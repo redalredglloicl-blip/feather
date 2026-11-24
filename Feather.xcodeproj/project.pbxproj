@@ -33,6 +33,28 @@
 			membershipExceptions = (
 				Resources/ellekit.deb,
 				Resources/Info.plist,
+Backend/Observable/UpdateManager.swift,
+Backend/Storage/Storage+SourceMetadata.swift,
+Backend/Storage/Storage+Sources.swift,
+Views/Settings/About/AboutView.swift,
+Views/Settings/SettingsDonationCellView.swift,
+Views/Sources/Apps/Detail/AppVersionInfo.swift,
+Views/Sources/Apps/Detail/ExpandableText.swift,
+Views/Sources/Apps/Detail/FlexibleHeader.swift,
+Views/Sources/Apps/Detail/ScreenshotPreviewView.swift,
+Views/Sources/Apps/Detail/SourceAppsDetailView.swift,
+Views/Sources/Apps/Detail/VersionHistoryView.swift,
+Views/Sources/Apps/DownloadButtonView.swift,
+Views/Sources/Apps/News/SourceNewsCardInfoView.swift,
+Views/Sources/Apps/News/SourceNewsCardView.swift,
+Views/Sources/Apps/News/SourceNewsView.swift,
+Views/Sources/Apps/SourceAppsCellView.swift,
+Views/Sources/Apps/SourceAppsView.swift,
+Views/Sources/Apps/UIKit/SourceAppsTableRepresentableView.swift,
+Views/Sources/SourcesAddView.swift,
+Views/Sources/SourcesCellView.swift,
+Views/Sources/SourcesView.swift,
+Views/Sources/SourcesViewModel.swift,
 			);
 			target = 3379C1B82DA869A1004372DA /* Feather */;
 		};
