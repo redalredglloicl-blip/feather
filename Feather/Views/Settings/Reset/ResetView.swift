@@ -84,15 +84,6 @@ extension ResetView {
 	@ViewBuilder
 	private func _coredata() -> some View {
 		Section {
-			Button(.localized("Reset Sources"), systemImage: "xmark.circle") {
-				Self.resetAlert(
-					title: .localized("Reset Sources"),
-					message: Storage.shared.countContent(for: AltSource.self)
-				) {
-					Self.resetSources()
-				}
-			}
-			
 			Button(.localized("Reset Signed Apps"), systemImage: "xmark.circle") {
 				Self.resetAlert(
 					title: .localized("Reset Signed Apps"),
@@ -167,18 +158,12 @@ extension ResetView {
 		}
 	}
 	
-	static func resetSources() {
-		Storage.shared.clearContext(request: AltSource.fetchRequest())
-	}
-	
 	static func deleteSignedApps() {
-		Storage.shared.deleteSourceMetadata(kind: .signed)
 		Storage.shared.clearContext(request: Signed.fetchRequest())
 		try? FileManager.default.removeFileIfNeeded(at: FileManager.default.signed)
 	}
 	
 	static func deleteImportedApps() {
-		Storage.shared.deleteSourceMetadata(kind: .imported)
 		Storage.shared.clearContext(request: Imported.fetchRequest())
 		try? FileManager.default.removeFileIfNeeded(at: FileManager.default.unsigned)
 	}
@@ -196,7 +181,6 @@ extension ResetView {
 	static func resetAll() {
 		clearWorkCache()
 		clearNetworkCache()
-		resetSources()
 		deleteSignedApps()
 		deleteImportedApps()
 		resetCertificates(resetAll: true)

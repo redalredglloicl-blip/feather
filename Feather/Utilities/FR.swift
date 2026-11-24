@@ -9,21 +9,18 @@ import Foundation.NSURL
 import UIKit.UIImage
 import ZsignC
 import NimbleJSON
-import AltSourceKit
 import IDeviceSwift
 
 enum FR {
 	static func handlePackageFile(
 		_ ipa: URL,
 		download: Download? = nil,
-		sourceProvenance: SourceAppProvenance? = nil,
 		completion: @escaping (Error?) -> Void
 	) {
 		Task.detached {
 			let handler = AppFileHandler(
 				file: ipa,
-				download: download,
-				sourceProvenance: sourceProvenance
+				download: download
 			)
 			
 			do {
@@ -153,34 +150,6 @@ enum FR {
 				}
 			case .failure(_):
 				completion(false)
-			}
-		}
-	}
-	
-	static func handleSource(
-		_ urlString: String,
-		competion: @escaping () -> Void
-	) {
-		guard let url = URL(string: urlString) else { return }
-		
-		NBFetchService().fetch<ASRepository>(from: url) { (result: Result<ASRepository, Error>) in
-			switch result {
-			case .success(let data):
-				let id = data.id ?? url.absoluteString
-				
-				if !Storage.shared.sourceExists(id) {
-					Storage.shared.addSource(url, repository: data, id: id) { _ in
-						competion()
-					}
-				} else {
-					DispatchQueue.main.async {
-						UIAlertController.showAlertWithOk(title: .localized("Error"), message: .localized("Repository already added."))
-					}
-				}
-			case .failure(let error):
-				DispatchQueue.main.async {
-					UIAlertController.showAlertWithOk(title: .localized("Error"), message: error.localizedDescription)
-				}
 			}
 		}
 	}

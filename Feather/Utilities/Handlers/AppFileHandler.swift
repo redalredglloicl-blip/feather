@@ -18,18 +18,15 @@ final class AppFileHandler: NSObject, @unchecked Sendable {
 	private var _ipa: URL
 	private let _install: Bool
 	private let _download: Download?
-	private let _sourceProvenance: SourceAppProvenance?
 	
 	init(
 		file ipa: URL,
 		install: Bool = false,
-		download: Download? = nil,
-		sourceProvenance: SourceAppProvenance? = nil
+		download: Download? = nil
 	) {
 		self._ipa = ipa
 		self._install = install
 		self._download = download
-		self._sourceProvenance = sourceProvenance ?? download?.sourceProvenance
 		self._uniqueWorkDir = _fileManager.temporaryDirectory
 			.appendingPathComponent("FeatherImport_\(_uuid)", isDirectory: true)
 		
@@ -116,20 +113,12 @@ final class AppFileHandler: NSObject, @unchecked Sendable {
 		
 		Storage.shared.addImported(
 			uuid: _uuid,
-			source: _sourceProvenance?.sourceRepositoryURL,
+			source: nil,
 			appName: bundle?.name,
 			appIdentifier: bundle?.bundleIdentifier,
 			appVersion: bundle?.version,
 			appIcon: bundle?.iconFileName
 		) { _ in }
-		
-		if let sourceProvenance = _sourceProvenance {
-			Storage.shared.addSourceMetadata(
-				for: _uuid,
-				kind: .imported,
-				provenance: sourceProvenance
-			)
-		}
 	}
 	
 	private func _directory() async throws -> URL {

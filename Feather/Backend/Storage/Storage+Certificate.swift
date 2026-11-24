@@ -33,10 +33,16 @@ extension Storage {
 		Storage.shared.revokagedCertificate(for: new)
 		saveContext()
 		generator.impactOccurred()
+		
+		// Remind the user before this certificate expires.
+		NotificationManager.shared.scheduleExpiryReminders(for: new)
+		
 		completion(nil)
 	}
 	
 	func deleteCertificate(for cert: CertificatePair) {
+		NotificationManager.shared.cancelReminders(for: cert)
+		
 		if let url = getUuidDirectory(for: cert) {
 			try? FileManager.default.removeItem(at: url)
 		}

@@ -42,6 +42,14 @@ struct LibraryInfoView: View {
 
 // MARK: - Extension: View
 extension LibraryInfoView {
+	private static let _expiryDateFormatter: DateFormatter = {
+		let formatter = DateFormatter()
+		formatter.dateStyle = .medium
+		formatter.timeStyle = .none
+		return formatter
+	}()
+	
+
 	@ViewBuilder
 	private func _infoSection(for app: AppInfoPresentable) -> some View {
 		NBSection(.localized("Info")) {
@@ -78,6 +86,11 @@ extension LibraryInfoView {
 				CertificatesCellView(
 					cert: cert
 				)
+				
+				if let expiration = cert.expiration {
+					_infoCell(.localized("Expires"), desc: "\(Self._expiryDateFormatter.string(from: expiration)) (\(expiration.expirationInfo().formatted))")
+						.foregroundStyle(expiration.expirationInfo().color)
+				}
 			}
 		}
 	}

@@ -20,6 +20,7 @@ struct CertificatesAddView: View {
 	
 	@State private var _isImportingP12Presenting = false
 	@State private var _isImportingMobileProvisionPresenting = false
+	@State private var _isAppleIDSignInPresenting = false
 	
 	var saveButtonDisabled: Bool {
 		_p12URL == nil || _provisionURL == nil
@@ -37,6 +38,16 @@ struct CertificatesAddView: View {
 						_isImportingMobileProvisionPresenting = true
 					}
 				}
+				NBSection(.localized("Certificate from Apple")) {
+					Button {
+						_isAppleIDSignInPresenting = true
+					} label: {
+						Label(.localized("Certificate from Apple"), systemImage: "apple.logo")
+					}
+				} footer: {
+					Text(.localized("Get a free certificate from Apple with your Apple ID"))
+				}
+				
 				NBSection(.localized("Password")) {
 					SecureField(.localized("Enter Password"), text: $_p12Password)
 				} footer: {
@@ -58,6 +69,9 @@ struct CertificatesAddView: View {
 				) {
 					_saveCertificate()
 				}
+			}
+			.sheet(isPresented: $_isAppleIDSignInPresenting) {
+				AppleIDSignInView()
 			}
 			.sheet(isPresented: $_isImportingP12Presenting) {
 				FileImporterRepresentableView(

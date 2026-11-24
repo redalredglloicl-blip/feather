@@ -40,6 +40,14 @@ struct FeatherApp: App {
 			}
 			// dear god help me
 			.onAppear {
+				// Expiry reminders: ask once, then re-schedule for all stored certificates.
+				NotificationManager.shared.requestAuthorization()
+				Storage.shared.getAllCertificates().forEach {
+					NotificationManager.shared.scheduleExpiryReminders(for: $0)
+				}
+				// Keep a background refresh scheduled on every launch.
+				AutoRefreshManager.shared.scheduleBackgroundRefresh()
+				
 				if let style = UIUserInterfaceStyle(rawValue: UserDefaults.standard.integer(forKey: "Feather.userInterfaceStyle")) {
 					UIApplication.topViewController()?.view.window?.overrideUserInterfaceStyle = style
 				}
@@ -117,10 +125,6 @@ struct FeatherApp: App {
 				
 				FR.exportCertificateAndOpenUrl(using: callbackTemplate)
 			}
-			/// feather://source/<url>
-			if let fullPath = url.validatedScheme(after: "/source/") {
-				FR.handleSource(fullPath) { }
-			}
 			/// feather://install/<url.ipa>
 			if
 				let fullPath = url.validatedScheme(after: "/install/"),
@@ -160,6 +164,12 @@ class AppDelegate: NSObject, UIApplicationDelegate {
 		_createDocumentsDirectories()
 		ResetView.clearWorkCache()
 		_addDefaultCertificates()
+		// Background auto-refresh: register the task and schedule the
+		// next run. Best-effort — iOS decides when it actually runs.
+		Task { @MainActor in
+			AutoRefreshManager.shared.registerBackgroundRefresh()
+			AutoRefreshManager.shared.scheduleBackgroundRefresh()
+		}
 		return true
 	}
 	

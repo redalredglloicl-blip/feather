@@ -171,12 +171,6 @@ final class SigningHandler: NSObject {
 				continuation.resume()
 			}
 		}
-		
-		Storage.shared.copySourceMetadata(
-			from: _app.uuid,
-			to: _uuid,
-			kind: .signed
-		)
 	}
 	
 	private func _directory() async throws -> URL {
