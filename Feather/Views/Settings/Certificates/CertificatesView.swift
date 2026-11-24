@@ -190,7 +190,7 @@ struct CertificatesView: View {
 				VStack(alignment: .leading, spacing: 2) {
 					Text(.localized("Certificate expires soon"))
 						.font(.headline)
-					Text([cert.nickname, info.formatted].compactMap { $0 }.filter { !$0.isEmpty }.joined(separator: " \u00b7 "))
+					Text([cert.nickname, info.formatted].compactMap { $0 }.filter { !$0.isEmpty }.joined(separator: " \u{00B7} "))
 						.font(.footnote)
 						.foregroundStyle(.secondary)
 				}
