@@ -22,7 +22,7 @@ jobs:
       - name: Build
         run: | 
           agvtool new-version -all $(git rev-parse HEAD)
-          make
+          make iphoneos#
 
       - name: Get Version
         id: get_version
