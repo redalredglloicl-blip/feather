@@ -225,6 +225,7 @@ final class AutoRefreshManager {
 	}
 	
 	func scheduleBackgroundRefresh() {
+		registerBackgroundRefresh()
 		let request = BGAppRefreshTaskRequest(identifier: Self.backgroundTaskIdentifier)
 		request.earliestBeginDate = Date(timeIntervalSinceNow: 24 * 3600)
 		try? BGTaskScheduler.shared.submit(request)
