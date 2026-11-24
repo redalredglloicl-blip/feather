@@ -432,7 +432,7 @@ final class AppleIDAuthManager: ObservableObject {
 				session: session
 			))
 		
-		let deviceType: DeviceType = UIDevice.current.userInterfaceIdiom == .pad ? .ipad : .iphone
+		let deviceType: DeviceType = UIDevice.current.userInterfaceIdiom == .pad ? .iPad : .iPhone
 		
 		return try await DeveloperPortal.shared.downloadProvisioningProfile(
 			for: wildcard,
