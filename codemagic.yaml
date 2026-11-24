@@ -1,0 +1,27 @@
+# Codemagic build for our Feather fork (redalredglloicl-blip/Feather).
+# Put this file at the REPO ROOT as codemagic.yaml — Codemagic auto-detects it.
+# Free plan: 500 macOS M2 minutes/month, no credit card, 120 min/build limit.
+# Builds the UNSIGNED IPA exactly like the GitHub workflow (make -> packages/Feather.ipa).
+workflows:
+  feather-ios:
+    name: Feather iOS build
+    instance_type: mac_mini_m2
+    max_build_duration: 60
+    environment:
+      xcode: 26.3
+    triggering:
+      events:
+        - push
+      branch_patterns:
+        - pattern: main
+          include: true
+    scripts:
+      - name: Init submodules
+        script: |
+          git submodule update --init --recursive
+      - name: Build Feather IPA
+        script: |
+          agvtool new-version -all $(git rev-parse HEAD)
+          make
+    artifacts:
+      - packages/Feather.ipa
