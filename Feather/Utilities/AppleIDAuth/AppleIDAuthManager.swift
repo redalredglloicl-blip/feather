@@ -424,13 +424,17 @@ final class AppleIDAuthManager: ObservableObject {
 		// Free accounts sign with the wildcard team profile (bundle ID "*"),
 		// which covers any app. Reuse it when it already exists.
 		let appIDs = try await DeveloperPortal.shared.fetchAppIDs(for: team, session: session)
-		let wildcard = appIDs.first(where: { $0.bundleIdentifier == "*" })
-			?? (try await DeveloperPortal.shared.addAppID(
+		let wildcard: AppID
+		if let existing = appIDs.first(where: { $0.bundleIdentifier == "*" }) {
+			wildcard = existing
+		} else {
+			wildcard = try await DeveloperPortal.shared.addAppID(
 				withName: "Feather",
 				bundleIdentifier: "*",
 				team: team,
 				session: session
-			))
+			)
+		}
 		
 		let deviceType: DeviceType = UIDevice.current.userInterfaceIdiom == .pad ? .iPad : .iPhone
 		
