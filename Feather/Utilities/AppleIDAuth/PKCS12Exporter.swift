@@ -7,19 +7,16 @@
 //  normal certificate import path (FR.handleCertificateFiles), exactly
 //  like a certificate the user imported from Files.
 //
-//  Uses CodeSignKit's PKCS12Builder (verified API). The .p12 password is a
-//  random UUID generated per certificate and stored with the pair.
+//  Uses SideSign's own KeyStore.exportP12 — CodeSignKit is only a
+//  transitive dependency of SideSign and cannot be imported by the
+//  Feather target (that was a build failure: "No such module
+//  'CodeSignKit'").
 
 import Foundation
-import CodeSignKit
 import SideSign
 
 enum PKCS12Exporter {
 	static func build(keyStore: KeyStore, password: String) throws -> Data {
-		try PKCS12Builder.build(
-			certificateDER: keyStore.certificate.rawDER,
-			privateKeyDER: keyStore.privateKey,
-			password: password
-		)
+		try keyStore.exportP12(password: password)
 	}
 }
