@@ -145,7 +145,7 @@ struct AppleIDSignInView: View {
 					if let certs = _manager.revocationRequest {
 						ForEach(certs, id: \.serialNumberHex) { cert in
 							VStack(alignment: .leading, spacing: 2) {
-								Text(cert.commonName)
+								Text(cert.name)
 									.font(.headline)
 								if let notBefore = cert.notBefore {
 									Text(notBefore.formatted(date: .abbreviated, time: .omitted))
