@@ -24,8 +24,11 @@
 //    + the existing silent-audio manager to stretch the time iOS gives us.
 //    Background execution is best-effort: iOS decides when to run it.
 //  * Self-refresh: FOREGROUND ONLY, behind an explicit confirmation.
-//    Re-signing Feather itself and installing the new copy over the old
-//    one is the most dangerous step in this file — any failure could
+//    Re-signing Zenith itself with its current certificate (a fresh
+//    Apple certificate is fetched first when the current one came
+//    from Apple and a session is stored) and installing the new copy
+//    over the old one is the most dangerous step in this file — any
+//    failure could
 //    leave the user with no app at all. It is therefore never attempted
 //    in the background, never attempted when any other app failed, and
 //    it installs only through the AFC pairing path (the server path
@@ -48,6 +51,7 @@ import Zip
 enum AutoRefreshError: Error, LocalizedError {
 	case noStoredSession
 	case noCertificate
+	case currentCertificateExpired
 	case resignFailed(appName: String, underlying: Error)
 	case selfRefreshFailed(underlying: Error)
 	
@@ -57,10 +61,12 @@ enum AutoRefreshError: Error, LocalizedError {
 			return "No saved Apple ID session. Sign in once from Certificates to enable auto-refresh."
 		case .noCertificate:
 			return "Could not fetch a fresh certificate."
+		case .currentCertificateExpired:
+			return "The current certificate is expired. Import a new certificate first."
 		case .resignFailed(let name, let error):
 			return "Could not re-sign \(name): \(error.localizedDescription)"
 		case .selfRefreshFailed(let error):
-			return "Could not refresh Feather itself: \(error.localizedDescription)"
+			return "Could not refresh Zenith itself: \(error.localizedDescription)"
 		}
 	}
 }
@@ -128,9 +134,12 @@ final class AutoRefreshManager {
 	
 	// MARK: - Foreground refresh
 	
-	/// Re-signs every due app with a fresh free certificate fetched
-	/// through the stored Apple ID session. Returns a report; partial
-	/// failure is normal and is reported per app, never hidden.
+	/// Re-signs every due app. The certificate is picked the same way
+	/// self-refresh picks it: a fresh Apple certificate only when the
+	/// current one is Xcode-managed and a session is stored; an
+	/// imported certificate is used directly — no Apple ID session is
+	/// needed for that. Returns a report; partial failure is normal
+	/// and is reported per app, never hidden.
 	func refreshDueApps() async -> AutoRefreshReport {
 		var report = AutoRefreshReport()
 		
@@ -139,20 +148,32 @@ final class AutoRefreshManager {
 			return report
 		}
 		
-		let freshCertificate: CertificatePair
+		// Zenith forced update: one-tap renewal refuses unless a fresh
+		// version check has passed.
+		guard await ForcedUpdateManager.shared.ensureCheckPassed() else {
+			let error: Error = ForcedUpdateManager.shared.isUpdateRequired
+				? ForcedUpdateError.updateRequired
+				: ForcedUpdateError.checkFailed
+			for app in due {
+				report.failed.append((name: app.name ?? "", error: error))
+			}
+			return report
+		}
+		
+		let certificate: CertificatePair
 		do {
-			freshCertificate = try await AppleIDAuthManager.shared.refreshCertificateWithStoredSession()
+			certificate = try await _certificateForResigning()
 		} catch {
 			for app in due {
 				report.failed.append((name: app.name ?? "", error: error))
 			}
 			return report
 		}
-		report.newCertificate = freshCertificate
+		report.newCertificate = certificate
 		
 		for app in due {
 			do {
-				try await _resign(app, with: freshCertificate)
+				try await _resign(app, with: certificate)
 				report.refreshedAppNames.append(app.name ?? "")
 			} catch {
 				report.failed.append((name: app.name ?? "", error: error))
@@ -168,13 +189,22 @@ final class AutoRefreshManager {
 	
 	// MARK: - Self-refresh (foreground only, user-confirmed)
 	
-	/// Re-signs Feather's own bundle with a fresh free certificate.
+	/// Re-signs Zenith's own bundle with its current certificate.
+	/// A fresh Apple certificate is fetched first when the current
+	/// one came from Apple and a session is stored; an imported
+	/// certificate is used directly, with no Apple ID session.
 	/// Only call from the foreground behind an explicit confirmation.
 	/// Returns `.installed` when the AFC pairing path installed the new
 	/// copy over the old one, or `.ipaReady` with the saved IPA path
 	/// when AFC is unavailable (the user installs it with SideStore/ESign).
 	func refreshSelf() async throws -> AutoRefreshReport.SelfRefreshOutcome {
-		let freshCertificate = try await AppleIDAuthManager.shared.refreshCertificateWithStoredSession()
+		// Zenith forced update: self-refresh refuses unless a fresh
+		// version check has passed.
+		guard await ForcedUpdateManager.shared.ensureCheckPassed() else {
+			throw AutoRefreshError.selfRefreshFailed(underlying: ForcedUpdateManager.shared.isUpdateRequired ? ForcedUpdateError.updateRequired : ForcedUpdateError.checkFailed)
+		}
+		
+		let freshCertificate = try await _certificateForResigning()
 		
 		let ipaURL: URL
 		do {
@@ -201,6 +231,29 @@ final class AutoRefreshManager {
 			// keeps running and the new IPA can be installed by hand.
 			return .ipaReady(ipaURL)
 		}
+	}
+	
+	/// Picks the certificate to re-sign with (Zenith itself, or any
+	/// due app). Apple-ID free certificate + a stored session: fetch
+	/// a fresh one through the session. Imported certificate (e.g. an
+	/// enterprise certificate) or no stored session: re-sign with
+	/// the CURRENT certificate directly — no Apple ID session is
+	/// needed for that. This is the fix for imported certificates,
+	/// which used to fail with "The saved Apple ID session expired.
+	/// Sign in again." even though no session was ever required.
+	private func _certificateForResigning() async throws -> CertificatePair {
+		let selectedIndex = UserDefaults.standard.integer(forKey: "feather.selectedCert")
+		guard let current = Storage.shared.getCertificate(for: selectedIndex) else {
+			throw AutoRefreshError.noCertificate
+		}
+		if let expiration = current.expiration, expiration <= Date() {
+			throw AutoRefreshError.currentCertificateExpired
+		}
+		let isXcodeManaged = Storage.shared.getProvisionFileDecoded(for: current)?.IsXcodeManaged == true
+		if isXcodeManaged, AppleIDAuthManager.shared.storedSession != nil {
+			return try await AppleIDAuthManager.shared.refreshCertificateWithStoredSession()
+		}
+		return current
 	}
 	
 	// MARK: - Background

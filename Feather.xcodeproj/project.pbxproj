@@ -33,28 +33,6 @@
 			membershipExceptions = (
 				Resources/ellekit.deb,
 				Resources/Info.plist,
-Backend/Observable/UpdateManager.swift,
-"Backend/Storage/Storage+SourceMetadata.swift",
-"Backend/Storage/Storage+Sources.swift",
-Views/Settings/About/AboutView.swift,
-Views/Settings/SettingsDonationCellView.swift,
-Views/Sources/Apps/Detail/AppVersionInfo.swift,
-Views/Sources/Apps/Detail/ExpandableText.swift,
-Views/Sources/Apps/Detail/FlexibleHeader.swift,
-Views/Sources/Apps/Detail/ScreenshotPreviewView.swift,
-Views/Sources/Apps/Detail/SourceAppsDetailView.swift,
-Views/Sources/Apps/Detail/VersionHistoryView.swift,
-Views/Sources/Apps/DownloadButtonView.swift,
-Views/Sources/Apps/News/SourceNewsCardInfoView.swift,
-Views/Sources/Apps/News/SourceNewsCardView.swift,
-Views/Sources/Apps/News/SourceNewsView.swift,
-Views/Sources/Apps/SourceAppsCellView.swift,
-Views/Sources/Apps/SourceAppsView.swift,
-Views/Sources/Apps/UIKit/SourceAppsTableRepresentableView.swift,
-Views/Sources/SourcesAddView.swift,
-Views/Sources/SourcesCellView.swift,
-Views/Sources/SourcesView.swift,
-Views/Sources/SourcesViewModel.swift,
 			);
 			target = 3379C1B82DA869A1004372DA /* Feather */;
 		};
@@ -211,7 +189,7 @@ Views/Sources/SourcesViewModel.swift,
 				330F68FF2DC03DF400D8C35D /* XCLocalSwiftPackageReference "NimbleKit" */,
 				3346F8372DC6C68300C7D508 /* XCRemoteSwiftPackageReference "Nuke" */,
 				3349E7652DEFB46F00E317ED /* XCLocalSwiftPackageReference "IDeviceKitten" */,
-        553D3D1447F3EACF2C3D0604 /* XCRemoteSwiftPackageReference "SideSign" */,
+				553D3D1447F3EACF2C3D0604 /* XCRemoteSwiftPackageReference "SideSign" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 3379C1BA2DA869A1004372DA /* Products */;
@@ -388,7 +366,8 @@ Views/Sources/SourcesViewModel.swift,
 				);
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Feather/Resources/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = Feather;
+				INFOPLIST_KEY_CFBundleDisplayName = Zenith;
+				INFOPLIST_KEY_ZenithBuildNumber = 2;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright (c) 2024 Samara M";
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
@@ -452,7 +431,8 @@ Views/Sources/SourcesViewModel.swift,
 				GCC_PREPROCESSOR_DEFINITIONS = "";
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Feather/Resources/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = Feather;
+				INFOPLIST_KEY_CFBundleDisplayName = Zenith;
+				INFOPLIST_KEY_ZenithBuildNumber = 2;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright (c) 2024 Samara M";
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;

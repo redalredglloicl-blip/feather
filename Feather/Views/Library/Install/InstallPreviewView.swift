@@ -81,6 +81,9 @@ struct InstallPreviewView: View {
 				
 				switch newStatus {
 				case .completed, .broken(_):
+					if case .completed = newStatus {
+						LibraryPrefs.shared.recordOpened(uuid: app.uuid)
+					}
 					progressTask?.cancel()
 					progressTask = nil
 					#if !targetEnvironment(macCatalyst)
@@ -123,6 +126,7 @@ struct InstallPreviewView: View {
 		ZStack {
 			if viewModel.isCompleted {
 				Button {
+					LibraryPrefs.shared.recordOpened(uuid: app.uuid)
 					UIApplication.openApp(with: app.identifier ?? "")
 				} label: {
 					NBButton("Open", systemImage: "", style: .text)
@@ -145,6 +149,19 @@ struct InstallPreviewView: View {
 		}
 				
 		Task.detached {
+			// Zenith forced update: installing refuses unless a fresh
+			// version check has passed.
+			guard await ForcedUpdateManager.shared.ensureCheckPassed() else {
+				await MainActor.run {
+					UIAlertController.showAlertWithOk(
+						title: .localized("Install"),
+						message: ForcedUpdateManager.shared.isUpdateRequired
+							? .localized("حدّث Zenith أولاً.")
+							: .localized("ما قدرت أتأكد من إصدار التطبيق. تأكد من النت وحاول مرة ثانية.")
+					)
+				}
+				return
+			}
 			do {
 				let handler = await ArchiveHandler(app: app, viewModel: viewModel)
 				try await handler.move()

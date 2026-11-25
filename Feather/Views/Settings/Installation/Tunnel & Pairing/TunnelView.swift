@@ -34,7 +34,7 @@ struct TunnelView: View {
 			}
 			
 			Section {
-				Button(.localized("Import Pairing File"), systemImage: "square.and.arrow.down") {
+				Button(.localized("Import Pairing File"), image: "icon-import") {
 					_isImportingPairingPresenting = true
 				}
 				if #available(iOS 17.4, *) {

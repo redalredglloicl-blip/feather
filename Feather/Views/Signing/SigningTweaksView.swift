@@ -101,7 +101,7 @@ extension SigningTweaksView {
 				}
 			}
 		} label: {
-			Label(.localized("Delete"), systemImage: "trash")
+			Label(.localized("Delete"), image: "icon-delete")
 		}
 	}
 }

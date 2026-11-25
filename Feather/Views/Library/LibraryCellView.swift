@@ -13,6 +13,8 @@ import NimbleViews
 struct LibraryCellView: View {
 	@Environment(\.horizontalSizeClass) private var horizontalSizeClass
 	@Environment(\.editMode) private var editMode
+	@ObservedObject private var _prefs = LibraryPrefs.shared
+	@State private var _isDeleteConfirmPresenting = false
 
 	var certInfo: Date.ExpirationInfo? {
 		Storage.shared.getCertificate(from: app)?.expiration?.expirationInfo()
@@ -73,11 +75,16 @@ struct LibraryCellView: View {
 			}
 		}
 		.padding(isRegular ? 12 : 0)
-		.background(
-			isRegular
-				? RoundedRectangle(cornerRadius: 18, style: .continuous)
-				.fill(_isSelected && isEditing ? Color.accentColor.opacity(0.1) : Color(.quaternarySystemFill))
-				: nil
+		.zenithGlassCard(
+			isEnabled: isRegular,
+			cornerRadius: 18,
+			fallback: _isSelected && isEditing ? Color.accentColor.opacity(0.1) : Color(.quaternarySystemFill)
+		)
+		.shadow(
+			color: isRegular ? Color.black.opacity(0.18) : Color.clear,
+			radius: isRegular ? 10 : 0,
+			x: 0,
+			y: isRegular ? 4 : 0
 		)
 		.contentShape(Rectangle())
 		.onTapGesture {
@@ -98,6 +105,12 @@ struct LibraryCellView: View {
 				Divider()
 				_actions(for: app)
 			}
+		}
+		.alert(.localized("متأكد تمسح التطبيق؟"), isPresented: $_isDeleteConfirmPresenting) {
+			Button(.localized("Delete"), role: .destructive) {
+				Storage.shared.deleteApp(for: app)
+			}
+			Button(.localized("Cancel"), role: .cancel) { }
 		}
 	}
 	
@@ -121,6 +134,12 @@ struct LibraryCellView: View {
 			lines.append("\(Self._expiryDateFormatter.string(from: expiration)) (\(expiration.expirationInfo().formatted))")
 		}
 		
+		if let uuid = app.uuid, let lastOpened = _prefs.lastOpenedDate(for: uuid) {
+			lines.append("\(String.localized("Last opened")): \(Self._expiryDateFormatter.string(from: lastOpened))")
+		} else {
+			lines.append(.localized("Never opened"))
+		}
+		
 		return lines.joined(separator: "\n")
 	}
 }
@@ -134,15 +153,37 @@ extension LibraryCellView {
 	
 	@ViewBuilder
 	private func _actions(for app: AppInfoPresentable) -> some View {
-		Button(.localized("Delete"), systemImage: "trash", role: .destructive) {
-			Storage.shared.deleteApp(for: app)
+		Button(.localized("Delete"), image: "icon-delete", role: .destructive) {
+			_isDeleteConfirmPresenting = true
 		}
 	}
 	
 	@ViewBuilder
 	private func _contextActions(for app: AppInfoPresentable) -> some View {
-		Button(.localized("Get Info"), systemImage: "info.circle") {
+		Button(.localized("Get Info"), image: "icon-info") {
 			selectedInfoAppPresenting = AnyApp(base: app)
+		}
+		Button(
+			_prefs.isFavorite(uuid: app.uuid) ? .localized("Remove from Favorites") : .localized("Add to Favorites"),
+			image: "icon-favorite"
+		) {
+			_prefs.toggleFavorite(uuid: app.uuid)
+		}
+		Menu {
+			ForEach(LibraryView.HomeCategory.allCases, id: \.self) { category in
+				Button {
+					_prefs.setCategory(category, for: app.uuid)
+				} label: {
+					HStack {
+						Text(category.pickerDisplayName)
+						if _prefs.category(for: app.uuid) == category {
+							Image(systemName: "checkmark")
+						}
+					}
+				}
+			}
+		} label: {
+			Label(.localized("Category"), image: "icon-category")
 		}
 	}
 	
@@ -151,23 +192,24 @@ extension LibraryCellView {
 		if app.isSigned {
 			if let id = app.identifier {
 				Button(.localized("Open"), systemImage: "app.badge.checkmark") {
+					LibraryPrefs.shared.recordOpened(uuid: app.uuid)
 					UIApplication.openApp(with: id)
 				}
 			}
-			Button(.localized("Install"), systemImage: "square.and.arrow.down") {
+			Button(.localized("Install"), image: "icon-install") {
 				selectedInstallAppPresenting = AnyApp(base: app)
 			}
-			Button(.localized("Re-sign"), systemImage: "signature") {
+			Button(.localized("Re-sign"), image: "icon-sign") {
 				selectedSigningAppPresenting = AnyApp(base: app)
 			}
-			Button(.localized("Export"), systemImage: "square.and.arrow.up") {
+			Button(.localized("Export"), image: "icon-export") {
 				selectedInstallAppPresenting = AnyApp(base: app, archive: true)
 			}
 		} else {
-			Button(.localized("Install"), systemImage: "square.and.arrow.down") {
+			Button(.localized("Install"), image: "icon-install") {
 				selectedInstallAppPresenting = AnyApp(base: app)
 			}
-			Button(.localized("Sign"), systemImage: "signature") {
+			Button(.localized("Sign"), image: "icon-sign") {
 				selectedSigningAppPresenting = AnyApp(base: app)
 			}
 		}
@@ -176,6 +218,17 @@ extension LibraryCellView {
 	@ViewBuilder
 	private func _buttonActions(for app: AppInfoPresentable) -> some View {
 		Group {
+			Button {
+				_prefs.toggleFavorite(uuid: app.uuid)
+			} label: {
+				Image("icon-favorite")
+					.renderingMode(.template)
+					.resizable()
+					.scaledToFit()
+					.frame(width: 22, height: 22)
+					.foregroundStyle(_prefs.isFavorite(uuid: app.uuid) ? Color.accentColor : Color.secondary)
+			}
+			
 			if app.isSigned {
 				Button {
 					selectedInstallAppPresenting = AnyApp(base: app)

@@ -18,15 +18,19 @@ struct ArchiveView: View {
 	var body: some View {
 		NBList(.localized("Archive & Compression")) {
 			Section {
-				Picker(.localized("Compression Level"), systemImage: "archivebox", selection: $_compressionLevel) {
+				Picker(selection: $_compressionLevel) {
 					ForEach(ZipCompression.allCases, id: \.rawValue) { level in
 						Text(level.label).tag(level)
 					}
+				} label: {
+					Label(.localized("Compression Level"), image: "icon-archive")
 				}
 			}
 			
 			Section {
-				Toggle(.localized("Show Sheet when Exporting"), systemImage: "square.and.arrow.up", isOn: $_useShareSheet)
+				Toggle(isOn: $_useShareSheet) {
+					Label(.localized("Show Sheet when Exporting"), image: "icon-export")
+				}
 			} footer: {
 				Text(.localized("Toggling show sheet will present a share sheet after exporting to your files."))
 			}

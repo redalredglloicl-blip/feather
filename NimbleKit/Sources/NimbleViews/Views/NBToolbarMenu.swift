@@ -10,6 +10,7 @@ import SwiftUI
 public struct NBToolbarMenu<Content>: ToolbarContent where Content: View {
 	private var _title: String
 	private var _icon: String
+	private var _image: String
 	private var _style: NBToolbarMenuStyle
 	private var _placement: ToolbarItemPlacement
 	private var _content: Content
@@ -17,12 +18,14 @@ public struct NBToolbarMenu<Content>: ToolbarContent where Content: View {
 	public init(
 		_ title: String = "",
 		systemImage: String = "",
+		image: String = "",
 		style: NBToolbarMenuStyle = .icon,
 		placement: ToolbarItemPlacement = .automatic,
 		@ViewBuilder content: () -> Content
 	) {
 		self._title = title
 		self._icon = systemImage
+		self._image = image
 		self._style = style
 		self._placement = placement
 		self._content = content()
@@ -34,7 +37,15 @@ public struct NBToolbarMenu<Content>: ToolbarContent where Content: View {
 				_content
 			} label: {
 				if _style == .icon {
-					Image(systemName: _icon)
+					if !_image.isEmpty {
+						Image(_image)
+							.renderingMode(.template)
+							.resizable()
+							.scaledToFit()
+							.frame(width: 20, height: 20)
+					} else {
+						Image(systemName: _icon)
+					}
 				} else {
 					Label(_title, systemImage: _icon).labelStyle(.titleOnly)
 				}

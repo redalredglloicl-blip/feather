@@ -72,6 +72,7 @@ struct CertificatesAddView: View {
 			}
 			.sheet(isPresented: $_isAppleIDSignInPresenting) {
 				AppleIDSignInView()
+					.zenithSheetBackground()
 			}
 			.sheet(isPresented: $_isImportingP12Presenting) {
 				FileImporterRepresentableView(
@@ -82,6 +83,7 @@ struct CertificatesAddView: View {
 					}
 				)
 				.ignoresSafeArea()
+				.zenithSheetBackground()
 			}
 			.sheet(isPresented: $_isImportingMobileProvisionPresenting) {
 				FileImporterRepresentableView(
@@ -92,6 +94,7 @@ struct CertificatesAddView: View {
 					}
 				)
 				.ignoresSafeArea()
+				.zenithSheetBackground()
 			}
 		}
 	}

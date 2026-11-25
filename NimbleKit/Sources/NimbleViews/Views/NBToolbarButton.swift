@@ -13,6 +13,7 @@ public struct NBToolbarButton: ToolbarContent {
 	
 	private var _title: String
 	private var _icon: String
+	private var _image: String
 	private var _style: NBToolbarMenuStyle
 	private var _placement: ToolbarItemPlacement
 	private var _isDisabled: Bool
@@ -22,6 +23,7 @@ public struct NBToolbarButton: ToolbarContent {
 	public init(
 		_ title: String = "",
 		systemImage: String = "",
+		image: String = "",
 		style: NBToolbarMenuStyle = .icon,
 		placement: ToolbarItemPlacement = .automatic,
 		isDisabled: Bool = false,
@@ -29,6 +31,7 @@ public struct NBToolbarButton: ToolbarContent {
 	) {
 		self._title = title
 		self._icon = systemImage
+		self._image = image
 		self._style = style
 		self._placement = placement
 		self._isDisabled = isDisabled
@@ -43,6 +46,7 @@ public struct NBToolbarButton: ToolbarContent {
 		self._placement = placement
 		self._isDisabled = false
 		self._action = {}
+		self._image = ""
 		
 		switch role {
 		case .cancel:
@@ -72,7 +76,15 @@ public struct NBToolbarButton: ToolbarContent {
 				}
 			} label: {
 				if _style == .icon {
-					Image(systemName: _icon)
+					if !_image.isEmpty {
+						Image(_image)
+							.renderingMode(.template)
+							.resizable()
+							.scaledToFit()
+							.frame(width: 20, height: 20)
+					} else {
+						Image(systemName: _icon)
+					}
 				} else {
 					Label(_title, systemImage: _icon).labelStyle(.titleOnly)
 				}

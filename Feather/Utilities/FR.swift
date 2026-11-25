@@ -48,8 +48,21 @@ enum FR {
 		certificate: CertificatePair?,
 		completion: @escaping (Error?) -> Void
 	) {
-		Task.detached {
-			let handler = SigningHandler(app: app, options: options)
+		// Zenith forced update: signing refuses unless a fresh
+		// version check has passed. The gate re-runs the check on
+		// demand, so a transient failure only delays signing.
+		Task {
+			guard await ForcedUpdateManager.shared.ensureCheckPassed() else {
+				let error: Error = ForcedUpdateManager.shared.isUpdateRequired
+					? ForcedUpdateError.updateRequired
+					: ForcedUpdateError.checkFailed
+				await MainActor.run {
+					completion(error)
+				}
+				return
+			}
+			Task.detached {
+				let handler = SigningHandler(app: app, options: options)
 			handler.appCertificate = certificate
 			handler.appIcon = icon
 			
@@ -65,6 +78,7 @@ enum FR {
 				await MainActor.run {
 					completion(error)
 				}
+			}
 			}
 		}
 	}

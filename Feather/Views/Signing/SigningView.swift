@@ -20,6 +20,7 @@ struct SigningView: View {
 	@State private var _isFilePickerPresenting = false
 	@State private var _isImagePickerPresenting = false
 	@State private var _isSigning = false
+	@State private var _isSuccessPresenting = false
 	@State private var _selectedPhoto: PhotosPickerItem? = nil
 	@State var appIcon: UIImage?
 	
@@ -70,7 +71,7 @@ struct SigningView: View {
 								NBSheetButton(title: .localized("Start Signing"), style: .prominent)
 									.padding()
 							}
-							.buttonStyle(.plain)
+							.buttonStyle(ZenithPressButtonStyle())
 							.offset(y: UIDevice.current.userInterfaceIdiom == .pad ? -20 : -40)
 						}
 				}
@@ -94,7 +95,7 @@ struct SigningView: View {
 					appIcon = nil
 				}
 			}
-			.sheet(isPresented: $_isAltPickerPresenting) { SigningAlternativeIconView(app: app, appIcon: $appIcon, isModifing: .constant(true)) }
+			.sheet(isPresented: $_isAltPickerPresenting) { SigningAlternativeIconView(app: app, appIcon: $appIcon, isModifing: .constant(true)).zenithSheetBackground() }
 			.sheet(isPresented: $_isFilePickerPresenting) {
 				FileImporterRepresentableView(
 					allowedContentTypes:  [.image],
@@ -104,6 +105,7 @@ struct SigningView: View {
 					}
 				)
 				.ignoresSafeArea()
+				.zenithSheetBackground()
 			}
 			.photosPicker(isPresented: $_isImagePickerPresenting, selection: $_selectedPhoto)
 			.onChange(of: _selectedPhoto) { newValue in
@@ -118,6 +120,24 @@ struct SigningView: View {
 			}
 			.disabled(_isSigning)
 			.animation(.smooth, value: _isSigning)
+		}
+		.overlay {
+			if _isSuccessPresenting {
+				SigningSuccessView(appName: app.name ?? .localized("Unknown")) {
+					withAnimation(.easeOut(duration: 0.25)) {
+						_isSuccessPresenting = false
+					}
+					if _temporaryOptions.post_installAppAfterSigned {
+						DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
+							NotificationCenter.default.post(name: Notification.Name("Feather.installApp"), object: nil)
+						}
+					}
+					DispatchQueue.main.asyncAfter(deadline: .now() + 0.35) {
+						dismiss()
+					}
+				}
+				.transition(.opacity.combined(with: .scale(scale: 0.95)))
+			}
 		}
 		.onAppear {
 			// ppq protection
@@ -302,13 +322,15 @@ extension SigningView {
 				{
 					Storage.shared.deleteApp(for: app)
 				}
-				
-				if _temporaryOptions.post_installAppAfterSigned {
-					DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
-						NotificationCenter.default.post(name: Notification.Name("Feather.installApp"), object: nil)
-					}
+
+				// Zenith: show the animated success screen instead of
+				// dismissing silently. The install-after-sign trigger
+				// moves to the success screen's dismiss button, so the
+				// install sheet never pops up under the success view.
+				_isSigning = false
+				withAnimation(.spring(response: 0.4, dampingFraction: 0.8)) {
+					_isSuccessPresenting = true
 				}
-				dismiss()
 			}
 		}
 	}

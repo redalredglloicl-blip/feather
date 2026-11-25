@@ -4,76 +4,32 @@
 //
 //  Created by samara on 10.04.2025.
 //
+//  Zenith: Certificates live in their own tab now, so the Certificates
+//  section was removed from Settings. The Version row shows the bundle
+//  version (2.0) so the user can tell the update arrived.
 
 import SwiftUI
 import NimbleViews
+import NimbleExtensions
 import UIKit
 import Darwin
 import IDeviceSwift
 
 // MARK: - View
 struct SettingsView: View {
-	@AppStorage("feather.selectedCert") private var _storedSelectedCert: Int = 0
-	@State private var _currentIcon: String? = UIApplication.shared.alternateIconName
-	
-	// MARK: Fetch
-	@FetchRequest(
-		entity: CertificatePair.entity(),
-		sortDescriptors: [NSSortDescriptor(keyPath: \CertificatePair.date, ascending: false)],
-		animation: .snappy
-	) private var _certificates: FetchedResults<CertificatePair>
-	
-	private var selectedCertificate: CertificatePair? {
-		guard
-			_storedSelectedCert >= 0,
-			_storedSelectedCert < _certificates.count
-		else {
-			return nil
-		}
-		return _certificates[_storedSelectedCert]
-	}
-
-    
-    
 	// MARK: Body
 	var body: some View {
 		NBNavigationView(.localized("Settings")) {
 			Form {
-				Section {
-					NavigationLink(destination: AppearanceView()) {
-						Label(.localized("Appearance"), systemImage: "paintbrush")
-					}
-					NavigationLink(destination: AppIconView(currentIcon: $_currentIcon)) {
-						Label(.localized("App Icon"), systemImage: "app.badge")
-					}
-				}
-                
-				NBSection(.localized("Certificates")) {
-                    
-					if let cert = selectedCertificate {
-						CertificatesCellView(cert: cert)
-					} else {
-						Text(.localized("No Certificate"))
-							.font(.footnote)
-							.foregroundColor(.disabled())
-					}
-					NavigationLink(destination: CertificatesView()) {
-						Label(.localized("Certificates"), systemImage: "checkmark.seal")
-					}
-                 
-				} footer: {
-					Text(.localized("Add and manage certificates used for signing applications."))
-				}
-                
 				NBSection(.localized("Features")) {
 					NavigationLink(destination: ConfigurationView()) {
-						Label(.localized("Signing Options"), systemImage: "signature")
+						Label(.localized("Signing Options"), image: "icon-sign")
 					}
 					NavigationLink(destination: ArchiveView()) {
-						Label(.localized("Archive & Compression"), systemImage: "archivebox")
+						Label(.localized("Archive & Compression"), image: "icon-archive")
 					}
 					NavigationLink(destination: InstallationView()) {
-						Label(.localized("Installation"), systemImage: "arrow.down.circle")
+						Label(.localized("Installation"), image: "icon-install")
 					}
 				} footer: {
 					Text(.localized("Configure the apps way of installing, its zip compression levels, and custom modifications to apps."))
@@ -83,10 +39,19 @@ struct SettingsView: View {
                 
 				Section {
 					NavigationLink(destination: ResetView()) {
-						Label(.localized("Reset"), systemImage: "trash")
+						Label(.localized("Reset"), image: "icon-delete")
 					}
 				} footer: {
 					Text(.localized("Reset the applications certificates, apps, and general contents."))
+				}
+				
+				Section {
+					HStack {
+						Text(.localized("Version"))
+						Spacer()
+						Text(Bundle.main.version)
+							.foregroundStyle(.secondary)
+					}
 				}
 			}
 		}

@@ -48,6 +48,7 @@ struct SigningOptionsView: View {
 			Self.picker(
 				.localized("Signing Type"),
 				systemImage: "signature",
+				image: "icon-sign",
 				selection: $options.signingOption,
 				values: Options.SigningOption.allCases
 			)
@@ -148,12 +149,14 @@ struct SigningOptionsView: View {
 			_toggle(
 				.localized("Install After Signing"),
 				systemImage: "arrow.down.circle",
+				image: "icon-install",
 				isOn: $options.post_installAppAfterSigned,
 				temporaryValue: temporaryOptions?.post_installAppAfterSigned
 			)
 			_toggle(
 				.localized("Delete After Signing"),
 				systemImage: "trash",
+				image: "icon-delete",
 				isOn: $options.post_deleteAppAfterSigned,
 				temporaryValue: temporaryOptions?.post_deleteAppAfterSigned
 			)
@@ -202,6 +205,7 @@ struct SigningOptionsView: View {
 	static func picker<SelectionValue: Hashable, T: Hashable & LocalizedDescribable>(
 		_ title: String,
 		systemImage: String,
+		image: String? = nil,
 		selection: Binding<SelectionValue>,
 		values: [T]
 	) -> some View {
@@ -210,7 +214,19 @@ struct SigningOptionsView: View {
 				Text(value.localizedDescription)
 			}
 		} label: {
-			Label(title, systemImage: systemImage)
+			Label {
+				Text(title)
+			} icon: {
+				if let image {
+					Image(image)
+						.renderingMode(.template)
+						.resizable()
+						.scaledToFit()
+						.frame(width: 20, height: 20)
+				} else {
+					Image(systemName: systemImage)
+				}
+			}
 		}
 	}
 	
@@ -218,6 +234,7 @@ struct SigningOptionsView: View {
 	private func _toggle(
 		_ title: String,
 		systemImage: String,
+		image: String? = nil,
 		isOn: Binding<Bool>,
 		temporaryValue: Bool? = nil
 	) -> some View {
@@ -229,7 +246,15 @@ struct SigningOptionsView: View {
 					Text(title)
 				}
 			} icon: {
-				Image(systemName: systemImage)
+				if let image {
+					Image(image)
+						.renderingMode(.template)
+						.resizable()
+						.scaledToFit()
+						.frame(width: 20, height: 20)
+				} else {
+					Image(systemName: systemImage)
+				}
 			}
 		}
 	}

@@ -17,17 +17,31 @@ struct FeatherApp: App {
 	let heartbeat = HeartbeatManager.shared
 	
 	@StateObject var downloadManager = DownloadManager.shared
+	@StateObject private var _forcedUpdate = ForcedUpdateManager.shared
+	@State private var _launchBounced = false
 	let storage = Storage.shared
 	
 	var body: some Scene {
 		WindowGroup {
-			VStack {
+			Group {
+				if _forcedUpdate.isUpdateRequired {
+					ForcedUpdateView()
+				} else {
+					VStack {
 				DownloadHeaderView(downloadManager: downloadManager)
 					.transition(.move(edge: .top).combined(with: .opacity))
 				VariedTabbarView()
 					.environment(\.managedObjectContext, storage.context)
 					.onOpenURL(perform: _handleURL)
 					.transition(.move(edge: .top).combined(with: .opacity))
+					// Zenith: light launch bounce, once only, on first appear.
+					.scaleEffect(_launchBounced ? 1 : 0.97)
+					.opacity(_launchBounced ? 1 : 0)
+					.onAppear {
+						withAnimation(.spring(response: 0.55, dampingFraction: 0.75)) {
+							_launchBounced = true
+						}
+					}
 			}
 			.animation(.smooth, value: downloadManager.manualDownloads.description)
 			.onReceive(NotificationCenter.default.publisher(for: .heartbeatInvalidHost)) { _ in
@@ -48,11 +62,25 @@ struct FeatherApp: App {
 				// Keep a background refresh scheduled on every launch.
 				AutoRefreshManager.shared.scheduleBackgroundRefresh()
 				
-				if let style = UIUserInterfaceStyle(rawValue: UserDefaults.standard.integer(forKey: "Feather.userInterfaceStyle")) {
-					UIApplication.topViewController()?.view.window?.overrideUserInterfaceStyle = style
+				// Zenith: fixed theme — dark mode + peach accent, no user choice.
+				UIApplication.topViewController()?.view.window?.overrideUserInterfaceStyle = .dark
+				UIApplication.topViewController()?.view.window?.tintColor = UIColor(Color(hex: "#FFC778"))
+				// Zenith: reset any stored v1 appearance choices so old tinted/dynamic icons cannot survive.
+				UserDefaults.standard.removeObject(forKey: "Feather.userInterfaceStyle")
+				UserDefaults.standard.removeObject(forKey: "Feather.shouldTintIcons")
+				UserDefaults.standard.removeObject(forKey: "Feather.shouldChangeIconsBasedOffStyle")
+				UserDefaults.standard.set("#FFC778", forKey: "Feather.userTintColor")
+			}
 				}
-				
-				UIApplication.topViewController()?.view.window?.tintColor = UIColor(Color(hex: UserDefaults.standard.string(forKey: "Feather.userTintColor") ?? "#848ef9"))
+			}
+			.task {
+				// Zenith forced update: check on every launch.
+				await ForcedUpdateManager.shared.checkForUpdate()
+			}
+			.onReceive(NotificationCenter.default.publisher(for: UIApplication.willEnterForegroundNotification)) { _ in
+				Task {
+					await ForcedUpdateManager.shared.checkForUpdate()
+				}
 			}
 		}
 	}

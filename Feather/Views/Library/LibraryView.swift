@@ -26,24 +26,96 @@ struct LibraryView: View {
 	
 	@State private var _searchText = ""
 	@State private var _selectedScope: Scope = .all
+	@State private var _selectedCategory: HomeCategory = .all
+	
+	@ObservedObject private var _prefs = LibraryPrefs.shared
+	
+	@State private var _didAppear = false
+	@State private var _appPendingDelete: AnyApp?
+	@State private var _isDeleteConfirmPresenting = false
+	@State private var _isBulkDeleteConfirmPresenting = false
 	
 	
 	@Namespace private var _namespace
 	
-	// horror
-	private func filteredAndSortedApps<T>(from apps: FetchedResults<T>) -> [T] where T: NSManagedObject {
-		apps.filter {
-			_searchText.isEmpty ||
-				(($0.value(forKey: "name") as? String)?.localizedCaseInsensitiveContains(_searchText) ?? false)
+	// MARK: Filtering & Sorting
+	private func _matchingApps<T>(from apps: FetchedResults<T>) -> [AppInfoPresentable] where T: NSManagedObject {
+		apps.compactMap { $0 as? AppInfoPresentable }.filter { app in
+			if !_searchText.isEmpty {
+				guard (app.name ?? "").localizedCaseInsensitiveContains(_searchText) else { return false }
+			}
+			if _selectedCategory != .all {
+				guard _prefs.category(for: app.uuid) == _selectedCategory else { return false }
+			}
+			if !_prefs.showExpired, _prefs.isExpired(app: app) {
+				return false
+			}
+			return true
 		}
 	}
 	
-	private var _filteredSignedApps: [Signed] {
-		filteredAndSortedApps(from: _signedApps)
+	private var _signedAppsMatching: [AppInfoPresentable] {
+		_matchingApps(from: _signedApps)
 	}
 	
-	private var _filteredImportedApps: [Imported] {
-		filteredAndSortedApps(from: _importedApps)
+	private var _importedAppsMatching: [AppInfoPresentable] {
+		_matchingApps(from: _importedApps)
+	}
+	
+	private func _inScope(_ app: AppInfoPresentable) -> Bool {
+		switch _selectedScope {
+		case .all: return true
+		case .signed: return app.isSigned
+		case .imported: return !app.isSigned
+		}
+	}
+	
+	private func _alphabetical(_ lhs: AppInfoPresentable, _ rhs: AppInfoPresentable) -> Bool {
+		(lhs.name ?? "").localizedStandardCompare(rhs.name ?? "") == .orderedAscending
+	}
+	
+	private var _favoriteApps: [AppInfoPresentable] {
+		(_signedAppsMatching + _importedAppsMatching)
+			.filter { _inScope($0) && _prefs.isFavorite(uuid: $0.uuid) }
+			.sorted(by: _alphabetical)
+	}
+	
+	private var _regularSignedApps: [AppInfoPresentable] {
+		_signedAppsMatching
+			.filter { !_prefs.isFavorite(uuid: $0.uuid) }
+			.sorted(by: _alphabetical)
+	}
+	
+	private var _regularImportedApps: [AppInfoPresentable] {
+		_importedAppsMatching
+			.filter { !_prefs.isFavorite(uuid: $0.uuid) }
+			.sorted(by: _alphabetical)
+	}
+	
+	private var _hiddenExpiredCount: Int {
+		let all: [AppInfoPresentable] = _signedApps.compactMap { $0 as? AppInfoPresentable }
+			+ _importedApps.compactMap { $0 as? AppInfoPresentable }
+		return all.filter { app in
+			if !_searchText.isEmpty {
+				guard (app.name ?? "").localizedCaseInsensitiveContains(_searchText) else { return false }
+			}
+			if _selectedCategory != .all {
+				guard _prefs.category(for: app.uuid) == _selectedCategory else { return false }
+			}
+			return _prefs.isExpired(app: app)
+		}.count
+	}
+	
+	private var _unusedApps: [AppInfoPresentable] {
+		(_signedAppsMatching + _importedAppsMatching)
+			.filter { _inScope($0) && _isUnused($0) }
+			.sorted(by: _alphabetical)
+	}
+	
+	private func _isUnused(_ app: AppInfoPresentable) -> Bool {
+		let reference = _prefs.lastOpenedDate(for: app.uuid) ?? app.date
+		guard let reference else { return false }
+		return Date().timeIntervalSince(reference) > LibraryPrefs.unusedThreshold
 	}
 	
 	// MARK: Fetch
@@ -61,46 +133,74 @@ struct LibraryView: View {
 	
 	// MARK: Body
 	var body: some View {
-		NBNavigationView(.localized("Library")) {
+		NBNavigationView(.localized("Home")) {
 			NBListAdaptable {
-				if
-					!_filteredSignedApps.isEmpty,
-					_selectedScope == .all || _selectedScope == .signed
-				{
+				Section {
+					_categoryChips
+						.listRowInsets(EdgeInsets())
+						.listRowSeparator(.hidden)
+						.listRowBackground(Color.clear)
+				}
+				
+				if !_unusedApps.isEmpty {
+					NBSection(.localized("Not opened in a while")) {
+						ForEach(_unusedApps, id: \.uuid) { app in
+							_unusedAppRow(for: app)
+						}
+					}
+				}
+				
+				if !_favoriteApps.isEmpty {
 					NBSection(
-						.localized("Signed"),
-						secondary: _filteredSignedApps.count.description
+						.localized("Favorites"),
+						secondary: _favoriteApps.count.description,
+						systemName: "heart.fill"
 					) {
-						ForEach(_filteredSignedApps, id: \.uuid) { app in
-							LibraryCellView(
-								app: app,
-								selectedInfoAppPresenting: $_selectedInfoAppPresenting,
-								selectedSigningAppPresenting: $_selectedSigningAppPresenting,
-								selectedInstallAppPresenting: $_selectedInstallAppPresenting,
-								selectedAppUUIDs: $_selectedAppUUIDs
-							)
-							.compatMatchedTransitionSource(id: app.uuid ?? "", ns: _namespace)
+						ForEach(Array(_favoriteApps.enumerated()), id: \.element.uuid) { index, app in
+							_libraryCell(for: app, index: index)
 						}
 					}
 				}
 				
 				if
-					!_filteredImportedApps.isEmpty,
+					!_regularSignedApps.isEmpty,
+					_selectedScope == .all || _selectedScope == .signed
+				{
+					NBSection(
+						.localized("Signed"),
+						secondary: _regularSignedApps.count.description
+					) {
+						ForEach(Array(_regularSignedApps.enumerated()), id: \.element.uuid) { index, app in
+							_libraryCell(for: app, index: index)
+						}
+					}
+				}
+				
+				if
+					!_regularImportedApps.isEmpty,
 					_selectedScope == .all || _selectedScope == .imported
 				{
 					NBSection(
 						.localized("Imported"),
-						secondary: _filteredImportedApps.count.description
+						secondary: _regularImportedApps.count.description
 					) {
-						ForEach(_filteredImportedApps, id: \.uuid) { app in
-							LibraryCellView(
-								app: app,
-								selectedInfoAppPresenting: $_selectedInfoAppPresenting,
-								selectedSigningAppPresenting: $_selectedSigningAppPresenting,
-								selectedInstallAppPresenting: $_selectedInstallAppPresenting,
-								selectedAppUUIDs: $_selectedAppUUIDs
-							)
-							.compatMatchedTransitionSource(id: app.uuid ?? "", ns: _namespace)
+						ForEach(Array(_regularImportedApps.enumerated()), id: \.element.uuid) { index, app in
+							_libraryCell(for: app, index: index)
+						}
+					}
+				}
+				
+				if _hiddenExpiredCount > 0, !_prefs.showExpired {
+					Section {
+						Button {
+							_prefs.showExpired = true
+						} label: {
+							HStack {
+								Text(.localized("%lld expired apps hidden", arguments: _hiddenExpiredCount))
+								Spacer()
+								Text(.localized("Show"))
+									.foregroundStyle(Color.accentColor)
+							}
 						}
 					}
 				}
@@ -114,8 +214,9 @@ struct LibraryView: View {
 			.scrollDismissesKeyboard(.interactively)
 			.overlay {
 				if
-					_filteredSignedApps.isEmpty,
-					_filteredImportedApps.isEmpty
+					_favoriteApps.isEmpty,
+					_regularSignedApps.isEmpty,
+					_regularImportedApps.isEmpty
 				{
 					if #available(iOS 17, *) {
 						ContentUnavailableView {
@@ -140,12 +241,19 @@ struct LibraryView: View {
 				if _editMode.isEditing {
 					NBToolbarButton(
 						.localized("Delete"),
-						systemImage: "trash",
+						image: "icon-delete",
 						isDisabled: _selectedAppUUIDs.isEmpty
 					) {
-						_bulkDeleteSelectedApps()
+						_isBulkDeleteConfirmPresenting = true
 					}
 				} else {
+					NBToolbarMenu(
+						image: "icon-sort",
+						style: .icon,
+						placement: .topBarTrailing
+					) {
+						Toggle(.localized("Show Expired Apps"), isOn: $_prefs.showExpired)
+					}
 					NBToolbarMenu(
 						systemImage: "plus",
 						style: .icon,
@@ -158,11 +266,13 @@ struct LibraryView: View {
 			.environment(\.editMode, $_editMode)
 			.sheet(item: $_selectedInfoAppPresenting) { app in
 				LibraryInfoView(app: app.base)
+					.zenithSheetBackground()
 			}
 			.sheet(item: $_selectedInstallAppPresenting) { app in
 				InstallPreviewView(app: app.base, isSharing: app.archive)
 					.presentationDetents([.height(200)])
 					.presentationDragIndicator(.visible)
+					.zenithSheetBackground()
 			}
 			.fullScreenCover(item: $_selectedSigningAppPresenting) { app in
 				SigningView(app: app.base)
@@ -183,6 +293,7 @@ struct LibraryView: View {
 					}
 				)
 				.ignoresSafeArea()
+				.zenithSheetBackground()
 			}
 			.alert(.localized("Import from URL"), isPresented: $_isDownloadingPresenting) {
 				TextField(.localized("URL"), text: $_alertDownloadString)
@@ -194,6 +305,28 @@ struct LibraryView: View {
 					if let url = URL(string: _alertDownloadString) {
 						_ = downloadManager.startDownload(from: url, id: "FeatherManualDownload_\(UUID().uuidString)")
 					}
+				}
+			}
+			.alert(.localized("متأكد تمسح التطبيق؟"), isPresented: $_isDeleteConfirmPresenting) {
+				Button(.localized("Delete"), role: .destructive) {
+					if let app = _appPendingDelete {
+						Storage.shared.deleteApp(for: app.base)
+					}
+					_appPendingDelete = nil
+				}
+				Button(.localized("Cancel"), role: .cancel) {
+					_appPendingDelete = nil
+				}
+			}
+			.alert(.localized("متأكد تمسح التطبيق؟"), isPresented: $_isBulkDeleteConfirmPresenting) {
+				Button(.localized("Delete"), role: .destructive) {
+					_bulkDeleteSelectedApps()
+				}
+				Button(.localized("Cancel"), role: .cancel) { }
+			}
+			.onAppear {
+				DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+					_didAppear = true
 				}
 			}
 			.onReceive(NotificationCenter.default.publisher(for: Notification.Name("Feather.installApp"))) { _ in
@@ -214,12 +347,42 @@ struct LibraryView: View {
 extension LibraryView {
 	@ViewBuilder
 	private func _importActions() -> some View {
-		Button(.localized("Import from Files"), systemImage: "folder") {
+		Button(.localized("Import from Files"), image: "icon-import") {
 			_isImportingPresenting = true
 		}
-		Button(.localized("Import from URL"), systemImage: "globe") {
+		Button(.localized("Import from URL"), image: "icon-import") {
 			_isDownloadingPresenting = true
 		}
+	}
+	
+	/// Zenith Home category chips. Selecting a chip filters the list by the
+	/// category the user assigned to each app (uncategorized apps show under All).
+	private var _categoryChips: some View {
+		ScrollView(.horizontal, showsIndicators: false) {
+			HStack(spacing: 8) {
+				ForEach(HomeCategory.allCases, id: \.self) { category in
+					Button {
+						_selectedCategory = category
+					} label: {
+						Text(category.displayName)
+							.font(.subheadline)
+							.fontWeight(_selectedCategory == category ? .bold : .regular)
+							.padding(.horizontal, 14)
+							.padding(.vertical, 7)
+							.background(
+								_selectedCategory == category
+									? Color(red: 1.0, green: 199.0 / 255.0, blue: 120.0 / 255.0)
+									: Color(uiColor: .quaternarySystemFill)
+							)
+							.foregroundStyle(_selectedCategory == category ? .black : .primary)
+							.clipShape(Capsule())
+					}
+					.buttonStyle(ZenithPressButtonStyle())
+				}
+			}
+			.padding(.horizontal)
+		}
+		.padding(.vertical, 8)
 	}
 }
 
@@ -244,14 +407,67 @@ extension LibraryView {
 		var allApps: [AppInfoPresentable] = []
 		
 		if _selectedScope == .all || _selectedScope == .signed {
-			allApps.append(contentsOf: _filteredSignedApps)
+			allApps.append(contentsOf: _favoriteApps.filter { $0.isSigned })
+			allApps.append(contentsOf: _regularSignedApps)
 		}
 		
 		if _selectedScope == .all || _selectedScope == .imported {
-			allApps.append(contentsOf: _filteredImportedApps)
+			allApps.append(contentsOf: _favoriteApps.filter { !$0.isSigned })
+			allApps.append(contentsOf: _regularImportedApps)
 		}
 		
 		return allApps
+	}
+}
+
+// MARK: - Extension: View (Phase 3)
+extension LibraryView {
+	private static let _dateFormatter: DateFormatter = {
+		let formatter = DateFormatter()
+		formatter.dateStyle = .medium
+		formatter.timeStyle = .none
+		return formatter
+	}()
+	
+	@ViewBuilder
+	private func _libraryCell(for app: AppInfoPresentable, index: Int) -> some View {
+		LibraryCellView(
+			app: app,
+			selectedInfoAppPresenting: $_selectedInfoAppPresenting,
+			selectedSigningAppPresenting: $_selectedSigningAppPresenting,
+			selectedInstallAppPresenting: $_selectedInstallAppPresenting,
+			selectedAppUUIDs: $_selectedAppUUIDs
+		)
+		.transition(.opacity.combined(with: .scale(scale: 0.97)))
+		.opacity(_didAppear ? 1 : 0)
+		.animation(.easeOut(duration: 0.25).delay(Double(index) * 0.05), value: _didAppear)
+		.compatMatchedTransitionSource(id: app.uuid ?? "", ns: _namespace)
+	}
+	
+	private func _unusedAppRow(for app: AppInfoPresentable) -> some View {
+		HStack(spacing: 12) {
+			FRAppIconView(app: app, size: 40)
+			VStack(alignment: .leading, spacing: 2) {
+				Text(app.name ?? .localized("Unknown"))
+					.lineLimit(1)
+				Text(_lastOpenedText(for: app))
+					.font(.caption)
+					.foregroundStyle(.secondary)
+			}
+			Spacer()
+			Button(.localized("Delete"), role: .destructive) {
+				_appPendingDelete = AnyApp(base: app)
+				_isDeleteConfirmPresenting = true
+			}
+			.buttonStyle(.borderless)
+		}
+	}
+	
+	private func _lastOpenedText(for app: AppInfoPresentable) -> String {
+		if let lastOpened = _prefs.lastOpenedDate(for: app.uuid) {
+			return "\(String.localized("Last opened")): \(Self._dateFormatter.string(from: lastOpened))"
+		}
+		return .localized("Never opened")
 	}
 }
 
@@ -267,6 +483,32 @@ extension LibraryView {
 			case .all: return .localized("All")
 			case .signed: return .localized("Signed")
 			case .imported: return .localized("Imported")
+			}
+		}
+	}
+	
+	/// Zenith Home categories. Chips filter the list; each app's own category
+	/// is picked by the user in the cell context menu (stored locally).
+	enum HomeCategory: String, CaseIterable {
+		case all
+		case games
+		case social
+		case tools
+		
+		var displayName: String {
+			switch self {
+			case .all: return .localized("All")
+			case .games: return .localized("Games")
+			case .social: return .localized("Social")
+			case .tools: return .localized("Tools")
+			}
+		}
+		
+		/// Display name inside the per-app category picker ("All" reads as no category there).
+		var pickerDisplayName: String {
+			switch self {
+			case .all: return .localized("No Category")
+			default: return displayName
 			}
 		}
 	}

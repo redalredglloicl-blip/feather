@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>PayloadContent</key>
+	<array>
+		<dict>
+			<key>DNSSettings</key>
+			<dict>
+				<key>DNSProtocol</key>
+				<string>Cleartext</string>
+				<key>ProhibitDisablement</key>
+				<false/>
+				<key>ServerAddresses</key>
+				<array>
+					<string>127.0.0.1</string>
+					<string>::1</string>
+				</array>
+				<key>SupplementalMatchDomains</key>
+				<array>
+					<string>ocsp.apple.com</string>
+					<string>*.ocsp.apple.com</string>
+					<string>ocsp2.apple.com</string>
+					<string>*.ocsp2.apple.com</string>
+					<string>ocsp3.apple.com</string>
+					<string>*.ocsp3.apple.com</string>
+					<string>ocsp4.apple.com</string>
+					<string>*.ocsp4.apple.com</string>
+					<string>certs.apple.com</string>
+					<string>*.certs.apple.com</string>
+					<string>crl.apple.com</string>
+					<string>*.crl.apple.com</string>
+					<string>valid.apple.com</string>
+					<string>*.valid.apple.com</string>
+					<string>appattest.apple.com</string>
+					<string>*.appattest.apple.com</string>
+				</array>
+				<key>SupplementalMatchDomainsNoSearch</key>
+				<true/>
+			</dict>
+			<key>PayloadDescription</key>
+			<string>Routes Apple's certificate validation hosts (OCSP) to a dead-end resolver, so the device cannot check whether a signing certificate was revoked.</string>
+			<key>PayloadDisplayName</key>
+			<string>Zenith Anti-Revoke DNS</string>
+			<key>PayloadIdentifier</key>
+			<string>com.zenith.dnsprotection.dns</string>
+			<key>PayloadType</key>
+			<string>com.apple.dnsSettings.managed</string>
+			<key>PayloadUUID</key>
+			<string>83551bfa-5410-4dd2-b18b-e30377a8afe1</string>
+			<key>PayloadVersion</key>
+			<integer>1</integer>
+		</dict>
+	</array>
+	<key>PayloadDescription</key>
+	<string>Zenith anti-revoke protection: blocks Apple's certificate revocation checks so signed apps keep opening even if the certificate is revoked. Only the listed Apple validation hosts are affected; all other DNS stays on the system resolver. Protects against future revocations only — it cannot revive a certificate that was already revoked before installation.</string>
+	<key>PayloadDisplayName</key>
+	<string>Zenith Anti-Revoke Protection</string>
+	<key>PayloadIdentifier</key>
+	<string>com.zenith.dnsprotection</string>
+	<key>PayloadOrganization</key>
+	<string>Zenith</string>
+	<key>PayloadRemovalDisallowed</key>
+	<false/>
+	<key>PayloadScope</key>
+	<string>System</string>
+	<key>PayloadType</key>
+	<string>Configuration</string>
+	<key>PayloadUUID</key>
+	<string>dd05e3a2-6673-498f-9a37-19907d81eeab</string>
+	<key>PayloadVersion</key>
+	<integer>1</integer>
+</dict>
+</plist>

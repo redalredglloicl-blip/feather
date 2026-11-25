@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import UIKit
 import NimbleViews
 
 // MARK: - View
@@ -23,6 +24,8 @@ struct CertificatesView: View {
 	@State private var _isSelfRefreshConfirmPresenting = false
 	@State private var _selfRefreshResult: String?
 	@State private var _isSelfRefreshResultPresenting = false
+	@AppStorage("Zenith.dnsProtectionInstalled") private var _dnsProtectionInstalled = false
+	@State private var _isProfileNotFoundPresenting = false
 
 	// MARK: Fetch
 	@FetchRequest(
@@ -46,16 +49,22 @@ struct CertificatesView: View {
 		VStack(spacing: 0) {
 			_expiryBanner
 			
+			if let selected = _selectedCertificate {
+				CertificateHeroCardView(cert: selected)
+			}
+			
 			NBGrid {
 				ForEach(Array(_certificates.enumerated()), id: \.element.uuid) { index, cert in
 					_cellButton(for: cert, at: index)
 				}
 			}
 			
+			_dnsProtectionCard
+			
 			Button {
 				_isSelfRefreshConfirmPresenting = true
 			} label: {
-				Label(.localized("Refresh Feather Itself"), systemImage: "arrow.clockwise.circle")
+				Label(.localized("Refresh Zenith Itself"), image: "icon-renew")
 			}
 			.buttonStyle(.bordered)
 			.padding(.vertical, 8)
@@ -81,7 +90,7 @@ struct CertificatesView: View {
 		.toolbar {
 			if _bindingSelectedCert == nil {
 				NBToolbarButton(
-					systemImage: "arrow.clockwise",
+					image: "icon-resign",
 					style: .icon,
 					placement: .topBarTrailing,
 					isDisabled: _isRefreshing
@@ -104,10 +113,12 @@ struct CertificatesView: View {
 		}
 		.sheet(item: $_isSelectedInfoPresenting) { cert in
 			CertificatesInfoView(cert: cert)
+				.zenithSheetBackground()
 		}
 		.sheet(isPresented: $_isAddingPresenting) {
 			CertificatesAddView()
 				.presentationDetents([.medium])
+				.zenithSheetBackground()
 		}
 		.alert(.localized("Change Nickname"), isPresented: $_isRenamingPresenting, presenting: _certToRename) { cert in
 			TextField(.localized("Nickname"), text: $_newNickname)
@@ -122,16 +133,16 @@ struct CertificatesView: View {
 		} message: {
 			Text(_refreshResultMessage)
 		}
-		.alert(.localized("Refresh Feather Itself"), isPresented: $_isSelfRefreshConfirmPresenting) {
+		.alert(.localized("Refresh Zenith Itself"), isPresented: $_isSelfRefreshConfirmPresenting) {
 			Button(.localized("Cancel"), role: .cancel) { }
 			Button(.localized("Refresh"), role: .destructive) {
 				Task {
 					do {
 						switch try await AutoRefreshManager.shared.refreshSelf() {
 						case .installed:
-							_selfRefreshResult = .localized("Feather was re-signed and installed over itself.")
+							_selfRefreshResult = .localized("Zenith was re-signed and installed over itself.")
 						case .ipaReady:
-							_selfRefreshResult = .localized("A freshly signed Feather IPA was saved to Archives. Install it with SideStore or ESign.")
+							_selfRefreshResult = .localized("A freshly signed Zenith IPA was saved to Archives. Install it with SideStore or ESign.")
 						case .notAttempted:
 							_selfRefreshResult = .localized("Self-refresh was not attempted.")
 						}
@@ -142,12 +153,17 @@ struct CertificatesView: View {
 				}
 			}
 		} message: {
-			Text(.localized("This re-signs Feather itself with a fresh free certificate and installs the new copy over this one. If anything fails, the old copy keeps running."))
+			Text(.localized("This re-signs Zenith itself and installs the new copy over this one. If the certificate came from Apple, a fresh one is fetched first; otherwise the current certificate is used. If anything fails, the old copy keeps running."))
 		}
-		.alert(.localized("Refresh Feather Itself"), isPresented: $_isSelfRefreshResultPresenting) {
+		.alert(.localized("Refresh Zenith Itself"), isPresented: $_isSelfRefreshResultPresenting) {
 			Button(.localized("OK"), role: .cancel) { }
 		} message: {
 			Text(_selfRefreshResult ?? "")
+		}
+		.alert(.localized("Profile Not Found"), isPresented: $_isProfileNotFoundPresenting) {
+			Button(.localized("OK"), role: .cancel) { }
+		} message: {
+			Text(.localized("The protection profile is missing from the app. Please reinstall Zenith."))
 		}
 	}
 	
@@ -168,9 +184,18 @@ struct CertificatesView: View {
 		}
 		return parts.joined(separator: "\n")
 	}
+}
 
 
 	// MARK: Expiry reminder
+	private var _selectedCertificate: CertificatePair? {
+		let index = _selectedCertBinding.wrappedValue
+		if index >= 0 && index < _certificates.count {
+			return _certificates[index]
+		}
+		return _certificates.first
+	}
+	
 	private var _soonestExpiring: CertificatePair? {
 		_certificates
 			.filter { ($0.expiration ?? .distantFuture) <= Date().addingTimeInterval(7 * 86400) }
@@ -189,7 +214,7 @@ struct CertificatesView: View {
 				VStack(alignment: .leading, spacing: 2) {
 					Text(.localized("Certificate expires soon"))
 						.font(.headline)
-					Text([cert.nickname, info.formatted].compactMap { $0 }.filter { !$0.isEmpty }.joined(separator: " \u{00B7} "))
+					Text([cert.nickname, info.formatted].compactMap { $0 }.filter { !$0.isEmpty }.joined(separator: " \u00b7 "))
 						.font(.footnote)
 						.foregroundStyle(.secondary)
 				}
@@ -203,10 +228,7 @@ struct CertificatesView: View {
 				.controlSize(.small)
 			}
 			.padding()
-			.background(
-				RoundedRectangle(cornerRadius: 14)
-					.fill(Color(uiColor: .secondarySystemFill))
-			)
+			.zenithGlassCard(cornerRadius: 14, fallback: Color(uiColor: .secondarySystemFill))
 			.overlay(
 				RoundedRectangle(cornerRadius: 14)
 					.strokeBorder(info.color, lineWidth: 1.5)
@@ -215,10 +237,94 @@ struct CertificatesView: View {
 			.padding(.top, 8)
 		}
 	}
-}
 	
 // MARK: - View extension
 extension CertificatesView {
+	@ViewBuilder
+	private var _dnsProtectionCard: some View {
+		VStack(alignment: .leading, spacing: 10) {
+			HStack(spacing: 10) {
+				Image("icon-protection")
+					.renderingMode(.template)
+					.resizable()
+					.scaledToFit()
+					.frame(width: 24, height: 24)
+					.foregroundStyle(Color.accentColor)
+				
+				Text(.localized("Anti-Revoke Protection"))
+					.font(.headline)
+				
+				Spacer()
+				
+				Text(.localized(_dnsProtectionInstalled ? "Protection Installed" : "Protection Not Installed"))
+					.font(.footnote)
+					.padding(.horizontal, 8)
+					.padding(.vertical, 4)
+					.background(
+						Capsule().fill(_dnsProtectionInstalled ? Color.green.opacity(0.2) : Color(uiColor: .secondarySystemFill))
+					)
+					.foregroundStyle(_dnsProtectionInstalled ? .green : .secondary)
+			}
+			
+			Text(.localized("Blocks Apple's revocation checks so signed apps keep opening if the certificate is revoked."))
+				.font(.footnote)
+				.foregroundStyle(.secondary)
+			
+			Button {
+				_installDNSProtection()
+			} label: {
+				Label(.localized(_dnsProtectionInstalled ? "Reinstall Protection" : "Install Protection"), image: "icon-protection")
+			}
+			.buttonStyle(.borderedProminent)
+			
+			Text(.localized("iOS does not let the app verify installation. This status is based on your install tap."))
+				.font(.caption2)
+				.foregroundStyle(.secondary)
+			
+			if _dnsProtectionInstalled {
+				Text(.localized("To remove the protection: Settings → VPN & Device Management."))
+					.font(.caption2)
+					.foregroundStyle(.secondary)
+			}
+		}
+		.padding()
+		.zenithGlassCard(cornerRadius: 18, fallback: Color(uiColor: .secondarySystemFill))
+		.padding(.horizontal)
+		.padding(.top, 8)
+	}
+	
+	/// Opens the bundled anti-revoke profile so iOS can install it.
+	/// The user confirms once in Settings. The install tap is recorded
+	/// locally because iOS gives the app no API to verify that a
+	/// specific profile is installed.
+	private func _installDNSProtection() {
+		guard let bundleURL = Bundle.main.url(forResource: "ZenithAntiRevoke", withExtension: "mobileconfig") else {
+			_isProfileNotFoundPresenting = true
+			return
+		}
+		let tempURL = FileManager.default.temporaryDirectory
+			.appendingPathComponent("ZenithAntiRevoke.mobileconfig")
+		try? FileManager.default.removeItem(at: tempURL)
+		guard (try? FileManager.default.copyItem(at: bundleURL, to: tempURL)) != nil else {
+			_isProfileNotFoundPresenting = true
+			return
+		}
+		UIApplication.shared.open(tempURL) { success in
+			if success {
+				// Record the tap in UserDefaults directly: the open
+				// completion runs outside the view struct, and the
+				// @AppStorage wrapper observes the same keys.
+				UserDefaults.standard.set(true, forKey: "Zenith.dnsProtectionInstalled")
+			} else {
+				// iOS would not open the profile directly: offer the
+				// share sheet so the user can open it in Safari/Files.
+				Task { @MainActor in
+					UIActivityViewController.show(activityItems: [tempURL])
+				}
+			}
+		}
+	}
+	
 	@ViewBuilder
 	private func _cellButton(for cert: CertificatePair, at index: Int) -> some View {
 		let cornerRadius = {
@@ -236,10 +342,7 @@ extension CertificatesView {
 				cert: cert
 			)
 			.padding()
-			.background(
-				RoundedRectangle(cornerRadius: cornerRadius)
-					.fill(Color(uiColor: .quaternarySystemFill))
-			)
+			.zenithGlassCard(cornerRadius: cornerRadius, fallback: Color(uiColor: .quaternarySystemFill))
 			.overlay(
 				RoundedRectangle(cornerRadius: cornerRadius)
 					.strokeBorder(
@@ -258,19 +361,19 @@ extension CertificatesView {
 				$0.animation = nil
 			}
 		}
-		.buttonStyle(.plain)
+		.buttonStyle(ZenithPressButtonStyle())
 	}
 	
 	@ViewBuilder
 	private func _actions(for cert: CertificatePair) -> some View {
-		Button(.localized("Delete"), systemImage: "trash", role: .destructive) {
+		Button(.localized("Delete"), image: "icon-delete", role: .destructive) {
 			Storage.shared.deleteCertificate(for: cert)
 		}
 	}
 	
 	@ViewBuilder
 	private func _contextActions(for cert: CertificatePair) -> some View {
-		Button(.localized("Get Info"), systemImage: "info.circle") {
+		Button(.localized("Get Info"), image: "icon-info") {
 			_isSelectedInfoPresenting = cert
 		}
 		Button(.localized("Change Nickname"), systemImage: "pencil") {
@@ -278,7 +381,7 @@ extension CertificatesView {
 			_certToRename = cert
 			_isRenamingPresenting = true
 		}
-		Button(.localized("Renew Certificate"), systemImage: "arrow.clockwise") {
+		Button(.localized("Renew Certificate"), image: "icon-resign") {
 			_isAddingPresenting = true
 		}
 		Divider()

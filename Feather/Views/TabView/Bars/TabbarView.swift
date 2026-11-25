@@ -15,10 +15,11 @@ struct TabbarView: View {
 			ForEach(TabEnum.defaultTabs, id: \.hashValue) { tab in
 				TabEnum.view(for: tab)
 					.tabItem {
-						Label(tab.title, systemImage: tab.icon)
+						Label(tab.title, image: tab.icon)
 					}
 					.tag(tab)
 			}
 		}
+		.zenithTabBarBackground()
 	}
 }

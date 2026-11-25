@@ -372,78 +372,6 @@
         }
       }
     },
-    "%lld required system dylibs not shown.": {
-      "comment": "Number of macho load paths not listed for safety",
-      "extractionState": "manual",
-      "localizations": {
-        "ar": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "لم يتم عرض %lld من dylibs النظام المطلوبة."
-          }
-        },
-        "cs": {
-          "stringUnit": {
-            "state": "needs_review",
-            "value": "%lld požadované systémové knihovny nejsou zobrazeny"
-          }
-        },
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%lld benötigte System-Dylibs werden nicht angezeigt."
-          }
-        },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%lld required system dylibs not shown."
-          }
-        },
-        "id": {
-          "stringUnit": {
-            "state": "needs_review",
-            "value": "%lld dylib sistem yang diperlukan tidak ditampilkan"
-          }
-        },
-        "it": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%lld dylibs di sistema richiesti non mostrati."
-          }
-        },
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "필요한 시스템 Dylib %lld개가 표시되지 않았습니다."
-          }
-        },
-        "pl": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Nie pokazano %lld wymaganych bibliotek systemowych"
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%lld gerekli sistem dylib kütüphanesi gizlendi."
-          }
-        },
-        "vi": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%lld thư viện hệ thống bắt buộc không được hiển thị"
-          }
-        },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "隐藏了%lld个系统dylibs"
-          }
-        }
-      }
-    },
     "%lld Sources": {
       "comment": "Amount of sources",
       "extractionState": "manual",
@@ -588,73 +516,108 @@
         }
       }
     },
-    "💜 This couldn't of been done without my sponsors!": {
+    "%lld required system dylibs not shown.": {
+      "comment": "Number of macho load paths not listed for safety",
       "extractionState": "manual",
       "localizations": {
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "💜 هذا لم يكن ليتحقق لولا داعمونا!"
+            "value": "ما انعرضت %lld من dylibs النظام المطلوبة."
           }
         },
         "cs": {
           "stringUnit": {
-            "state": "translated",
-            "value": "💜Nebylo by to možné bez mých sponzorů!"
+            "state": "needs_review",
+            "value": "%lld požadované systémové knihovny nejsou zobrazeny"
           }
         },
         "de": {
           "stringUnit": {
             "state": "translated",
-            "value": "💜 Ohne meine Sponsoren wäre das alles nicht möglich!"
+            "value": "%lld benötigte System-Dylibs werden nicht angezeigt."
           }
         },
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "💜 This couldn't of been done without my sponsors!"
+            "value": "%lld required system dylibs not shown."
           }
         },
         "id": {
           "stringUnit": {
-            "state": "translated",
-            "value": "💜 Ini tidak akan bisa dilakukan tanpa sponsor saya!"
+            "state": "needs_review",
+            "value": "%lld dylib sistem yang diperlukan tidak ditampilkan"
           }
         },
         "it": {
           "stringUnit": {
             "state": "translated",
-            "value": "💜 Questo non era stato possibile creare senza i miei sostenitori!"
+            "value": "%lld dylibs di sistema richiesti non mostrati."
           }
         },
         "ko": {
           "stringUnit": {
             "state": "translated",
-            "value": "💜 후원자분들이 아니었다면 이 일을 해낼 수 없었을 거예요!"
+            "value": "필요한 시스템 Dylib %lld개가 표시되지 않았습니다."
           }
         },
         "pl": {
           "stringUnit": {
             "state": "translated",
-            "value": "💜 To nie byłoby możliwe bez moich sponsorów!"
+            "value": "Nie pokazano %lld wymaganych bibliotek systemowych"
           }
         },
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "💜 Sponsorlarım olmadan başarılamazdı!"
+            "value": "%lld gerekli sistem dylib kütüphanesi gizlendi."
           }
         },
         "vi": {
           "stringUnit": {
             "state": "translated",
-            "value": "💜 Điều này không thể thực hiện được nếu không có các nhà tài trợ của tôi!"
+            "value": "%lld thư viện hệ thống bắt buộc không được hiển thị"
           }
         },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "💜感谢捐赠者们的贡献与一路以来的支持！"
+            "value": "隐藏了%lld个系统dylibs"
+          }
+        }
+      }
+    },
+    "A freshly signed Zenith IPA was saved to Archives. Install it with SideStore or ESign.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "A freshly signed Zenith IPA was saved to Archives. Install it with SideStore or ESign."
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "انحفظت نسخة زينيث الموقعة بالأرشيف. ثبّتها بسايد ستور أو إي ساين."
+          }
+        }
+      }
+    },
+    "Ad-hoc": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ad-hoc"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "توقيع مخصص"
           }
         }
       }
@@ -665,7 +628,7 @@
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "إضافة"
+            "value": "ضيف"
           }
         },
         "cs": {
@@ -742,60 +705,13 @@
         }
       }
     },
-    "Add and manage certificates used for signing applications.": {
-      "extractionState": "manual",
-      "localizations": {
-        "ar": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "أضف وأدر الشهادات المستخدمة لتوقيع التطبيقات."
-          }
-        },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Add and manage certificates used for signing applications."
-          }
-        },
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "애플리케이션 서명에 사용되는 인증서를 추가하고 관리합니다."
-          }
-        },
-        "pl": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Dodawaj i zarządzaj certyfikatami używanymi do podpisywania aplikacji."
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Uygulamaları imzalamak için kullanılan sertifikaları ekleyin ve yönetin."
-          }
-        },
-        "vi": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Thêm và quản lý chứng chỉ được sử dụng để ký ứng dụng."
-          }
-        },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "添加和管理用于签名应用的证书。"
-          }
-        }
-      }
-    },
     "Add Source": {
       "extractionState": "manual",
       "localizations": {
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "إضافة مصدر"
+            "value": "ضيف مصدر"
           }
         },
         "cs": {
@@ -860,13 +776,60 @@
         }
       }
     },
+    "Add and manage certificates used for signing applications.": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ضيف ودير الشهادات اللي توقّع بيها التطبيقات."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Add and manage certificates used for signing applications."
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "애플리케이션 서명에 사용되는 인증서를 추가하고 관리합니다."
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dodawaj i zarządzaj certyfikatami używanymi do podpisywania aplikacji."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Uygulamaları imzalamak için kullanılan sertifikaları ekleyin ve yönetin."
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Thêm và quản lý chứng chỉ được sử dụng để ký ứng dụng."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "添加和管理用于签名应用的证书。"
+          }
+        }
+      }
+    },
     "Adds the localized description of the app.": {
       "extractionState": "manual",
       "localizations": {
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "يضيف الوصف المترجم للتطبيق."
+            "value": "يضيف الوصف المترجم مال التطبيق."
           }
         },
         "de": {
@@ -1120,77 +1083,6 @@
         }
       }
     },
-    "All of the apps files are contained in the documents directory, here are some quick links to these.": {
-      "extractionState": "manual",
-      "localizations": {
-        "ar": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "جميع ملفات التطبيق موجودة داخل مجلد Documents. إليك بعض الروابط السريعة لها."
-          }
-        },
-        "cs": {
-          "stringUnit": {
-            "state": "needs_review",
-            "value": "Všechny soubory Featheru jsou v složce Dokumenty, zde jsou na ně rychlé odkazy."
-          }
-        },
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Alle App-Dateien liegen im Dokumente-Verzeichnis. Hier sind einige Schnellzugriffe."
-          }
-        },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "All of the apps files are contained in the documents directory, here are some quick links to these."
-          }
-        },
-        "id": {
-          "stringUnit": {
-            "state": "needs_review",
-            "value": "Semua berkas Feather berada di direktori dokumen, berikut beberapa tautan cepat ke berkas-berkas tersebut."
-          }
-        },
-        "it": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Tutti i file dell'app sono contenute nella cartella dei documenti, ecco alcuni link di quelle."
-          }
-        },
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "모든 앱 파일은 문서 폴더에 포함되어 있으며, 다음은 해당 폴더로 빠르게 갈 수 있는 링크들 입니다."
-          }
-        },
-        "pl": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Wszystkie pliki Feather znajdują się w katalogu dokumentów, oto szybkie odnośniki do nich."
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Tüm dosyalar “Belgeler” klasöründe yer almaktadır. Yukarıda yer alan bağlantılar ile bunlardan bazılarına erişebilirsiniz."
-          }
-        },
-        "vi": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Tất cả các file của Feather có thể được tìm thấy trong ứng dụng Tệp, đây là một số liên kết nhanh đến chúng."
-          }
-        },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "所有应用都存储于文档目录，可以通过以上链接访问。"
-          }
-        }
-      }
-    },
     "All Repositories": {
       "comment": "All repositories",
       "extractionState": "manual",
@@ -1259,6 +1151,77 @@
           "stringUnit": {
             "state": "translated",
             "value": "全部仓库"
+          }
+        }
+      }
+    },
+    "All of the apps files are contained in the documents directory, here are some quick links to these.": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "كل ملفات التطبيق موجودة بمجلد Documents. هاي بعض الروابط السريعة إلها."
+          }
+        },
+        "cs": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Všechny soubory Featheru jsou v složce Dokumenty, zde jsou na ně rychlé odkazy."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Alle App-Dateien liegen im Dokumente-Verzeichnis. Hier sind einige Schnellzugriffe."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "All of the apps files are contained in the documents directory, here are some quick links to these."
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Semua berkas Feather berada di direktori dokumen, berikut beberapa tautan cepat ke berkas-berkas tersebut."
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tutti i file dell'app sono contenute nella cartella dei documenti, ecco alcuni link di quelle."
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "모든 앱 파일은 문서 폴더에 포함되어 있으며, 다음은 해당 폴더로 빠르게 갈 수 있는 링크들 입니다."
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Wszystkie pliki Feather znajdują się w katalogu dokumentów, oto szybkie odnośniki do nich."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tüm dosyalar “Belgeler” klasöründe yer almaktadır. Yukarıda yer alan bağlantılar ile bunlardan bazılarına erişebilirsiniz."
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tất cả các file của Feather có thể được tìm thấy trong ứng dụng Tệp, đây là một số liên kết nhanh đến chúng."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "所有应用都存储于文档目录，可以通过以上链接访问。"
           }
         }
       }
@@ -1524,6 +1487,77 @@
         }
       }
     },
+    "AppID Name": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "اسم AppID"
+          }
+        },
+        "cs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Název AppID"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "AppID Name"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "AppID Name"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nama AppID"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nome AppID"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "앱ID 이름"
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nazwa AppID"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Uygulama Kimliği Adı"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tên AppID"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "AppID名称"
+          }
+        }
+      }
+    },
     "Appearance": {
       "extractionState": "manual",
       "localizations": {
@@ -1613,73 +1647,36 @@
         }
       }
     },
-    "AppID Name": {
+    "Apple ID": {
       "extractionState": "manual",
       "localizations": {
-        "ar": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "اسم AppID"
-          }
-        },
-        "cs": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Název AppID"
-          }
-        },
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "AppID Name"
-          }
-        },
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "AppID Name"
+            "value": "Apple ID"
           }
         },
-        "id": {
+        "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "Nama AppID"
+            "value": "حساب أبل"
+          }
+        }
+      }
+    },
+    "Apps refreshed": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Apps refreshed"
           }
         },
-        "it": {
+        "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "Nome AppID"
-          }
-        },
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "앱ID 이름"
-          }
-        },
-        "pl": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Nazwa AppID"
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Uygulama Kimliği Adı"
-          }
-        },
-        "vi": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Tên AppID"
-          }
-        },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "AppID名称"
+            "value": "تجدّدت التطبيقات"
           }
         }
       }
@@ -1755,6 +1752,23 @@
         }
       }
     },
+    "Auto-refresh failed": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Auto-refresh failed"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "التجديد التلقائي فشل"
+          }
+        }
+      }
+    },
     "Bad Password": {
       "comment": "Bad certificate password",
       "extractionState": "manual",
@@ -1762,7 +1776,7 @@
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "كلمة مرور ضعيفة"
+            "value": "كلمة المرور ضعيفة"
           }
         },
         "cs": {
@@ -2070,7 +2084,7 @@
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "بشكل افتراضي، لن يتم تغيير العناوين المترجمة للتطبيق، لكن هذا الخيار يتجاوز ذلك."
+            "value": "بالافتراضي، العناوين المترجمة مال التطبيق ما راح تتغير، بس هالخيار يغيّرها."
           }
         },
         "de": {
@@ -2330,6 +2344,74 @@
         }
       }
     },
+    "Certificate Already Exists": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Certificate Already Exists"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "أكو شهادة موجودة"
+          }
+        }
+      }
+    },
+    "Certificate expires soon": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Certificate expires soon"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "الشهادة راح تنتهي قريب"
+          }
+        }
+      }
+    },
+    "Certificate from Apple": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Certificate from Apple"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "شهادة من أبل"
+          }
+        }
+      }
+    },
+    "Certificate ready.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Certificate ready."
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "الشهادة جاهزة."
+          }
+        }
+      }
+    },
     "Certificates": {
       "comment": "Certificates tab",
       "extractionState": "manual",
@@ -2426,7 +2508,7 @@
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "تم تحديث الشهادات بنجاح."
+            "value": "تحدّثت الشهادات بنجاح."
           }
         },
         "en": {
@@ -2473,7 +2555,7 @@
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "تغيير"
+            "value": "غيّر"
           }
         },
         "cs": {
@@ -2574,30 +2656,7 @@
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "تغيير الاسم المستعار"
-          }
-        }
-      }
-    },
-    "Check for Updates": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Check for Updates"
-          }
-        },
-        "pl": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Sprawdź aktualizacje"
-          }
-        },
-        "ar": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "التحقق من وجود تحديثات"
+            "value": "غيّر الاسم المستعار"
           }
         }
       }
@@ -2608,7 +2667,7 @@
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "فحص حالة الإلغاء"
+            "value": "افحص حالة الإلغاء"
           }
         },
         "de": {
@@ -2661,6 +2720,29 @@
         }
       }
     },
+    "Check for Updates": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Check for Updates"
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sprawdź aktualizacje"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "دوّر على تحديثات"
+          }
+        }
+      }
+    },
     "Choose from Files": {
       "comment": "Select custom app icon from files",
       "extractionState": "manual",
@@ -2668,7 +2750,7 @@
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "اختر من الملفات"
+            "value": "اختار من الملفات"
           }
         },
         "cs": {
@@ -2740,7 +2822,7 @@
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "اختر من الصور"
+            "value": "اختار من الصور"
           }
         },
         "cs": {
@@ -2805,13 +2887,30 @@
         }
       }
     },
+    "Choose how Apple sends your verification code.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Choose how Apple sends your verification code."
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "اختار شلون أبل تدزلك رمز التحقق."
+          }
+        }
+      }
+    },
     "Close": {
       "extractionState": "manual",
       "localizations": {
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "إغلاق"
+            "value": "سكّر"
           }
         },
         "cs": {
@@ -2882,7 +2981,7 @@
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "اكتمل"
+            "value": "خلص"
           }
         },
         "de": {
@@ -3013,7 +3112,7 @@
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "قم بتحديد طريقة تثبيت التطبيق ومستويات ضغط zip والتعديلات المخصصة عليه."
+            "value": "حدّد طريقة تثبيت التطبيق ومستويات ضغط zip والتعديلات المخصصة عليه."
           }
         },
         "de": {
@@ -3066,13 +3165,47 @@
         }
       }
     },
+    "Connect to LocalDevVPN": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Connect to LocalDevVPN"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "اتصل بـ LocalDevVPN"
+          }
+        }
+      }
+    },
+    "Contact support if you want your source to be featured.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Contact support if you want your source to be featured."
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "تواصل ويا الدعم إذا تريد مصدرك يظهر."
+          }
+        }
+      }
+    },
     "Copy": {
       "extractionState": "manual",
       "localizations": {
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "نسخ"
+            "value": "انسخ"
           }
         },
         "cs": {
@@ -3161,7 +3294,7 @@
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "نسخ روابط التنزيل"
+            "value": "انسخ روابط التنزيل"
           }
         },
         "de": {
@@ -3723,7 +3856,7 @@
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "النمط الافتراضي للتطبيق، ويتضمن العنوان الفرعي فقط."
+            "value": "النمط الافتراضي مال التطبيق، ويتضمن العنوان الفرعي بس."
           }
         },
         "de": {
@@ -3782,7 +3915,7 @@
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "حذف"
+            "value": "امسح"
           }
         },
         "cs": {
@@ -3871,7 +4004,7 @@
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "حذف بعد التوقيع"
+            "value": "امسح بعد التوقيع"
           }
         },
         "de": {
@@ -4036,7 +4169,7 @@
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "تعطيل الزجاج السائل"
+            "value": "طفي الزجاج السائل"
           }
         }
       }
@@ -4047,7 +4180,7 @@
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "إغلاق"
+            "value": "سكّر"
           }
         },
         "cs": {
@@ -4219,7 +4352,7 @@
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "هل تريد تنزيل هذا الملف وتثبيته؟"
+            "value": "تريد تنزّل هالملف وتثبّته؟"
           }
         }
       }
@@ -4230,7 +4363,7 @@
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "هل تريد تصدير شهادتك إلى تطبيق خارجي؟ سيتمكن ذلك التطبيق من توقيع التطبيقات باستخدام شهادتك."
+            "value": "تريد تصدّر شهادتك لتطبيق ثاني؟ هالتطبيق راح يكدر يوقّع تطبيقات بشهادتك."
           }
         },
         "en": {
@@ -4277,6 +4410,23 @@
         }
       }
     },
+    "Download LocalDevVPN": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Download LocalDevVPN"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "نزّل LocalDevVPN"
+          }
+        }
+      }
+    },
     "Download StosVPN": {
       "comment": "Don't translate StosVPN, this is for linking the download to the required VPN for idevice",
       "extractionState": "manual",
@@ -4284,7 +4434,7 @@
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "تنزيل StosVPN"
+            "value": "نزّل StosVPN"
           }
         },
         "de": {
@@ -4361,7 +4511,24 @@
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "تنزيل التحديث"
+            "value": "نزّل التحديث"
+          }
+        }
+      }
+    },
+    "Downloading": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Downloading"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "جاي ينزّل"
           }
         }
       }
@@ -4496,7 +4663,7 @@
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "تفعيل Liquid Glass"
+            "value": "شغّل Liquid Glass"
           }
         },
         "de": {
@@ -4555,7 +4722,7 @@
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "عند تفعيل أي نوع من الحماية، سيتم إضافة نص عشوائي إلى معرّفات الحزمة للتطبيقات التي تقوم بتوقيعها. الهدف من ذلك هو تقليل احتمال تمييز Apple ID الخاص بك من قبل Apple. لكن إذا كنت تستخدم خدمة توقيع، يمكنك تجاهل هذا الخيار."
+            "value": "من تفعّل أي حماية، راح ينضاف نص عشوائي لمعرّفات الحزمة مال التطبيقات اللي توقّعها، وهالشي حتى حساب أبل مالك ما ينكشف. بس إذا تستخدم خدمة توقيع، تكدر تتجاهل هالخيار."
           }
         },
         "cs": {
@@ -4627,7 +4794,7 @@
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "هل تستمتع باستخدام %@؟"
+            "value": "عاجبك %@؟"
           }
         },
         "de": {
@@ -4680,84 +4847,13 @@
         }
       }
     },
-    "Enter a URL to start validation.": {
-      "extractionState": "manual",
-      "localizations": {
-        "ar": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "أدخل رابط URL لبدء التحقق."
-          }
-        },
-        "cs": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Zadejte URL pro začátek validace."
-          }
-        },
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Gib eine URL ein, um die Validierung zu starten."
-          }
-        },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Enter a URL to start validation."
-          }
-        },
-        "id": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Masukkan URL untuk memulai validasi."
-          }
-        },
-        "it": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Inserisci un URL per iniziare la verifica."
-          }
-        },
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "검증을 시작하려면 URL를 입력하세요."
-          }
-        },
-        "pl": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Wprowadź adres URL, aby rozpocząć weryfikację."
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Doğrulamayı başlatmak için bir URL girin."
-          }
-        },
-        "vi": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Nhập URL để bắt đầu xác thực."
-          }
-        },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "输入链接开始验证"
-          }
-        }
-      }
-    },
     "Enter Password": {
       "extractionState": "manual",
       "localizations": {
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "أدخل كلمة المرور"
+            "value": "دخّل كلمة المرور"
           }
         },
         "cs": {
@@ -4846,7 +4942,7 @@
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "أدخل رابط المصدر"
+            "value": "دخّل رابط المصدر"
           }
         },
         "de": {
@@ -4899,13 +4995,84 @@
         }
       }
     },
+    "Enter a URL to start validation.": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "دخّل رابط حتى يبدي التحقق."
+          }
+        },
+        "cs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Zadejte URL pro začátek validace."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gib eine URL ein, um die Validierung zu starten."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Enter a URL to start validation."
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Masukkan URL untuk memulai validasi."
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Inserisci un URL per iniziare la verifica."
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "검증을 시작하려면 URL를 입력하세요."
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Wprowadź adres URL, aby rozpocząć weryfikację."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Doğrulamayı başlatmak için bir URL girin."
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nhập URL để bắt đầu xác thực."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "输入链接开始验证"
+          }
+        }
+      }
+    },
     "Enter the password associated with the private key. Leave it blank if theres no password required.": {
       "extractionState": "manual",
       "localizations": {
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "أدخل كلمة المرور المرتبطة بالمفتاح الخاص. اتركه فارغًا إذا لم تكن هناك كلمة مرور مطلوبة."
+            "value": "دخّل كلمة المرور مال المفتاح الخاص. اتركه فارغ إذا ماكو كلمة مرور مطلوبة."
           }
         },
         "cs": {
@@ -4984,6 +5151,91 @@
           "stringUnit": {
             "state": "translated",
             "value": "输入你的私钥的密码。没有密码则留空。"
+          }
+        }
+      }
+    },
+    "Enter the verification code from the phone call.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Enter the verification code from the phone call."
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "دخّل رمز التحقق اللي وصلك بالمكالمة."
+          }
+        }
+      }
+    },
+    "Enter the verification code sent by text message.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Enter the verification code sent by text message."
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "دخّل رمز التحقق اللي وصلك برسالة نصية."
+          }
+        }
+      }
+    },
+    "Enter the verification code sent to your trusted device.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Enter the verification code sent to your trusted device."
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "دخّل رمز التحقق اللي انرسل لجهازك الموثوق."
+          }
+        }
+      }
+    },
+    "Enter the verification code shown on your trusted device.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Enter the verification code shown on your trusted device."
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "دخّل رمز التحقق اللي ظهر على جهازك الموثوق."
+          }
+        }
+      }
+    },
+    "Enter the verification code.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Enter the verification code."
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "دخّل رمز التحقق."
           }
         }
       }
@@ -5325,7 +5577,7 @@
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "منتهي الصلاحية"
+            "value": "منتهي"
           }
         },
         "cs": {
@@ -5480,7 +5732,7 @@
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "تصدير"
+            "value": "صدّر"
           }
         },
         "cs": {
@@ -5551,7 +5803,7 @@
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "تصدير الشهادة"
+            "value": "صدّر الشهادة"
           }
         },
         "en": {
@@ -5604,7 +5856,7 @@
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "فشل التنزيل. تحقق من اتصال الإنترنت ثم حاول مرة أخرى."
+            "value": "التنزيل فشل. تأكد من النت وحاول مرة ثانية."
           }
         },
         "cs": {
@@ -5799,6 +6051,23 @@
         }
       }
     },
+    "Fetch Certificate": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fetch Certificate"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "جيب الشهادة"
+          }
+        }
+      }
+    },
     "File Sharing": {
       "comment": "If app should have file sharing",
       "extractionState": "manual",
@@ -5954,7 +6223,7 @@
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "تصفية حسب"
+            "value": "فلتر حسب"
           }
         },
         "cs": {
@@ -6015,6 +6284,23 @@
           "stringUnit": {
             "state": "translated",
             "value": "过滤"
+          }
+        }
+      }
+    },
+    "Finding your free team…": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Finding your free team…"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "جاي أدوّر على فريقك المجاني…"
           }
         }
       }
@@ -6362,6 +6648,23 @@
         }
       }
     },
+    "Games": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Games"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ألعاب"
+          }
+        }
+      }
+    },
     "General": {
       "extractionState": "manual",
       "localizations": {
@@ -6451,7 +6754,7 @@
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "الحصول"
+            "value": "جيب"
           }
         },
         "en": {
@@ -6499,7 +6802,7 @@
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "عرض المعلومات"
+            "value": "شوف المعلومات"
           }
         },
         "cs": {
@@ -6564,13 +6867,30 @@
         }
       }
     },
+    "Get a free certificate from Apple with your Apple ID": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Get a free certificate from Apple with your Apple ID"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "جيب شهادة مجانية من أبل بحساب أبل مالك"
+          }
+        }
+      }
+    },
     "Get started by adding your first repository.": {
       "extractionState": "manual",
       "localizations": {
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "ابدأ بإضافة أول Repository لك."
+            "value": "ابدأ بضيف أول Repository إلك."
           }
         },
         "de": {
@@ -6688,7 +7008,7 @@
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "ابدأ التوقيع عبر استيراد أول شهادة لك."
+            "value": "ابدأ التوقيع باستيراد أول شهادة إلك."
           }
         },
         "de": {
@@ -6747,7 +7067,7 @@
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "اذهب إلى GitHub الخاص بنا وضع لنا نجمة!"
+            "value": "روح لـ GitHub مالنا وحطّلنا نجمة!"
           }
         },
         "de": {
@@ -7013,6 +7333,23 @@
         }
       }
     },
+    "Home": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Home"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "الرئيسية"
+          }
+        }
+      }
+    },
     "Identifier": {
       "extractionState": "manual",
       "localizations": {
@@ -7244,113 +7581,13 @@
         }
       }
     },
-    "idevice": {
-      "extractionState": "manual",
-      "localizations": {
-        "ar": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "idevice"
-          }
-        },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "idevice"
-          }
-        },
-        "it": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "idevice"
-          }
-        },
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "idevice"
-          }
-        },
-        "pl": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "idevice"
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "idevice"
-          }
-        },
-        "vi": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "idevice"
-          }
-        },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "idevice"
-          }
-        }
-      }
-    },
-    "idevice warning": {
-      "extractionState": "manual",
-      "localizations": {
-        "ar": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "تحذير idevice"
-          }
-        },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "This installation method is intended for advanced users only!\n\nIt requires a VPN and a pairing file from a PC.\n\nIts recommended you go back to the server installation method."
-          }
-        },
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "이 설치 방법은 숙련된 사용자만을 대상으로 합니다!\n\n이 방법을 사용하려면 VPN과 PC에서 가져온 페어링 파일이 필요합니다.\n\n서버 설치 방법으로 되돌아가는 것이 좋습니다."
-          }
-        },
-        "pl": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Ta metoda instalacji jest przeznaczona tylko dla zaawansowanych użytkowników!\n\nWymaga ona VPN i pliku parowania z komputera.\n\nZaleca się powrót do metody instalacji przez serwer."
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Bu kurulum yöntemi yalnızca ileri düzey kullanıcılar içindir!\n\nBilgisayarınız üzerinden alınmış bir eşleştirme dosyası ve VPN gerektirir.\n\nSunucu kurulum yöntemine geri dönmeniz önerilir."
-          }
-        },
-        "vi": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Phương pháp cài đặt này chỉ dành cho người dùng nâng cao!\n\nNó yêu cầu VPN và tệp ghép nối từ máy tính.\n\nChúng tôi khuyên bạn nên quay lại phương pháp cài đặt trên máy chủ."
-          }
-        },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "此安装方式仅适用于高级用户！\n\n需要VPN和来自电脑的配对文件。\n\n建议您返回服务器安装方式。"
-          }
-        }
-      }
-    },
     "If any issues occur within the app please report it via the GitHub repository. When submitting an issue, make sure to submit detailed information.": {
       "extractionState": "manual",
       "localizations": {
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "إذا واجهت أي مشاكل داخل التطبيق، يرجى الإبلاغ عنها عبر GitHub Repository. وعند إرسال المشكلة، تأكد من تقديم معلومات مفصلة."
+            "value": "إذا صارت وياك أي مشاكل بالتطبيق، بلّغ عنها بـ GitHub Repository. ومن ترسل المشكلة، تأكد تقدّم معلومات مفصلة."
           }
         },
         "de": {
@@ -7564,6 +7801,148 @@
         }
       }
     },
+    "Import Pairing File": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "استيراد ملف الاقتران"
+          }
+        },
+        "cs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Importovat párovací soubor"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pairing-Datei importieren"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Import Pairing File"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Impor Berkas Pairing"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Importa file di abbinamento"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "페어링 파일 가져오기"
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Importuj plik parowania"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Eşleştirme Dosyasını İçe Aktar"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nhập tệp ghép nối"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "导入配对文件"
+          }
+        }
+      }
+    },
+    "Import Provisioning File": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "استيراد ملف Provisioning"
+          }
+        },
+        "cs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Importovat soubor Provision"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Provisioning-Datei importieren"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Import Provisioning File"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Impor Berkas Provisioning"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Importa file mobileprovision"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "프로비저닝 파일 가져오기"
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Importuj plik provisioning"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hazırlık Profilini İçe Aktar"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nhập tệp mobileprovision"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "导入描述文件"
+          }
+        }
+      }
+    },
     "Import from Files": {
       "comment": "Select an app from files to import",
       "extractionState": "manual",
@@ -7708,155 +8087,13 @@
         }
       }
     },
-    "Import Pairing File": {
-      "extractionState": "manual",
-      "localizations": {
-        "ar": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "استيراد ملف الاقتران"
-          }
-        },
-        "cs": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Importovat párovací soubor"
-          }
-        },
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Pairing-Datei importieren"
-          }
-        },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Import Pairing File"
-          }
-        },
-        "id": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Impor Berkas Pairing"
-          }
-        },
-        "it": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Importa file di abbinamento"
-          }
-        },
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "페어링 파일 가져오기"
-          }
-        },
-        "pl": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Importuj plik parowania"
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Eşleştirme Dosyasını İçe Aktar"
-          }
-        },
-        "vi": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Nhập tệp ghép nối"
-          }
-        },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "导入配对文件"
-          }
-        }
-      }
-    },
-    "Import Provisioning File": {
-      "extractionState": "manual",
-      "localizations": {
-        "ar": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "استيراد ملف Provisioning"
-          }
-        },
-        "cs": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Importovat soubor Provision"
-          }
-        },
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Provisioning-Datei importieren"
-          }
-        },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Import Provisioning File"
-          }
-        },
-        "id": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Impor Berkas Provisioning"
-          }
-        },
-        "it": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Importa file mobileprovision"
-          }
-        },
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "프로비저닝 파일 가져오기"
-          }
-        },
-        "pl": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Importuj plik provisioning"
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Hazırlık Profilini İçe Aktar"
-          }
-        },
-        "vi": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Nhập tệp mobileprovision"
-          }
-        },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "导入描述文件"
-          }
-        }
-      }
-    },
     "Imported": {
       "extractionState": "manual",
       "localizations": {
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "تم الاستيراد"
+            "value": "انستورد"
           }
         },
         "cs": {
@@ -8080,6 +8317,23 @@
         }
       }
     },
+    "Injection": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Injection"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "الحقن"
+          }
+        }
+      }
+    },
     "Injection Folder": {
       "extractionState": "manual",
       "localizations": {
@@ -8216,7 +8470,7 @@
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "تثبيت"
+            "value": "ثبّت"
           }
         },
         "cs": {
@@ -8305,7 +8559,7 @@
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "التثبيت بعد التوقيع"
+            "value": "ثبّت بعد التوقيع"
           }
         },
         "de": {
@@ -8370,7 +8624,7 @@
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "تثبيت الإصدار الحالي"
+            "value": "ثبّت الإصدار الحالي"
           }
         }
       }
@@ -8511,7 +8765,7 @@
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "جارٍ التثبيت"
+            "value": "جاي يتثبّت"
           }
         },
         "de": {
@@ -8564,162 +8818,13 @@
         }
       }
     },
-    "iPad Fullscreen": {
-      "extractionState": "manual",
-      "localizations": {
-        "ar": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "iPad وضع ملء الشاشة"
-          }
-        },
-        "cs": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Fullscreen na iPadu"
-          }
-        },
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "iPad Vollbild"
-          }
-        },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "iPad Fullscreen"
-          }
-        },
-        "id": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Layar Penuh iPad"
-          }
-        },
-        "it": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Schermo intero iPad"
-          }
-        },
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "iPad 전체 화면"
-          }
-        },
-        "pl": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "iPad pełny ekran"
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "iPad’de Tam Ekran"
-          }
-        },
-        "vi": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Toàn màn hình iPad"
-          }
-        },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "iPad全屏"
-          }
-        }
-      }
-    },
-    "iTunes File Sharing": {
-      "comment": "If app should have iTunes file sharing",
-      "extractionState": "manual",
-      "localizations": {
-        "ar": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "مشاركة الملفات عبر iTunes"
-          }
-        },
-        "cs": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Sdílení souboru v iTunes"
-          }
-        },
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "iTunes Dateifreigabe"
-          }
-        },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "iTunes File Sharing"
-          }
-        },
-        "id": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Berbagi Berkas iTunes"
-          }
-        },
-        "it": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Condivisione file su iTunes"
-          }
-        },
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "iTunes 파일 공유"
-          }
-        },
-        "pl": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Udostępnianie plików iTunes"
-          }
-        },
-        "ru": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Разрешить общий доступ через iTunes"
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "iTunes Dosya Paylaşımı"
-          }
-        },
-        "vi": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Chia sẻ tệp qua iTunes"
-          }
-        },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "iTunes文件共享"
-          }
-        }
-      }
-    },
     "Join Us on Discord": {
       "extractionState": "manual",
       "localizations": {
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "انضم إلينا على Discord"
+            "value": "انضم إلنا على Discord"
           }
         },
         "de": {
@@ -8772,7 +8877,7 @@
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "تعرّف أكثر على كيفية إعداد Repository…"
+            "value": "تعلّم أكثر شلون تسوي Repository…"
           }
         },
         "de": {
@@ -9080,7 +9185,24 @@
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "دمج الصلاحيات"
+            "value": "ادمج الصلاحيات"
+          }
+        }
+      }
+    },
+    "Minimum OS": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Minimum OS"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "الحد الأدنى للنظام"
           }
         }
       }
@@ -9234,7 +9356,7 @@
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "تعديل"
+            "value": "عدّل"
           }
         },
         "cs": {
@@ -9589,6 +9711,23 @@
         }
       }
     },
+    "Nickname": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nickname"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "الاسم المستعار"
+          }
+        }
+      }
+    },
     "Nickname (Optional)": {
       "comment": "Certificate custom nickname",
       "extractionState": "manual",
@@ -9667,7 +9806,7 @@
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "لا توجد تطبيقات"
+            "value": "ماكو تطبيقات"
           }
         },
         "de": {
@@ -9726,7 +9865,7 @@
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "لا توجد شهادة"
+            "value": "ماكو شهادة"
           }
         },
         "cs": {
@@ -9797,7 +9936,7 @@
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "لا توجد شهادات"
+            "value": "ماكو شهادات"
           }
         },
         "de": {
@@ -9856,7 +9995,7 @@
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "لا توجد Entitlements مدرجة."
+            "value": "ماكو Entitlements مدرجة."
           }
         },
         "en": {
@@ -9897,78 +10036,13 @@
         }
       }
     },
-    "No files chosen.": {
-      "extractionState": "manual",
-      "localizations": {
-        "ar": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "لم يتم اختيار أي ملفات."
-          }
-        },
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Keine Dateien ausgewählt."
-          }
-        },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "No files chosen."
-          }
-        },
-        "id": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Belum ada file yang dipilih."
-          }
-        },
-        "it": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Nessun file scelto."
-          }
-        },
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "파일이 선택되지 않았습니다."
-          }
-        },
-        "pl": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Nie wybrano plików."
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Hiçbir dosya seçilmedi."
-          }
-        },
-        "vi": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Không có tập tin nào được chọn."
-          }
-        },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "未选择文件。"
-          }
-        }
-      }
-    },
     "No Frameworks or PlugIns Found.": {
       "extractionState": "manual",
       "localizations": {
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "لم يتم العثور على أي Frameworks أو PlugIns."
+            "value": "ما لكينا أي Frameworks أو PlugIns."
           }
         },
         "de": {
@@ -10027,7 +10101,7 @@
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "لم يتم العثور على أي أيقونات."
+            "value": "ما لكينا أي أيقونات."
           }
         },
         "de": {
@@ -10080,13 +10154,184 @@
         }
       }
     },
+    "No Privacy Permissions listed.": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ماكو أذونات خصوصية مدرجة."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No Privacy Permissions listed."
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "개인정보 권한이 목록에 없습니다."
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Brak wymienionych uprawnień prywatności."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hiçbir Gizlilik İzni Listelenmedi."
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Không có quyền riêng tư nào được liệt kê."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "未列出私有权限。"
+          }
+        }
+      }
+    },
+    "No Repositories": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ماكو Repositories"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Keine Repositories"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No Repositories"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nessuna fonte"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "저장소 없음"
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Brak Repozytoriów"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Depo Yok"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Không có kho lưu trữ"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "无已导入的仓库"
+          }
+        }
+      }
+    },
+    "No files chosen.": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ما اخترت أي ملفات."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Keine Dateien ausgewählt."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No files chosen."
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Belum ada file yang dipilih."
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nessun file scelto."
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "파일이 선택되지 않았습니다."
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nie wybrano plików."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hiçbir dosya seçilmedi."
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Không có tập tin nào được chọn."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "未选择文件。"
+          }
+        }
+      }
+    },
     "No pairing file found, please import it.": {
       "extractionState": "manual",
       "localizations": {
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "لم يتم العثور على ملف اقتران، يرجى استيراده."
+            "value": "ما لكينا ملف اقتران، استورده."
           }
         },
         "cs": {
@@ -10151,119 +10396,13 @@
         }
       }
     },
-    "No Privacy Permissions listed.": {
-      "extractionState": "manual",
-      "localizations": {
-        "ar": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "لا توجد أذونات خصوصية مدرجة."
-          }
-        },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "No Privacy Permissions listed."
-          }
-        },
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "개인정보 권한이 목록에 없습니다."
-          }
-        },
-        "pl": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Brak wymienionych uprawnień prywatności."
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Hiçbir Gizlilik İzni Listelenmedi."
-          }
-        },
-        "vi": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Không có quyền riêng tư nào được liệt kê."
-          }
-        },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "未列出私有权限。"
-          }
-        }
-      }
-    },
-    "No Repositories": {
-      "extractionState": "manual",
-      "localizations": {
-        "ar": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "لا توجد Repositories"
-          }
-        },
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Keine Repositories"
-          }
-        },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "No Repositories"
-          }
-        },
-        "it": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Nessuna fonte"
-          }
-        },
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "저장소 없음"
-          }
-        },
-        "pl": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Brak Repozytoriów"
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Depo Yok"
-          }
-        },
-        "vi": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Không có kho lưu trữ"
-          }
-        },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "无已导入的仓库"
-          }
-        }
-      }
-    },
     "No sources to copy": {
       "extractionState": "manual",
       "localizations": {
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "لا توجد مصادر لنسخها"
+            "value": "ماكو مصادر تنسخها"
           }
         },
         "en": {
@@ -10310,7 +10449,7 @@
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "لا شيء"
+            "value": "لا شي"
           }
         },
         "de": {
@@ -10359,6 +10498,23 @@
           "stringUnit": {
             "state": "translated",
             "value": "空"
+          }
+        }
+      }
+    },
+    "Nothing to refresh right now.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nothing to refresh right now."
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ماكو شي تجدّده هسه."
           }
         }
       }
@@ -10458,7 +10614,7 @@
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "استخدم عنوان localhost فقط"
+            "value": "استخدم عنوان localhost بس"
           }
         },
         "cs": {
@@ -10529,7 +10685,7 @@
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "فتح"
+            "value": "افتح"
           }
         },
         "cs": {
@@ -10594,72 +10750,13 @@
         }
       }
     },
-    "Open an [issue](https://github.com/khcrysalis/Feather/issues) on GitHub if you want your source to be featured.": {
-      "extractionState": "manual",
-      "localizations": {
-        "ar": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "افتح [issues](https://github.com/khcrysalis/Feather/issues) على GitHub إذا كنت تريد أن يتم تمييز مصدرك."
-          }
-        },
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Erstelle ein [Issue](https://github.com/khcrysalis/Feather/issues) auf GitHub wenn du deine Quelle aufgelistet haben möchtest."
-          }
-        },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Open an [issue](https://github.com/khcrysalis/Feather/issues) on GitHub if you want your source to be featured."
-          }
-        },
-        "it": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Apri un [problema](https://github.com/khcrysalis/Feather/issues) su GitHub se vuoi che la tua fonte sia consigliata."
-          }
-        },
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "소스가 소개되기를 원하신다면 GitHub에서 [이슈](https://github.com/khcrysalis/Feather/issues)를 등록해 주세요."
-          }
-        },
-        "pl": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Otwórz [issue](https://github.com/khcrysalis/Feather/issues) na GitHubie, jeśli chcesz, aby Twoje źródło zostało wyróżnione."
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Kaynağınızın öne çıkarılmasını istiyorsanız GitHub’da bir [sorun kaydı](https://github.com/khcrysalis/Feather/issues) açın."
-          }
-        },
-        "vi": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Mở [issue](https://github.com/khcrysalis/Feather/issues) trên GitHub nếu bạn muốn nguồn của mình được giới thiệu."
-          }
-        },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "开启一个[issue](https://github.com/khcrysalis/Feather/issues)"
-          }
-        }
-      }
-    },
     "Open Archives": {
       "extractionState": "manual",
       "localizations": {
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "فتح الأرشيفات"
+            "value": "افتح الأرشيفات"
           }
         },
         "cs": {
@@ -10730,7 +10827,7 @@
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "فتح الشهادات"
+            "value": "افتح الشهادات"
           }
         },
         "cs": {
@@ -10801,7 +10898,7 @@
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "فتح المستندات"
+            "value": "افتح المستندات"
           }
         },
         "cs": {
@@ -10866,13 +10963,72 @@
         }
       }
     },
+    "Open an [issue](https://github.com/khcrysalis/Feather/issues) on GitHub if you want your source to be featured.": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "افتح [issues](https://github.com/khcrysalis/Feather/issues) على GitHub إذا تريد مصدرك يتميّز."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Erstelle ein [Issue](https://github.com/khcrysalis/Feather/issues) auf GitHub wenn du deine Quelle aufgelistet haben möchtest."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Open an [issue](https://github.com/khcrysalis/Feather/issues) on GitHub if you want your source to be featured."
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Apri un [problema](https://github.com/khcrysalis/Feather/issues) su GitHub se vuoi che la tua fonte sia consigliata."
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "소스가 소개되기를 원하신다면 GitHub에서 [이슈](https://github.com/khcrysalis/Feather/issues)를 등록해 주세요."
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Otwórz [issue](https://github.com/khcrysalis/Feather/issues) na GitHubie, jeśli chcesz, aby Twoje źródło zostało wyróżnione."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kaynağınızın öne çıkarılmasını istiyorsanız GitHub’da bir [sorun kaydı](https://github.com/khcrysalis/Feather/issues) açın."
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mở [issue](https://github.com/khcrysalis/Feather/issues) trên GitHub nếu bạn muốn nguồn của mình được giới thiệu."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "开启一个[issue](https://github.com/khcrysalis/Feather/issues)"
+          }
+        }
+      }
+    },
     "Open in Files": {
       "extractionState": "manual",
       "localizations": {
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "فتح في الملفات"
+            "value": "افتح بالملفات"
           }
         },
         "cs": {
@@ -10955,13 +11111,171 @@
         }
       }
     },
+    "Open the Library and install the refreshed apps.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Open the Library and install the refreshed apps."
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "افتح المكتبة وثبّت التطبيقات اللي تجدّدت."
+          }
+        }
+      }
+    },
+    "Open the app and renew your certificate.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Open the app and renew your certificate."
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "افتح التطبيق وجدّد شهادتك."
+          }
+        }
+      }
+    },
+    "PPQ Protection": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "حماية PPQ"
+          }
+        },
+        "cs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "PPQ ochrana"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "PPQ-Schutz"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "PPQ Protection"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Perlindungan PPQ"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Protezione PPQ"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "PPQ 보호"
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ochrona PPQ"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Включить защиту"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "PPQ Koruması"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bảo vệ PPQ"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "PPQ保护"
+          }
+        }
+      }
+    },
+    "PPQCheck": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "PPQCheck"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "PPQCheck"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "PPQ 검사"
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Weryfikacja PPQ"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "PPQCheck"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kiểm tra PPQ"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "PPQ检查"
+          }
+        }
+      }
+    },
     "Packaging": {
       "extractionState": "manual",
       "localizations": {
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "إنشاء الحزمة"
+            "value": "سوّي الحزمة"
           }
         },
         "de": {
@@ -11228,7 +11542,7 @@
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "يرجى التحقق من كلمة المرور والمحاولة مرة أخرى."
+            "value": "تأكد من كلمة المرور وحاول مرة ثانية."
           }
         },
         "cs": {
@@ -11317,7 +11631,7 @@
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "يرجى الانتقال إلى الإعدادات واستيراد شهادة صالحة"
+            "value": "روح للإعدادات واستورد شهادة صالحة"
           }
         },
         "cs": {
@@ -11382,6 +11696,23 @@
         }
       }
     },
+    "PlugIns": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "PlugIns"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "الإضافات"
+          }
+        }
+      }
+    },
     "Post Signing": {
       "extractionState": "manual",
       "localizations": {
@@ -11441,126 +11772,19 @@
         }
       }
     },
-    "PPQ Protection": {
+    "Preparing device identity…": {
       "extractionState": "manual",
       "localizations": {
-        "ar": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "حماية PPQ"
-          }
-        },
-        "cs": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "PPQ ochrana"
-          }
-        },
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "PPQ-Schutz"
-          }
-        },
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "PPQ Protection"
+            "value": "Preparing device identity…"
           }
         },
-        "id": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Perlindungan PPQ"
-          }
-        },
-        "it": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Protezione PPQ"
-          }
-        },
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "PPQ 보호"
-          }
-        },
-        "pl": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Ochrona PPQ"
-          }
-        },
-        "ru": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Включить защиту"
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "PPQ Koruması"
-          }
-        },
-        "vi": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Bảo vệ PPQ"
-          }
-        },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "PPQ保护"
-          }
-        }
-      }
-    },
-    "PPQCheck": {
-      "extractionState": "manual",
-      "localizations": {
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "PPQCheck"
-          }
-        },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "PPQCheck"
-          }
-        },
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "PPQ 검사"
-          }
-        },
-        "pl": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Weryfikacja PPQ"
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "PPQCheck"
-          }
-        },
-        "vi": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Kiểm tra PPQ"
-          }
-        },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "PPQ检查"
+            "value": "جاي أجهّز هوية الجهاز…"
           }
         }
       }
@@ -11696,7 +11920,7 @@
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "متابعة"
+            "value": "كمّل"
           }
         },
         "de": {
@@ -11904,7 +12128,7 @@
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "توفير لكل الأجهزة"
+            "value": "وفّر لكل الأجهزة"
           }
         },
         "cs": {
@@ -12046,7 +12270,7 @@
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "إعادة التوقيع"
+            "value": "أعد التوقيع"
           }
         },
         "cs": {
@@ -12170,6 +12394,57 @@
         }
       }
     },
+    "Refresh": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Refresh"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "جدّد"
+          }
+        }
+      }
+    },
+    "Refresh Zenith Itself": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Refresh Zenith Itself"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "جدّد زينيث نفسه"
+          }
+        }
+      }
+    },
+    "Refreshed: %@": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Refreshed: %@"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "تجدّد: %@"
+          }
+        }
+      }
+    },
     "Removal": {
       "extractionState": "manual",
       "localizations": {
@@ -12247,7 +12522,7 @@
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "إزالة الـ Provisioning"
+            "value": "شيل الـ Provisioning"
           }
         },
         "cs": {
@@ -12324,7 +12599,7 @@
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "إزالة URL Scheme"
+            "value": "شيل URL Scheme"
           }
         },
         "cs": {
@@ -12401,7 +12676,7 @@
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "إزالة Watch Placeholder"
+            "value": "شيل Watch Placeholder"
           }
         },
         "cs": {
@@ -12472,7 +12747,7 @@
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "إزالة ملف Provisioning ستمنع تضمين ملف mobileprovision داخل التطبيق أثناء التوقيع، مما يساعد على تقليل احتمالية اكتشافه."
+            "value": "شيل ملف Provisioning يمنع تضمين ملف mobileprovision داخل التطبيق من توقّعه، وهالشي يساعد حتى ما ينكشف."
           }
         },
         "en": {
@@ -12519,13 +12794,47 @@
         }
       }
     },
+    "Renew Certificate": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Renew Certificate"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "جدّد الشهادة"
+          }
+        }
+      }
+    },
+    "Renew now to keep signing": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Renew now to keep signing"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "جدّد هسه حتى تكمل توقيع"
+          }
+        }
+      }
+    },
     "Replace Substrate with ElleKit": {
       "extractionState": "manual",
       "localizations": {
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "استبدال Substrate بـ ElleKit"
+            "value": "استبدل Substrate بـ ElleKit"
           }
         },
         "de": {
@@ -12726,13 +13035,30 @@
         }
       }
     },
+    "Requesting a free certificate from Apple…": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Requesting a free certificate from Apple…"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "جاي أطلب شهادة مجانية من أبل…"
+          }
+        }
+      }
+    },
     "Reset": {
       "extractionState": "manual",
       "localizations": {
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "إعادة تعيين"
+            "value": "صفّر"
           }
         },
         "cs": {
@@ -12821,7 +13147,7 @@
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "إعادة تعيين الكل"
+            "value": "صفّر الكل"
           }
         },
         "de": {
@@ -12880,7 +13206,7 @@
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "إعادة تعيين الشهادات"
+            "value": "صفّر الشهادات"
           }
         },
         "de": {
@@ -12939,7 +13265,7 @@
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "إعادة تعيين التطبيقات المستوردة"
+            "value": "صفّر التطبيقات المستوردة"
           }
         },
         "de": {
@@ -12998,7 +13324,7 @@
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "إعادة تعيين ذاكرة الشبكة المؤقتة"
+            "value": "صفّر ذاكرة الشبكة المؤقتة"
           }
         },
         "de": {
@@ -13057,7 +13383,7 @@
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "إعادة تعيين الإعدادات"
+            "value": "صفّر الإعدادات"
           }
         },
         "de": {
@@ -13116,7 +13442,7 @@
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "إعادة تعيين التطبيقات الموقعة"
+            "value": "صفّر التطبيقات الموقعة"
           }
         },
         "de": {
@@ -13175,7 +13501,7 @@
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "إعادة تعيين ذاكرة العمل المؤقتة"
+            "value": "صفّر ذاكرة العمل المؤقتة"
           }
         },
         "de": {
@@ -13228,13 +13554,30 @@
         }
       }
     },
+    "Reset the applications certificates, apps, and general contents.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Reset the applications certificates, apps, and general contents."
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "هاي تصفّر شهادات التطبيق وتطبيقاته ومحتوياته العامة."
+          }
+        }
+      }
+    },
     "Restart Heartbeat": {
       "extractionState": "manual",
       "localizations": {
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "إعادة تشغيل نبض"
+            "value": "شغّل نبض من جديد"
           }
         },
         "cs": {
@@ -13305,7 +13648,7 @@
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "يلزم إعادة التشغيل"
+            "value": "لازم تعيد التشغيل"
           }
         },
         "cs": {
@@ -13370,6 +13713,23 @@
         }
       }
     },
+    "Revoke Oldest & Continue": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Revoke Oldest & Continue"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "الغي الأقدم وكمّل"
+          }
+        }
+      }
+    },
     "Revoked": {
       "extractionState": "manual",
       "localizations": {
@@ -13417,13 +13777,101 @@
         }
       }
     },
+    "Revoking deletes the oldest certificate from your Apple ID. Apps signed with it stop working.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Revoking deletes the oldest certificate from your Apple ID. Apps signed with it stop working."
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "الإلغاء يمسح أقدم شهادة من حساب أبل مالك. التطبيقات الموقعة بيها تتوقف عن الشغل."
+          }
+        }
+      }
+    },
+    "SSL Certificates": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "شهادات SSL"
+          }
+        },
+        "cs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "SSL certifikáty"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "SSL Zertifikate"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "SSL Certificates"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sertifikat SSL"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Certificati SSL"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "SSL 인증서"
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Certyfikaty SSL"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "SSL Sertifikaları"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Chứng chỉ SSL"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "SSL证书"
+          }
+        }
+      }
+    },
     "Save": {
       "extractionState": "manual",
       "localizations": {
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "حفظ"
+            "value": "احفظ"
           }
         },
         "cs": {
@@ -13500,6 +13948,23 @@
         }
       }
     },
+    "Saving the certificate…": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Saving the certificate…"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "جاي أحفظ الشهادة…"
+          }
+        }
+      }
+    },
     "Screenshots": {
       "extractionState": "manual",
       "localizations": {
@@ -13554,7 +14019,7 @@
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "عرض كل التطبيقات من مصادرك"
+            "value": "شوف كل التطبيقات من مصادرك"
           }
         },
         "cs": {
@@ -13625,7 +14090,7 @@
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "يبدو أنك حصلت على ملف الاقتران الخاص بك!"
+            "value": "يبدو إنك حصلت على ملف الاقتران مالك!"
           }
         },
         "cs": {
@@ -13697,7 +14162,7 @@
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "اختر أيقونة بديلة"
+            "value": "اختار أيقونة بديلة"
           }
         },
         "cs": {
@@ -13769,7 +14234,7 @@
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "حدد ملف الصلاحيات"
+            "value": "حدّد ملف الصلاحيات"
           }
         },
         "cs": {
@@ -13830,6 +14295,23 @@
           "stringUnit": {
             "state": "translated",
             "value": "选择授权文件"
+          }
+        }
+      }
+    },
+    "Self-refresh was not attempted.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Self-refresh was not attempted."
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ما صارت محاولة تجديد الذات."
           }
         }
       }
@@ -13911,7 +14393,7 @@
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "جارٍ إرسال Manifest"
+            "value": "جاي أدز Manifest"
           }
         },
         "de": {
@@ -13970,7 +14452,7 @@
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "جارٍ إرسال Payload"
+            "value": "جاي أدز Payload"
           }
         },
         "de": {
@@ -14082,65 +14564,6 @@
         }
       }
     },
-    "Server (Recommended):\nUses a locally hosted server and itms-services:// to install applications.\n\nIDevice (advanced):\nUses a VPN and a pairing file. Writes to AFC and manually calls installd, while monitoring install progress by using a callback\nAdvantage: It is very reliable, does not need SSL certificates or a externally hosted server. Rather, works similarly to a computer.": {
-      "extractionState": "manual",
-      "localizations": {
-        "ar": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Server (موصى به):\nيستخدم خادمًا محليًا و itms-services:// لتثبيت التطبيقات.\n\nIDevice (متقدم):\nيستخدم VPN وملف اقتران. يكتب إلى AFC ويستدعي installd يدويًا، مع مراقبة تقدم التثبيت عبر callback.\nالميزة: موثوق جدًا، ولا يحتاج إلى شهادات SSL أو خادم مستضاف خارجيًا، بل يعمل بطريقة مشابهة للكمبيوتر."
-          }
-        },
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Server (Empfohlen):\nVerwendet einen lokal gehosteten Server und itms-services://, um Apps zu installieren.\n\nIDevice (fortgeschritten):\nVerwendet ein VPN und eine Pairing-Datei. Verwendet AFC und ruft installd manuell auf, während der Installationsfortschritt über einen Callback überwacht wird.\nVorteil: Es ist sehr zuverlässig, benötigt keine SSL-Zertifikate oder extern gehostete Server."
-          }
-        },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Server (Recommended):\nUses a locally hosted server and itms-services:// to install applications.\n\nIDevice (advanced):\nUses a VPN and a pairing file. Writes to AFC and manually calls installd, while monitoring install progress by using a callback\nAdvantage: It is very reliable, does not need SSL certificates or a externally hosted server. Rather, works similarly to a computer."
-          }
-        },
-        "it": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Server (Consigliato):Utilizza un server ospitato localmente e itms-services:// per installare le applicazioni.iDevice (Avanzato):Utilizza una VPN e un file di abbinamento. Scrive tramite AFC e richiama manualmente installd, monitorando l’avanzamento dell’installazione tramite una callback.Vantaggi:È molto affidabile, non richiede certificati SSL né un server ospitato esternamente. Funziona in modo simile a un computer."
-          }
-        },
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "서버 (추천):\n로컬에 호스팅된 서버와 itms-services://를 사용하여 애플리케이션을 설치합니다.\n\nIDevice (고급):\nVPN과 페어링 파일을 사용합니다. AFC에 데이터를 기록하고 수동으로 installd를 호출하며, 콜백을 통해 설치 진행 상황을 모니터링합니다.\n장점: 매우 안정적이며, SSL 인증서나 외부 호스팅 서버가 필요하지 않습니다. 오히려 컴퓨터와 비슷한 방식으로 작동합니다."
-          }
-        },
-        "pl": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Serwer (zalecane):\nUżywa lokalnie hostowanego serwera i itms-services:// do instalowania aplikacji.\n\nIDevice (zaawansowane):\nUżywa VPN i pliku parowania. Zapisuje do AFC i ręcznie wywołuje installd, monitorując postęp instalacji przez callback.\nZaleta: Jest bardzo niezawodny, nie wymaga certyfikatów SSL ani zewnętrznego serwera. Działa podobnie do komputera."
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Sunucu (Önerilen):\nUygulamaları yüklemek için yerel olarak barındırılan bir sunucu ve itms-services:// kullanır.\n\nIDevice (Gelişmiş):\nBir VPN ve eşleştirme dosyası kullanır. Kurulum AFC aracılığıyla gerçekleştirilir ve ilerleme izlenebilir.\nAvantajı: Çok güvenilirdir, SSL sertifikalarına veya harici olarak barındırılan bir sunucuya ihtiyaç duymaz. Aksine, bir bilgisayara benzer şekilde çalışır."
-          }
-        },
-        "vi": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Máy chủ (Khuyến nghị):\nSử dụng máy chủ lưu trữ cục bộ và itms-services:// để cài đặt ứng dụng.\n\nIDevice (nâng cao):\nSử dụng VPN và tệp ghép nối. Ghi vào AFC và gọi installd theo cách thủ công, đồng thời theo dõi tiến trình cài đặt bằng cách sử dụng lệnh gọi lại\nƯu điểm: Rất đáng tin cậy, không cần chứng chỉ SSL hoặc máy chủ lưu trữ bên ngoài. Thay vào đó, hoạt động tương tự như máy tính."
-          }
-        },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "服务器（推荐）：\n使用本地托管的服务器和itms-services://来安装应用。\n\nIDevice（高级）：\n使用VPN和配对文件。写入AFC并手动调用installd，使用回调检测安装进度。\n优点：非常稳定，不需要SSL证书或设备外托管的服务器，而是在本地进行模拟。"
-          }
-        }
-      }
-    },
     "Server & SSL": {
       "extractionState": "manual",
       "localizations": {
@@ -14208,6 +14631,65 @@
           "stringUnit": {
             "state": "translated",
             "value": "服务器与SSL"
+          }
+        }
+      }
+    },
+    "Server (Recommended):\nUses a locally hosted server and itms-services:// to install applications.\n\nIDevice (advanced):\nUses a VPN and a pairing file. Writes to AFC and manually calls installd, while monitoring install progress by using a callback\nAdvantage: It is very reliable, does not need SSL certificates or a externally hosted server. Rather, works similarly to a computer.": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Server (موصى بيه):\nيستخدم خادم محلي و itms-services:// حتى يثبّت التطبيقات.\n\nIDevice (متقدم):\nيستخدم VPN وملف اقتران. يكتب بـ AFC ويستدعي installd يدويًا، ويراقب تقدّم التثبيت عن طريق callback.\nالميزة: موثوق كلش، وما يحتاج شهادات SSL أو خادم مستضاف برّه، بل يشتغل بطريقة تشبه الكمبيوتر."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Server (Empfohlen):\nVerwendet einen lokal gehosteten Server und itms-services://, um Apps zu installieren.\n\nIDevice (fortgeschritten):\nVerwendet ein VPN und eine Pairing-Datei. Verwendet AFC und ruft installd manuell auf, während der Installationsfortschritt über einen Callback überwacht wird.\nVorteil: Es ist sehr zuverlässig, benötigt keine SSL-Zertifikate oder extern gehostete Server."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Server (Recommended):\nUses a locally hosted server and itms-services:// to install applications.\n\nIDevice (advanced):\nUses a VPN and a pairing file. Writes to AFC and manually calls installd, while monitoring install progress by using a callback\nAdvantage: It is very reliable, does not need SSL certificates or a externally hosted server. Rather, works similarly to a computer."
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Server (Consigliato):Utilizza un server ospitato localmente e itms-services:// per installare le applicazioni.iDevice (Avanzato):Utilizza una VPN e un file di abbinamento. Scrive tramite AFC e richiama manualmente installd, monitorando l’avanzamento dell’installazione tramite una callback.Vantaggi:È molto affidabile, non richiede certificati SSL né un server ospitato esternamente. Funziona in modo simile a un computer."
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "서버 (추천):\n로컬에 호스팅된 서버와 itms-services://를 사용하여 애플리케이션을 설치합니다.\n\nIDevice (고급):\nVPN과 페어링 파일을 사용합니다. AFC에 데이터를 기록하고 수동으로 installd를 호출하며, 콜백을 통해 설치 진행 상황을 모니터링합니다.\n장점: 매우 안정적이며, SSL 인증서나 외부 호스팅 서버가 필요하지 않습니다. 오히려 컴퓨터와 비슷한 방식으로 작동합니다."
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Serwer (zalecane):\nUżywa lokalnie hostowanego serwera i itms-services:// do instalowania aplikacji.\n\nIDevice (zaawansowane):\nUżywa VPN i pliku parowania. Zapisuje do AFC i ręcznie wywołuje installd, monitorując postęp instalacji przez callback.\nZaleta: Jest bardzo niezawodny, nie wymaga certyfikatów SSL ani zewnętrznego serwera. Działa podobnie do komputera."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sunucu (Önerilen):\nUygulamaları yüklemek için yerel olarak barındırılan bir sunucu ve itms-services:// kullanır.\n\nIDevice (Gelişmiş):\nBir VPN ve eşleştirme dosyası kullanır. Kurulum AFC aracılığıyla gerçekleştirilir ve ilerleme izlenebilir.\nAvantajı: Çok güvenilirdir, SSL sertifikalarına veya harici olarak barındırılan bir sunucuya ihtiyaç duymaz. Aksine, bir bilgisayara benzer şekilde çalışır."
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Máy chủ (Khuyến nghị):\nSử dụng máy chủ lưu trữ cục bộ và itms-services:// để cài đặt ứng dụng.\n\nIDevice (nâng cao):\nSử dụng VPN và tệp ghép nối. Ghi vào AFC và gọi installd theo cách thủ công, đồng thời theo dõi tiến trình cài đặt bằng cách sử dụng lệnh gọi lại\nƯu điểm: Rất đáng tin cậy, không cần chứng chỉ SSL hoặc máy chủ lưu trữ bên ngoài. Thay vào đó, hoạt động tương tự như máy tính."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "服务器（推荐）：\n使用本地托管的服务器和itms-services://来安装应用。\n\nIDevice（高级）：\n使用VPN和配对文件。写入AFC并手动调用installd，使用回调检测安装进度。\n优点：非常稳定，不需要SSL证书或设备外托管的服务器，而是在本地进行模拟。"
           }
         }
       }
@@ -14362,7 +14844,7 @@
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "إظهار نافذة المشاركة عند التصدير"
+            "value": "أظهر نافذة المشاركة من تصدّر"
           }
         },
         "cs": {
@@ -14433,7 +14915,7 @@
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "توقيع"
+            "value": "وقّع"
           }
         },
         "cs": {
@@ -14498,13 +14980,30 @@
         }
       }
     },
+    "Sign in with your Apple ID to fetch a free certificate.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sign in with your Apple ID to fetch a free certificate."
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "سجّل دخول بحساب أبل مالك حتى تجيب شهادة مجانية."
+          }
+        }
+      }
+    },
     "Signed": {
       "extractionState": "manual",
       "localizations": {
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "تم التوقيع"
+            "value": "انوقّع"
           }
         },
         "cs": {
@@ -14782,6 +15281,23 @@
         }
       }
     },
+    "Signing in…": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Signing in…"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "جاي أسجّل دخول…"
+          }
+        }
+      }
+    },
     "Size": {
       "extractionState": "manual",
       "localizations": {
@@ -14825,6 +15341,57 @@
           "stringUnit": {
             "state": "translated",
             "value": "大小"
+          }
+        }
+      }
+    },
+    "Social": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Social"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "تواصل"
+          }
+        }
+      }
+    },
+    "Some apps refreshed": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Some apps refreshed"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "تجدّدت بعض التطبيقات"
+          }
+        }
+      }
+    },
+    "Something went wrong.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Something went wrong."
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "صار شي غلط."
           }
         }
       }
@@ -15037,7 +15604,7 @@
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "تم نسخ المصادر إلى الحافظة"
+            "value": "اننسخت المصادر للحافظة"
           }
         },
         "en": {
@@ -15226,77 +15793,6 @@
         }
       }
     },
-    "SSL Certificates": {
-      "extractionState": "manual",
-      "localizations": {
-        "ar": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "شهادات SSL"
-          }
-        },
-        "cs": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "SSL certifikáty"
-          }
-        },
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "SSL Zertifikate"
-          }
-        },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "SSL Certificates"
-          }
-        },
-        "id": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Sertifikat SSL"
-          }
-        },
-        "it": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Certificati SSL"
-          }
-        },
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "SSL 인증서"
-          }
-        },
-        "pl": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Certyfikaty SSL"
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "SSL Sertifikaları"
-          }
-        },
-        "vi": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Chứng chỉ SSL"
-          }
-        },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "SSL证书"
-          }
-        }
-      }
-    },
     "Standard": {
       "extractionState": "manual",
       "localizations": {
@@ -15374,7 +15870,7 @@
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "بدء التوقيع"
+            "value": "ابدأ التوقيع"
           }
         },
         "cs": {
@@ -15441,6 +15937,23 @@
           "stringUnit": {
             "state": "translated",
             "value": "开始签名"
+          }
+        }
+      }
+    },
+    "Status": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Status"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "الحالة"
           }
         }
       }
@@ -15664,7 +16177,7 @@
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "الرجوع"
+            "value": "ارجع"
           }
         },
         "en": {
@@ -15853,7 +16366,7 @@
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "ميزة نبض مفعلة في الخلفية، وستُعاد تشغيلها عند فتح التطبيق مرة أخرى أو عند الطلب. إذا كانت الحالة في الأسفل تنبض، فهذا يعني أنها تعمل بشكل سليم."
+            "value": "ميزة نبض شغالة بالخلفية، وراح تنعاد من تفتح التطبيق مرة ثانية أو من تطلبها. إذا الحالة جوّه تنبض، معناها تشتغل تمام."
           }
         },
         "cs": {
@@ -15924,7 +16437,7 @@
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "الـ Repositories المدعومة فقط هي Repositories الخاصة بـ AltStore."
+            "value": "الـ Repositories المدعومة بس هي Repositories مال AltStore."
           }
         },
         "de": {
@@ -16042,7 +16555,7 @@
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "هذه التغييرات تتطلب إعادة تشغيل التطبيق"
+            "value": "هالتغييرات تحتاج تعيد تشغيل التطبيق"
           }
         },
         "cs": {
@@ -16107,12 +16620,29 @@
         }
       }
     },
+    "This Apple ID already has development certificates. Apple allows only a limited number of free certificates.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "This Apple ID already has development certificates. Apple allows only a limited number of free certificates."
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "هالحساب عنده شهادات تطوير أصلاً. أبل تسمح بعدد محدود بس من الشهادات المجانية."
+          }
+        }
+      }
+    },
     "This action cannot be undone. Would you like to proceed?": {
       "localizations": {
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "لا يمكن التراجع عن هذا الإجراء. هل تريد المتابعة؟"
+            "value": "ما تكدر تتراجع عن هالإجراء. تريد تكمّل؟"
           }
         },
         "de": {
@@ -16171,7 +16701,7 @@
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "يتيح لك هذا تعيين قواعد لاستبدال Bundle ID / Display Name تلقائيًا عند توقيع التطبيق."
+            "value": "هالشي يخليك تحط قواعد تستبدل Bundle ID / Display Name تلقائيًا من توقّع التطبيق."
           }
         },
         "en": {
@@ -16218,7 +16748,7 @@
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "هذا يفعّل Liquid Glass لهذا التطبيق، ويتطلب إعادة تشغيل التطبيق حتى يتم تطبيقه."
+            "value": "هالشي يشغّل Liquid Glass لهالتطبيق، ويحتاج تعيد تشغيل التطبيق حتى يشتغل."
           }
         },
         "de": {
@@ -16277,7 +16807,7 @@
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "هذا الخيار يجبر التطبيقات على محاولة استخدام تصميم Liquid Glass الجديد الذي قدمه iOS 26. قد لا يعمل ذلك مع جميع التطبيقات بسبب اختلاف الأُطر المستخدمة."
+            "value": "هالخيار يجبر التطبيقات تحاول تستخدم تصميم Liquid Glass الجديد اللي قدّمه iOS 26. يمكن ما يشتغل ويا كل التطبيقات بسبب اختلاف الأُطر المستخدمة."
           }
         },
         "de": {
@@ -16342,7 +16872,7 @@
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "هذا الخيار يدمج الصلاحيات مع الصلاحيات المضمّنة في التطبيق الذي توقّعه."
+            "value": "هالخيار يدمج الصلاحيات ويا الصلاحيات المضمّنة بالتطبيق اللي توقّعه."
           }
         }
       }
@@ -16353,7 +16883,7 @@
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "سيؤدي هذا إلى حذف التطبيق المستورد بعد التوقيع لتوفير المساحة غير الضرورية."
+            "value": "هالشي راح يمسح التطبيق المستورد بعد التوقيع حتى يوفّر مساحة."
           }
         },
         "de": {
@@ -16459,7 +16989,7 @@
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "عند تفعيل خيار إظهار النافذة، ستظهر نافذة المشاركة بعد التصدير إلى ملفاتك."
+            "value": "من تفعّل خيار إظهار النافذة، راح تظهر نافذة المشاركة بعد التصدير لملفاتك."
           }
         },
         "cs": {
@@ -16520,6 +17050,23 @@
           "stringUnit": {
             "state": "translated",
             "value": "启用该选项会在导出文件时显示共享菜单。"
+          }
+        }
+      }
+    },
+    "Tools": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tools"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "أدوات"
           }
         }
       }
@@ -16661,13 +17208,66 @@
         }
       }
     },
+    "URL": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "الرابط"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "URL"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "URL"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "URL"
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "URL"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "URL"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "URL"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "网址"
+          }
+        }
+      }
+    },
     "Unknown": {
       "extractionState": "manual",
       "localizations": {
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "غير معروف"
+            "value": "ما معروف"
           }
         },
         "cs": {
@@ -16768,7 +17368,7 @@
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "تحديث"
+            "value": "حدّث"
           }
         }
       }
@@ -16791,7 +17391,7 @@
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "يتوفر تحديث"
+            "value": "أكو تحديث"
           }
         }
       }
@@ -16802,7 +17402,7 @@
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "تحديث شهادات SSL"
+            "value": "حدّث شهادات SSL"
           }
         },
         "cs": {
@@ -16873,7 +17473,7 @@
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "تم التحديث"
+            "value": "تحدّث"
           }
         },
         "en": {
@@ -16910,59 +17510,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "已更新"
-          }
-        }
-      }
-    },
-    "URL": {
-      "extractionState": "manual",
-      "localizations": {
-        "ar": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "الرابط"
-          }
-        },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "URL"
-          }
-        },
-        "it": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "URL"
-          }
-        },
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "URL"
-          }
-        },
-        "pl": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "URL"
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "URL"
-          }
-        },
-        "vi": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "URL"
-          }
-        },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "网址"
           }
         }
       }
@@ -17022,6 +17569,40 @@
           "stringUnit": {
             "state": "translated",
             "value": "值"
+          }
+        }
+      }
+    },
+    "Verification Code": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Verification Code"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "رمز التحقق"
+          }
+        }
+      }
+    },
+    "Verify": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Verify"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "تأكد"
           }
         }
       }
@@ -17211,7 +17792,7 @@
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "عرض الصلاحيات"
+            "value": "شوف الصلاحيات"
           }
         },
         "cs": {
@@ -17283,7 +17864,7 @@
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "زيارة Patreon"
+            "value": "زور Patreon"
           }
         },
         "cs": {
@@ -17355,7 +17936,7 @@
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "زيارة الموقع"
+            "value": "زور الموقع"
           }
         },
         "cs": {
@@ -17426,7 +18007,7 @@
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "ما الجديد"
+            "value": "شنو الجديد"
           }
         },
         "en": {
@@ -17473,7 +18054,7 @@
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "لا يمكنك تحديث ‘%@‘ بنفسه، يرجى استخدام أداة بديلة لتحديثه."
+            "value": "ما تكدر تحدّث ‘%@‘ بنفسه، استخدم أداة ثانية حتى تحدّثه."
           }
         },
         "de": {
@@ -17532,13 +18113,30 @@
         }
       }
     },
+    "Your Apple ID password is used only for this sign-in and is never stored.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Your Apple ID password is used only for this sign-in and is never stored."
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "كلمة مرور حساب أبل تُستخدم لهالتسجيل بس وما تنحفظ أبد."
+          }
+        }
+      }
+    },
     "Your pairing file is invalid and is incompatible with your device, please import a valid pairing file.": {
       "extractionState": "manual",
       "localizations": {
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "ملف pairing غير صالح وغير متوافق مع جهازك، يرجى استيراد ملف pairing صالح."
+            "value": "ملف pairing مو صالح ومو متوافق ويا جهازك، استورد ملف pairing صالح."
           }
         },
         "de": {
@@ -17591,886 +18189,560 @@
         }
       }
     },
-    "Renew Certificate": {
+    "Zenith was re-signed and installed over itself.": {
       "extractionState": "manual",
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Renew Certificate"
+            "value": "Zenith was re-signed and installed over itself."
           }
         },
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "تجديد الشهادة"
+            "value": "انوقّع زينيث وانثبّت فوق نفسه."
           }
         }
       }
     },
-    "Certificate expires soon": {
+    "iPad Fullscreen": {
       "extractionState": "manual",
       "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Certificate expires soon"
-          }
-        },
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "الشهادة تنتهي قريباً"
+            "value": "iPad وضع ملء الشاشة"
+          }
+        },
+        "cs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fullscreen na iPadu"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "iPad Vollbild"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "iPad Fullscreen"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Layar Penuh iPad"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Schermo intero iPad"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "iPad 전체 화면"
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "iPad pełny ekran"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "iPad’de Tam Ekran"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Toàn màn hình iPad"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "iPad全屏"
           }
         }
       }
     },
-    "Renew now to keep signing": {
+    "iTunes File Sharing": {
+      "comment": "If app should have iTunes file sharing",
       "extractionState": "manual",
       "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Renew now to keep signing"
-          }
-        },
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "جدّد الآن لمتابعة التوقيع"
+            "value": "مشاركة الملفات عبر iTunes"
+          }
+        },
+        "cs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sdílení souboru v iTunes"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "iTunes Dateifreigabe"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "iTunes File Sharing"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Berbagi Berkas iTunes"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Condivisione file su iTunes"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "iTunes 파일 공유"
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Udostępnianie plików iTunes"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Разрешить общий доступ через iTunes"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "iTunes Dosya Paylaşımı"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Chia sẻ tệp qua iTunes"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "iTunes文件共享"
           }
         }
       }
     },
-    "Contact support if you want your source to be featured.": {
+    "idevice": {
       "extractionState": "manual",
       "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Contact support if you want your source to be featured."
-          }
-        },
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "تواصل مع الدعم إذا أردت إبراز مصدرك."
+            "value": "idevice"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "idevice"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "idevice"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "idevice"
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "idevice"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "idevice"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "idevice"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "idevice"
           }
         }
       }
     },
-    "Certificate from Apple": {
+    "idevice warning": {
       "extractionState": "manual",
       "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Certificate from Apple"
-          }
-        },
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "شهادة من أبل"
+            "value": "تحذير idevice"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "This installation method is intended for advanced users only!\n\nIt requires a VPN and a pairing file from a PC.\n\nIts recommended you go back to the server installation method."
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "이 설치 방법은 숙련된 사용자만을 대상으로 합니다!\n\n이 방법을 사용하려면 VPN과 PC에서 가져온 페어링 파일이 필요합니다.\n\n서버 설치 방법으로 되돌아가는 것이 좋습니다."
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ta metoda instalacji jest przeznaczona tylko dla zaawansowanych użytkowników!\n\nWymaga ona VPN i pliku parowania z komputera.\n\nZaleca się powrót do metody instalacji przez serwer."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bu kurulum yöntemi yalnızca ileri düzey kullanıcılar içindir!\n\nBilgisayarınız üzerinden alınmış bir eşleştirme dosyası ve VPN gerektirir.\n\nSunucu kurulum yöntemine geri dönmeniz önerilir."
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Phương pháp cài đặt này chỉ dành cho người dùng nâng cao!\n\nNó yêu cầu VPN và tệp ghép nối từ máy tính.\n\nChúng tôi khuyên bạn nên quay lại phương pháp cài đặt trên máy chủ."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "此安装方式仅适用于高级用户！\n\n需要VPN和来自电脑的配对文件。\n\n建议您返回服务器安装方式。"
           }
         }
       }
     },
-    "Get a free certificate from Apple with your Apple ID": {
+    "💜 This couldn't of been done without my sponsors!": {
       "extractionState": "manual",
       "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Get a free certificate from Apple with your Apple ID"
-          }
-        },
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "احصل على شهادة مجانية من أبل باستخدام حساب أبل الخاص بك"
+            "value": "💜 هالشي ما كان يصير لولا داعمينا!"
+          }
+        },
+        "cs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "💜Nebylo by to možné bez mých sponzorů!"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "💜 Ohne meine Sponsoren wäre das alles nicht möglich!"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "💜 This couldn't of been done without my sponsors!"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "💜 Ini tidak akan bisa dilakukan tanpa sponsor saya!"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "💜 Questo non era stato possibile creare senza i miei sostenitori!"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "💜 후원자분들이 아니었다면 이 일을 해낼 수 없었을 거예요!"
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "💜 To nie byłoby możliwe bez moich sponsorów!"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "💜 Sponsorlarım olmadan başarılamazdı!"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "💜 Điều này không thể thực hiện được nếu không có các nhà tài trợ của tôi!"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "💜感谢捐赠者们的贡献与一路以来的支持！"
           }
         }
       }
     },
-    "Sign in with your Apple ID to fetch a free certificate.": {
+    "Days Remaining": {
       "extractionState": "manual",
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Sign in with your Apple ID to fetch a free certificate."
+            "value": "Days Remaining"
           }
         },
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "سجّل الدخول بحساب أبل الخاص بك لجلب شهادة مجانية."
+            "value": "يوم باقي"
           }
         }
       }
     },
-    "Preparing device identity…": {
+    "Expires on %@": {
       "extractionState": "manual",
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Preparing device identity…"
+            "value": "Expires on %@"
           }
         },
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "جارٍ تجهيز هوية الجهاز…"
+            "value": "تنتهي بـ %@"
           }
         }
       }
     },
-    "Signing in…": {
+    "Anti-Revoke Protection": {
       "extractionState": "manual",
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Signing in…"
+            "value": "Anti-Revoke Protection"
           }
         },
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "جارٍ تسجيل الدخول…"
+            "value": "الحماية من الإلغاء"
           }
         }
       }
     },
-    "Enter the verification code.": {
+    "Install Protection": {
       "extractionState": "manual",
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Enter the verification code."
+            "value": "Install Protection"
           }
         },
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "أدخل رمز التحقق."
+            "value": "ثبّت الحماية"
           }
         }
       }
     },
-    "Finding your free team…": {
+    "Reinstall Protection": {
       "extractionState": "manual",
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Finding your free team…"
+            "value": "Reinstall Protection"
           }
         },
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "جارٍ البحث عن فريقك المجاني…"
+            "value": "ثبّت الحماية من جديد"
           }
         }
       }
     },
-    "Requesting a free certificate from Apple…": {
+    "Protection Installed": {
       "extractionState": "manual",
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Requesting a free certificate from Apple…"
+            "value": "Protection Installed"
           }
         },
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "جارٍ طلب شهادة مجانية من أبل…"
+            "value": "الحماية مثبّتة"
           }
         }
       }
     },
-    "Saving the certificate…": {
+    "Protection Not Installed": {
       "extractionState": "manual",
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Saving the certificate…"
+            "value": "Protection Not Installed"
           }
         },
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "جارٍ حفظ الشهادة…"
+            "value": "الحماية مو مثبّتة"
           }
         }
       }
     },
-    "Certificate ready.": {
+    "Blocks Apple's revocation checks so signed apps keep opening if the certificate is revoked.": {
       "extractionState": "manual",
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Certificate ready."
+            "value": "Blocks Apple's revocation checks so signed apps keep opening if the certificate is revoked."
           }
         },
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "الشهادة جاهزة."
+            "value": "تحجب فحوصات الإلغاء مال أبل حتى التطبيقات الموقعة تستمر تشتغل إذا انلغت الشهادة."
           }
         }
       }
     },
-    "Something went wrong.": {
+    "iOS does not let the app verify installation. This status is based on your install tap.": {
       "extractionState": "manual",
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Something went wrong."
+            "value": "iOS does not let the app verify installation. This status is based on your install tap."
           }
         },
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "حدث خطأ ما."
+            "value": "نظام iOS ما يخلي التطبيق يتأكد من التثبيت. هالحالة تعتمد على ضغطتك على زر التثبيت."
           }
         }
       }
     },
-    "Apple ID": {
+    "To remove the protection: Settings → VPN & Device Management.": {
       "extractionState": "manual",
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Apple ID"
+            "value": "To remove the protection: Settings → VPN & Device Management."
           }
         },
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "حساب أبل"
+            "value": "حتى تشيل الحماية: الإعدادات ← VPN وإدارة الجهاز."
           }
         }
       }
     },
-    "Your Apple ID password is used only for this sign-in and is never stored.": {
+    "Profile Not Found": {
       "extractionState": "manual",
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Your Apple ID password is used only for this sign-in and is never stored."
+            "value": "Profile Not Found"
           }
         },
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "كلمة مرور حساب أبل تُستخدم لتسجيل الدخول هذا فقط ولا تُحفظ أبداً."
+            "value": "ما لكينا الملف"
           }
         }
       }
     },
-    "Fetch Certificate": {
+    "The protection profile is missing from the app. Please reinstall Zenith.": {
       "extractionState": "manual",
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Fetch Certificate"
+            "value": "The protection profile is missing from the app. Please reinstall Zenith."
           }
         },
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "جلب الشهادة"
+            "value": "ملف الحماية مو موجود بالتطبيق. ثبّت Zenith من جديد."
           }
         }
       }
     },
-    "Verification Code": {
+    "This re-signs Zenith itself and installs the new copy over this one. If the certificate came from Apple, a fresh one is fetched first; otherwise the current certificate is used. If anything fails, the old copy keeps running.": {
       "extractionState": "manual",
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Verification Code"
+            "value": "This re-signs Zenith itself and installs the new copy over this one. If the certificate came from Apple, a fresh one is fetched first; otherwise the current certificate is used. If anything fails, the old copy keeps running."
           }
         },
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "رمز التحقق"
-          }
-        }
-      }
-    },
-    "Verify": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Verify"
-          }
-        },
-        "ar": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "تحقق"
-          }
-        }
-      }
-    },
-    "Enter the verification code sent to your trusted device.": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Enter the verification code sent to your trusted device."
-          }
-        },
-        "ar": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "أدخل رمز التحقق المرسل إلى جهازك الموثوق."
-          }
-        }
-      }
-    },
-    "Enter the verification code shown on your trusted device.": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Enter the verification code shown on your trusted device."
-          }
-        },
-        "ar": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "أدخل رمز التحقق الظاهر على جهازك الموثوق."
-          }
-        }
-      }
-    },
-    "Enter the verification code sent by text message.": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Enter the verification code sent by text message."
-          }
-        },
-        "ar": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "أدخل رمز التحقق المرسل برسالة نصية."
-          }
-        }
-      }
-    },
-    "Enter the verification code from the phone call.": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Enter the verification code from the phone call."
-          }
-        },
-        "ar": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "أدخل رمز التحقق من المكالمة الهاتفية."
-          }
-        }
-      }
-    },
-    "Choose how Apple sends your verification code.": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Choose how Apple sends your verification code."
-          }
-        },
-        "ar": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "اختر كيف ترسل أبل رمز التحقق إليك."
-          }
-        }
-      }
-    },
-    "Certificate Already Exists": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Certificate Already Exists"
-          }
-        },
-        "ar": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "توجد شهادة بالفعل"
-          }
-        }
-      }
-    },
-    "This Apple ID already has development certificates. Apple allows only a limited number of free certificates.": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "This Apple ID already has development certificates. Apple allows only a limited number of free certificates."
-          }
-        },
-        "ar": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "حساب أبل هذا لديه شهادات تطوير بالفعل. تسمح أبل بعدد محدود فقط من الشهادات المجانية."
-          }
-        }
-      }
-    },
-    "Revoke Oldest & Continue": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Revoke Oldest & Continue"
-          }
-        },
-        "ar": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "إلغاء الأقدم والمتابعة"
-          }
-        }
-      }
-    },
-    "Revoking deletes the oldest certificate from your Apple ID. Apps signed with it stop working.": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Revoking deletes the oldest certificate from your Apple ID. Apps signed with it stop working."
-          }
-        },
-        "ar": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "الإلغاء يحذف أقدم شهادة من حساب أبل الخاص بك. التطبيقات الموقعة بها تتوقف عن العمل."
-          }
-        }
-      }
-    },
-    "Refresh": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Refresh"
-          }
-        },
-        "ar": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "تجديد"
-          }
-        }
-      }
-    },
-    "Nothing to refresh right now.": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Nothing to refresh right now."
-          }
-        },
-        "ar": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "لا يوجد شيء لتجديده الآن."
-          }
-        }
-      }
-    },
-    "Refreshed: %@": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Refreshed: %@"
-          }
-        },
-        "ar": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "تم تجديد: %@"
-          }
-        }
-      }
-    },
-    "Open the Library and install the refreshed apps.": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Open the Library and install the refreshed apps."
-          }
-        },
-        "ar": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "افتح المكتبة وثبّت التطبيقات المجددة."
-          }
-        }
-      }
-    },
-    "Refresh Feather Itself": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Refresh Feather Itself"
-          }
-        },
-        "ar": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "تجديد فيذر نفسه"
-          }
-        }
-      }
-    },
-    "This re-signs Feather itself with a fresh free certificate and installs the new copy over this one. If anything fails, the old copy keeps running.": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "This re-signs Feather itself with a fresh free certificate and installs the new copy over this one. If anything fails, the old copy keeps running."
-          }
-        },
-        "ar": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "هذا يعيد توقيع فيذر نفسه بشهادة مجانية جديدة ويثبّت النسخة الجديدة فوق هذه النسخة. إذا فشل أي شيء، تبقى النسخة القديمة تعمل."
-          }
-        }
-      }
-    },
-    "Feather was re-signed and installed over itself.": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Feather was re-signed and installed over itself."
-          }
-        },
-        "ar": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "تمت إعادة توقيع فيذر وتثبيته فوق نفسه."
-          }
-        }
-      }
-    },
-    "A freshly signed Feather IPA was saved to Archives. Install it with SideStore or ESign.": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "A freshly signed Feather IPA was saved to Archives. Install it with SideStore or ESign."
-          }
-        },
-        "ar": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "تم حفظ نسخة فيذر الموقعة حديثاً في الأرشيف. ثبّتها باستخدام سايد ستور أو إي ساين."
-          }
-        }
-      }
-    },
-    "Self-refresh was not attempted.": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Self-refresh was not attempted."
-          }
-        },
-        "ar": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "لم تتم محاولة تجديد الذات."
-          }
-        }
-      }
-    },
-    "Apps refreshed": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Apps refreshed"
-          }
-        },
-        "ar": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "تم تجديد التطبيقات"
-          }
-        }
-      }
-    },
-    "Auto-refresh failed": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Auto-refresh failed"
-          }
-        },
-        "ar": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "فشل التجديد التلقائي"
-          }
-        }
-      }
-    },
-    "Some apps refreshed": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Some apps refreshed"
-          }
-        },
-        "ar": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "تم تجديد بعض التطبيقات"
-          }
-        }
-      }
-    },
-    "Open the app and renew your certificate.": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Open the app and renew your certificate."
-          }
-        },
-        "ar": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "افتح التطبيق وجدّد شهادتك."
-          }
-        }
-      }
-    },
-    "Nickname": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Nickname"
-          }
-        },
-        "ar": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "الاسم المستعار"
-          }
-        }
-      }
-    },
-    "Ad-hoc": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Ad-hoc"
-          }
-        },
-        "ar": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "توقيع مخصص"
-          }
-        }
-      }
-    },
-    "Connect to LocalDevVPN": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Connect to LocalDevVPN"
-          }
-        },
-        "ar": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "الاتصال بـ LocalDevVPN"
-          }
-        }
-      }
-    },
-    "Download LocalDevVPN": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Download LocalDevVPN"
-          }
-        },
-        "ar": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "تنزيل LocalDevVPN"
-          }
-        }
-      }
-    },
-    "Downloading": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Downloading"
-          }
-        },
-        "ar": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "جارٍ التنزيل"
-          }
-        }
-      }
-    },
-    "Injection": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Injection"
-          }
-        },
-        "ar": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "الحقن"
-          }
-        }
-      }
-    },
-    "Minimum OS": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Minimum OS"
-          }
-        },
-        "ar": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "الحد الأدنى للنظام"
-          }
-        }
-      }
-    },
-    "PlugIns": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "PlugIns"
-          }
-        },
-        "ar": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "الإضافات"
-          }
-        }
-      }
-    },
-    "Reset the applications certificates, apps, and general contents.": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Reset the applications certificates, apps, and general contents."
-          }
-        },
-        "ar": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "إعادة تعيين شهادات التطبيق وتطبيقاته ومحتوياته العامة."
-          }
-        }
-      }
-    },
-    "Status": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Status"
-          }
-        },
-        "ar": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "الحالة"
+            "value": "هالشي يوقّع زينيث نفسه ويثبّت النسخة الجديدة فوق هاي النسخة. إذا الشهادة من أبل، تنجاب شهادة جديدة أولاً؛ وإلا تنستخدم الشهادة الحالية. إذا فشل أي شي، تبقى النسخة القديمة تشتغل."
           }
         }
       }
