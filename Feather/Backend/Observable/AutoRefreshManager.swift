@@ -207,35 +207,13 @@ final class AutoRefreshManager {
 	
 	func registerBackgroundRefresh() {
 		// Disabled 2026-11-25: BGTaskScheduler registration throws on this
-		// build at launch (see crash logs). Returning immediately.
-		return
-		BGTaskScheduler.shared.register(
-			forTaskWithIdentifier: Self.backgroundTaskIdentifier,
-			using: nil
-		) { task in
-			guard let task = task as? BGAppRefreshTask else { return }
-			// Re-schedule the next run first, so a crash still leaves
-			// a future refresh scheduled.
-			self.scheduleBackgroundRefresh()
-			task.expirationHandler = {
-				task.setTaskCompleted(success: false)
-			}
-			Task {
-				let report = await self._runBackgroundRefresh()
-				task.setTaskCompleted(success: report.failed.isEmpty)
-			}
-		}
+		// build at launch (see crash logs). Background refresh is off.
 	}
 	
 	func scheduleBackgroundRefresh() {
 		// Disabled 2026-11-25: BGTaskScheduler throws on this build at launch,
 		// so background refresh is off. Expiry notifications + one-tap renewal
 		// still cover renewals.
-		return
-		registerBackgroundRefresh()
-		let request = BGAppRefreshTaskRequest(identifier: Self.backgroundTaskIdentifier)
-		request.earliestBeginDate = Date(timeIntervalSinceNow: 24 * 3600)
-		try? BGTaskScheduler.shared.submit(request)
 	}
 	
 	private func _runBackgroundRefresh() async -> AutoRefreshReport {
