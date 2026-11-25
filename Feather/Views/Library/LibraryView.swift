@@ -196,7 +196,7 @@ struct LibraryView: View {
 							_prefs.showExpired = true
 						} label: {
 							HStack {
-								Text(.localized("%lld expired apps hidden", arguments: _hiddenExpiredCount))
+								Text(verbatim: .localized("%lld expired apps hidden", arguments: _hiddenExpiredCount))
 								Spacer()
 								Text(.localized("Show"))
 									.foregroundStyle(Color.accentColor)

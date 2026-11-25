@@ -53,7 +53,8 @@ enum FR {
 		// demand, so a transient failure only delays signing.
 		Task {
 			guard await ForcedUpdateManager.shared.ensureCheckPassed() else {
-				let error: Error = ForcedUpdateManager.shared.isUpdateRequired
+				let updateRequired = await ForcedUpdateManager.shared.isUpdateRequired
+				let error: Error = updateRequired
 					? ForcedUpdateError.updateRequired
 					: ForcedUpdateError.checkFailed
 				await MainActor.run {

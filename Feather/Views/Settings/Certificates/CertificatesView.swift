@@ -184,8 +184,6 @@ struct CertificatesView: View {
 		}
 		return parts.joined(separator: "\n")
 	}
-}
-
 
 	// MARK: Expiry reminder
 	private var _selectedCertificate: CertificatePair? {
@@ -237,7 +235,8 @@ struct CertificatesView: View {
 			.padding(.top, 8)
 		}
 	}
-	
+}
+
 // MARK: - View extension
 extension CertificatesView {
 	@ViewBuilder
