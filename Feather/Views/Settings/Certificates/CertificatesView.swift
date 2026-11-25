@@ -214,7 +214,7 @@ struct CertificatesView: View {
 				VStack(alignment: .leading, spacing: 2) {
 					Text(.localized("Certificate expires soon"))
 						.font(.headline)
-					Text([cert.nickname, info.formatted].compactMap { $0 }.filter { !$0.isEmpty }.joined(separator: " \u00b7 "))
+					Text([cert.nickname, info.formatted].compactMap { $0 }.filter { !$0.isEmpty }.joined(separator: " · "))
 						.font(.footnote)
 						.foregroundStyle(.secondary)
 				}
@@ -366,23 +366,29 @@ extension CertificatesView {
 	
 	@ViewBuilder
 	private func _actions(for cert: CertificatePair) -> some View {
-		Button(.localized("Delete"), image: "icon-delete", role: .destructive) {
+		Button(role: .destructive) {
 			Storage.shared.deleteCertificate(for: cert)
+		} label: {
+			Label(.localized("Delete"), image: "icon-delete")
 		}
 	}
 	
 	@ViewBuilder
 	private func _contextActions(for cert: CertificatePair) -> some View {
-		Button(.localized("Get Info"), image: "icon-info") {
+		Button {
 			_isSelectedInfoPresenting = cert
+		} label: {
+			Label(.localized("Get Info"), image: "icon-info")
 		}
 		Button(.localized("Change Nickname"), systemImage: "pencil") {
 			_newNickname = cert.nickname ?? ""
 			_certToRename = cert
 			_isRenamingPresenting = true
 		}
-		Button(.localized("Renew Certificate"), image: "icon-resign") {
+		Button {
 			_isAddingPresenting = true
+		} label: {
+			Label(.localized("Renew Certificate"), image: "icon-resign")
 		}
 		Divider()
 		Button(.localized("Check Revokage"), systemImage: "person.text.rectangle") {

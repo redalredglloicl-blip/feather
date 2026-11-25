@@ -347,11 +347,15 @@ struct LibraryView: View {
 extension LibraryView {
 	@ViewBuilder
 	private func _importActions() -> some View {
-		Button(.localized("Import from Files"), image: "icon-import") {
+		Button {
 			_isImportingPresenting = true
+		} label: {
+			Label(.localized("Import from Files"), image: "icon-import")
 		}
-		Button(.localized("Import from URL"), image: "icon-import") {
+		Button {
 			_isDownloadingPresenting = true
+		} label: {
+			Label(.localized("Import from URL"), image: "icon-import")
 		}
 	}
 	

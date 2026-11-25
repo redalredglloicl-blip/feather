@@ -153,21 +153,27 @@ extension LibraryCellView {
 	
 	@ViewBuilder
 	private func _actions(for app: AppInfoPresentable) -> some View {
-		Button(.localized("Delete"), image: "icon-delete", role: .destructive) {
+		Button(role: .destructive) {
 			_isDeleteConfirmPresenting = true
+		} label: {
+			Label(.localized("Delete"), image: "icon-delete")
 		}
 	}
 	
 	@ViewBuilder
 	private func _contextActions(for app: AppInfoPresentable) -> some View {
-		Button(.localized("Get Info"), image: "icon-info") {
+		Button {
 			selectedInfoAppPresenting = AnyApp(base: app)
+		} label: {
+			Label(.localized("Get Info"), image: "icon-info")
 		}
-		Button(
-			_prefs.isFavorite(uuid: app.uuid) ? .localized("Remove from Favorites") : .localized("Add to Favorites"),
-			image: "icon-favorite"
-		) {
+		Button {
 			_prefs.toggleFavorite(uuid: app.uuid)
+		} label: {
+			Label(
+				_prefs.isFavorite(uuid: app.uuid) ? .localized("Remove from Favorites") : .localized("Add to Favorites"),
+				image: "icon-favorite"
+			)
 		}
 		Menu {
 			ForEach(LibraryView.HomeCategory.allCases, id: \.self) { category in
@@ -196,21 +202,31 @@ extension LibraryCellView {
 					UIApplication.openApp(with: id)
 				}
 			}
-			Button(.localized("Install"), image: "icon-install") {
+			Button {
 				selectedInstallAppPresenting = AnyApp(base: app)
+			} label: {
+				Label(.localized("Install"), image: "icon-install")
 			}
-			Button(.localized("Re-sign"), image: "icon-sign") {
+			Button {
 				selectedSigningAppPresenting = AnyApp(base: app)
+			} label: {
+				Label(.localized("Re-sign"), image: "icon-sign")
 			}
-			Button(.localized("Export"), image: "icon-export") {
+			Button {
 				selectedInstallAppPresenting = AnyApp(base: app, archive: true)
+			} label: {
+				Label(.localized("Export"), image: "icon-export")
 			}
 		} else {
-			Button(.localized("Install"), image: "icon-install") {
+			Button {
 				selectedInstallAppPresenting = AnyApp(base: app)
+			} label: {
+				Label(.localized("Install"), image: "icon-install")
 			}
-			Button(.localized("Sign"), image: "icon-sign") {
+			Button {
 				selectedSigningAppPresenting = AnyApp(base: app)
+			} label: {
+				Label(.localized("Sign"), image: "icon-sign")
 			}
 		}
 	}
