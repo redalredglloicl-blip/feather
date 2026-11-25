@@ -14,7 +14,6 @@ struct LibraryCellView: View {
 	@Environment(\.horizontalSizeClass) private var horizontalSizeClass
 	@Environment(\.editMode) private var editMode
 	@ObservedObject private var _prefs = LibraryPrefs.shared
-	@State private var _isDeleteConfirmPresenting = false
 
 	var certInfo: Date.ExpirationInfo? {
 		Storage.shared.getCertificate(from: app)?.expiration?.expirationInfo()
@@ -29,7 +28,12 @@ struct LibraryCellView: View {
 	@Binding var selectedSigningAppPresenting: AnyApp?
 	@Binding var selectedInstallAppPresenting: AnyApp?
 	@Binding var selectedAppUUIDs: Set<String>
-	
+	/// Called when the user asks to delete an app (swipe or menu).
+	/// The confirmation alert lives on the Library list, not on the
+	/// row: an alert owned by a row that is about to be deleted
+	/// dismisses itself when the row goes away.
+	var onDeleteRequest: ((AppInfoPresentable) -> Void)?
+
 	// MARK: Selections
 	private var _isSelected: Bool {
 		guard let uuid = app.uuid else { return false }
@@ -106,12 +110,6 @@ struct LibraryCellView: View {
 				_actions(for: app)
 			}
 		}
-		.alert(.localized("متأكد تمسح التطبيق؟"), isPresented: $_isDeleteConfirmPresenting) {
-			Button(.localized("Delete"), role: .destructive) {
-				Storage.shared.deleteApp(for: app)
-			}
-			Button(.localized("Cancel"), role: .cancel) { }
-		}
 	}
 	
 	private static let _expiryDateFormatter: DateFormatter = {
@@ -154,7 +152,7 @@ extension LibraryCellView {
 	@ViewBuilder
 	private func _actions(for app: AppInfoPresentable) -> some View {
 		Button(role: .destructive) {
-			_isDeleteConfirmPresenting = true
+			onDeleteRequest?(app)
 		} label: {
 			Label(.localized("Delete"), image: "icon-delete")
 		}

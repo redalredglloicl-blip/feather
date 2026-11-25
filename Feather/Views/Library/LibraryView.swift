@@ -440,7 +440,11 @@ extension LibraryView {
 			selectedInfoAppPresenting: $_selectedInfoAppPresenting,
 			selectedSigningAppPresenting: $_selectedSigningAppPresenting,
 			selectedInstallAppPresenting: $_selectedInstallAppPresenting,
-			selectedAppUUIDs: $_selectedAppUUIDs
+			selectedAppUUIDs: $_selectedAppUUIDs,
+			onDeleteRequest: { app in
+				_appPendingDelete = AnyApp(base: app)
+				_isDeleteConfirmPresenting = true
+			}
 		)
 		.transition(.opacity.combined(with: .scale(scale: 0.97)))
 		.opacity(_didAppear ? 1 : 0)

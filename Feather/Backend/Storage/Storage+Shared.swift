@@ -22,14 +22,18 @@ extension Storage {
 	}
 	
 	func deleteApp(for app: AppInfoPresentable) {
-		do {
-			if let url = getUuidDirectory(for: app) {
-				try? FileManager.default.removeItem(at: url)
-			}
-			if let object = app as? NSManagedObject {
-				context.delete(object)
-			}
-			saveContext()
+		if let url = getUuidDirectory(for: app) {
+			try? FileManager.default.removeItem(at: url)
+		}
+		if let object = app as? NSManagedObject {
+			context.delete(object)
+		}
+		// Save synchronously on the spot: the old async save could be
+		// lost if the app was quit or crashed right after the delete,
+		// leaving the row back on next launch while its files were
+		// already gone (and signing such an orphan then crashed).
+		if context.hasChanges {
+			try? context.save()
 		}
 	}
 	

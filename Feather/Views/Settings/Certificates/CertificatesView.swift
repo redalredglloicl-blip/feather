@@ -51,12 +51,13 @@ struct CertificatesView: View {
 			
 			if let selected = _selectedCertificate {
 				CertificateHeroCardView(cert: selected)
-			}
-			
-			NBGrid {
-				ForEach(Array(_certificates.enumerated()), id: \.element.uuid) { index, cert in
-					_cellButton(for: cert, at: index)
-				}
+					.contextMenu {
+						_contextActions(for: selected)
+						if selected.isDefault != true {
+							Divider()
+							_actions(for: selected)
+						}
+					}
 			}
 			
 			_dnsProtectionCard
@@ -322,45 +323,6 @@ extension CertificatesView {
 				}
 			}
 		}
-	}
-	
-	@ViewBuilder
-	private func _cellButton(for cert: CertificatePair, at index: Int) -> some View {
-		let cornerRadius = {
-			if #available(iOS 26.0, *) {
-				28.0
-			} else {
-				10.5
-			}
-		}()
-		
-		Button {
-			_selectedCertBinding.wrappedValue = index
-		} label: {
-			CertificatesCellView(
-				cert: cert
-			)
-			.padding()
-			.zenithGlassCard(cornerRadius: cornerRadius, fallback: Color(uiColor: .quaternarySystemFill))
-			.overlay(
-				RoundedRectangle(cornerRadius: cornerRadius)
-					.strokeBorder(
-						_selectedCertBinding.wrappedValue == index ? Color.accentColor : Color.clear,
-						lineWidth: 2
-					)
-			)
-			.contextMenu {
-				_contextActions(for: cert)
-				if cert.isDefault != true {
-					Divider()
-					_actions(for: cert)
-				}
-			}
-			.transaction {
-				$0.animation = nil
-			}
-		}
-		.buttonStyle(ZenithPressButtonStyle())
 	}
 	
 	@ViewBuilder
