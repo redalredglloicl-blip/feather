@@ -158,8 +158,8 @@ struct MiniBrowserView: UIViewControllerRepresentable {
 			capturedDestinationURL = nil
 		}
 		
-		/// Shared destination computation for both WKDownloadDelegate
-		/// decideDestination spellings (iOS 26 SDK): a safe filename,
+		/// Shared destination computation for the WKDownloadDelegate
+		/// decideDestination method (iOS 26 SDK): a safe filename,
 		/// the temp dir "ZenithBrowserDownloads", any existing file
 		/// removed, and the destination recorded for downloadDidFinish.
 		private func _downloadDestination(for response: URLResponse, suggestedFilename: String) -> URL {
@@ -180,10 +180,6 @@ struct MiniBrowserView: UIViewControllerRepresentable {
 
 		func download(_ download: WKDownload, decideDestinationUsing response: URLResponse, suggestedFilename: String, completionHandler: @escaping @MainActor @Sendable (URL?) -> Void) {
 			completionHandler(_downloadDestination(for: response, suggestedFilename: suggestedFilename))
-		}
-
-		func download(_ download: WKDownload, decideDestinationUsing response: URLResponse, suggestedFilename: String) async -> URL? {
-			_downloadDestination(for: response, suggestedFilename: suggestedFilename)
 		}
 
 		func webView(_ webView: WKWebView, download: WKDownload, decideDestinationUsing response: URLResponse, suggestedFilename: String, completionHandler: @escaping (URL?) -> Void) {

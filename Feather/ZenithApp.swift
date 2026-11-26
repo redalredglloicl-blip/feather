@@ -18,6 +18,7 @@ struct ZenithApp: App {
 	
 	@StateObject var downloadManager = DownloadManager.shared
 	@StateObject private var _forcedUpdate = ForcedUpdateManager.shared
+	@StateObject private var _networkMonitor = NetworkMonitor.shared
 	@StateObject private var _newVersionNotifier = NewVersionNotifier.shared
 	@State private var _launchBounced = false
 	@State private var _startupDone = false
@@ -26,7 +27,9 @@ struct ZenithApp: App {
 	var body: some Scene {
 		WindowGroup {
 			Group {
-				if _forcedUpdate.isUpdateRequired {
+				if _networkMonitor.isOffline {
+					OfflineBlockView()
+				} else if _forcedUpdate.isUpdateRequired {
 					ForcedUpdateView()
 				} else if !_startupDone {
 					// Zenith v2.2: real startup screen — the counter is
@@ -90,10 +93,22 @@ struct ZenithApp: App {
 				}
 			}
 			.task {
+				// Zenith v2.3: no-internet gate — start watching connectivity.
+				NetworkMonitor.shared.start()
 				// Zenith forced update: check on every launch.
 				await ForcedUpdateManager.shared.checkForUpdate()
 				// Zenith v2.2: notify once if a newer build was released.
 				await NewVersionNotifier.shared.checkForNewVersion()
+			}
+			.onChange(of: _networkMonitor.isOffline) { isOffline in
+				// Back online after being blocked: the update check
+				// ran while offline and failed open, so check again now.
+				if !isOffline {
+					Task {
+						await ForcedUpdateManager.shared.checkForUpdate()
+						await NewVersionNotifier.shared.checkForNewVersion()
+					}
+				}
 			}
 			.onReceive(NotificationCenter.default.publisher(for: UIApplication.willEnterForegroundNotification)) { _ in
 				Task {

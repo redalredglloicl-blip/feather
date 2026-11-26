@@ -39,6 +39,7 @@
 import Foundation
 import Security
 import X509
+import SwiftASN1
 import Zsign
 
 // MARK: - Local details
@@ -271,8 +272,9 @@ final class CertificateHealthChecker: ObservableObject {
 		}
 		// SecIdentity is a CoreFoundation type: a conditional
 		// downcast to it always succeeds, so the compiler rejects
-		// `as?` here — the presence guard above is the real check.
-		let identity = rawIdentity as SecIdentity
+		// `as?` here — the presence guard above is the real check,
+		// and SecPKCS12Import guarantees this value is a SecIdentity.
+		let identity = rawIdentity as! SecIdentity
 
 		var certificate: SecCertificate?
 		guard SecIdentityCopyCertificate(identity, &certificate) == errSecSuccess, let certificate else {
@@ -287,11 +289,13 @@ final class CertificateHealthChecker: ObservableObject {
 		// present. Read the same fields from the DER bytes with
 		// swift-certificates (X509), already in the package graph
 		// as a dependency of swift-nio-ssl.
-		if let der = SecCertificateCopyData(certificate) as Data?,
-		   let x509 = try? Certificate(derEncoded: [UInt8](der)) {
-			info.expiry = x509.notValidAfter
-			info.subject = String(describing: x509.subject)
-			info.issuer = String(describing: x509.issuer)
+		if let der = SecCertificateCopyData(certificate) as Data? {
+			var decoder = DER.Decoder(derEncoded: [UInt8](der))
+			if let x509 = try? Certificate(from: &decoder) {
+				info.expiry = x509.notValidAfter
+				info.subject = String(describing: x509.subject)
+				info.issuer = String(describing: x509.issuer)
+			}
 		}
 		return .success(info)
 	}

@@ -172,6 +172,7 @@
 				3346F8482DC6D64800C7D508 /* NimbleJSON */,
 				3349E7662DEFB46F00E317ED /* IDeviceSwift */,
 				4CDE693E59B6DBA9A1D4EB28 /* X509 */,
+				B91E46308FC883FAE2B4C33E /* SwiftASN1 */,
 			);
 			productName = Zenith;
 			productReference = 3379C1B92DA869A1004372DA /* Zenith.app */;
@@ -223,6 +224,7 @@
 				3349E7652DEFB46F00E317ED /* XCLocalSwiftPackageReference "IDeviceKitten" */,
 				553D3D1447F3EACF2C3D0604 /* XCRemoteSwiftPackageReference "SideSign" */,
 				DA3F6F5DFA3A55176E69D0D0 /* XCRemoteSwiftPackageReference "swift-certificates" */,
+				998190949780BC80200114B5 /* XCRemoteSwiftPackageReference "swift-asn1" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 3379C1BA2DA869A1004372DA /* Products */;
@@ -595,6 +597,14 @@
 				version = 1.21.2;
 			};
 		};
+		998190949780BC80200114B5 /* XCRemoteSwiftPackageReference "swift-asn1" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/apple/swift-asn1";
+			requirement = {
+				kind = exactVersion;
+				version = 1.6.0;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -655,6 +665,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = DA3F6F5DFA3A55176E69D0D0 /* XCRemoteSwiftPackageReference "swift-certificates" */;
 			productName = X509;
+		};
+		B91E46308FC883FAE2B4C33E /* SwiftASN1 */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 998190949780BC80200114B5 /* XCRemoteSwiftPackageReference "swift-asn1" */;
+			productName = SwiftASN1;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
