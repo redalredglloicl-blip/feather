@@ -22,7 +22,7 @@
 			<string>Owner</string>
 			<key>LSItemContentTypes</key>
 			<array>
-				<string>thewonderofyou.Zenith.ipa</string>
+				<string>com.zenith.app.ipa</string>
 			</array>
 		</dict>
 		<dict>
@@ -36,7 +36,7 @@
 			<string>Alternate</string>
 			<key>LSItemContentTypes</key>
 			<array>
-				<string>thewonderofyou.Zenith.tipa</string>
+				<string>com.zenith.app.tipa</string>
 			</array>
 		</dict>
 	</array>
@@ -108,7 +108,7 @@
 			<key>CFBundleURLIconFile</key>
 			<string>feather_extension</string>
 			<key>CFBundleURLName</key>
-			<string>thewonderofyou.Zenith</string>
+			<string>com.zenith.app</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
 				<string>feather</string>
@@ -147,7 +147,7 @@
 				<string>IPA</string>
 			</dict>
 			<key>UTTypeIdentifier</key>
-			<string>thewonderofyou.Zenith.ipa</string>
+			<string>com.zenith.app.ipa</string>
 			<key>UTTypeTagSpecification</key>
 			<dict>
 				<key>public.filename-extension</key>
@@ -179,7 +179,7 @@
 				<string>TIPA</string>
 			</dict>
 			<key>UTTypeIdentifier</key>
-			<string>thewonderofyou.Zenith.tipa</string>
+			<string>com.zenith.app.tipa</string>
 			<key>UTTypeTagSpecification</key>
 			<dict>
 				<key>public.filename-extension</key>

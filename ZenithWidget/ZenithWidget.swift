@@ -4,7 +4,7 @@
 //
 //  Zenith v2.2 — home-screen widget: days left on the certificate.
 //
-//  Data comes ONLY from the shared App Group "thewonderofyou.Zenith",
+//  Data comes ONLY from the shared App Group "group.com.zenith.app",
 //  written by WidgetDataStore in the main app (cert name + the real
 //  ExpirationDate). The widget never invents a number: with no shared
 //  data it says "افتح التطبيق لتحديث العدّاد" instead.
@@ -28,7 +28,7 @@ private extension Color {
 }
 
 private enum WidgetKeys {
-	static let appGroupID = "thewonderofyou.Zenith"
+	static let appGroupID = "group.com.zenith.app"
 	static let certNameKey = "Zenith.widget.certName"
 	static let certExpirationKey = "Zenith.widget.certExpiration"
 }

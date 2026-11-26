@@ -4,7 +4,7 @@
 //
 //  Zenith v2.2 — shares the selected certificate with the home-screen
 //  widget (ZenithWidget target) through the App Group
-//  "thewonderofyou.Zenith".
+//  "group.com.zenith.app".
 //
 //  The app writes the certificate name + real ExpirationDate here
 //  whenever the certificate changes or is loaded; the widget only
@@ -22,7 +22,7 @@ final class WidgetDataStore {
 	/// App Group shared by the app and the ZenithWidget extension.
 	/// Both targets must list it in their entitlements, and the
 	/// signing profile must contain it, or sharing silently fails.
-	static let appGroupID = "thewonderofyou.Zenith"
+	static let appGroupID = "group.com.zenith.app"
 
 	/// Keys — the widget reads these exact strings. Keep in sync
 	/// with ZenithWidget.swift; there is no shared source file
