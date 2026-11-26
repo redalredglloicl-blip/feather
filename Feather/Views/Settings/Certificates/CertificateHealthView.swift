@@ -142,25 +142,29 @@ struct CertificateHealthView: View {
 		}
 	}
 
+	// NOTE: every branch returns explicitly — the .expiringSoon
+	// branch uses `return` inside an `if`, so the switch cannot
+	// be an expression; bare values in the other branches would
+	// silently not return ("missing return in getter").
 	private var _statusText: String {
 		switch _checker.status {
 		case .unknown:
-			String.localized("ما انفحصت بعد")
+			return String.localized("ما انفحصت بعد")
 		case .checking:
-			String.localized("جارٍ الفحص...")
+			return String.localized("جارٍ الفحص...")
 		case .healthy:
-			String.localized("سليمة — أبل ما ساحبتها")
+			return String.localized("سليمة — أبل ما ساحبتها")
 		case .expiringSoon(let details, _):
 			if let daysLeft = details.daysLeft {
 				return .localized("راح تنتهي قريباً — باقي %lld يوم", arguments: daysLeft)
 			}
 			return .localized("راح تنتهي قريباً")
 		case .expired:
-			String.localized("الشهادة منتهية")
+			return String.localized("الشهادة منتهية")
 		case .revoked:
-			String.localized("مسحوبة من أبل")
+			return String.localized("مسحوبة من أبل")
 		case .invalid, .unverified:
-			String.localized("ما گدرنا نتأكد من الشهادة")
+			return String.localized("ما گدرنا نتأكد من الشهادة")
 		}
 	}
 
