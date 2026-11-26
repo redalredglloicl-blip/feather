@@ -25,24 +25,32 @@
 //  * Blocked only when the server POSITIVELY says so: killed == true,
 //    or minVersion is set and the installed build number is smaller.
 //  * Values absent (not set yet) -> no enforcement, app opens normally.
-//  * Check fails (offline) -> fall back to the last cached values.
-//    A cached minVersion saying this build is old STAYS blocked; only
-//    with no cached value at all does the app fail open. The block
-//    screen never appears on a failed check alone.
-//  * The same per-field fallback applies when only SOME fetches fail:
-//    a failed minVersion/killed fetch reads its cached value, never
-//    nil/false — a single dropped request can never lift a block (or
-//    pass the check) while its sibling fetches succeed. Only a field
-//    that succeeded fresh may clear or overwrite its cache.
+//  * A check that fails does NOT pass the app. The decisive fetches
+//    (minVersion, killed) are retried (3 attempts, 2 s apart) while
+//    the device reports connectivity, and the launch screen waits
+//    for a FRESH decision — both decisive fields fetched live —
+//    before the app opens (see LoadingView step 4). Build 12 proved
+//    why: its check failed on a weak connection, fell back to the
+//    cached minVersion 11, and opened while the server said 13.
+//  * The cache is still applied on a failed check, so a cached block
+//    STAYS blocked and shows instantly, and a single dropped request
+//    can never lift a block. But a cached "fine" no longer opens the
+//    app at launch and no longer sets hasPassedCheck: only a fresh
+//    check passes, and only a field that succeeded fresh may clear
+//    or overwrite its cache.
 //  * Every check (launch and foreground) applies the cached decision
 //    FIRST, before any network, so a cached block shows instantly
 //    and a backgrounded old app re-blocks the moment it foregrounds.
 //  * Signing and installing refuse to run unless a fresh check has
 //    passed (in-memory flag, set only by a real check that found no
-//    block). A failed check with no cached values leaves the flag
-//    unset, so signing/installing refuse until a live check succeeds.
-//    The gate re-runs the check on demand, so a transient failure
-//    only delays the action until the network is back.
+//    block). A failed check leaves the flag unset, so signing and
+//    installing refuse until a live check succeeds. The gate re-runs
+//    the check on demand, so a transient failure only delays the
+//    action until the network is back.
+//  * Genuinely offline (no Wi-Fi and no mobile data) is owned by the
+//    no-internet gate (OfflineBlockView), not this manager: the retry
+//    loop stops as soon as the device reports offline, and the launch
+//    screen stops waiting, so the app is never bricked by a retry loop.
 //
 //  Honest limits: this is a server-side gate, not a vault. A
 //  determined attacker with a decrypted IPA can patch the check out
@@ -51,6 +59,16 @@
 //  instead of allowing it), and it cannot be bypassed by editing the
 //  app's stored data (the pass flag lives only in memory; the minimum
 //  version comes from the server, not the device).
+//
+//  One more honest limit (v2.11): while the device reports online
+//  but Firebase itself cannot be reached, the app waits on the
+//  loading screen instead of opening — it cannot tell "Firebase is
+//  down" apart from "the server raised minVersion and the fetch is
+//  being dropped", and opening on that guess is exactly the hole
+//  build 12 fell through. Rio's Firebase features work on Reda's
+//  phone, so the RTDB endpoint is reachable for him; a Firebase
+//  outage would still strand the app on "Checking for updates"
+//  until the endpoint answers again.
 //
 //  Already-installed old builds run their own frozen gate code and
 //  cannot be fixed by changing this file: v1 has no gate at all, and
@@ -111,10 +129,17 @@ final class ForcedUpdateManager: ObservableObject {
 	@Published private(set) var latestVersionName: String?
 	@Published private(set) var isChecking = false
 	
-	/// Set ONLY by a real check that completed and found no block
-	/// (fresh values, or cached values saying the app is fine).
-	/// Lives in memory only — a relaunch must check again.
+	/// Set ONLY by a real check that completed fresh and found no block.
+	/// A check that fell back to the cache never sets it, even when the
+	/// cached values say the app is fine. Lives in memory only — a
+	/// relaunch must check again.
 	private(set) var hasPassedCheck = false
+
+	/// True once a check has applied a FRESH decision — both decisive
+	/// fields (minVersion and killed) fetched live. The launch screen
+	/// waits for this before the app opens. In-memory only: every
+	/// launch starts false and must earn it again.
+	@Published private(set) var hasFreshDecision = false
 	
 	private var _checkTask: Task<Void, Never>?
 	
@@ -217,14 +242,48 @@ final class ForcedUpdateManager: ObservableObject {
 		isChecking = true
 		defer { isChecking = false }
 		
-		async let minVersionFetch = _tryFetchInt(from: Self.minVersionURL)
-		async let killedFetch = _tryFetchBool(from: Self.killedURL)
-		async let updateURLFetch = _tryFetchString(from: Self.updateURLValue)
-		async let nameFetch = _tryFetchString(from: Self.latestVersionNameURL)
-		let minVersionResult = await minVersionFetch
-		let killedResult = await killedFetch
-		let updateURLResult = await updateURLFetch
-		let nameResult = await nameFetch
+		// Decisive fields (minVersion, killed) are retried: a single
+		// dropped request on a weak connection must never decide the
+		// launch. First success wins per field; later rounds re-fetch
+		// every field (idempotent GETs) but only a field that has not
+		// succeeded yet takes the new result. Non-decisive fields
+		// (update URL, version name) ride along opportunistically —
+		// their failure never blocks the decision.
+		var minVersionResult: (value: Int?, succeeded: Bool) = (nil, false)
+		var killedResult: (value: Bool?, succeeded: Bool) = (nil, false)
+		var updateURLResult: (value: String?, succeeded: Bool) = (nil, false)
+		var nameResult: (value: String?, succeeded: Bool) = (nil, false)
+
+		// 3 attempts, 2 s apart. Worst case on a dead-but-"online"
+		// connection is ~3 x 15 s timeouts + gaps before the caller
+		// retries again; the launch screen waits (see LoadingView),
+		// because opening on a guess is exactly how build 12 shipped
+		// past minVersion 13.
+		for attempt in 1...3 {
+			async let minVersionFetch = _tryFetchInt(from: Self.minVersionURL)
+			async let killedFetch = _tryFetchBool(from: Self.killedURL)
+			async let updateURLFetch = _tryFetchString(from: Self.updateURLValue)
+			async let nameFetch = _tryFetchString(from: Self.latestVersionNameURL)
+			let mv = await minVersionFetch
+			let kl = await killedFetch
+			let uu = await updateURLFetch
+			let nm = await nameFetch
+			if !minVersionResult.succeeded { minVersionResult = mv }
+			if !killedResult.succeeded { killedResult = kl }
+			if !updateURLResult.succeeded { updateURLResult = uu }
+			if !nameResult.succeeded { nameResult = nm }
+
+			// Both decisive fields fresh: nothing left to retry for.
+			if minVersionResult.succeeded && killedResult.succeeded { break }
+			// No connectivity at all: stop burning attempts — the
+			// no-internet gate (OfflineBlockView) owns this case, and
+			// the check re-runs when connectivity returns.
+			if NetworkMonitor.shared.isOffline { break }
+			if Task.isCancelled { break }
+			if attempt < 3 {
+				try? await Task.sleep(nanoseconds: 2_000_000_000)
+			}
+		}
 		
 		let fetchedAny = minVersionResult.succeeded || killedResult.succeeded || updateURLResult.succeeded || nameResult.succeeded
 		
@@ -262,7 +321,8 @@ final class ForcedUpdateManager: ObservableObject {
 			// check) while its siblings succeed. Only a field that
 			// succeeded fresh may clear or overwrite its cache (above).
 			// When a decisive field (minVersion / killed) came from
-			// the cache, the pass flag follows the cached-value rule.
+			// the cache, the decision counts as cached, not fresh:
+			// it can hold a block, but it can never pass the app.
 			let usedCacheForDecision = !minVersionResult.succeeded || !killedResult.succeeded
 			_apply(
 				minVersion: minVersionResult.succeeded ? minVersionResult.value : Self.cachedMinVersion,
@@ -272,8 +332,11 @@ final class ForcedUpdateManager: ObservableObject {
 				fromCache: usedCacheForDecision
 			)
 		} else {
-			// All fetches failed (offline): fall back to the cache.
-			// Only with no cached value at all do we fail open.
+			// All fetches failed even after retries: fall back to the
+			// cache for the BLOCK decision only. A cached "fine" does
+			// not pass the check (see _apply) and does not set
+			// hasFreshDecision, so the launch screen keeps waiting
+			// and re-runs the check instead of opening on a guess.
 			_apply(
 				minVersion: Self.cachedMinVersion,
 				killed: Self.cachedKilled,
@@ -301,17 +364,20 @@ final class ForcedUpdateManager: ObservableObject {
 			hasPassedCheck = false
 		} else {
 			isUpdateRequired = false
-			// A fresh successful check passes. A failed check only
-			// passes when we already had cached values saying the app
-			// is fine — with no cached value at all the flag stays
-			// unset and signing/installing refuse until a live check
-			// succeeds.
-			hasPassedCheck = !fromCache || _hasAnyCachedValue
+			// Only a FRESH check passes. A failed check that fell back
+			// to the cache never passes: the cached minVersion is from
+			// an older server state — build 12 passed on cached 11
+			// while the server already said 13 — so a cached "fine"
+			// is not proof this build is still allowed. Signing and
+			// installing refuse until a live check succeeds.
+			hasPassedCheck = !fromCache
 		}
-	}
-	
-	private var _hasAnyCachedValue: Bool {
-		Self.cachedMinVersion != nil || Self.cachedKilled || Self.cachedUpdateURLString != nil
+		// A fresh decision means BOTH decisive fields (minVersion and
+		// killed) were fetched live this check. The launch screen waits
+		// for this flag. In-memory only: every launch must earn it again.
+		if !fromCache {
+			hasFreshDecision = true
+		}
 	}
 	
 	// MARK: - Cache accessors

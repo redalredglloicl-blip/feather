@@ -97,16 +97,16 @@ public struct NBSheetButton: View {
 }
 
 private extension View {
+	/// Zenith v2.11: plain flat fill, NO Liquid Glass. The glass
+	/// variant drew a bright specular rim around the button — the
+	/// same white-frame defect as the cards. The pre-iOS-26 path
+	/// already rendered this exact flat color, so the button looks
+	/// the same on every iOS version now.
 	@ViewBuilder
 	func adaptiveGlassBackground(
 		tintColor: Color,
 		fallback: Color
 	) -> some View {
-		if #available(iOS 26.0, *) {
-			Color.clear
-				.glassEffect(.regular.tint(tintColor), in: .rect(cornerRadius: 28, style: .continuous))
-		} else {
-			fallback
-		}
+		fallback
 	}
 }

@@ -23,7 +23,6 @@ struct TunnelView: View {
 				if #available(iOS 17.4, *) {
 				} else {
 					_tunnelInfo()
-						.background(Color.white.opacity(0.04), in: RoundedRectangle(cornerRadius: 12, style: .continuous))
 						.zenithGlassCard(cornerRadius: 12)
 						.listRowSeparator(.hidden)
 						.listRowInsets(EdgeInsets(top: 7, leading: 16, bottom: 7, trailing: 16))

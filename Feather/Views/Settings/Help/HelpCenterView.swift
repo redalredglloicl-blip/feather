@@ -95,7 +95,6 @@ struct HelpCenterView: View {
 							Text(.localized("ما صار أي خطأ مسجّل — إذا صار خطأ بالتوقيع أو التثبيت، راح يطلع هنا."))
 								.font(.footnote)
 								.foregroundStyle(.secondary)
-								.background(Color.white.opacity(0.04), in: RoundedRectangle(cornerRadius: 12, style: .continuous))
 								.zenithGlassCard(cornerRadius: 12)
 								.listRowSeparator(.hidden)
 								.listRowInsets(EdgeInsets(top: 7, leading: 16, bottom: 7, trailing: 16))

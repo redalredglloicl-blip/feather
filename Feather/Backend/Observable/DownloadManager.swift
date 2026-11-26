@@ -30,7 +30,12 @@ extension DownloadStatus {
 	}
 }
 
-class Download: Identifiable, @unchecked Sendable {
+/// Zenith v2.11: ObservableObject, so a row can observe the live
+/// download directly (@ObservedObject) instead of mirroring each
+/// @Published property into @State through onReceive — the mirror
+/// could only show what its subscriptions delivered, and the row's
+/// Pause/Resume button was gated on the mirrored copy.
+class Download: Identifiable, ObservableObject, @unchecked Sendable {
 	@Published var progress: Double = 0.0
 	@Published var bytesDownloaded: Int64 = 0
 	@Published var totalBytes: Int64 = 0
@@ -672,19 +677,27 @@ class DownloadManager: NSObject, ObservableObject {
 	/// A manual pause never sets the waiting flag, so it is never
 	/// auto-resumed: only the connectivity paths set the flag, and
 	/// resumeDownload clears it.
+	/// Zenith v2.11: the visible state flips FIRST, synchronously.
+	/// The old code only set `.paused` inside async callbacks — the
+	/// resume-data callback for a single-connection download, a
+	/// detached MainActor task for a multi-connection one — so a
+	/// slow or never-firing callback left the row stuck showing
+	/// Pause (and the download still running) after the user tapped
+	/// it: the tap looked dead. Cancelling the transport is what
+	/// stops the bytes; the status must not wait on the callback.
 	func pauseDownload(_ download: Download) {
+		download.status = .paused
 		if let multi = download.multipart {
 			multi.pause()
 			_saveActiveDownloads()
 			return
 		}
-		
+
 		guard let task = download.task else {
-			download.status = .paused
 			_saveActiveDownloads()
 			return
 		}
-		
+
 		task.cancel(byProducingResumeData: { [weak self] data in
 			if let data {
 				self?._saveResumeData(data, for: download.id)
@@ -695,6 +708,16 @@ class DownloadManager: NSObject, ObservableObject {
 				self?._saveActiveDownloads()
 			}
 		})
+		// Zenith v2.11: persist the paused record NOW, not only in
+		// the resume-data callback above. The callback runs
+		// asynchronously and may never land if the app is killed
+		// (e.g. right after a background-task expiry) — without
+		// this write the JSON on disk would still hold the
+		// pre-pause record. The status is already .paused (set
+		// above), so this snapshot restores as paused with the
+		// real progress; the callback's later save only adds the
+		// resume data to disk.
+		_saveActiveDownloads()
 	}
 	
 	/// Retry is a resume: a failed or paused download continues from
@@ -928,10 +951,26 @@ class DownloadManager: NSObject, ObservableObject {
 	/// restarting. A download killed mid-flight with no persisted
 	/// resume data restarts from zero — it is still not lost.
 	private func _restoreActiveDownloads() {
-		guard
-			let data = try? Data(contentsOf: _activeDownloadsURL),
-			let records = try? JSONDecoder().decode([PersistedActiveDownload].self, from: data)
-		else { return }
+		guard let data = try? Data(contentsOf: _activeDownloadsURL) else { return }
+		// Zenith v2.11: the old all-or-nothing decode dropped EVERY
+		// download when a single record failed to decode (a torn
+		// write, a future schema change) — and the $downloads sink
+		// subscribed right after then persisted [] over the file,
+		// making the loss permanent. Decode element by element on
+		// failure, so one bad record can never wipe the whole list.
+		let records: [PersistedActiveDownload]
+		if let decoded = try? JSONDecoder().decode([PersistedActiveDownload].self, from: data) {
+			records = decoded
+		} else if
+			let raw = try? JSONSerialization.jsonObject(with: data) as? [[String: Any]]
+		{
+			records = raw.compactMap { element in
+				guard let elementData = try? JSONSerialization.data(withJSONObject: element) else { return nil }
+				return try? JSONDecoder().decode(PersistedActiveDownload.self, from: elementData)
+			}
+		} else {
+			return
+		}
 		for record in records {
 			guard let url = URL(string: record.urlString) else { continue }
 			guard !downloads.contains(where: { $0.id == record.id }) else { continue }
@@ -1274,6 +1313,25 @@ final class ZenithMultipartDownload: @unchecked Sendable {
 	private var _didFailOver = false
 	private var _cancelled = false
 	private var _isDead = false
+
+	/// Generation of the currently-running start(): pause, resume
+	/// and cancel bump it, so a stale start() that is still winding
+	/// down — its part tasks were cancelled but its _finish had not
+	/// run yet — can never act on the download again. Zenith v2.11:
+	/// a quick pause-then-resume used to let the OLD _finish run
+	/// after resume() had cleared _cancelled, see an unfinished
+	/// file, and fail over to a fresh single-connection download —
+	/// cancelling the resumed parts and throwing the multipart
+	/// progress away, so the resume looked dead. Guarded by `lock`
+	/// with the rest of the mutable state.
+	private var _generation = 0
+
+	/// Current generation, under the lock.
+	private func _currentGeneration() -> Int {
+		lock.lock()
+		defer { lock.unlock() }
+		return _generation
+	}
 	
 	init(
 		download: Download,
@@ -1356,33 +1414,44 @@ final class ZenithMultipartDownload: @unchecked Sendable {
 			_persistManifest()
 			return
 		}
-		
+
+		// Generation this start() owns: a pause/resume/cancel since
+		// launch bumps it, and the stale _finish / part below must
+		// then do nothing (see _generation).
+		let generation = _currentGeneration()
+
 		startTime = Date()
 		lastReportDate = Date()
-		
+
 		for index in 0..<partCount {
-			_launchPart(index)
+			_launchPart(index, generation: generation)
 		}
-		
+
 		lock.lock()
 		let tasks = partTasks
 		lock.unlock()
 		for task in tasks {
 			await task.value
 		}
-		await _finish()
+		await _finish(generation: generation)
 	}
 	
 	/// Pauses: cancels the part tasks; _finish persists the manifest
 	/// so resume continues from the per-part byte counts.
+	/// Zenith v2.11: persists the manifest here, synchronously —
+	/// the stale _finish of this start() is now a no-op once a
+	/// resume bumps the generation, so it can no longer be relied
+	/// on to persist the offsets.
 	func pause() {
 		lock.lock()
 		_cancelled = true
+		_generation += 1
 		let tasks = partTasks
 		lock.unlock()
 		for task in tasks {
 			task.cancel()
 		}
+		_persistManifest()
 		Task { @MainActor in
 			download.status = .paused
 		}
@@ -1402,9 +1471,9 @@ final class ZenithMultipartDownload: @unchecked Sendable {
 	/// with no route) and never fail the download. The manifest is
 	/// persisted here, and again by _finish, so resume continues
 	/// from the per-part byte counts.
-	func _parkAsWaitingForInternet() {
+	func _parkAsWaitingForInternet(generation: Int) {
 		lock.lock()
-		if _didFailOver || _isDead {
+		if _didFailOver || _isDead || generation != _generation {
 			lock.unlock()
 			return
 		}
@@ -1429,6 +1498,7 @@ final class ZenithMultipartDownload: @unchecked Sendable {
 		_cancelled = false
 		_failedError = nil
 		_didFailOver = false
+		_generation += 1
 		lock.unlock()
 		Task { @MainActor in
 			download.status = .downloading
@@ -1443,6 +1513,7 @@ final class ZenithMultipartDownload: @unchecked Sendable {
 		lock.lock()
 		_isDead = true
 		_cancelled = true
+		_generation += 1
 		let tasks = partTasks
 		lock.unlock()
 		for task in tasks {
@@ -1455,16 +1526,16 @@ final class ZenithMultipartDownload: @unchecked Sendable {
 		_deleteTempAndManifest()
 	}
 	
-	private func _launchPart(_ index: Int) {
+	private func _launchPart(_ index: Int, generation: Int) {
 		let task = Task {
-			await self._runPart(index)
+			await self._runPart(index, generation: generation)
 		}
 		lock.lock()
 		partTasks.append(task)
 		lock.unlock()
 	}
 	
-	private func _runPart(_ index: Int) async {
+	private func _runPart(_ index: Int, generation: Int) async {
 		let start = Int64(index) * _partSize
 		let end = min(start + _partSize - 1, totalBytes - 1)
 		var offset = start + _partDownloaded(index)
@@ -1482,7 +1553,7 @@ final class ZenithMultipartDownload: @unchecked Sendable {
 			guard (response as? HTTPURLResponse)?.statusCode == 206 else {
 				// The server claimed ranges but answered with the whole
 				// file: fall back to the single-connection task.
-				_failOverToSingleConnection()
+				_failOverToSingleConnection(generation: generation)
 				return
 			}
 			// URLSession.bytes yields single UInt8 values, not Data
@@ -1494,11 +1565,11 @@ final class ZenithMultipartDownload: @unchecked Sendable {
 				try Task.checkCancellation()
 				buffer.append(byte)
 				if buffer.count >= 64 * 1024 {
-					guard _write(buffer, at: offset) else {
+					guard _write(buffer, at: offset, generation: generation) else {
 						// The part file is unwritable — the
 						// single-connection task writes through
 						// URLSession's own temp file instead.
-						_failOverToSingleConnection()
+						_failOverToSingleConnection(generation: generation)
 						return
 					}
 					offset += Int64(buffer.count)
@@ -1508,8 +1579,8 @@ final class ZenithMultipartDownload: @unchecked Sendable {
 				}
 			}
 			if !buffer.isEmpty {
-				guard _write(buffer, at: offset) else {
-					_failOverToSingleConnection()
+				guard _write(buffer, at: offset, generation: generation) else {
+					_failOverToSingleConnection(generation: generation)
 					return
 				}
 				offset += Int64(buffer.count)
@@ -1525,7 +1596,7 @@ final class ZenithMultipartDownload: @unchecked Sendable {
 			// persisted, so resume continues from the per-part
 			// byte counts.
 			if _isConnectivityError(error) || NetworkMonitor.shared.isOffline {
-				_parkAsWaitingForInternet()
+				_parkAsWaitingForInternet(generation: generation)
 				return
 			}
 			// Any other part failure — truncated byte stream,
@@ -1533,14 +1604,14 @@ final class ZenithMultipartDownload: @unchecked Sendable {
 			// download instead of failing the whole download. The
 			// single task is the last resort: if it fails too, the
 			// download fails honestly through its own delegate.
-			_failOverToSingleConnection()
+			_failOverToSingleConnection(generation: generation)
 		}
 	}
 	
 	/// Writes one buffered chunk at its file offset. Returns false
 	/// when the part file cannot be written (closed handle or disk
 	/// error); the caller fails over to the single-connection task.
-	private func _write(_ data: Data, at offset: Int64) -> Bool {
+	private func _write(_ data: Data, at offset: Int64, generation: Int) -> Bool {
 		lock.lock()
 		guard let handle = fileHandle else {
 			lock.unlock()
@@ -1554,7 +1625,12 @@ final class ZenithMultipartDownload: @unchecked Sendable {
 				_failedError = error
 			}
 			lock.unlock()
-			_cancelAllParts()
+			// Only the current generation may cancel the parts: a
+			// stale part failing its write must not kill the parts
+			// a resume has just relaunched.
+			if generation == _currentGeneration() {
+				_cancelAllParts()
+			}
 			return false
 		}
 		lock.unlock()
@@ -1570,12 +1646,15 @@ final class ZenithMultipartDownload: @unchecked Sendable {
 		}
 	}
 	
-	private func _failOverToSingleConnection() {
+	private func _failOverToSingleConnection(generation: Int) {
 		lock.lock()
 		// Never fail over after a pause (manual or connectivity):
 		// the download is parked, and a single task started here
-		// would be a zombie transport behind the pause.
-		if _didFailOver || _cancelled {
+		// would be a zombie transport behind the pause. Never on
+		// behalf of a stale start() either: a pause/resume since
+		// this start() launched means a newer start() owns the
+		// download, and failing over here would cancel its parts.
+		if _didFailOver || _cancelled || generation != _generation {
 			lock.unlock()
 			return
 		}
@@ -1594,8 +1673,13 @@ final class ZenithMultipartDownload: @unchecked Sendable {
 		}
 	}
 	
-	private func _finish() async {
+	private func _finish(generation: Int) async {
 		if _isDead { return }
+		// Stale start(): a pause/resume/cancel since this start()
+		// launched bumped the generation, and a newer start() owns
+		// the download now — this finish must not fail over, fail,
+		// or complete anything (see _generation).
+		if generation != _currentGeneration() { return }
 		if _didFailOver { return }
 		
 		if _cancelled {
@@ -1634,10 +1718,10 @@ final class ZenithMultipartDownload: @unchecked Sendable {
 			// the internet is gone, in which case park as waiting:
 			// a single task started now would just fail too.
 			if NetworkMonitor.shared.isOffline {
-				_parkAsWaitingForInternet()
+				_parkAsWaitingForInternet(generation: generation)
 				return
 			}
-			_failOverToSingleConnection()
+			_failOverToSingleConnection(generation: generation)
 			return
 		}
 		

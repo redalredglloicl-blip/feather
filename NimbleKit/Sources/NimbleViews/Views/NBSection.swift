@@ -70,7 +70,9 @@ public struct NBSection<Content, Footer>: View
 							.padding(.vertical, 4.4)
 							.background(Color(uiColor: .quaternarySystemFill))
 							.clipShape(Capsule())
-							.glassEffect()
+							// Zenith v2.11: no glass effect here — Liquid
+							// Glass draws a bright rim around the capsule,
+							// the same white-frame defect as the cards.
 					} else {
 						Text(_headerTextSecondary)
 							.font(.caption)

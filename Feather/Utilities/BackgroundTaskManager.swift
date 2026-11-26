@@ -30,7 +30,19 @@ class BackgroundTaskManager: ObservableObject {
 				
 				task.expirationHandler = {
 					if let download = DownloadManager.shared.getDownload(by: downloadId) {
-						DownloadManager.shared.cancelDownload(download)
+						// Zenith v2.11: expiry is the system reclaiming
+						// background time, NOT a user cancel. Cancelling
+						// here removed the download from the list (and
+						// the $downloads sink then persisted [] over
+						// ZenithActiveDownloads.json) and deleted its
+						// resume data + multipart manifest — so a
+						// download that was backgrounded for a while
+						// vanished with no history entry, and the
+						// Downloads tab showed "no downloads yet" on
+						// the next launch. Pause instead: the entry,
+						// its real progress and its resume state all
+						// survive, and the user resumes it by hand.
+						DownloadManager.shared.pauseDownload(download)
 					}
 					self.activeTasks.removeValue(forKey: task.identifier)
 				}

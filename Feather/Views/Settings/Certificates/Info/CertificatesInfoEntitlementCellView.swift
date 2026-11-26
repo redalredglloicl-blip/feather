@@ -11,21 +11,13 @@ import SwiftUI
 struct CertificatesInfoEntitlementCellView: View {
 	let key: String
 	let value: Any
-	/// True when this cell is nested inside another cell's disclosure
-	/// group: it gets a faintly lighter fill so the inner card reads
-	/// as a separate surface from its parent card (v2.10, no lines).
-	let isNested: Bool
 	@State private var _isExpanded = false
 
-	// v2.10 fix: explicit init — the synthesized memberwise init does not
-	// expose `isNested` (it only takes key/value). Note: the property has
-	// NO default value here — a `let` with `= false` is already initialized
-	// by its default, so assigning it in init fails with "may only be
-	// initialized once"; the default lives on the parameter instead.
-	init(key: String, value: Any, isNested: Bool = false) {
+	// Explicit init (kept from v2.10; the synthesized memberwise init
+	// is equivalent now that `isNested` is gone in v2.11).
+	init(key: String, value: Any) {
 		self.key = key
 		self.value = value
-		self.isNested = isNested
 	}
 	
 	// MARK: Body
@@ -46,12 +38,6 @@ struct CertificatesInfoEntitlementCellView: View {
 			}
 		}
 		.zenithGlassCard(cornerRadius: 12)
-		.overlay {
-			if isNested {
-				RoundedRectangle(cornerRadius: 12, style: .continuous)
-					.fill(Color.white.opacity(0.04))
-			}
-		}
 		.padding(.vertical, 6)
 		.listRowSeparator(.hidden)
 	}
@@ -59,7 +45,7 @@ struct CertificatesInfoEntitlementCellView: View {
 	private func _makeDisclosureGroup(items: [(String, Any)]) -> some View {
 		DisclosureGroup(isExpanded: $_isExpanded) {
 			ForEach(items, id: \.0) { item in
-				CertificatesInfoEntitlementCellView(key: item.0, value: item.1, isNested: true)
+				CertificatesInfoEntitlementCellView(key: item.0, value: item.1)
 			}
 		} label: {
 			Text(key)

@@ -2,23 +2,34 @@
 //  ZenithPolish.swift
 //  Zenith
 //
-//  Zenith v2 Phase 7 polish: liquid-glass surfaces, press-scale buttons,
-//  blurred popup backgrounds and the animated signing-success screen.
+//  Zenith v2 Phase 7 polish: press-scale buttons, blurred popup
+//  backgrounds and the animated signing-success screen.
 //  Everything here is visual only — no logic, signing or networking code.
-//  Glass uses `.glassEffect` (iOS 26 SDK) only behind `#available`,
-//  with `.ultraThinMaterial` fallbacks so iOS 16 still builds and runs.
+//
+//  Zenith v2.11: NO Liquid Glass anywhere on cards. v2.10 removed the
+//  explicit white stroke, but the frames stayed: on iOS 26/27 Apple's
+//  Liquid Glass draws its own bright specular edge highlight ("glass
+//  rim", brightest along the top edge) around every shape, and Reda's
+//  2.10 video proves it — every card still shows a light outline.
+//  Cards are plain flat fills now (see ZenithGlassCardModifier).
+//  NEVER re-add a glass effect, stroke or outline to a card surface:
+//  separation is spacing + subtly different fill tones + soft shadow.
+//  The only strokes left in the app are functional drawings
+//  (countdown/progress rings, the success checkmark, the planet logo,
+//  selection rings, tint-swatch rings, app-icon hairlines).
 //
 
 import SwiftUI
 
-// MARK: - Liquid glass card
-/// Applies a liquid-glass look to a card: real `.glassEffect` on iOS 26+,
-/// a translucent material fill on older iOS. Replaces a plain rounded
-/// background fill — do not stack it on top of an opaque fill.
-/// Zenith v2.10: NO outline lines — the thin white border from v2.9 is
-/// gone. Cards stay separate by depth instead: a soft shadow under every
-/// card, generous spacing between cards, and subtly different fill tones.
-/// Never add a stroke/outline to this modifier.
+// MARK: - Flat card (v2.11: was Liquid Glass, removed — see above)
+/// A plain flat card fill: a rounded rectangle in the given tone with a
+/// soft shadow for depth. Deliberately NOT Liquid Glass — the glass
+/// effect's specular rim read as a white frame around every card on
+/// iOS 26/27 (v2.10 video). Do not stack it on top of an opaque fill,
+/// and never add a stroke/outline to this modifier.
+/// Zenith v2.11: the iOS 26+ branch is identical to the older-iOS
+/// branch — one flat fill on every iOS version, so cards look the
+/// same everywhere and there is no bright rim to regress.
 struct ZenithGlassCardModifier: ViewModifier {
 	var isEnabled: Bool = true
 	var cornerRadius: CGFloat = 18
@@ -27,15 +38,9 @@ struct ZenithGlassCardModifier: ViewModifier {
 	@ViewBuilder
 	func body(content: Content) -> some View {
 		if isEnabled {
-			if #available(iOS 26.0, *) {
-				content
-					.glassEffect(.regular, in: RoundedRectangle(cornerRadius: cornerRadius, style: .continuous))
-					.shadow(color: .black.opacity(0.35), radius: 10, x: 0, y: 4)
-			} else {
-				content
-					.background(fallback, in: RoundedRectangle(cornerRadius: cornerRadius, style: .continuous))
-					.shadow(color: .black.opacity(0.35), radius: 10, x: 0, y: 4)
-			}
+			content
+				.background(fallback, in: RoundedRectangle(cornerRadius: cornerRadius, style: .continuous))
+				.shadow(color: .black.opacity(0.35), radius: 10, x: 0, y: 4)
 		} else {
 			content
 		}
@@ -43,8 +48,8 @@ struct ZenithGlassCardModifier: ViewModifier {
 }
 
 extension View {
-	/// Liquid-glass card background (iOS 26 glass, material fill below)
-	/// with a soft shadow for depth. No outline lines (v2.10).
+	/// Flat card background (plain fill, v2.11 — no glass, no rim)
+	/// with a soft shadow for depth. No outline lines.
 	func zenithGlassCard(
 		isEnabled: Bool = true,
 		cornerRadius: CGFloat = 18,
@@ -55,6 +60,8 @@ extension View {
 
 	/// Tab bar background: the system already draws liquid glass on
 	/// iOS 26; older iOS gets a translucent material bar instead.
+	/// Zenith v2.11: the system tab bar's own glass rim is Apple's,
+	/// not app-drawn — it is left alone (see item 3 report).
 	@ViewBuilder
 	func zenithTabBarBackground() -> some View {
 		if #available(iOS 26.0, *) {

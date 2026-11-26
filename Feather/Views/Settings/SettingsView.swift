@@ -70,7 +70,6 @@ struct SettingsView: View {
 							Text(UIDevice.current.name)
 								.foregroundStyle(.secondary)
 						}
-						.background(Color.white.opacity(0.04), in: RoundedRectangle(cornerRadius: 12, style: .continuous))
 						.zenithGlassCard(cornerRadius: 12)
 						.listRowSeparator(.hidden)
 						.listRowInsets(EdgeInsets(top: 7, leading: 16, bottom: 7, trailing: 16))
@@ -80,7 +79,6 @@ struct SettingsView: View {
 							Text(Bundle.main.version)
 								.foregroundStyle(.secondary)
 						}
-						.background(Color.white.opacity(0.04), in: RoundedRectangle(cornerRadius: 12, style: .continuous))
 						.zenithGlassCard(cornerRadius: 12)
 						.listRowSeparator(.hidden)
 						.listRowInsets(EdgeInsets(top: 7, leading: 16, bottom: 7, trailing: 16))

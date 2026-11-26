@@ -66,18 +66,43 @@ final class StartupProgress: ObservableObject {
 
 		// Step 4 — forced-update check (real network). The manager
 		// shares one in-flight check between callers, so this joins
-		// the launch check instead of starting a second one. Wait
-		// at most 8 s: offline the check has 15 s timeouts, and the
-		// app must not sit on the loading screen — the check keeps
-		// running in the background and the update gate flips the
-		// moment it answers.
+		// the launch check instead of starting a second one.
+		//
+		// There is NO timeout bypass any more: build 12 opened after
+		// this step's old 8 s deadline even though the check had not
+		// answered, and the check then resolved as a PASS on the stale
+		// cached minVersion (11) while the server already said 13 —
+		// so the app opened and never flipped to the block screen.
+		// This step now waits until the manager reports a FRESH
+		// decision (both minVersion and killed fetched live), and
+		// re-runs the check if a round ends without one. The only
+		// exits without a fresh decision are cancellation and a
+		// genuinely offline device — in the offline case the root
+		// branch shows OfflineBlockView instead, so the app is never
+		// bricked by the wait.
 		_setStep(0.75, .localized("Checking for updates"))
 		_checkTask = Task { [weak self] in
 			await ForcedUpdateManager.shared.checkForUpdate()
 			self?._checkDone = true
 		}
-		let deadline = Date().addingTimeInterval(8)
-		while !_checkDone, Date() < deadline, !Task.isCancelled {
+		while !ForcedUpdateManager.shared.hasFreshDecision, !Task.isCancelled {
+			if NetworkMonitor.shared.isOffline {
+				return
+			}
+			if _checkDone {
+				// The round ended without a fresh decision (the fetches
+				// kept failing while the device still reports online):
+				// run it again after a short pause.
+				_checkDone = false
+				try? await Task.sleep(nanoseconds: 2_000_000_000)
+				if Task.isCancelled || NetworkMonitor.shared.isOffline {
+					return
+				}
+				_checkTask = Task { [weak self] in
+					await ForcedUpdateManager.shared.checkForUpdate()
+					self?._checkDone = true
+				}
+			}
 			try? await Task.sleep(nanoseconds: 200_000_000)
 		}
 		await _settle()

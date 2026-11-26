@@ -162,10 +162,6 @@ struct AppPassportView: View {
 					.font(.footnote)
 					.foregroundStyle(.secondary)
 					.zenithGlassCard(cornerRadius: 12)
-					.overlay(
-						RoundedRectangle(cornerRadius: 12, style: .continuous)
-							.fill(Color.white.opacity(0.04))
-					)
 					.padding(.vertical, 6)
 					.listRowSeparator(.hidden)
 			}

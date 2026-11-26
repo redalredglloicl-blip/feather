@@ -230,17 +230,14 @@ struct DownloadsView: View {
 /// One live download: real % from byte counts, real measured speed,
 /// real time left, pause/resume and cancel.
 struct DownloadRowView: View {
-	let download: Download
-	
-	@State private var _progress: Double = 0
-	@State private var _bytesDownloaded: Int64 = 0
-	@State private var _totalBytes: Int64 = 0
-	@State private var _speed: Int64 = 0
-	@State private var _timeRemaining: TimeInterval?
-	@State private var _status: DownloadStatus = .downloading
-	@State private var _isAccelerated = false
-	@State private var _isWaitingForInternet = false
-	
+	/// The live download object, observed directly: every @Published
+	/// change (status, progress, speed) re-renders this row at once,
+	/// so pause/resume/cancel show immediately. The old @State mirror
+	/// + onReceive chain could only show what its subscriptions
+	/// delivered, one property at a time, and the Pause/Resume button
+	/// itself was gated on the mirrored copy.
+	@ObservedObject var download: Download
+
 	var body: some View {
 		VStack(alignment: .leading, spacing: 12) {
 			HStack {
@@ -248,7 +245,7 @@ struct DownloadRowView: View {
 					.font(.subheadline)
 					.lineLimit(1)
 				Spacer()
-				if _isAccelerated {
+				if download.isAccelerated {
 					Text(.localized("Fast"))
 						.font(.caption2)
 						.fontWeight(.semibold)
@@ -257,41 +254,41 @@ struct DownloadRowView: View {
 						.padding(.vertical, 2)
 						.background(Color(hex: "#FFC778").opacity(0.15), in: Capsule())
 				}
-				Text(verbatim: "\(Int(_progress * 100))%")
+				Text(verbatim: "\(Int(download.progress * 100))%")
 					.font(.subheadline)
 					.fontWeight(.semibold)
 					.contentTransition(.numericText())
 			}
 			
-			ProgressView(value: _progress)
+			ProgressView(value: download.progress)
 				.progressViewStyle(.linear)
-				.tint(_status == .failed ? .red : Color(hex: "#FFC778"))
+				.tint(download.status == .failed ? .red : Color(hex: "#FFC778"))
 			
 			HStack {
-				if _status == .failed {
+				if download.status == .failed {
 					Text(.localized("Download Failed"))
 						.foregroundStyle(.red)
-				} else if _isWaitingForInternet {
+				} else if download.isWaitingForInternet {
 					// Zenith v2.8: auto-paused for lost internet —
 					// never a failure state. The download resumes
 					// itself when the internet returns.
 					Text(.localized("Waiting for Internet"))
 						.foregroundStyle(.secondary)
-				} else if _status == .paused {
+				} else if download.status == .paused {
 					Text(.localized("Paused"))
 						.foregroundStyle(.secondary)
 				} else {
 					// Downloading: the smoothed real speed; "—"
 					// while nothing is moving yet (waiting, not 0).
-					Text(verbatim: _speed > 0 ? _formatSpeed(_speed) : "—")
+					Text(verbatim: download.speedBytesPerSec > 0 ? _formatSpeed(download.speedBytesPerSec) : "—")
 				}
 				Spacer()
-				if _totalBytes > 0 {
-					Text(verbatim: "\(_bytesDownloaded.formattedByteCount) / \(_totalBytes.formattedByteCount)")
+				if download.totalBytes > 0 {
+					Text(verbatim: "\(download.bytesDownloaded.formattedByteCount) / \(download.totalBytes.formattedByteCount)")
 				}
-				if let remaining = _timeRemaining, _status == .downloading {
+				if let remaining = download.estimatedTimeRemaining, download.status == .downloading {
 					Text(verbatim: "· \(_formatTimeRemaining(remaining))")
-				} else if _status == .downloading, _totalBytes > 0 {
+				} else if download.status == .downloading, download.totalBytes > 0 {
 					// No usable speed yet: waiting, never a huge
 					// number from dividing by ~0.
 					Text(verbatim: "· —")
@@ -302,44 +299,38 @@ struct DownloadRowView: View {
 			.contentTransition(.numericText())
 			
 			HStack(spacing: 16) {
-				if _status == .downloading {
+				if download.status == .downloading {
 					Button {
 						DownloadManager.shared.pauseDownload(download)
 					} label: {
 						Label(.localized("Pause"), systemImage: "pause.fill")
 					}
-				} else if _status == .paused || _status == .failed {
+					.buttonStyle(.borderless)
+				} else if download.status == .paused || download.status == .failed {
 					Button {
 						DownloadManager.shared.retryDownload(download)
 					} label: {
 						Label(
-							_status == .failed ? .localized("Retry") : .localized("Resume"),
+							download.status == .failed ? .localized("Retry") : .localized("Resume"),
 							systemImage: "play.fill"
 						)
 					}
+					.buttonStyle(.borderless)
 				}
-				
+
 				Button(role: .destructive) {
 					DownloadManager.shared.cancelDownload(download)
 				} label: {
 					Label(.localized("Cancel"), systemImage: "xmark")
 				}
-				
+				.buttonStyle(.borderless)
+
 				Spacer()
 			}
 			.font(.subheadline)
-			.buttonStyle(.borderless)
 		}
 		.padding(.vertical, 4)
 		.zenithGlassCard(cornerRadius: 12)
-		.onReceive(download.$progress) { _progress = $0 }
-		.onReceive(download.$bytesDownloaded) { _bytesDownloaded = $0 }
-		.onReceive(download.$totalBytes) { _totalBytes = $0 }
-		.onReceive(download.$speedBytesPerSec) { _speed = $0 }
-		.onReceive(download.$estimatedTimeRemaining) { _timeRemaining = $0 }
-		.onReceive(download.$status) { _status = $0 }
-		.onReceive(download.$isAccelerated) { _isAccelerated = $0 }
-		.onReceive(download.$isWaitingForInternet) { _isWaitingForInternet = $0 }
 	}
 	
 	/// Real measured throughput, formatted for the row: one
