@@ -105,6 +105,30 @@ class DownloadManager: NSObject, ObservableObject {
 	/// DownloadManager makes carries this instead.
 	static let browserUserAgent = "Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Mobile/15E148 Safari/604.1"
 	
+	/// Normalizes a pasted link ONCE, shared by every entry point
+	/// (Downloads tab, Library import-from-URL, certificate direct
+	/// download): trims whitespace, strips leading slashes, adds
+	/// https:// when the scheme is missing, then validates scheme +
+	/// host. A link that only needs trimming never fails validation,
+	/// and no caller ever loads the raw pasted text.
+	static func normalizedURL(from text: String) -> URL? {
+		var text = text.trimmingCharacters(in: .whitespacesAndNewlines)
+		while text.hasPrefix("/") {
+			text.removeFirst()
+		}
+		guard !text.isEmpty else { return nil }
+		if !text.contains("://") {
+			text = "https://" + text
+		}
+		guard
+			let url = URL(string: text),
+			let scheme = url.scheme?.lowercased(),
+			scheme == "http" || scheme == "https",
+			url.host != nil
+		else { return nil }
+		return url
+	}
+	
 	private var _session: URLSession!
 	
 	#if !targetEnvironment(macCatalyst)

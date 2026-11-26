@@ -48,7 +48,14 @@ extension ConfigurationDictView {
 		Button(role: .destructive) {
 			dataDict.removeValue(forKey: key)
 		} label: {
-			Label(.localized("Delete"), image: "icon-delete")
+			Label {
+				Text(.localized("Delete"))
+			} icon: {
+				Image("icon-delete")
+					.resizable()
+					.scaledToFit()
+					.frame(width: 20, height: 20)
+			}
 		}
 	}
 }

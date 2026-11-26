@@ -74,27 +74,30 @@ struct CertificatesAddView: View {
 				AppleIDSignInView()
 					.zenithSheetBackground()
 			}
-			.sheet(isPresented: $_isImportingP12Presenting) {
-				FileImporterRepresentableView(
-					allowedContentTypes: [.p12],
-					onDocumentsPicked: { urls in
-						guard let selectedFileURL = urls.first else { return }
-						self._p12URL = selectedFileURL
-					}
-				)
-				.ignoresSafeArea()
-				.zenithSheetBackground()
+			// Native fileImporter, NOT a nested sheet hosting a
+			// UIDocumentPicker: the picker-as-sheet-content pattern
+			// presented a black, hanging sheet on iOS 27 (the
+			// certificate import never opened). The system modifier
+			// presents the Files picker directly from this sheet.
+			.fileImporter(
+				isPresented: $_isImportingP12Presenting,
+				allowedContentTypes: [.p12],
+				allowsMultipleSelection: false
+			) { result in
+				if case let .success(urls) = result,
+				   let selectedFileURL = urls.first {
+					_p12URL = selectedFileURL
+				}
 			}
-			.sheet(isPresented: $_isImportingMobileProvisionPresenting) {
-				FileImporterRepresentableView(
-					allowedContentTypes: [.mobileProvision],
-					onDocumentsPicked: { urls in
-						guard let selectedFileURL = urls.first else { return }
-						self._provisionURL = selectedFileURL
-					}
-				)
-				.ignoresSafeArea()
-				.zenithSheetBackground()
+			.fileImporter(
+				isPresented: $_isImportingMobileProvisionPresenting,
+				allowedContentTypes: [.mobileProvision],
+				allowsMultipleSelection: false
+			) { result in
+				if case let .success(urls) = result,
+				   let selectedFileURL = urls.first {
+					_provisionURL = selectedFileURL
+				}
 			}
 		}
 	}

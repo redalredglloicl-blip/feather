@@ -33,6 +33,9 @@ struct SettingsView: View {
 						NavigationLink(destination: InstallationView()) {
 							_settingsRow(title: .localized("Installation"), icon: "icon-install")
 						}
+						NavigationLink(destination: CertificateDirectDownloadView()) {
+							_settingsRow(title: .localized("تحميل شهادة من رابط"), icon: "icon-download")
+						}
 						NavigationLink(destination: HelpCenterView()) {
 							_settingsRow(title: .localized("مركز المساعدة"), icon: "icon-info")
 						}
@@ -52,14 +55,12 @@ struct SettingsView: View {
 
 					Section {
 						HStack {
-							_rowIcon("icon-settings")
 							Text(.localized("Device Name"))
 							Spacer()
 							Text(UIDevice.current.name)
 								.foregroundStyle(.secondary)
 						}
 						HStack {
-							_rowIcon("icon-info")
 							Text(.localized("Version"))
 							Spacer()
 							Text(Bundle.main.version)
@@ -74,9 +75,10 @@ struct SettingsView: View {
 		}
 	}
 
-	/// One settings row: a peach line icon at 24pt next to the title,
-	/// matching the settings mockup (glass rows, peach icons, stars
-	/// showing through the gaps).
+	/// One settings row: a peach line icon at 20pt next to the title.
+	/// v2.2 used a bare Label(image:) whose SVG scaled to the font
+	/// size; the 96px PNGs need this explicit frame to render at
+	/// that same size. Template-tinted peach, like the original art.
 	private func _settingsRow(title: String, icon: String) -> some View {
 		HStack(spacing: 12) {
 			_rowIcon(icon)
@@ -85,13 +87,13 @@ struct SettingsView: View {
 	}
 
 	/// A peach line icon PNG (transparent, 96px asset) rendered as a
-	/// 24pt template image tinted with the peach accent color.
+	/// 20pt template image tinted with the peach accent color.
 	private func _rowIcon(_ name: String) -> some View {
 		Image(name)
 			.renderingMode(.template)
 			.resizable()
 			.scaledToFit()
-			.frame(width: 24, height: 24)
+			.frame(width: 20, height: 20)
 			.foregroundStyle(Color.accentColor)
 	}
 }
@@ -101,20 +103,14 @@ extension SettingsView {
 	@ViewBuilder
 	private func _directories() -> some View {
 		NBSection(.localized("Misc")) {
-			Button {
+			Button(.localized("Open Documents"), systemImage: "folder") {
 				UIApplication.open(URL.documentsDirectory.toSharedDocumentsURL()!)
-			} label: {
-				_settingsRow(title: .localized("Open Documents"), icon: "icon-library")
 			}
-			Button {
+			Button(.localized("Open Archives"), systemImage: "folder") {
 				UIApplication.open(FileManager.default.archives.toSharedDocumentsURL()!)
-			} label: {
-				_settingsRow(title: .localized("Open Archives"), icon: "icon-archive")
 			}
-			Button {
+			Button(.localized("Open Certificates"), systemImage: "folder") {
 				UIApplication.open(FileManager.default.certificates.toSharedDocumentsURL()!)
-			} label: {
-				_settingsRow(title: .localized("Open Certificates"), icon: "icon-certificates")
 			}
 		} footer: {
 			Text(.localized("All of the apps files are contained in the documents directory, here are some quick links to these."))

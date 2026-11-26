@@ -14,6 +14,7 @@ struct CertificatesView: View {
 	@AppStorage("zenith.selectedCert") private var _storedSelectedCert: Int = 0
 	
 	@State private var _isAddingPresenting = false
+	@State private var _isDirectDownloadPresenting = false
 	@State private var _isRenamingPresenting = false
 	@State private var _isSelectedInfoPresenting: CertificatePair?
 	@State private var _certToRename: CertificatePair?
@@ -78,7 +79,29 @@ struct CertificatesView: View {
 				Button {
 					_isSelfRefreshConfirmPresenting = true
 				} label: {
-					Label(.localized("Refresh Zenith Itself"), image: "icon-renew")
+					// Sized icon: a bare Label image renders the
+					// 96px PNG at full size (the v2.3 giant-icon bug).
+					HStack(spacing: 8) {
+						Image("icon-renew")
+							.resizable()
+							.scaledToFit()
+							.frame(width: 20, height: 20)
+						Text(.localized("Refresh Zenith Itself"))
+					}
+				}
+				.buttonStyle(.bordered)
+				.padding(.vertical, 8)
+				
+				Button {
+					_isDirectDownloadPresenting = true
+				} label: {
+					HStack(spacing: 8) {
+						Image("icon-download")
+							.resizable()
+							.scaledToFit()
+							.frame(width: 20, height: 20)
+						Text(.localized("تحميل شهادة من رابط"))
+					}
 				}
 				.buttonStyle(.bordered)
 				.padding(.vertical, 8)
@@ -117,6 +140,10 @@ struct CertificatesView: View {
 		.sheet(isPresented: $_isAddingPresenting) {
 			CertificatesAddView()
 				.presentationDetents([.medium])
+				.zenithSheetBackground()
+		}
+		.sheet(isPresented: $_isDirectDownloadPresenting) {
+			CertificateDirectDownloadView()
 				.zenithSheetBackground()
 		}
 		.sheet(isPresented: $_isDNSDocumentPresenterPresented) {
@@ -266,9 +293,11 @@ extension CertificatesView {
 	@ViewBuilder
 	private var _emptyState: some View {
 		VStack(spacing: 12) {
-			Image(systemName: "questionmark.folder.fill")
-				.font(.system(size: 48))
-				.foregroundStyle(.secondary)
+			// Real certificate icon, not the grey "?" placeholder.
+			Image("icon-certificates")
+				.resizable()
+				.scaledToFit()
+				.frame(width: 48, height: 48)
 			
 			Text(.localized("No Certificates"))
 				.font(.headline)
@@ -283,9 +312,16 @@ extension CertificatesView {
 			} label: {
 				NBButton(.localized("Import"), style: .text)
 			}
+			
+			Button {
+				_isDirectDownloadPresenting = true
+			} label: {
+				NBButton(.localized("تحميل شهادة من رابط"), style: .text)
+			}
 		}
 		.padding()
 		.frame(maxWidth: .infinity)
+		.zenithGlassCard(cornerRadius: 18)
 	}
 	
 	/// Hosted copy of the protection profile, served by the Cloudflare
@@ -328,7 +364,15 @@ extension CertificatesView {
 			Button {
 				_installDNSProtection()
 			} label: {
-				Label(.localized(_dnsProtectionInstalled ? "Reinstall Protection" : "Install Protection"), image: "icon-protection")
+				// Sized icon: a bare Label image renders the 96px
+				// PNG at full size (the v2.3 giant-icon bug).
+				HStack(spacing: 8) {
+					Image("icon-protection")
+						.resizable()
+						.scaledToFit()
+						.frame(width: 20, height: 20)
+					Text(.localized(_dnsProtectionInstalled ? "Reinstall Protection" : "Install Protection"))
+				}
 			}
 			.buttonStyle(.borderedProminent)
 			
@@ -413,7 +457,14 @@ extension CertificatesView {
 		Button(role: .destructive) {
 			Storage.shared.deleteCertificate(for: cert)
 		} label: {
-			Label(.localized("Delete"), image: "icon-delete")
+			Label {
+				Text(.localized("Delete"))
+			} icon: {
+				Image("icon-delete")
+					.resizable()
+					.scaledToFit()
+					.frame(width: 20, height: 20)
+			}
 		}
 	}
 	
@@ -422,7 +473,14 @@ extension CertificatesView {
 		Button {
 			_isSelectedInfoPresenting = cert
 		} label: {
-			Label(.localized("Get Info"), image: "icon-info")
+			Label {
+				Text(.localized("Get Info"))
+			} icon: {
+				Image("icon-info")
+					.resizable()
+					.scaledToFit()
+					.frame(width: 20, height: 20)
+			}
 		}
 		Button(.localized("Change Nickname"), systemImage: "pencil") {
 			_newNickname = cert.nickname ?? ""
@@ -432,7 +490,14 @@ extension CertificatesView {
 		Button {
 			_isAddingPresenting = true
 		} label: {
-			Label(.localized("Renew Certificate"), image: "icon-resign")
+			Label {
+				Text(.localized("Renew Certificate"))
+			} icon: {
+				Image("icon-resign")
+					.resizable()
+					.scaledToFit()
+					.frame(width: 20, height: 20)
+			}
 		}
 		Divider()
 		Button(.localized("Check Revokage"), systemImage: "person.text.rectangle") {

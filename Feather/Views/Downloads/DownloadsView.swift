@@ -42,13 +42,23 @@ struct DownloadsView: View {
 									ProgressView()
 										.frame(maxWidth: .infinity)
 								} else {
-									Label(.localized("Download"), image: "icon-download")
-										.frame(maxWidth: .infinity)
+									// Sized icon: a bare Label image
+									// renders the 96px PNG at full size
+									// (the v2.3 giant-arrow bug).
+									HStack(spacing: 8) {
+										Image("icon-download")
+											.resizable()
+											.scaledToFit()
+											.frame(width: 20, height: 20)
+										Text(.localized("Download"))
+									}
+									.frame(maxWidth: .infinity)
 								}
 							}
 							.buttonStyle(.borderedProminent)
 							.disabled(_linkText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || _isProbing)
 						}
+						.zenithGlassCard(cornerRadius: 14)
 					} header: {
 						Text(.localized("Download IPA"))
 					} footer: {
@@ -91,6 +101,7 @@ struct DownloadsView: View {
 						}
 						.frame(maxWidth: .infinity)
 						.padding(.vertical, 32)
+						.zenithGlassCard(cornerRadius: 18)
 						.listRowBackground(Color.clear)
 					}
 				}
@@ -154,27 +165,10 @@ struct DownloadsView: View {
 		return Int(Double(_pendingSize) / _pendingSpeed / 60)
 	}
 	
-	/// Normalizes what the user pasted: a bare "example.com/app.ipa"
-	/// becomes https://example.com/app.ipa, so a link without a
-	/// scheme no longer fails at once.
-	private func _normalizedURL(from text: String) -> URL? {
-		var text = text.trimmingCharacters(in: .whitespacesAndNewlines)
-		guard !text.isEmpty else { return nil }
-		if !text.contains("://") {
-			text = "https://" + text
-		}
-		guard
-			let url = URL(string: text),
-			let scheme = url.scheme?.lowercased(),
-			scheme == "http" || scheme == "https",
-			url.host != nil
-		else { return nil }
-		return url
-	}
-	
 	/// Opens the pasted link in the small in-app browser, where the
 	/// user taps the page's own download button (or the link is the
-	/// file itself and the browser intercepts it directly).
+	/// file itself and the browser intercepts it directly). The URL
+	/// here is always the shared normalized one, never raw pasted text.
 	private func _openBrowser(with url: URL) {
 		_browserURL = url
 		_isShowingBrowser = true
@@ -183,7 +177,7 @@ struct DownloadsView: View {
 	/// Validates the link, probes the speed for big files, warns when
 	/// the connection is slow, then opens the browser for the download.
 	private func _startDownloadFlow() {
-		guard let url = _normalizedURL(from: _linkText) else {
+		guard let url = DownloadManager.normalizedURL(from: _linkText) else {
 			_isShowingInvalidLink = true
 			return
 		}
@@ -307,6 +301,7 @@ struct DownloadRowView: View {
 			.buttonStyle(.borderless)
 		}
 		.padding(.vertical, 4)
+		.zenithGlassCard(cornerRadius: 12)
 		.onReceive(download.$progress) { _progress = $0 }
 		.onReceive(download.$bytesDownloaded) { _bytesDownloaded = $0 }
 		.onReceive(download.$totalBytes) { _totalBytes = $0 }
@@ -363,5 +358,6 @@ struct DownloadHistoryRowView: View {
 			}
 		}
 		.padding(.vertical, 2)
+		.zenithGlassCard(cornerRadius: 12)
 	}
 }

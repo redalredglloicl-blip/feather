@@ -232,7 +232,14 @@ extension LibraryCellView {
 		Button(role: .destructive) {
 			onDeleteRequest?(app)
 		} label: {
-			Label(.localized("Delete"), image: "icon-delete")
+			Label {
+				Text(.localized("Delete"))
+			} icon: {
+				Image("icon-delete")
+					.resizable()
+					.scaledToFit()
+					.frame(width: 20, height: 20)
+			}
 		}
 	}
 	
@@ -241,15 +248,26 @@ extension LibraryCellView {
 		Button {
 			selectedInfoAppPresenting = AnyApp(base: app)
 		} label: {
-			Label(.localized("Get Info"), image: "icon-info")
+			Label {
+				Text(.localized("Get Info"))
+			} icon: {
+				Image("icon-info")
+					.resizable()
+					.scaledToFit()
+					.frame(width: 20, height: 20)
+			}
 		}
 		Button {
 			_prefs.toggleFavorite(uuid: app.uuid)
 		} label: {
-			Label(
-				_prefs.isFavorite(uuid: app.uuid) ? .localized("Remove from Favorites") : .localized("Add to Favorites"),
-				image: "icon-favorite"
-			)
+			Label {
+				Text(_prefs.isFavorite(uuid: app.uuid) ? .localized("Remove from Favorites") : .localized("Add to Favorites"))
+			} icon: {
+				Image("icon-favorite")
+					.resizable()
+					.scaledToFit()
+					.frame(width: 20, height: 20)
+			}
 		}
 		Menu {
 			ForEach(LibraryView.HomeCategory.allCases, id: \.self) { category in
@@ -265,7 +283,14 @@ extension LibraryCellView {
 				}
 			}
 		} label: {
-			Label(.localized("Category"), image: "icon-category")
+			Label {
+				Text(.localized("Category"))
+			} icon: {
+				Image("icon-category")
+					.resizable()
+					.scaledToFit()
+					.frame(width: 20, height: 20)
+			}
 		}
 	}
 	
@@ -281,28 +306,63 @@ extension LibraryCellView {
 			Button {
 				selectedInstallAppPresenting = AnyApp(base: app)
 			} label: {
-				Label(.localized("Install"), image: "icon-install")
+				Label {
+					Text(.localized("Install"))
+				} icon: {
+					Image("icon-install")
+						.resizable()
+						.scaledToFit()
+						.frame(width: 20, height: 20)
+				}
 			}
 			Button {
 				selectedSigningAppPresenting = AnyApp(base: app)
 			} label: {
-				Label(.localized("Re-sign"), image: "icon-sign")
+				Label {
+					Text(.localized("Re-sign"))
+				} icon: {
+					Image("icon-sign")
+						.resizable()
+						.scaledToFit()
+						.frame(width: 20, height: 20)
+				}
 			}
 			Button {
 				selectedInstallAppPresenting = AnyApp(base: app, archive: true)
 			} label: {
-				Label(.localized("Export"), image: "icon-export")
+				Label {
+					Text(.localized("Export"))
+				} icon: {
+					Image("icon-export")
+						.resizable()
+						.scaledToFit()
+						.frame(width: 20, height: 20)
+				}
 			}
 		} else {
 			Button {
 				selectedInstallAppPresenting = AnyApp(base: app)
 			} label: {
-				Label(.localized("Install"), image: "icon-install")
+				Label {
+					Text(.localized("Install"))
+				} icon: {
+					Image("icon-install")
+						.resizable()
+						.scaledToFit()
+						.frame(width: 20, height: 20)
+				}
 			}
 			Button {
 				selectedSigningAppPresenting = AnyApp(base: app)
 			} label: {
-				Label(.localized("Sign"), image: "icon-sign")
+				Label {
+					Text(.localized("Sign"))
+				} icon: {
+					Image("icon-sign")
+						.resizable()
+						.scaledToFit()
+						.frame(width: 20, height: 20)
+				}
 			}
 		}
 	}

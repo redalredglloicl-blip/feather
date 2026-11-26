@@ -39,12 +39,6 @@ struct LibraryView: View {
 	
 	
 	@Namespace private var _namespace
-
-	/// 2-column grid for the Library (mockup layout).
-	private static let _gridColumns = [
-		GridItem(.flexible(), spacing: 12),
-		GridItem(.flexible(), spacing: 12)
-	]
 	
 	// MARK: Filtering & Sorting
 	private func _matchingApps<T>(from apps: FetchedResults<T>) -> [AppInfoPresentable] where T: NSManagedObject {
@@ -141,52 +135,65 @@ struct LibraryView: View {
 	
 	// MARK: Body
 	var body: some View {
-		NBNavigationView(.localized("Home"), displayMode: .inline) {
-			ScrollView {
-				VStack(alignment: .leading, spacing: 20) {
-					_zenithHeader
-					
+		NBNavigationView(.localized("Home")) {
+			NBListAdaptable {
+				Section {
 					_categoryChips
-					
-					if !_unusedApps.isEmpty {
-						_gridSection(
-							title: .localized("Not opened in a while"),
-							apps: _unusedApps
-						)
+						.listRowInsets(EdgeInsets())
+						.listRowSeparator(.hidden)
+						.listRowBackground(Color.clear)
+				}
+				
+				if !_unusedApps.isEmpty {
+					NBSection(.localized("Not opened in a while")) {
+						ForEach(_unusedApps, id: \.uuid) { app in
+							_unusedAppRow(for: app)
+						}
 					}
-					
-					if !_favoriteApps.isEmpty {
-						_gridSection(
-							title: .localized("Favorites"),
-							count: _favoriteApps.count,
-							systemName: "heart.fill",
-							apps: _favoriteApps
-						)
+				}
+				
+				if !_favoriteApps.isEmpty {
+					NBSection(
+						.localized("Favorites"),
+						secondary: _favoriteApps.count.description,
+						systemName: "heart.fill"
+					) {
+						ForEach(Array(_favoriteApps.enumerated()), id: \.element.uuid) { index, app in
+							_libraryCell(for: app, index: index)
+						}
 					}
-					
-					if
-						!_regularSignedApps.isEmpty,
-						_selectedScope == .all || _selectedScope == .signed
-					{
-						_gridSection(
-							title: .localized("Signed"),
-							count: _regularSignedApps.count,
-							apps: _regularSignedApps
-						)
+				}
+				
+				if
+					!_regularSignedApps.isEmpty,
+					_selectedScope == .all || _selectedScope == .signed
+				{
+					NBSection(
+						.localized("Signed"),
+						secondary: _regularSignedApps.count.description
+					) {
+						ForEach(Array(_regularSignedApps.enumerated()), id: \.element.uuid) { index, app in
+							_libraryCell(for: app, index: index)
+						}
 					}
-					
-					if
-						!_regularImportedApps.isEmpty,
-						_selectedScope == .all || _selectedScope == .imported
-					{
-						_gridSection(
-							title: .localized("Imported"),
-							count: _regularImportedApps.count,
-							apps: _regularImportedApps
-						)
+				}
+				
+				if
+					!_regularImportedApps.isEmpty,
+					_selectedScope == .all || _selectedScope == .imported
+				{
+					NBSection(
+						.localized("Imported"),
+						secondary: _regularImportedApps.count.description
+					) {
+						ForEach(Array(_regularImportedApps.enumerated()), id: \.element.uuid) { index, app in
+							_libraryCell(for: app, index: index)
+						}
 					}
-					
-					if _hiddenExpiredCount > 0, !_prefs.showExpired {
+				}
+				
+				if _hiddenExpiredCount > 0, !_prefs.showExpired {
+					Section {
 						Button {
 							_prefs.showExpired = true
 						} label: {
@@ -196,14 +203,11 @@ struct LibraryView: View {
 								Text(.localized("Show"))
 									.foregroundStyle(Color.accentColor)
 							}
-							.padding()
 						}
-						.zenithGlassCard(cornerRadius: 16, fallback: Color.white.opacity(0.08))
-						.padding(.horizontal)
 					}
 				}
-				.padding(.bottom, 16)
 			}
+			.scrollContentBackground(.hidden)
 			.searchable(text: $_searchText, placement: .platform())
 			.compatSearchScopes($_selectedScope) {
 				ForEach(Scope.allCases, id: \.displayName) { scope in
@@ -217,7 +221,19 @@ struct LibraryView: View {
 					_regularSignedApps.isEmpty,
 					_regularImportedApps.isEmpty
 				{
-					_emptyState
+					if #available(iOS 17, *) {
+						ContentUnavailableView {
+							Label(.localized("No Apps"), systemImage: "questionmark.app.fill")
+						} description: {
+							Text(.localized("Get started by importing your first IPA file."))
+						} actions: {
+							Menu {
+								_importActions()
+							} label: {
+								NBButton(.localized("Import"), style: .text)
+							}
+						}
+					}
 				}
 			}
 			.toolbar {
@@ -304,7 +320,7 @@ struct LibraryView: View {
 					_alertDownloadString = ""
 				}
 				Button(.localized("OK")) {
-					if let url = URL(string: _alertDownloadString) {
+					if let url = DownloadManager.normalizedURL(from: _alertDownloadString) {
 						_ = downloadManager.startDownload(from: url, id: "ZenithManualDownload_\(UUID().uuidString)")
 					}
 				}
@@ -353,12 +369,26 @@ extension LibraryView {
 		Button {
 			_isImportingPresenting = true
 		} label: {
-			Label(.localized("Import from Files"), image: "icon-import")
+			Label {
+				Text(.localized("Import from Files"))
+			} icon: {
+				Image("icon-import")
+					.resizable()
+					.scaledToFit()
+					.frame(width: 20, height: 20)
+			}
 		}
 		Button {
 			_isDownloadingPresenting = true
 		} label: {
-			Label(.localized("Import from URL"), image: "icon-import")
+			Label {
+				Text(.localized("Import from URL"))
+			} icon: {
+				Image("icon-import")
+					.resizable()
+					.scaledToFit()
+					.frame(width: 20, height: 20)
+			}
 		}
 	}
 	
@@ -390,86 +420,6 @@ extension LibraryView {
 			.padding(.horizontal)
 		}
 		.padding(.vertical, 8)
-	}
-	
-	/// Mockup header: big peach "Zenith" over the library subtitle.
-	/// The navigation bar is inline, so this is the only large title.
-	private var _zenithHeader: some View {
-		VStack(alignment: .leading, spacing: 2) {
-			Text(verbatim: "Zenith")
-				.font(.system(size: 44, weight: .bold, design: .rounded))
-				.foregroundStyle(Color.accentColor)
-			Text(.localized("App Library"))
-				.font(.title3)
-				.foregroundStyle(.secondary)
-		}
-		.padding(.horizontal)
-		.padding(.top, 8)
-	}
-	
-	/// One Library section as a 2-column grid of large glass cards.
-	/// Same apps, same order and same counts as the old list sections.
-	private func _gridSection(
-		title: String,
-		count: Int? = nil,
-		systemName: String? = nil,
-		apps: [AppInfoPresentable]
-	) -> some View {
-		VStack(alignment: .leading, spacing: 10) {
-			HStack(spacing: 4) {
-				if let systemName {
-					Image(systemName: systemName)
-						.font(.system(size: 12))
-						.offset(y: -2)
-				}
-				Text(verbatim: title)
-					.font(.title2)
-					.fontWeight(.bold)
-				if let count {
-					Text(verbatim: count.description)
-						.font(.subheadline)
-						.foregroundStyle(.secondary)
-				}
-				Spacer()
-			}
-			.padding(.horizontal)
-			
-			LazyVGrid(columns: Self._gridColumns, spacing: 12) {
-				ForEach(Array(apps.enumerated()), id: \.element.uuid) { index, app in
-					_libraryCell(for: app, index: index)
-				}
-			}
-			.padding(.horizontal)
-		}
-	}
-	
-	/// Designed empty state: transparent so the starfield shows
-	/// through, the library illustration, the existing Iraqi copy
-	/// and the import button.
-	private var _emptyState: some View {
-		VStack(spacing: 16) {
-			Image("icon-library")
-				.resizable()
-				.scaledToFit()
-				.frame(width: 96, height: 96)
-				.shadow(color: Color.accentColor.opacity(0.5), radius: 24)
-			Text(.localized("No Apps"))
-				.font(.title2)
-				.fontWeight(.bold)
-			Text(.localized("Get started by importing your first IPA file."))
-				.font(.subheadline)
-				.foregroundStyle(.secondary)
-				.multilineTextAlignment(.center)
-				.padding(.horizontal, 32)
-			Menu {
-				_importActions()
-			} label: {
-				NBButton(.localized("Import"), style: .text)
-			}
-		}
-		.padding()
-		.frame(maxWidth: .infinity, maxHeight: .infinity)
-		.background(Color.clear)
 	}
 }
 
@@ -509,6 +459,13 @@ extension LibraryView {
 
 // MARK: - Extension: View (Phase 3)
 extension LibraryView {
+	private static let _dateFormatter: DateFormatter = {
+		let formatter = DateFormatter()
+		formatter.dateStyle = .medium
+		formatter.timeStyle = .none
+		return formatter
+	}()
+	
 	@ViewBuilder
 	private func _libraryCell(for app: AppInfoPresentable, index: Int) -> some View {
 		LibraryCellView(
@@ -529,6 +486,34 @@ extension LibraryView {
 		.compatMatchedTransitionSource(id: app.uuid ?? "", ns: _namespace)
 	}
 	
+	private func _unusedAppRow(for app: AppInfoPresentable) -> some View {
+		HStack(spacing: 12) {
+			// v2.2 called this FRAppIconView — the struct was renamed
+			// to ZenithAppIconView in v2.3 (same view, same 40pt size);
+			// FRAppIconView no longer exists anywhere in the tree.
+			ZenithAppIconView(app: app, size: 40)
+			VStack(alignment: .leading, spacing: 2) {
+				Text(app.name ?? .localized("Unknown"))
+					.lineLimit(1)
+				Text(_lastOpenedText(for: app))
+					.font(.caption)
+					.foregroundStyle(.secondary)
+			}
+			Spacer()
+			Button(.localized("Delete"), role: .destructive) {
+				_appPendingDelete = AnyApp(base: app)
+				_isDeleteConfirmPresenting = true
+			}
+			.buttonStyle(.borderless)
+		}
+	}
+	
+	private func _lastOpenedText(for app: AppInfoPresentable) -> String {
+		if let lastOpened = _prefs.lastOpenedDate(for: app.uuid) {
+			return "\(String.localized("Last opened")): \(Self._dateFormatter.string(from: lastOpened))"
+		}
+		return .localized("Never opened")
+	}
 }
 
 // MARK: - Extension: View (Sort)

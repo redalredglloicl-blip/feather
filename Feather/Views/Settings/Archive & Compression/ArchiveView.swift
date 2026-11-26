@@ -23,13 +23,27 @@ struct ArchiveView: View {
 						Text(level.label).tag(level)
 					}
 				} label: {
-					Label(.localized("Compression Level"), image: "icon-archive")
+					Label {
+						Text(.localized("Compression Level"))
+					} icon: {
+						Image("icon-archive")
+							.resizable()
+							.scaledToFit()
+							.frame(width: 20, height: 20)
+					}
 				}
 			}
 			
 			Section {
 				Toggle(isOn: $_useShareSheet) {
-					Label(.localized("Show Sheet when Exporting"), image: "icon-export")
+					Label {
+						Text(.localized("Show Sheet when Exporting"))
+					} icon: {
+						Image("icon-export")
+							.resizable()
+							.scaledToFit()
+							.frame(width: 20, height: 20)
+					}
 				}
 			} footer: {
 				Text(.localized("Toggling show sheet will present a share sheet after exporting to your files."))

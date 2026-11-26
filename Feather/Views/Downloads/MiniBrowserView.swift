@@ -136,6 +136,10 @@ struct MiniBrowserView: UIViewControllerRepresentable {
 			if (error as NSError).code == NSURLErrorCancelled { return }
 			Task { @MainActor in
 				self.controller?.setProgress(1)
+				// The address bar must still show the attempted URL:
+				// setAddress falls back to it when the web view never
+				// committed a URL.
+				self.controller?.setAddress(webView.url)
 				self.controller?.showError(error.localizedDescription)
 			}
 		}
@@ -143,6 +147,7 @@ struct MiniBrowserView: UIViewControllerRepresentable {
 		func webView(_ webView: WKWebView, didFail navigation: WKNavigation!, withError error: Error) {
 			if (error as NSError).code == NSURLErrorCancelled { return }
 			Task { @MainActor in
+				self.controller?.setAddress(webView.url)
 				self.controller?.showError(error.localizedDescription)
 			}
 		}
@@ -270,6 +275,12 @@ final class MiniBrowserViewController: UIViewController {
 	private var backButton: UIButton!
 	private var forwardButton: UIButton!
 	private weak var _toolbar: UIView?
+	/// The URL this browser is trying to load (the shared normalized
+	/// one, never raw pasted text). The address bar shows it from the
+	/// first frame, even when the load fails before committing.
+	private var _currentURL: URL?
+	private var _errorCard: UIView!
+	private var _errorCardLabel: UILabel!
 	
 	func configure(coordinator: MiniBrowserView.Coordinator, startURL: URL, onClose: @escaping () -> Void) {
 		self.coordinator = coordinator
@@ -280,11 +291,16 @@ final class MiniBrowserViewController: UIViewController {
 	
 	func loadIfNeeded(url: URL) {
 		guard let webView, webView.url == nil else { return }
+		_currentURL = url
+		setAddress(url)
 		webView.load(URLRequest(url: url))
 	}
 	
 	func setAddress(_ url: URL?) {
-		addressLabel?.text = url?.absoluteString ?? ""
+		// Fall back to the attempted URL: after a failed load the
+		// web view has no committed URL, and the bar must still
+		// show what was being loaded.
+		addressLabel?.text = (url ?? _currentURL)?.absoluteString ?? ""
 		backButton?.isEnabled = webView?.canGoBack ?? false
 		forwardButton?.isEnabled = webView?.canGoForward ?? false
 	}
@@ -298,11 +314,16 @@ final class MiniBrowserViewController: UIViewController {
 		errorLabel?.text = message
 		errorLabel?.isHidden = false
 		errorHeightConstraint?.isActive = false
+		// The card replaces the bare white page: the same message,
+		// plus a retry button.
+		_errorCardLabel?.text = message
+		_errorCard?.isHidden = false
 	}
 	
 	func hideError() {
 		errorLabel?.isHidden = true
 		errorHeightConstraint?.isActive = true
+		_errorCard?.isHidden = true
 	}
 	
 	override func viewDidLoad() {
@@ -311,7 +332,10 @@ final class MiniBrowserViewController: UIViewController {
 		_buildToolbar()
 		_buildWebView()
 		_buildHint()
+		_buildErrorCard()
 		if let startURL {
+			_currentURL = startURL
+			setAddress(startURL)
 			webView.load(URLRequest(url: startURL))
 		}
 	}
@@ -450,6 +474,51 @@ final class MiniBrowserViewController: UIViewController {
 		])
 	}
 	
+	/// Centered error card, shown instead of a bare white page when
+	/// a load fails (for example the host cannot be found): the clear
+	/// message plus a retry button that reloads the same URL.
+	private func _buildErrorCard() {
+		let card = UIView()
+		card.backgroundColor = .secondarySystemBackground
+		card.layer.cornerRadius = 14
+		card.translatesAutoresizingMaskIntoConstraints = false
+		card.isHidden = true
+		view.addSubview(card)
+		
+		let label = UILabel()
+		label.font = .preferredFont(forTextStyle: .subheadline)
+		label.textColor = .label
+		label.textAlignment = .center
+		label.numberOfLines = 0
+		label.translatesAutoresizingMaskIntoConstraints = false
+		card.addSubview(label)
+		
+		let retryButton = UIButton(type: .system)
+		retryButton.setTitle(.localized("إعادة المحاولة"), for: .normal)
+		retryButton.titleLabel?.font = .preferredFont(forTextStyle: .headline)
+		retryButton.translatesAutoresizingMaskIntoConstraints = false
+		retryButton.addTarget(self, action: #selector(_retryLoad), for: .touchUpInside)
+		card.addSubview(retryButton)
+		
+		NSLayoutConstraint.activate([
+			card.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+			card.centerYAnchor.constraint(equalTo: view.centerYAnchor),
+			card.leadingAnchor.constraint(greaterThanOrEqualTo: view.leadingAnchor, constant: 32),
+			card.trailingAnchor.constraint(lessThanOrEqualTo: view.trailingAnchor, constant: -32),
+			
+			label.topAnchor.constraint(equalTo: card.topAnchor, constant: 16),
+			label.leadingAnchor.constraint(equalTo: card.leadingAnchor, constant: 16),
+			label.trailingAnchor.constraint(equalTo: card.trailingAnchor, constant: -16),
+			
+			retryButton.topAnchor.constraint(equalTo: label.bottomAnchor, constant: 12),
+			retryButton.centerXAnchor.constraint(equalTo: card.centerXAnchor),
+			retryButton.bottomAnchor.constraint(equalTo: card.bottomAnchor, constant: -16),
+		])
+		
+		_errorCard = card
+		_errorCardLabel = label
+	}
+	
 	private func _toolButton(systemName: String) -> UIButton {
 		let button = UIButton(type: .system)
 		button.setImage(UIImage(systemName: systemName), for: .normal)
@@ -472,6 +541,13 @@ final class MiniBrowserViewController: UIViewController {
 	
 	@objc private func _reload() {
 		webView?.reload()
+	}
+	
+	@objc private func _retryLoad() {
+		hideError()
+		if let url = webView?.url ?? _currentURL {
+			webView?.load(URLRequest(url: url))
+		}
 	}
 	
 	@objc private func _close() {

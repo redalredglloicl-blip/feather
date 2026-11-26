@@ -53,7 +53,17 @@ struct CertificateHealthView: View {
 				Button {
 					_checker.check(cert: cert)
 				} label: {
-					Label(.localized("تحديث"), image: "icon-renew")
+					// icon-renew is a 96px PNG: a bare Label(image:)
+					// renders it at intrinsic 96pt. Explicit 20pt
+					// frame = the size the v2.2 SVG scaled to.
+					Label {
+						Text(.localized("تحديث"))
+					} icon: {
+						Image("icon-renew")
+							.resizable()
+							.scaledToFit()
+							.frame(width: 20, height: 20)
+					}
 				}
 				.buttonStyle(.bordered)
 				.controlSize(.small)

@@ -71,10 +71,17 @@ struct AppPassportView: View {
 						} label: {
 							HStack {
 								Spacer()
-								Label(
-									app.isSigned ? .localized("أعد توقيع التطبيق") : .localized("وقّع التطبيق"),
-									image: "icon-sign"
-								)
+								// icon-sign is a 96px PNG: a bare Label(image:)
+								// renders it at intrinsic 96pt. Explicit 20pt
+								// frame = the size the v2.2 SVG scaled to.
+								Label {
+									Text(app.isSigned ? .localized("أعد توقيع التطبيق") : .localized("وقّع التطبيق"))
+								} icon: {
+									Image("icon-sign")
+										.resizable()
+										.scaledToFit()
+										.frame(width: 20, height: 20)
+								}
 								.font(.headline)
 								Spacer()
 							}

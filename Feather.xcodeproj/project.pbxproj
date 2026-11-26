@@ -61,6 +61,9 @@
 				Resources/feather_extension.png,
 				Resources/AppIcon.icon/Assets/feather.png,
 				"Resources/AppIcon.icon/Assets/feather 5.png",
+				Resources/AppIcon.icon/icon.json,
+				Resources/AppIcon.icon/Assets/zenith.png,
+				Resources/AppIcon.icon/Assets/zenith-5.png,
 			);
 			target = 3379C1B82DA869A1004372DA /* Zenith */;
 		};
@@ -75,6 +78,9 @@
 				Resources/feather_extension.png,
 				Resources/AppIcon.icon/Assets/feather.png,
 				"Resources/AppIcon.icon/Assets/feather 5.png",
+				Resources/AppIcon.icon/icon.json,
+				Resources/AppIcon.icon/Assets/zenith.png,
+				Resources/AppIcon.icon/Assets/zenith-5.png,
 			);
 		};
 /* End PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet section */
@@ -402,7 +408,7 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Feather/Resources/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = Zenith;
-				INFOPLIST_KEY_ZenithBuildNumber = 5;
+				INFOPLIST_KEY_ZenithBuildNumber = 6;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright (c) 2024 Samara M";
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
@@ -423,7 +429,7 @@
 					"$(PROJECT_DIR)/Feather/Resources/idevice",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 15.2;
-				ZENITH_PROJECT_VERSION = 2.3;
+				ZENITH_PROJECT_VERSION = 2.4;
 				MARKETING_VERSION = "$(ZENITH_PROJECT_VERSION)-debug";
 				PRODUCT_BUNDLE_IDENTIFIER = "$(ZENITH_PRODUCT_BUNDLE_IDENTIFIER)$(ZENITH_DISAMBIGUATOR)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -468,7 +474,7 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Feather/Resources/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = Zenith;
-				INFOPLIST_KEY_ZenithBuildNumber = 5;
+				INFOPLIST_KEY_ZenithBuildNumber = 6;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright (c) 2024 Samara M";
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
@@ -489,7 +495,7 @@
 					"$(PROJECT_DIR)/Feather/Resources/idevice",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 15.2;
-				ZENITH_PROJECT_VERSION = 2.3;
+				ZENITH_PROJECT_VERSION = 2.4;
 				MARKETING_VERSION = "$(ZENITH_PROJECT_VERSION)";
 				PRODUCT_BUNDLE_IDENTIFIER = "$(ZENITH_PRODUCT_BUNDLE_IDENTIFIER)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
