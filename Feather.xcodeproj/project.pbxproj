@@ -56,6 +56,7 @@
 				Views/Sources/SourcesView.swift,
 				Views/Sources/SourcesViewModel.swift,
 				FeatherApp.swift,
+				Views/Common/FRAppIconView.swift,
 				Backend/Storage/Feather.xcdatamodeld,
 				Resources/feather_extension.png,
 				Resources/AppIcon.icon/Assets/feather.png,
@@ -170,6 +171,7 @@
 				3346F83A2DC6C6D100C7D508 /* NukeUI */,
 				3346F8482DC6D64800C7D508 /* NimbleJSON */,
 				3349E7662DEFB46F00E317ED /* IDeviceSwift */,
+				4CDE693E59B6DBA9A1D4EB28 /* X509 */,
 			);
 			productName = Zenith;
 			productReference = 3379C1B92DA869A1004372DA /* Zenith.app */;
@@ -220,6 +222,7 @@
 				3346F8372DC6C68300C7D508 /* XCRemoteSwiftPackageReference "Nuke" */,
 				3349E7652DEFB46F00E317ED /* XCLocalSwiftPackageReference "IDeviceKitten" */,
 				553D3D1447F3EACF2C3D0604 /* XCRemoteSwiftPackageReference "SideSign" */,
+				DA3F6F5DFA3A55176E69D0D0 /* XCRemoteSwiftPackageReference "swift-certificates" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 3379C1BA2DA869A1004372DA /* Products */;
@@ -584,6 +587,14 @@
 				branch = main;
 			};
 		};
+		DA3F6F5DFA3A55176E69D0D0 /* XCRemoteSwiftPackageReference "swift-certificates" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/apple/swift-certificates";
+			requirement = {
+				kind = exactVersion;
+				version = 1.21.2;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -639,6 +650,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 553D3D1447F3EACF2C3D0604 /* XCRemoteSwiftPackageReference "SideSign" */;
 			productName = SideSign;
+		};
+		4CDE693E59B6DBA9A1D4EB28 /* X509 */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = DA3F6F5DFA3A55176E69D0D0 /* XCRemoteSwiftPackageReference "swift-certificates" */;
+			productName = X509;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

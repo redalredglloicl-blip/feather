@@ -158,7 +158,11 @@ struct MiniBrowserView: UIViewControllerRepresentable {
 			capturedDestinationURL = nil
 		}
 		
-		func webView(_ webView: WKWebView, download: WKDownload, decideDestinationUsing response: URLResponse, suggestedFilename: String, completionHandler: @escaping (URL?) -> Void) {
+		/// Shared destination computation for both WKDownloadDelegate
+		/// decideDestination spellings (iOS 26 SDK): a safe filename,
+		/// the temp dir "ZenithBrowserDownloads", any existing file
+		/// removed, and the destination recorded for downloadDidFinish.
+		private func _downloadDestination(for response: URLResponse, suggestedFilename: String) -> URL {
 			let rawName = suggestedFilename.isEmpty
 				? (response.url?.lastPathComponent ?? "")
 				: suggestedFilename
@@ -171,7 +175,19 @@ struct MiniBrowserView: UIViewControllerRepresentable {
 			let destination = directory.appendingPathComponent(safeName)
 			try? FileManager.default.removeItem(at: destination)
 			capturedDestinationURL = destination
-			completionHandler(destination)
+			return destination
+		}
+
+		func download(_ download: WKDownload, decideDestinationUsing response: URLResponse, suggestedFilename: String, completionHandler: @escaping @MainActor @Sendable (URL?) -> Void) {
+			completionHandler(_downloadDestination(for: response, suggestedFilename: suggestedFilename))
+		}
+
+		func download(_ download: WKDownload, decideDestinationUsing response: URLResponse, suggestedFilename: String) async -> URL? {
+			_downloadDestination(for: response, suggestedFilename: suggestedFilename)
+		}
+
+		func webView(_ webView: WKWebView, download: WKDownload, decideDestinationUsing response: URLResponse, suggestedFilename: String, completionHandler: @escaping (URL?) -> Void) {
+			completionHandler(_downloadDestination(for: response, suggestedFilename: suggestedFilename))
 		}
 		
 		func webView(_ webView: WKWebView, downloadDidFinish download: WKDownload) {
@@ -350,7 +366,7 @@ final class MiniBrowserViewController: UIViewController {
 		bar.addSubview(progressView)
 		
 		errorLabel = UILabel()
-		errorLabel.font = .preferredFont(forTextStyle: .caption)
+		errorLabel.font = .preferredFont(forTextStyle: .caption1)
 		errorLabel.textColor = .systemRed
 		errorLabel.numberOfLines = 2
 		errorLabel.isHidden = true
@@ -421,7 +437,7 @@ final class MiniBrowserViewController: UIViewController {
 		// the user knows to tap the page's own download button.
 		let hint = UILabel()
 		hint.text = .localized("Tap the download button on the page and the file will download automatically.")
-		hint.font = .preferredFont(forTextStyle: .caption)
+		hint.font = .preferredFont(forTextStyle: .caption1)
 		hint.textColor = .secondaryLabel
 		hint.textAlignment = .center
 		hint.numberOfLines = 2

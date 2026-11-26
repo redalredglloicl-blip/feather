@@ -145,22 +145,22 @@ struct CertificateHealthView: View {
 	private var _statusText: String {
 		switch _checker.status {
 		case .unknown:
-			.localized("ما انفحصت بعد")
+			String.localized("ما انفحصت بعد")
 		case .checking:
-			.localized("جارٍ الفحص...")
+			String.localized("جارٍ الفحص...")
 		case .healthy:
-			.localized("سليمة — أبل ما ساحبتها")
+			String.localized("سليمة — أبل ما ساحبتها")
 		case .expiringSoon(let details, _):
 			if let daysLeft = details.daysLeft {
 				return .localized("راح تنتهي قريباً — باقي %lld يوم", arguments: daysLeft)
 			}
 			return .localized("راح تنتهي قريباً")
 		case .expired:
-			.localized("الشهادة منتهية")
+			String.localized("الشهادة منتهية")
 		case .revoked:
-			.localized("مسحوبة من أبل")
+			String.localized("مسحوبة من أبل")
 		case .invalid, .unverified:
-			.localized("ما گدرنا نتأكد من الشهادة")
+			String.localized("ما گدرنا نتأكد من الشهادة")
 		}
 	}
 

@@ -15,7 +15,7 @@
 //
 //  The new check, in order:
 //  1. LOCAL (primary, decides the headline):
-//     - the .p12 is parsed with SecPKCS12Import + SecCertificateCopyValues
+//     - the .p12 is parsed with SecPKCS12Import + swift-certificates (X509)
 //       (expiry date, issuer, subject);
 //     - the .mobileprovision is parsed directly (it is a plist/XML
 //       file — the full Certificate decode first, a manual plist read
@@ -38,13 +38,14 @@
 
 import Foundation
 import Security
+import X509
 import Zsign
 
 // MARK: - Local details
 /// Everything the local parse learned about a certificate. Shown in
 /// the health card next to the verdict.
 struct LocalCertificateDetails: Equatable {
-	/// Expiry date from the .p12 (SecCertificateCopyValues).
+	/// Expiry date from the .p12 (X509 DER parse).
 	var p12Expiry: Date? = nil
 	/// Subject summary from the .p12.
 	var p12Subject: String? = nil
@@ -182,9 +183,9 @@ final class CertificateHealthChecker: ObservableObject {
 				details.p12Expiry = p12.expiry
 				details.p12Subject = p12.subject
 				details.p12Issuer = p12.issuer
-			case .failure(let reason):
-				details.p12Problem = reason
-				problems.append(reason)
+			case .failure(let error):
+				details.p12Problem = error.reason
+				problems.append(error.reason)
 			}
 		}
 
@@ -231,13 +232,25 @@ final class CertificateHealthChecker: ObservableObject {
 		var issuer: String?
 	}
 
+	/// The .p12 could not be read. `String` cannot be a `Result`
+	/// failure (it is not an `Error`), so the reason rides in this
+	/// tiny type instead.
+	private enum _P12Error: Error {
+		case unreadable(String)
+		var reason: String {
+			switch self {
+			case .unreadable(let message): return message
+			}
+		}
+	}
+
 	/// Imports the .p12 with the Security framework and reads the
 	/// certificate's expiry, subject and issuer. Any failure returns
 	/// the real reason instead of a made-up verdict.
-	private static func _readP12(at url: URL, password: String) -> Result<_P12Info, String> {
+	private static func _readP12(at url: URL, password: String) -> Result<_P12Info, _P12Error> {
 		let unreadable = String.localized("ملف الشهادة ما ينقرا — أعد استيراد الشهادة")
 		guard let data = try? Data(contentsOf: url) else {
-			return .failure(unreadable)
+			return .failure(.unreadable(unreadable))
 		}
 
 		var items: CFArray?
@@ -245,71 +258,42 @@ final class CertificateHealthChecker: ObservableObject {
 		let status = SecPKCS12Import(data as CFData, options as CFDictionary, &items)
 		guard status == errSecSuccess else {
 			if status == errSecAuthFailed {
-				return .failure(.localized("كلمة مرور الشهادة غلط"))
+				return .failure(.unreadable(.localized("كلمة مرور الشهادة غلط")))
 			}
-			return .failure(unreadable)
+			return .failure(.unreadable(unreadable))
 		}
 		guard
 			let items,
 			let item = (items as NSArray).firstObject as? [String: Any],
-			let identity = item[kSecImportItemIdentity as String] as? SecIdentity
+			let rawIdentity = item[kSecImportItemIdentity as String]
 		else {
-			return .failure(unreadable)
+			return .failure(.unreadable(unreadable))
 		}
+		// SecIdentity is a CoreFoundation type: a conditional
+		// downcast to it always succeeds, so the compiler rejects
+		// `as?` here — the presence guard above is the real check.
+		let identity = rawIdentity as SecIdentity
 
 		var certificate: SecCertificate?
 		guard SecIdentityCopyCertificate(identity, &certificate) == errSecSuccess, let certificate else {
-			return .failure(unreadable)
+			return .failure(.unreadable(unreadable))
 		}
 
 		var info = _P12Info()
-		info.subject = SecCertificateCopySubjectSummary(certificate)
-		if let values = SecCertificateCopyValues(
-			certificate,
-			[kSecOIDX509V1ValidityNotAfter, kSecOIDX509V1SubjectName, kSecOIDX509V1IssuerName] as CFArray,
-			nil
-		) as? [String: Any] {
-			if let notAfter = _value(of: kSecOIDX509V1ValidityNotAfter as String, in: values) as? Date {
-				info.expiry = notAfter
-			}
-			if let subject = _nameValue(of: kSecOIDX509V1SubjectName as String, in: values) {
-				info.subject = subject
-			}
-			if let issuer = _nameValue(of: kSecOIDX509V1IssuerName as String, in: values) {
-				info.issuer = issuer
-			}
+		info.subject = SecCertificateCopySubjectSummary(certificate) as String?
+		// SecCertificateCopyValues (and the kSecOID*/kSecPropertyKey*
+		// constants) are macOS-only — they do not exist in the iOS
+		// Security framework, even though `import Security` is
+		// present. Read the same fields from the DER bytes with
+		// swift-certificates (X509), already in the package graph
+		// as a dependency of swift-nio-ssl.
+		if let der = SecCertificateCopyData(certificate) as Data?,
+		   let x509 = try? Certificate(derEncoded: [UInt8](der)) {
+			info.expiry = x509.notValidAfter
+			info.subject = String(describing: x509.subject)
+			info.issuer = String(describing: x509.issuer)
 		}
 		return .success(info)
-	}
-
-	/// A per-OID entry in SecCertificateCopyValues is a dictionary;
-	/// the real value lives under kSecPropertyKeyValue.
-	private static func _value(of oid: String, in values: [String: Any]) -> Any? {
-		guard let entry = values[oid] as? [String: Any] else {
-			return nil
-		}
-		return entry[kSecPropertyKeyValue as String]
-	}
-
-	/// Flattens a subject/issuer name value (an array of
-	/// {label, value} dictionaries) into a readable string,
-	/// preferring the common name.
-	private static func _nameValue(of oid: String, in values: [String: Any]) -> String? {
-		let raw = _value(of: oid, in: values)
-		if let string = raw as? String {
-			return string
-		}
-		guard let parts = raw as? [[String: Any]] else {
-			return nil
-		}
-		for part in parts {
-			if (part[kSecPropertyKeyLabel as String] as? String) == "CN",
-			   let value = part[kSecPropertyKeyValue as String] as? String {
-				return value
-			}
-		}
-		let all = parts.compactMap { $0[kSecPropertyKeyValue as String] as? String }
-		return all.isEmpty ? nil : all.joined(separator: ", ")
 	}
 
 	// MARK: - .mobileprovision parsing
