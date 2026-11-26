@@ -53,9 +53,20 @@ class Download: Identifiable, @unchecked Sendable {
 	var task: URLSessionDownloadTask?
 	var resumeData: Data?
 	
+	/// Cookies captured from the in-app browser session for this
+	/// download (if any): attached to every URLSession request so
+	/// hosts that only serve the file to the logged-in session keep
+	/// working on the retry.
+	var cookies: [HTTPCookie]?
+	
+	/// True when the finished file is an app package (by extension).
+	/// Only .ipa files go through the install flow; anything else
+	/// completes as a plain file download.
+	var isIPA: Bool { (fileName as NSString).pathExtension.lowercased() == "ipa" }
+	
 	let id: String
 	let url: URL
-	let fileName: String
+	var fileName: String
 	let onlyArchiving: Bool
 	
 	init(
@@ -69,14 +80,13 @@ class Download: Identifiable, @unchecked Sendable {
 		self.onlyArchiving = onlyArchiving
 		// A pasted link can end in "/" or in a bare "download" path
 		// with no usable file name — never ship an empty name into
-		// the install flow, and give extension-less names the .ipa
-		// suffix the installer expects.
+		// the flow. The name is kept exactly as given, for ANY file
+		// type: no ".ipa" suffix is forced any more. (fileName is
+		// var, not let: the single-task completion adopts the
+		// server-suggested name, which is the real name on disk.)
 		let rawName = (fileName ?? url.lastPathComponent)
 			.trimmingCharacters(in: .whitespacesAndNewlines)
-		let baseName = rawName.isEmpty ? "download.ipa" : rawName
-		self.fileName = (baseName as NSString).pathExtension.isEmpty
-			? baseName + ".ipa"
-			: baseName
+		self.fileName = rawName.isEmpty ? "download" : rawName
 	}
 }
 
@@ -104,6 +114,41 @@ class DownloadManager: NSObject, ObservableObject {
 	/// the download then fails before a byte moves — every request
 	/// DownloadManager makes carries this instead.
 	static let browserUserAgent = "Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Mobile/15E148 Safari/604.1"
+	
+	/// Builds the "Cookie" header value for a download's captured
+	/// browser cookies (if any), via HTTPCookie.requestHeaderFields.
+	/// fileprivate (not private) so the multi-connection downloader
+	/// in this same file can attach it to its part requests too.
+	fileprivate func _cookieHeaderValue(for download: Download) -> String? {
+		guard let cookies = download.cookies, !cookies.isEmpty else { return nil }
+		return HTTPCookie.requestHeaderFields(with: cookies)["Cookie"]
+	}
+	
+	/// Completes a finished NON-IPA download: the file is already in
+	/// place in the ZenithDownloads dir and STAYS there — it is NOT
+	/// fed to the package/install flow. Mirrors the completed half
+	/// of handlePachageFile's callback (status, history, removal
+	/// from the active list, background bookkeeping).
+	func _completeNonIPADownload(_ download: Download) {
+		DispatchQueue.main.async {
+			download.status = .completed
+			DownloadManager.shared._recordHistory(for: download, status: .completed)
+			DownloadManager.shared._deleteResumeData(for: download.id)
+			DownloadManager.shared._deleteMultipartManifest(for: download.id)
+			
+			if let index = DownloadManager.shared.getDownloadIndex(by: download.id) {
+				DownloadManager.shared.downloads.remove(at: index)
+				
+				#if !targetEnvironment(macCatalyst)
+				if #available(iOS 26.0, *) {
+					BackgroundTaskManager.shared.updateProgress(for: download.id, progress: 1.0)
+				}
+				
+				self._updateBackgroundAudioState()
+				#endif
+			}
+		}
+	}
 	
 	/// Normalizes a pasted link ONCE, shared by every entry point
 	/// (Downloads tab, Library import-from-URL, certificate direct
@@ -152,7 +197,8 @@ class DownloadManager: NSObject, ObservableObject {
 	
 	func startDownload(
 		from url: URL,
-		id: String = UUID().uuidString
+		id: String = UUID().uuidString,
+		cookies: [HTTPCookie]? = nil
 	) -> Download {
 		if let existingDownload = downloads.first(where: { $0.url == url }) {
 			resumeDownload(existingDownload)
@@ -160,6 +206,7 @@ class DownloadManager: NSObject, ObservableObject {
 		}
 		
 		let download = Download(id: id, url: url)
+		download.cookies = cookies
 		downloads.append(download)
 		
 		#if !targetEnvironment(macCatalyst)
@@ -185,7 +232,8 @@ class DownloadManager: NSObject, ObservableObject {
 	/// downloaded: WebKit hands us a finished temp file, so there is
 	/// nothing left to fetch — move it into the app's downloads area
 	/// and hand it to the package flow exactly like a finished
-	/// single-connection download.
+	/// single-connection download. A non-IPA file skips the install
+	/// flow and completes as a plain file download instead.
 	func startDownloadFromCapturedFile(
 		_ fileURL: URL,
 		originalURL: URL,
@@ -207,7 +255,14 @@ class DownloadManager: NSObject, ObservableObject {
 			let destinationURL = customTempDir.appendingPathComponent(download.fileName)
 			try FileManager.default.removeFileIfNeeded(at: destinationURL)
 			try FileManager.default.moveItem(at: fileURL, to: destinationURL)
-			try handlePachageFile(url: destinationURL, dl: download)
+			if download.isIPA {
+				try handlePachageFile(url: destinationURL, dl: download)
+			} else {
+				// Not an app package: the file stays in
+				// ZenithDownloads and the download completes
+				// without the install flow.
+				_completeNonIPADownload(download)
+			}
 		} catch {
 			// The browser already finished the file — if moving it
 			// into place fails, the download failed honestly instead
@@ -252,6 +307,9 @@ class DownloadManager: NSObject, ObservableObject {
 			request.httpMethod = "HEAD"
 			request.timeoutInterval = 15
 			request.setValue(Self.browserUserAgent, forHTTPHeaderField: "User-Agent")
+			if let cookie = _cookieHeaderValue(for: download) {
+				request.setValue(cookie, forHTTPHeaderField: "Cookie")
+			}
 			let (_, response) = try await URLSession.shared.data(for: request)
 			guard
 				let http = response as? HTTPURLResponse,
@@ -287,6 +345,9 @@ class DownloadManager: NSObject, ObservableObject {
 		download.isAccelerated = false
 		var request = URLRequest(url: download.url)
 		request.setValue(Self.browserUserAgent, forHTTPHeaderField: "User-Agent")
+		if let cookie = _cookieHeaderValue(for: download) {
+			request.setValue(cookie, forHTTPHeaderField: "Cookie")
+		}
 		let task = _session.downloadTask(with: request)
 		download.task = task
 		task.resume()
@@ -356,6 +417,9 @@ class DownloadManager: NSObject, ObservableObject {
 		} else if let url = download.task?.originalRequest?.url {
 			var request = URLRequest(url: url)
 			request.setValue(Self.browserUserAgent, forHTTPHeaderField: "User-Agent")
+			if let cookie = _cookieHeaderValue(for: download) {
+				request.setValue(cookie, forHTTPHeaderField: "Cookie")
+			}
 			let task = _session.downloadTask(with: request)
 			download.task = task
 			task.resume()
@@ -451,6 +515,8 @@ class DownloadManager: NSObject, ObservableObject {
 	}
 	
 	/// Records a finished download. Keeps the newest 50 entries.
+	/// Completed entries remember the file's on-disk name, so the
+	/// Downloads tab can open the finished file later.
 	func _recordHistory(for download: Download, status: DownloadHistoryStatus) {
 		let entry = DownloadHistoryEntry(
 			id: download.id,
@@ -458,7 +524,8 @@ class DownloadManager: NSObject, ObservableObject {
 			urlString: download.url.absoluteString,
 			date: Date(),
 			status: status,
-			totalBytes: download.totalBytes
+			totalBytes: download.totalBytes,
+			localFileName: status == .completed ? download.fileName : nil
 		)
 		history.removeAll(where: { $0.id == entry.id })
 		history.insert(entry, at: 0)
@@ -477,6 +544,17 @@ class DownloadManager: NSObject, ObservableObject {
 	func retryHistoryEntry(_ entry: DownloadHistoryEntry) {
 		guard let url = URL(string: entry.urlString) else { return }
 		_ = startDownload(from: url, id: "ZenithManualDownload_\(UUID().uuidString)")
+	}
+	
+	/// URL of the finished file on disk for a completed history
+	/// entry, or nil when the entry has no recorded file or the file
+	/// is no longer in the ZenithDownloads dir.
+	func downloadedFileURL(for entry: DownloadHistoryEntry) -> URL? {
+		guard let name = entry.localFileName, !name.isEmpty else { return nil }
+		let url = FileManager.default.temporaryDirectory
+			.appendingPathComponent("ZenithDownloads", isDirectory: true)
+			.appendingPathComponent(name)
+		return FileManager.default.fileExists(atPath: url.path) ? url : nil
 	}
 	
 	// MARK: - Resume data persistence (single-connection)
@@ -602,12 +680,14 @@ extension DownloadManager: URLSessionDownloadDelegate {
 		guard let download = getDownloadTask(by: downloadTask) else { return }
 		
 		// A 4xx/5xx answer still "finishes" as a download — it is an
-		// error page, not the IPA. The same goes for a 200 that
-		// serves a web page instead of a file. Fail honestly here
-		// instead of feeding an HTML page to the installer.
+		// error page, not the file. The same goes for a 200 that
+		// serves an HTML page instead of a file. Fail honestly here
+		// instead of feeding an HTML page to the installer. Only
+		// text/html counts as an error page: real text files
+		// (.txt/.csv/.json) must download.
 		if let http = downloadTask.response as? HTTPURLResponse {
 			let isErrorPage = !(200...299).contains(http.statusCode)
-				|| (http.mimeType?.lowercased().hasPrefix("text/") ?? false)
+				|| http.mimeType?.lowercased() == "text/html"
 			if isErrorPage {
 				DispatchQueue.main.async {
 					download.status = .failed
@@ -634,7 +714,20 @@ extension DownloadManager: URLSessionDownloadDelegate {
 			try FileManager.default.removeFileIfNeeded(at: destinationURL)
 			try FileManager.default.moveItem(at: location, to: destinationURL)
 			
-			try handlePachageFile(url: destinationURL, dl: download)
+			// The server's name is the real file name (a direct link
+			// can end in an extension-less endpoint path): adopt it
+			// so the install decision and the history entry name the
+			// file that is actually on disk.
+			download.fileName = suggestedFileName
+			
+			if download.isIPA {
+				try handlePachageFile(url: destinationURL, dl: download)
+			} else {
+				// Not an app package: the file stays in
+				// ZenithDownloads and the download completes
+				// without the install flow.
+				_completeNonIPADownload(download)
+			}
 		} catch {
 			print("Error handling downloaded file: \(error.localizedDescription)")
 		}
@@ -729,6 +822,12 @@ struct DownloadHistoryEntry: Codable, Identifiable {
 	var date: Date
 	var status: DownloadHistoryStatus
 	var totalBytes: Int64
+	/// On-disk name of the finished file in the ZenithDownloads dir
+	/// (completed entries only). Optional with a default, so history
+	/// JSON saved by older versions — without this key — still
+	/// decodes (synthesized Decodable uses decodeIfPresent for
+	/// Optional properties).
+	var localFileName: String? = nil
 }
 
 // MARK: - Multi-connection download
@@ -926,6 +1025,9 @@ final class ZenithMultipartDownload: @unchecked Sendable {
 		var request = URLRequest(url: url)
 		request.setValue("bytes=\(offset)-\(end)", forHTTPHeaderField: "Range")
 		request.setValue(DownloadManager.browserUserAgent, forHTTPHeaderField: "User-Agent")
+		if let cookie = DownloadManager.shared._cookieHeaderValue(for: download) {
+			request.setValue(cookie, forHTTPHeaderField: "Cookie")
+		}
 		
 		do {
 			let (bytes, response) = try await session.bytes(for: request)
@@ -1061,7 +1163,9 @@ final class ZenithMultipartDownload: @unchecked Sendable {
 			return
 		}
 		
-		// All parts done: close, move into place, hand to the package flow.
+		// All parts done: close, move into place, then either hand
+		// to the package flow (.ipa) or complete as a plain file
+		// (anything else stays in ZenithDownloads, no install).
 		lock.lock()
 		try? fileHandle?.close()
 		fileHandle = nil
@@ -1075,10 +1179,14 @@ final class ZenithMultipartDownload: @unchecked Sendable {
 			try FileManager.default.removeFileIfNeeded(at: destinationURL)
 			try FileManager.default.moveItem(at: tempURL, to: destinationURL)
 			_deleteTempAndManifest()
-			await MainActor.run {
-				download.status = .completed
+			if download.isIPA {
+				await MainActor.run {
+					download.status = .completed
+				}
+				try DownloadManager.shared.handlePachageFile(url: destinationURL, dl: download)
+			} else {
+				DownloadManager.shared._completeNonIPADownload(download)
 			}
-			try DownloadManager.shared.handlePachageFile(url: destinationURL, dl: download)
 		} catch {
 			await MainActor.run {
 				download.status = .failed

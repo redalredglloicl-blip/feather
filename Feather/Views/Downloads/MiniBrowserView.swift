@@ -27,6 +27,14 @@ struct MiniBrowserView: UIViewControllerRepresentable {
 	/// this sheet and hands the file to DownloadManager.
 	var onFileCaptured: (URL) -> Void
 	
+	/// Optional: when set, a file navigation is NOT downloaded by
+	/// WebKit at all — instead the file's URL plus the web view's
+	/// cookies are handed back on the main actor, so the parent can
+	/// retry the download through URLSession (which supports resume,
+	/// progress and cookies the WKDownload path cannot carry). Nil
+	/// by default: the plain WKDownload flow is unchanged.
+	var onDownloadURLCaptured: ((URL, [HTTPCookie]) -> Void)? = nil
+	
 	/// Called when the user taps the close button.
 	var onClose: () -> Void
 	
@@ -60,11 +68,16 @@ struct MiniBrowserView: UIViewControllerRepresentable {
 		let parent: MiniBrowserView
 		
 		weak var controller: MiniBrowserViewController?
+		weak var webView: WKWebView?
 		
 		private var progressObservation: NSKeyValueObservation?
 		private var activeDownload: WKDownload?
 		private var capturedDestinationURL: URL?
 		private var didCapture = false
+		/// URL of the navigation that became the active WKDownload
+		/// (set in didBecome download): the fallback for retrying a
+		/// failed WebKit download through URLSession.
+		private var pendingDownloadURL: URL?
 		
 		init(parent: MiniBrowserView) {
 			self.parent = parent
@@ -75,6 +88,7 @@ struct MiniBrowserView: UIViewControllerRepresentable {
 		}
 		
 		func attach(webView: WKWebView) {
+			self.webView = webView
 			progressObservation = webView.observe(\.estimatedProgress, options: [.new]) { [weak self] webView, _ in
 				Task { @MainActor in
 					self?.controller?.setProgress(webView.estimatedProgress)
@@ -101,10 +115,23 @@ struct MiniBrowserView: UIViewControllerRepresentable {
 		}
 		
 		func webView(_ webView: WKWebView, decidePolicyFor navigationResponse: WKNavigationResponse, decisionHandler: @escaping (WKNavigationResponsePolicy) -> Void) {
-			if _isDownloadResponse(navigationResponse.response, navigationResponse: navigationResponse) {
-				// The page IS the file (direct link), or the tapped
-				// button navigated to the file: capture it as a
-				// download instead of showing it in the page.
+			let isDownload = _isDownloadResponse(navigationResponse.response, navigationResponse: navigationResponse)
+			if isDownload,
+			   let url = navigationResponse.response.url,
+			   let callback = parent.onDownloadURLCaptured {
+				// Hand the URL + the web view's cookies to the parent
+				// for a URLSession retry: cancel here, so WebKit never
+				// starts a WKDownload — and never fires the
+				// frame-interrupted (102) error for this navigation.
+				decisionHandler(.cancel)
+				webView.configuration.websiteDataStore.httpCookieStore.getAllCookies { cookies in
+					Task { @MainActor in
+						callback(url, cookies)
+					}
+				}
+			} else if isDownload {
+				// No URL to hand over, or no URL-capture handler:
+				// the plain WKDownload flow takes the file.
 				decisionHandler(.download)
 			} else {
 				decisionHandler(.allow)
@@ -134,6 +161,10 @@ struct MiniBrowserView: UIViewControllerRepresentable {
 		
 		func webView(_ webView: WKWebView, didFailProvisionalNavigation navigation: WKNavigation!, withError error: Error) {
 			if (error as NSError).code == NSURLErrorCancelled { return }
+			// WebKitErrorDomain 102 (FrameLoadInterruptedByPolicyChange)
+			// is the EXPECTED signal that a navigation became a
+			// download, not a real failure — never show it to the user.
+			if (error as NSError).domain == "WebKitErrorDomain" && (error as NSError).code == 102 { return }
 			Task { @MainActor in
 				self.controller?.setProgress(1)
 				// The address bar must still show the attempted URL:
@@ -146,6 +177,10 @@ struct MiniBrowserView: UIViewControllerRepresentable {
 		
 		func webView(_ webView: WKWebView, didFail navigation: WKNavigation!, withError error: Error) {
 			if (error as NSError).code == NSURLErrorCancelled { return }
+			// WebKitErrorDomain 102 (FrameLoadInterruptedByPolicyChange)
+			// is the EXPECTED signal that a navigation became a
+			// download, not a real failure — never show it to the user.
+			if (error as NSError).domain == "WebKitErrorDomain" && (error as NSError).code == 102 { return }
 			Task { @MainActor in
 				self.controller?.setAddress(webView.url)
 				self.controller?.showError(error.localizedDescription)
@@ -161,6 +196,7 @@ struct MiniBrowserView: UIViewControllerRepresentable {
 			download.delegate = self
 			didCapture = false
 			capturedDestinationURL = nil
+			pendingDownloadURL = navigationResponse.response.url
 		}
 		
 		/// Shared destination computation for the WKDownloadDelegate
@@ -186,15 +222,12 @@ struct MiniBrowserView: UIViewControllerRepresentable {
 		func download(_ download: WKDownload, decideDestinationUsing response: URLResponse, suggestedFilename: String, completionHandler: @escaping @MainActor @Sendable (URL?) -> Void) {
 			completionHandler(_downloadDestination(for: response, suggestedFilename: suggestedFilename))
 		}
-
-		func webView(_ webView: WKWebView, download: WKDownload, decideDestinationUsing response: URLResponse, suggestedFilename: String, completionHandler: @escaping (URL?) -> Void) {
-			completionHandler(_downloadDestination(for: response, suggestedFilename: suggestedFilename))
-		}
 		
-		func webView(_ webView: WKWebView, downloadDidFinish download: WKDownload) {
+		func downloadDidFinish(_ download: WKDownload) {
 			guard let destination = capturedDestinationURL, !didCapture else { return }
 			didCapture = true
 			activeDownload = nil
+			pendingDownloadURL = nil
 			// The file is fully written at the destination now.
 			// Hand it over once; the parent closes this sheet and
 			// starts the DownloadManager install flow from it.
@@ -203,8 +236,30 @@ struct MiniBrowserView: UIViewControllerRepresentable {
 			}
 		}
 		
-		func webView(_ webView: WKWebView, download: WKDownload, didFailWithError error: Error, resumeData: Data?) {
+		func download(_ download: WKDownload, didFailWithError error: Error, resumeData: Data?) {
 			activeDownload = nil
+			if let callback = parent.onDownloadURLCaptured,
+			   let url = pendingDownloadURL ?? download.originalRequest?.url {
+				pendingDownloadURL = nil
+				// The WebKit download failed after the file was
+				// already identified: retry the same URL through
+				// URLSession, carrying the web view's cookies — many
+				// hosts only serve the file to the session that
+				// requested it.
+				if let cookieStore = webView?.configuration.websiteDataStore.httpCookieStore {
+					cookieStore.getAllCookies { cookies in
+						Task { @MainActor in
+							callback(url, cookies)
+						}
+					}
+				} else {
+					Task { @MainActor in
+						callback(url, [])
+					}
+				}
+				return
+			}
+			pendingDownloadURL = nil
 			// Stay in the browser so the user can tap the button
 			// again — just say what went wrong.
 			Task { @MainActor in
@@ -224,34 +279,54 @@ struct MiniBrowserView: UIViewControllerRepresentable {
 		// MARK: Is this response a file?
 		
 		/// Decides whether a navigation response is a downloadable
-		/// file rather than a page to display.
+		/// file (ANY type, not just .ipa) rather than a page to
+		/// display. Order matters: an attachment wins over a text/*
+		/// MIME type, and a file-like name wins over a text/* MIME
+		/// type — a real .txt/.csv/.json must download, while a
+		/// text/html page with no file-like name must still display.
 		private func _isDownloadResponse(_ response: URLResponse, navigationResponse: WKNavigationResponse) -> Bool {
 			if let http = response as? HTTPURLResponse {
 				// An error page is not a file, even if its URL ends
-				// in .ipa — show it so the user sees what happened.
+				// in a file extension — show it so the user sees
+				// what happened.
 				guard (200...299).contains(http.statusCode) else { return false }
-				// Sent as an attachment: always a file.
+				// Sent as an attachment: always a file, even when
+				// the MIME type is text/*.
 				if let disposition = http.value(forHTTPHeaderField: "Content-Disposition")?.lowercased(),
 				   disposition.contains("attachment") {
 					return true
 				}
 			}
-			// The server names an .ipa file.
-			if let name = response.suggestedFilename,
-			   name.lowercased().hasSuffix(".ipa") {
-				return true
+			// The server names a file (any type) — except a web
+			// page served under a page-like name.
+			if let name = response.suggestedFilename {
+				let ext = (name as NSString).pathExtension.lowercased()
+				if !ext.isEmpty && !_isWebPageExtension(ext) {
+					return true
+				}
+			}
+			// The URL itself points at a file (any type) — except a
+			// web page: an HTML page must display, never download.
+			if let url = response.url {
+				let ext = url.pathExtension.lowercased()
+				if !ext.isEmpty && !_isWebPageExtension(ext)
+					&& response.mimeType?.lowercased() != "text/html" {
+					return true
+				}
 			}
 			// A web page is never a download, even when its URL ends
-			// in .ipa (some hosts serve a landing page there).
+			// in a file-like name (some hosts serve a landing page
+			// there) — unless the checks above already said file.
 			if let mime = response.mimeType?.lowercased(), mime.hasPrefix("text/") {
 				return false
 			}
-			// The URL itself points at a file.
-			if let url = response.url, url.pathExtension.lowercased() == "ipa" {
-				return true
-			}
 			// Anything the web view cannot display is a file.
 			return !navigationResponse.canShowMIMEType
+		}
+		
+		/// Extensions that mean "a web page", never a download.
+		private func _isWebPageExtension(_ ext: String) -> Bool {
+			["html", "htm", "php", "asp", "aspx", "jsp", "shtml"].contains(ext)
 		}
 	}
 }

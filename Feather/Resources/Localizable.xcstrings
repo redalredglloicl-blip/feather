@@ -1,6 +1,261 @@
 {
   "sourceLanguage": "en",
   "strings": {
+    "Paste File Link": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "الصق رابط الملف"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Paste File Link"
+          }
+        }
+      }
+    },
+    "Download File": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "تحميل ملف"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Download File"
+          }
+        }
+      }
+    },
+    "Paste a direct link to any file and it will download here. IPA files appear in your library.": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "الصق رابط مباشر لأي ملف وراح يتحمل هنا. ملفات IPA تظهر بمكتبتك."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Paste a direct link to any file and it will download here. IPA files appear in your library."
+          }
+        }
+      }
+    },
+    "Paste a valid link, like example.com/file.zip.": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "الصق رابط صحيح، مثل example.com/file.zip."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Paste a valid link, like example.com/file.zip."
+          }
+        }
+      }
+    },
+    "Downloaded files will show up here.": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "الملفات المحملة راح تظهر هنا."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Downloaded files will show up here."
+          }
+        }
+      }
+    },
+    "Share": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "مشاركة"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Share"
+          }
+        }
+      }
+    },
+    "Preview": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "معاينة"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Preview"
+          }
+        }
+      }
+    },
+    "Import Failed": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "فشل الاستيراد"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Import Failed"
+          }
+        }
+      }
+    },
+    "Could not access the selected file. Please try again.": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ما گدرنا نوصل للملف المختار. حاول مرة ثانية."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Could not access the selected file. Please try again."
+          }
+        }
+      }
+    },
+    "تم التثبيت": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "تم التثبيت"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Installed"
+          }
+        }
+      }
+    },
+    "بانتظار التثبيت": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "بانتظار التثبيت"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Waiting for install"
+          }
+        }
+      }
+    },
+    "غير مثبّت": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "غير مثبّت"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Not installed"
+          }
+        }
+      }
+    },
+    "1. اختر «حفظ في الملفات»\n2. افتح الملف من تطبيق الملفات\n3. من الإعدادات → VPN وإدارة الأجهزة → ثبّت الملف": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "1. اختر «حفظ في الملفات»\n2. افتح الملف من تطبيق الملفات\n3. من الإعدادات → VPN وإدارة الأجهزة → ثبّت الملف"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "1. Choose “Save to Files”\n2. Open the file from the Files app\n3. From Settings → VPN & Device Management → install the file"
+          }
+        }
+      }
+    },
+    "أكملت التثبيت": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "أكملت التثبيت"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "I finished installing"
+          }
+        }
+      }
+    },
+    "هاي الحالة حسب تأكيدك إنت، لأن التطبيق ما يقدر يتأكد من التثبيت بنفسه.": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "هاي الحالة حسب تأكيدك إنت، لأن التطبيق ما يقدر يتأكد من التثبيت بنفسه."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "This status is based on your own confirmation, because the app cannot verify the install itself."
+          }
+        }
+      }
+    },
     "%lld Apps": {
       "comment": "Repository app count",
       "extractionState": "manual",
@@ -18409,40 +18664,6 @@
         }
       }
     },
-    "Protection Installed": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Protection Installed"
-          }
-        },
-        "ar": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "الحماية مثبّتة"
-          }
-        }
-      }
-    },
-    "Protection Not Installed": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Protection Not Installed"
-          }
-        },
-        "ar": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "الحماية مو مثبّتة"
-          }
-        }
-      }
-    },
     "Blocks Apple's revocation checks so signed apps keep opening if the certificate is revoked.": {
       "extractionState": "manual",
       "localizations": {
@@ -18456,23 +18677,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "تحجب فحوصات الإلغاء مال أبل حتى التطبيقات الموقعة تستمر تشتغل إذا انلغت الشهادة."
-          }
-        }
-      }
-    },
-    "iOS does not let the app verify installation. This status is based on your install tap.": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "iOS does not let the app verify installation. This status is based on your install tap."
-          }
-        },
-        "ar": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "نظام iOS ما يخلي التطبيق يتأكد من التثبيت. هالحالة تعتمد على ضغطتك على زر التثبيت."
           }
         }
       }
@@ -18664,23 +18868,6 @@
         }
       }
     },
-    "Paste IPA Link": {
-      "extractionState": "manual",
-      "localizations": {
-        "ar": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "الصق رابط IPA"
-          }
-        },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Paste IPA Link"
-          }
-        }
-      }
-    },
     "Download": {
       "extractionState": "manual",
       "localizations": {
@@ -18694,40 +18881,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "Download"
-          }
-        }
-      }
-    },
-    "Download IPA": {
-      "extractionState": "manual",
-      "localizations": {
-        "ar": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "تحميل IPA"
-          }
-        },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Download IPA"
-          }
-        }
-      }
-    },
-    "Paste a direct link to an IPA file and it will download here, then appear in your library.": {
-      "extractionState": "manual",
-      "localizations": {
-        "ar": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "الصق رابط مباشر لملف IPA وراح يتحمل هنا، وبعدين يطلع بمكتبتك."
-          }
-        },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Paste a direct link to an IPA file and it will download here, then appear in your library."
           }
         }
       }
@@ -18796,23 +18949,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "No Downloads Yet"
-          }
-        }
-      }
-    },
-    "Downloaded IPA files will show up here.": {
-      "extractionState": "manual",
-      "localizations": {
-        "ar": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "ملفات IPA الي تحملها راح تطلع هنا."
-          }
-        },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Downloaded IPA files will show up here."
           }
         }
       }
@@ -20483,23 +20619,6 @@
         }
       }
     },
-    "Paste a valid link, like example.com/app.ipa.": {
-      "extractionState": "manual",
-      "localizations": {
-        "ar": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "الصق رابط صحيح، مثل example.com/app.ipa."
-          }
-        },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Paste a valid link, like example.com/app.ipa."
-          }
-        }
-      }
-    },
     "ثبّتها من سفاري": {
       "extractionState": "manual",
       "localizations": {
@@ -20720,23 +20839,6 @@
           }
         }
       }
-    },
-    "من قائمة المشاركة اختر «حفظ في الملفات»، وبعدين افتح الملف من تطبيق الملفات وكمّل التثبيت.": {
-        "extractionState": "manual",
-        "localizations": {
-            "ar": {
-                "stringUnit": {
-                    "state": "translated",
-                    "value": "من قائمة المشاركة اختر «حفظ في الملفات»، وبعدين افتح الملف من تطبيق الملفات وكمّل التثبيت."
-                }
-            },
-            "en": {
-                "stringUnit": {
-                    "state": "translated",
-                    "value": "From the share sheet choose “Save to Files”, then open the file in the Files app to finish installing it."
-                }
-            }
-        }
     },
     "إعادة المحاولة": {
       "extractionState": "manual",

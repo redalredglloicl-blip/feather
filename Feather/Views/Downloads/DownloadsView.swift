@@ -2,12 +2,13 @@
 //  DownloadsView.swift
 //  Zenith
 //
-//  Zenith v2.2 — Downloads tab: paste an IPA link, watch live progress
+//  Zenith v2.2 — Downloads tab: paste a file link, watch live progress
 //  (real %, speed and time left from DownloadManager), pause/resume,
 //  and download history with retry. All text is Iraqi dialect.
 
 import SwiftUI
 import Combine
+import QuickLook
 import NimbleViews
 
 struct DownloadsView: View {
@@ -24,140 +25,160 @@ struct DownloadsView: View {
 	@State private var _browserURL: URL?
 	
 	var body: some View {
-		ZStack {
-			StarfieldBackground()
-			NBNavigationView(.localized("Downloads")) {
-				List {
-					Section {
-						VStack(alignment: .leading, spacing: 12) {
-							TextField(.localized("Paste IPA Link"), text: $_linkText)
-								.textInputAutocapitalization(.never)
-								.keyboardType(.URL)
-								.autocorrectionDisabled()
-						
-							Button {
-								_startDownloadFlow()
-							} label: {
-								if _isProbing {
-									ProgressView()
-										.frame(maxWidth: .infinity)
-								} else {
-									// Sized icon: a bare Label image
-									// renders the 96px PNG at full size
-									// (the v2.3 giant-arrow bug).
-									HStack(spacing: 8) {
-										Image("icon-download")
-											.resizable()
-											.scaledToFit()
-											.frame(width: 20, height: 20)
-										Text(.localized("Download"))
-									}
-									.frame(maxWidth: .infinity)
-								}
-							}
-							.buttonStyle(.borderedProminent)
-							.disabled(_linkText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || _isProbing)
-						}
-						.zenithGlassCard(cornerRadius: 14)
-					} header: {
-						Text(.localized("Download IPA"))
-					} footer: {
-						Text(.localized("Paste a direct link to an IPA file and it will download here, then appear in your library."))
-					}
-				
-					if !_downloadManager.downloads.isEmpty {
-						Section(.localized("Active Downloads")) {
-							ForEach(_downloadManager.downloads) { download in
-								DownloadRowView(download: download)
-							}
-						}
-					}
-				
-					if !_downloadManager.history.isEmpty {
-						Section(.localized("Download History")) {
-							ForEach(_downloadManager.history) { entry in
-								DownloadHistoryRowView(entry: entry)
-							}
-						
-							Button(.localized("Clear History"), role: .destructive) {
-								_downloadManager.clearHistory()
-							}
-						}
-					}
-				
-					if _downloadManager.downloads.isEmpty && _downloadManager.history.isEmpty {
-						VStack(spacing: 10) {
-							Image("icon-download")
-								.resizable()
-								.scaledToFit()
-								.frame(width: 44, height: 44)
-								.opacity(0.6)
-							Text(.localized("No Downloads Yet"))
-								.font(.headline)
-							Text(.localized("Downloaded IPA files will show up here."))
-								.font(.subheadline)
-								.foregroundStyle(.secondary)
-								.multilineTextAlignment(.center)
-						}
-						.frame(maxWidth: .infinity)
-						.padding(.vertical, 32)
-						.zenithGlassCard(cornerRadius: 18)
-						.listRowBackground(Color.clear)
-					}
-				}
-				// Transparent list so the starfield shows through the gaps
-				// between rows; rows themselves stay clear as well.
-				.scrollContentBackground(.hidden)
-				.background(Color.clear)
-				.listRowBackground(Color.clear)
-			.alert(.localized("Invalid Link"), isPresented: $_isShowingInvalidLink) {
-				Button(.localized("OK"), role: .cancel) {}
-			} message: {
-				Text(.localized("Paste a valid link, like example.com/app.ipa."))
-			}
-			.sheet(isPresented: $_isShowingBrowser) {
-				if let url = _browserURL {
-					MiniBrowserView(
-						url: url,
-						onFileCaptured: { fileURL in
-							_isShowingBrowser = false
-							_linkText = ""
-							DownloadManager.shared.startDownloadFromCapturedFile(
-								fileURL,
-								originalURL: url,
-								id: "ZenithManualDownload_\(UUID().uuidString)"
+		NBNavigationView(.localized("Downloads")) {
+			List {
+				Section {
+					VStack(alignment: .leading, spacing: 12) {
+						TextField(.localized("Paste File Link"), text: $_linkText)
+							.textFieldStyle(.plain)
+							.textInputAutocapitalization(.never)
+							.keyboardType(.URL)
+							.autocorrectionDisabled()
+							.padding(.vertical, 10)
+							.padding(.horizontal, 12)
+							.background(Color.white.opacity(0.06), in: RoundedRectangle(cornerRadius: 10))
+							.overlay(
+								RoundedRectangle(cornerRadius: 10)
+									.stroke(Color.white.opacity(0.35), lineWidth: 1)
 							)
-						},
-						onClose: {
-							_isShowingBrowser = false
+						
+						Button {
+							_startDownloadFlow()
+						} label: {
+							if _isProbing {
+								ProgressView()
+									.frame(maxWidth: .infinity)
+							} else {
+								// Sized icon: a bare Label image
+								// renders the 96px PNG at full size
+								// (the v2.3 giant-arrow bug).
+								HStack(spacing: 8) {
+									Image("icon-download")
+										.resizable()
+										.scaledToFit()
+										.frame(width: 20, height: 20)
+									Text(.localized("Download"))
+								}
+								.frame(maxWidth: .infinity)
+							}
 						}
-					)
-					.ignoresSafeArea()
+						.buttonStyle(.borderedProminent)
+						.disabled(_linkText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || _isProbing)
+					}
+					.zenithGlassCard(cornerRadius: 14)
+					.padding(.horizontal, 16)
+					.listRowInsets(EdgeInsets())
+					.listRowBackground(Color.clear)
+					.listRowSeparator(.hidden)
+				} header: {
+					Text(.localized("Download File"))
+				} footer: {
+					Text(.localized("Paste a direct link to any file and it will download here. IPA files appear in your library."))
 				}
-			}
-			.alert(.localized("Slow Connection"), isPresented: $_isShowingSlowWarning) {
-				Button(.localized("Cancel"), role: .cancel) {
-					_pendingURL = nil
-				}
-				Button(.localized("Download Anyway")) {
-					if let url = _pendingURL {
-						_openBrowser(with: url)
-						_pendingURL = nil
+			
+				if !_downloadManager.downloads.isEmpty {
+					Section(.localized("Active Downloads")) {
+						ForEach(_downloadManager.downloads) { download in
+							DownloadRowView(download: download)
+						}
 					}
 				}
-			} message: {
-				Text(verbatim:
-					.localized(
-						"Slow Connection Warning",
-						arguments: _pendingSize.formattedByteCount,
-						Int64(_pendingSpeed).formattedByteCount,
-						_pendingEstimatedMinutes()
-					)
+			
+				if !_downloadManager.history.isEmpty {
+					Section(.localized("Download History")) {
+						ForEach(_downloadManager.history) { entry in
+							DownloadHistoryRowView(entry: entry)
+						}
+					
+						Button(.localized("Clear History"), role: .destructive) {
+							_downloadManager.clearHistory()
+						}
+					}
+				}
+			
+				if _downloadManager.downloads.isEmpty && _downloadManager.history.isEmpty {
+					VStack(spacing: 10) {
+						Image("icon-download")
+							.resizable()
+							.scaledToFit()
+							.frame(width: 44, height: 44)
+							.opacity(0.6)
+						Text(.localized("No Downloads Yet"))
+							.font(.headline)
+						Text(.localized("Downloaded files will show up here."))
+							.font(.subheadline)
+							.foregroundStyle(.secondary)
+							.multilineTextAlignment(.center)
+					}
+					.frame(maxWidth: .infinity)
+					.padding(.vertical, 32)
+					.zenithGlassCard(cornerRadius: 18)
+					.listRowBackground(Color.clear)
+				}
+			}
+			// Starfield sits directly on the List (like the
+			// Certificates ScrollView) so the stars show through the
+			// gaps between rows; rows themselves stay clear as well.
+			.scrollContentBackground(.hidden)
+			.background(Color.clear)
+			.starfieldBackground()
+			.listRowBackground(Color.clear)
+		}
+		.alert(.localized("Invalid Link"), isPresented: $_isShowingInvalidLink) {
+			Button(.localized("OK"), role: .cancel) {}
+		} message: {
+			Text(.localized("Paste a valid link, like example.com/file.zip."))
+		}
+		.sheet(isPresented: $_isShowingBrowser) {
+			if let url = _browserURL {
+				MiniBrowserView(
+					url: url,
+					onFileCaptured: { fileURL in
+						_isShowingBrowser = false
+						_linkText = ""
+						DownloadManager.shared.startDownloadFromCapturedFile(
+							fileURL,
+							originalURL: url,
+							id: "ZenithManualDownload_\(UUID().uuidString)"
+						)
+					},
+					onDownloadURLCaptured: { capturedURL, cookies in
+						_isShowingBrowser = false
+						_linkText = ""
+						_ = DownloadManager.shared.startDownload(
+							from: capturedURL,
+							id: "ZenithManualDownload_\(UUID().uuidString)",
+							cookies: cookies
+						)
+					},
+					onClose: {
+						_isShowingBrowser = false
+					}
 				)
+				.ignoresSafeArea()
 			}
 		}
+		.alert(.localized("Slow Connection"), isPresented: $_isShowingSlowWarning) {
+			Button(.localized("Cancel"), role: .cancel) {
+				_pendingURL = nil
+			}
+			Button(.localized("Download Anyway")) {
+				if let url = _pendingURL {
+					_openBrowser(with: url)
+					_pendingURL = nil
+				}
+			}
+		} message: {
+			Text(verbatim:
+				.localized(
+					"Slow Connection Warning",
+					arguments: _pendingSize.formattedByteCount,
+					Int64(_pendingSpeed).formattedByteCount,
+					_pendingEstimatedMinutes()
+				)
+			)
+		}
 	}
-}
 	
 	/// Minutes the pending download would take at the probed speed.
 	private func _pendingEstimatedMinutes() -> Int {
@@ -327,6 +348,9 @@ struct DownloadRowView: View {
 struct DownloadHistoryRowView: View {
 	let entry: DownloadHistoryEntry
 	
+	@State private var _fileToPreview: URL?
+	@State private var _isShowingPreview = false
+	
 	var body: some View {
 		HStack(spacing: 12) {
 			Image(systemName: entry.status == .completed ? "checkmark.circle.fill" : "xmark.circle.fill")
@@ -349,7 +373,21 @@ struct DownloadHistoryRowView: View {
 			
 			Spacer()
 			
-			if entry.status == .failed {
+			if entry.status == .completed,
+			   let fileURL = DownloadManager.shared.downloadedFileURL(for: entry),
+			   !_isIPAFile(entry.fileName) {
+				Button(.localized("Share")) {
+					UIActivityViewController.show(activityItems: [fileURL])
+				}
+				.buttonStyle(.borderless)
+				.font(.subheadline)
+				Button(.localized("Preview")) {
+					_fileToPreview = fileURL
+					_isShowingPreview = true
+				}
+				.buttonStyle(.borderless)
+				.font(.subheadline)
+			} else if entry.status == .failed {
 				Button(.localized("Retry")) {
 					DownloadManager.shared.retryHistoryEntry(entry)
 				}
@@ -359,5 +397,66 @@ struct DownloadHistoryRowView: View {
 		}
 		.padding(.vertical, 2)
 		.zenithGlassCard(cornerRadius: 12)
+		.sheet(isPresented: $_isShowingPreview) {
+			if let fileURL = _fileToPreview {
+				FilePreviewView(fileURL: fileURL)
+			}
+		}
+	}
+	
+	/// IPA files go through the signing/library flow, never the
+	/// generic share/preview buttons.
+	private func _isIPAFile(_ fileName: String) -> Bool {
+		URL(fileURLWithPath: fileName).pathExtension.lowercased() == "ipa"
+	}
+}
+
+// MARK: - File preview (QuickLook)
+
+/// System QuickLook preview for a downloaded non-IPA file, wrapped
+/// in a navigation controller so there is a Done button to dismiss.
+/// Only ever created for a file that exists on disk — the history
+/// row checks `downloadedFileURL(for:)` before showing the button.
+struct FilePreviewView: UIViewControllerRepresentable {
+	let fileURL: URL
+	
+	func makeCoordinator() -> FilePreviewCoordinator {
+		FilePreviewCoordinator(fileURL: fileURL)
+	}
+	
+	func makeUIViewController(context: Context) -> UINavigationController {
+		let preview = QLPreviewController()
+		preview.dataSource = context.coordinator
+		preview.navigationItem.rightBarButtonItem = UIBarButtonItem(
+			barButtonSystemItem: .done,
+			target: context.coordinator,
+			action: #selector(FilePreviewCoordinator.dismissPreview)
+		)
+		let navigation = UINavigationController(rootViewController: preview)
+		context.coordinator.navigationController = navigation
+		return navigation
+	}
+	
+	func updateUIViewController(_ uiViewController: UINavigationController, context: Context) {}
+}
+
+final class FilePreviewCoordinator: NSObject, QLPreviewControllerDataSource {
+	let fileURL: URL
+	weak var navigationController: UINavigationController?
+	
+	init(fileURL: URL) {
+		self.fileURL = fileURL
+	}
+	
+	func numberOfPreviewItems(in controller: QLPreviewController) -> Int {
+		1
+	}
+	
+	func previewController(_ controller: QLPreviewController, previewItemAt index: Int) -> QLPreviewItem {
+		fileURL as QLPreviewItem
+	}
+	
+	@objc func dismissPreview() {
+		navigationController?.dismiss(animated: true)
 	}
 }

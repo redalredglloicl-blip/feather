@@ -22,6 +22,9 @@ struct CertificatesAddView: View {
 	@State private var _isImportingMobileProvisionPresenting = false
 	@State private var _isAppleIDSignInPresenting = false
 	
+	@State private var _importErrorMessage: String = ""
+	@State private var _isImportErrorPresenting = false
+	
 	var saveButtonDisabled: Bool {
 		_p12URL == nil || _provisionURL == nil
 	}
@@ -31,11 +34,21 @@ struct CertificatesAddView: View {
 		NBNavigationView(.localized("New Certificate"), displayMode: .inline) {
 			Form {
 				NBSection(.localized("Files")) {
-					_importButton(.localized("Import Certificate File"), file: _p12URL) {
-						_isImportingP12Presenting = true
+					_importRow(
+						.localized("Import Certificate File"),
+						file: _p12URL,
+						isPresented: $_isImportingP12Presenting,
+						allowedContentTypes: [.p12]
+					) { result in
+						_handleImportedFile(result, forP12: true)
 					}
-					_importButton(.localized("Import Provisioning File"), file: _provisionURL) {
-						_isImportingMobileProvisionPresenting = true
+					_importRow(
+						.localized("Import Provisioning File"),
+						file: _provisionURL,
+						isPresented: $_isImportingMobileProvisionPresenting,
+						allowedContentTypes: [.mobileProvision]
+					) { result in
+						_handleImportedFile(result, forP12: false)
 					}
 				}
 				NBSection(.localized("Certificate from Apple")) {
@@ -74,30 +87,10 @@ struct CertificatesAddView: View {
 				AppleIDSignInView()
 					.zenithSheetBackground()
 			}
-			// Native fileImporter, NOT a nested sheet hosting a
-			// UIDocumentPicker: the picker-as-sheet-content pattern
-			// presented a black, hanging sheet on iOS 27 (the
-			// certificate import never opened). The system modifier
-			// presents the Files picker directly from this sheet.
-			.fileImporter(
-				isPresented: $_isImportingP12Presenting,
-				allowedContentTypes: [.p12],
-				allowsMultipleSelection: false
-			) { result in
-				if case let .success(urls) = result,
-				   let selectedFileURL = urls.first {
-					_p12URL = selectedFileURL
-				}
-			}
-			.fileImporter(
-				isPresented: $_isImportingMobileProvisionPresenting,
-				allowedContentTypes: [.mobileProvision],
-				allowsMultipleSelection: false
-			) { result in
-				if case let .success(urls) = result,
-				   let selectedFileURL = urls.first {
-					_provisionURL = selectedFileURL
-				}
+			.alert(.localized("Import Failed"), isPresented: $_isImportErrorPresenting) {
+				Button(.localized("OK"), role: .cancel) { }
+			} message: {
+				Text(_importErrorMessage)
 			}
 		}
 	}
@@ -106,22 +99,107 @@ struct CertificatesAddView: View {
 // MARK: - Extension: View
 extension CertificatesAddView {
 	@ViewBuilder
-	private func _importButton(
+	private func _importRow(
 		_ title: String,
 		file: URL?,
-		action: @escaping () -> Void
+		isPresented: Binding<Bool>,
+		allowedContentTypes: [UTType],
+		onResult: @escaping (Result<[URL], Error>) -> Void
 	) -> some View {
-		Button(title) {
-			action()
+		Button {
+			isPresented.wrappedValue = true
+		} label: {
+			HStack {
+				Text(title)
+					.foregroundColor(file == nil ? .accentColor : .secondary)
+				Spacer()
+				if let file = file {
+					Text(file.lastPathComponent)
+						.font(.footnote)
+						.foregroundColor(.secondary)
+						.lineLimit(1)
+					Image(systemName: "checkmark.circle.fill")
+						.foregroundColor(.green)
+				}
+			}
 		}
-		.foregroundColor(file == nil ? .accentColor : .disabled())
 		.disabled(file != nil)
 		.animation(.easeInOut(duration: 0.3), value: file != nil)
+		// Native fileImporter, NOT a nested sheet hosting a
+		// UIDocumentPicker: the picker-as-sheet-content pattern
+		// presented a black, hanging sheet on iOS 27 (the
+		// certificate import never opened). The system modifier
+		// presents the Files picker directly from this sheet.
+		// Each importer lives on its own row view: two .fileImporter
+		// modifiers on one shared host view is a fragile pattern.
+		.fileImporter(
+			isPresented: isPresented,
+			allowedContentTypes: allowedContentTypes,
+			allowsMultipleSelection: false,
+			onCompletion: onResult
+		)
 	}
 }
 
 // MARK: - Extension: View (import)
 extension CertificatesAddView {
+	private func _handleImportedFile(
+		_ result: Result<[URL], Error>,
+		forP12: Bool
+	) {
+		switch result {
+		case .success(let urls):
+			guard let selectedFileURL = urls.first else {
+				return
+			}
+			guard let localURL = _copyImportedFileToSandbox(selectedFileURL) else {
+				return
+			}
+			if forP12 {
+				_p12URL = localURL
+			} else {
+				_provisionURL = localURL
+			}
+		case .failure(let error):
+			_showImportError(error.localizedDescription)
+		}
+	}
+	
+	/// Copies a file picked from the Files picker into the app sandbox.
+	/// `.fileImporter` hands back a security-scoped URL outside the
+	/// sandbox; the later reads (`checkPasswordForCertificate` reads by
+	/// path through C functions, `handleCertificateFiles` copies with
+	/// FileManager) never claim scoped access, so storing the picked
+	/// URL as-is made the import silently die. Returns the sandbox-local
+	/// copy, or nil (after showing an alert) on failure.
+	private func _copyImportedFileToSandbox(_ sourceURL: URL) -> URL? {
+		guard sourceURL.startAccessingSecurityScopedResource() else {
+			_showImportError(.localized("Could not access the selected file. Please try again."))
+			return nil
+		}
+		defer { sourceURL.stopAccessingSecurityScopedResource() }
+		
+		let importDirectory = URL.documentsDirectory.appendingPathComponent("ZenithCertImport")
+		let destinationURL = importDirectory.appendingPathComponent(sourceURL.lastPathComponent)
+		
+		do {
+			try FileManager.default.createDirectory(at: importDirectory, withIntermediateDirectories: true)
+			if FileManager.default.fileExists(atPath: destinationURL.path) {
+				try FileManager.default.removeItem(at: destinationURL)
+			}
+			try FileManager.default.copyItem(at: sourceURL, to: destinationURL)
+			return destinationURL
+		} catch {
+			_showImportError(error.localizedDescription)
+			return nil
+		}
+	}
+	
+	private func _showImportError(_ message: String) {
+		_importErrorMessage = message
+		_isImportErrorPresenting = true
+	}
+	
 	private func _saveCertificate() {
 		guard
 			let p12URL = _p12URL,
@@ -145,4 +223,3 @@ extension CertificatesAddView {
 		}
 	}
 }
-

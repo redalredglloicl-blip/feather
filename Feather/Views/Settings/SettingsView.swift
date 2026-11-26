@@ -19,10 +19,8 @@ import IDeviceSwift
 struct SettingsView: View {
 	// MARK: Body
 	var body: some View {
-		ZStack {
-			StarfieldBackground()
-			NBNavigationView(.localized("Settings")) {
-				Form {
+		NBNavigationView(.localized("Settings")) {
+			Form {
 					NBSection(.localized("Features")) {
 						NavigationLink(destination: ConfigurationView()) {
 							_settingsRow(title: .localized("Signing Options"), icon: "icon-sign")
@@ -67,10 +65,10 @@ struct SettingsView: View {
 				}
 				.scrollContentBackground(.hidden)
 				.background(Color.clear)
+				.starfieldBackground()
 				.listRowBackground(Color.clear)
 			}
 		}
-	}
 
 	/// One settings row: a peach line icon at 20pt next to the title.
 	/// v2.2 used a bare Label(image:) whose SVG scaled to the font

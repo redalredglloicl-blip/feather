@@ -25,6 +25,7 @@ struct CertificatesView: View {
 	@State private var _selfRefreshResult: String?
 	@State private var _isSelfRefreshResultPresenting = false
 	@AppStorage("Zenith.dnsProtectionInstalled") private var _dnsProtectionInstalled = false
+	@AppStorage("Zenith.dnsProtectionPending") private var _dnsProtectionPending = false
 	@State private var _isProfileNotFoundPresenting = false
 
 	// MARK: Fetch
@@ -300,14 +301,14 @@ extension CertificatesView {
 				
 				Spacer()
 				
-				Text(.localized(_dnsProtectionInstalled ? "Protection Installed" : "Protection Not Installed"))
+				Text(.localized(_dnsProtectionInstalled ? "تم التثبيت" : _dnsProtectionPending ? "بانتظار التثبيت" : "غير مثبّت"))
 					.font(.footnote)
 					.padding(.horizontal, 8)
 					.padding(.vertical, 4)
 					.background(
-						Capsule().fill(_dnsProtectionInstalled ? Color.green.opacity(0.2) : Color(uiColor: .secondarySystemFill))
+						Capsule().fill(_dnsProtectionInstalled ? Color.green.opacity(0.2) : _dnsProtectionPending ? Color.orange.opacity(0.2) : Color(uiColor: .secondarySystemFill))
 					)
-					.foregroundStyle(_dnsProtectionInstalled ? .green : .secondary)
+					.foregroundStyle(_dnsProtectionInstalled ? .green : _dnsProtectionPending ? .orange : .secondary)
 			}
 			
 			Text(.localized("Blocks Apple's revocation checks so signed apps keep opening if the certificate is revoked."))
@@ -329,7 +330,21 @@ extension CertificatesView {
 			}
 			.buttonStyle(.borderedProminent)
 			
-			// Second route, shown only once the hosted worker URL is
+			// The user — never the app — confirms the install. iOS
+			// gives the app no API to verify a profile is installed,
+			// so this button only appears once a share has happened
+			// (pending) and the install has not been confirmed yet.
+			if _dnsProtectionPending && !_dnsProtectionInstalled {
+				Button {
+					_dnsProtectionInstalled = true
+					_dnsProtectionPending = false
+				} label: {
+					Label(.localized("أكملت التثبيت"), systemImage: "checkmark.circle.fill")
+				}
+				.buttonStyle(.bordered)
+			}
+
+// Second route, shown only once the hosted worker URL is
 			// set: Safari opens the hosted copy, and iOS offers the
 			// profile install from there. Use it whenever the first
 			// button does not produce an install prompt.
@@ -346,11 +361,11 @@ extension CertificatesView {
 					.foregroundStyle(.secondary)
 			}
 			
-			Text(.localized("من قائمة المشاركة اختر «حفظ في الملفات»، وبعدين افتح الملف من تطبيق الملفات وكمّل التثبيت."))
+			Text(.localized("1. اختر «حفظ في الملفات»\n2. افتح الملف من تطبيق الملفات\n3. من الإعدادات → VPN وإدارة الأجهزة → ثبّت الملف"))
 				.font(.caption2)
 				.foregroundStyle(.secondary)
 			
-			Text(.localized("iOS does not let the app verify installation. This status is based on your install tap."))
+			Text(.localized("هاي الحالة حسب تأكيدك إنت، لأن التطبيق ما يقدر يتأكد من التثبيت بنفسه."))
 				.font(.caption2)
 				.foregroundStyle(.secondary)
 			
@@ -374,27 +389,29 @@ extension CertificatesView {
 	/// sheet-hosted UIDocumentInteractionController whose empty view
 	/// stayed black forever when iOS 27 offered no "Open In" menu
 	/// for a .mobileconfig (proven on Reda's phone, v2.4).
-	/// The install tap is recorded locally because iOS gives the app
-	/// no API to verify that a specific profile is installed.
+	/// Sharing only marks the install as PENDING — it never claims
+	/// success, because iOS gives the app no API to verify that a
+	/// specific profile is installed. The user confirms completion
+	/// with the «أكملت التثبيت» button on the card.
 	private func _installDNSProtection() {
 		guard let tempURL = _dnsProfileTempURL() else {
 			_isProfileNotFoundPresenting = true
 			return
 		}
 		UIActivityViewController.show(activityItems: [tempURL])
-		_dnsProtectionInstalled = true
+		_dnsProtectionPending = true
 	}
 	
 	/// FALLBACK route: open the hosted copy in Safari, where iOS
-	/// offers the profile install from the download. Same honest
-	/// basis as the primary route: the tap is recorded, installation
-	/// itself cannot be verified by the app.
+	/// offers the profile install from the download. Like the primary
+	/// route it never claims success on tap — installation itself
+	/// cannot be verified by the app, so the user confirms it with
+	/// the «أكملت التثبيت» button on the card.
 	private func _installDNSProtectionViaSafari() {
 		guard let hosted = Self._dnsProfileHostedURL, let url = URL(string: hosted) else {
 			return
 		}
 		UIApplication.shared.open(url)
-		_dnsProtectionInstalled = true
 	}
 	
 	/// Copies the bundled profile to a temp file for handing to the
