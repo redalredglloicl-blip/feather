@@ -289,13 +289,17 @@ final class CertificateHealthChecker: ObservableObject {
 		// present. Read the same fields from the DER bytes with
 		// swift-certificates (X509), already in the package graph
 		// as a dependency of swift-nio-ssl.
-		if let der = SecCertificateCopyData(certificate) as Data? {
-			var decoder = DER.Decoder(derEncoded: [UInt8](der))
-			if let x509 = try? Certificate(from: &decoder) {
-				info.expiry = x509.notValidAfter
-				info.subject = String(describing: x509.subject)
-				info.issuer = String(describing: x509.issuer)
-			}
+		// The app has its own `Certificate: Codable` model
+		// (CertificateModel.swift) which shadows X509's type in
+		// this target — qualify the module, or the call resolves
+		// to the local model and its Decodable init. (swift-asn1
+		// 1.6.0 has no DER.Decoder type at all; decoding is via
+		// DERParseable's init(derEncoded:).)
+		if let der = SecCertificateCopyData(certificate) as Data?,
+		   let x509 = try? X509.Certificate(derEncoded: [UInt8](der)) {
+			info.expiry = x509.notValidAfter
+			info.subject = String(describing: x509.subject)
+			info.issuer = String(describing: x509.issuer)
 		}
 		return .success(info)
 	}
