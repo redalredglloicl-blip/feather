@@ -18,7 +18,9 @@ struct FeatherApp: App {
 	
 	@StateObject var downloadManager = DownloadManager.shared
 	@StateObject private var _forcedUpdate = ForcedUpdateManager.shared
+	@StateObject private var _newVersionNotifier = NewVersionNotifier.shared
 	@State private var _launchBounced = false
+	@State private var _startupDone = false
 	let storage = Storage.shared
 	
 	var body: some Scene {
@@ -26,10 +28,22 @@ struct FeatherApp: App {
 			Group {
 				if _forcedUpdate.isUpdateRequired {
 					ForcedUpdateView()
+				} else if !_startupDone {
+					// Zenith v2.2: real startup screen — the counter is
+					// driven by the actual init steps in LoadingView
+					// (storage, certificates, reminders, update check),
+					// never a fake timer. The forced-update gate above
+					// is untouched: a cached block still wins first.
+					LoadingView {
+						_startupDone = true
+					}
 				} else {
 					VStack {
 				DownloadHeaderView(downloadManager: downloadManager)
 					.transition(.move(edge: .top).combined(with: .opacity))
+				if _newVersionNotifier.showBanner {
+					NewVersionBannerView(notifier: _newVersionNotifier)
+				}
 				VariedTabbarView()
 					.environment(\.managedObjectContext, storage.context)
 					.onOpenURL(perform: _handleURL)
@@ -70,16 +84,22 @@ struct FeatherApp: App {
 				UserDefaults.standard.removeObject(forKey: "Feather.shouldTintIcons")
 				UserDefaults.standard.removeObject(forKey: "Feather.shouldChangeIconsBasedOffStyle")
 				UserDefaults.standard.set("#FFC778", forKey: "Feather.userTintColor")
+				// Zenith v2.2: share the selected certificate with the home-screen widget.
+				WidgetDataStore.shared.sync()
 			}
 				}
 			}
 			.task {
 				// Zenith forced update: check on every launch.
 				await ForcedUpdateManager.shared.checkForUpdate()
+				// Zenith v2.2: notify once if a newer build was released.
+				await NewVersionNotifier.shared.checkForNewVersion()
 			}
 			.onReceive(NotificationCenter.default.publisher(for: UIApplication.willEnterForegroundNotification)) { _ in
 				Task {
 					await ForcedUpdateManager.shared.checkForUpdate()
+					await NewVersionNotifier.shared.checkForNewVersion()
+					WidgetDataStore.shared.sync()
 				}
 			}
 		}

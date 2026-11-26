@@ -22,6 +22,10 @@ struct SigningView: View {
 	@State private var _isSigning = false
 	@State private var _isSuccessPresenting = false
 	@State private var _selectedPhoto: PhotosPickerItem? = nil
+	/// iOS-compat warning shown before signing starts (set by _start).
+	@State private var _isCompatAlertPresenting = false
+	@State private var _compatMinimumOS = ""
+	@State private var _compatDeviceOS = ""
 	@State var appIcon: UIImage?
 	
 	// MARK: Fetch
@@ -81,7 +85,7 @@ struct SigningView: View {
 			.toolbar {
 				NBToolbarButton(role: .dismiss)
 				ToolbarItem(placement: .principal) {
-					Image("Glyph")
+					Image("zenith")
 						.resizable()
 						.scaledToFit()
 						.frame(height: 38)
@@ -120,6 +124,14 @@ struct SigningView: View {
 			}
 			.disabled(_isSigning)
 			.animation(.smooth, value: _isSigning)
+			.alert(.localized("هالتطبيق يحتاج iOS أحدث"), isPresented: $_isCompatAlertPresenting) {
+				Button(.localized("إلغاء"), role: .cancel) { }
+				Button(.localized("وقّع على أي حال")) {
+					_start(confirmed: true)
+				}
+			} message: {
+				Text(.localized("هالتطبيق يحتاج iOS %@ على الأقل، وجهازك عليه iOS %@. ممكن ما يشتغل بعد التوقيع.", arguments: _compatMinimumOS, _compatDeviceOS))
+			}
 		}
 		.overlay {
 			if _isSuccessPresenting {
@@ -283,7 +295,22 @@ extension SigningView {
 
 // MARK: - Extension: View (import)
 extension SigningView {
-	private func _start() {
+	private func _start(confirmed: Bool = false) {
+		// Zenith v2.2: warn when the IPA needs a newer iOS than this
+		// device runs. The user can still proceed — the warning is
+		// advice, not a block.
+		if !confirmed {
+			switch IOSCompatValidator.check(app: app) {
+			case .requiresNewer(let minimumOS, let deviceOS):
+				_compatMinimumOS = minimumOS
+				_compatDeviceOS = deviceOS
+				_isCompatAlertPresenting = true
+				return
+			case .compatible, .unknown:
+				break
+			}
+		}
+
 		guard
 			_selectedCert() != nil || _temporaryOptions.signingOption != .default
 		else {
@@ -316,6 +343,14 @@ extension SigningView {
 					actions: [ok]
 				)
 			} else {
+				// Zenith v2.2: keep the custom icon picked in this
+				// sheet for the app's Library icon, keyed by the
+				// bundle identifier the app was signed with.
+				if let icon = appIcon {
+					CustomAppIconStore.shared.save(icon, for: _temporaryOptions.appIdentifier ?? app.identifier)
+				}
+				ZenithLastError.clear()
+
 				if
 					_temporaryOptions.post_deleteAppAfterSigned,
 					!app.isSigned

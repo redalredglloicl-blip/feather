@@ -149,6 +149,7 @@ struct SigningSuccessView: View {
 			.padding(.horizontal, 32)
 			.opacity(_contentOpacity)
 		}
+		.starfieldBackground()
 		.onAppear {
 			withAnimation(.spring(response: 0.35, dampingFraction: 0.7)) {
 				_circleScale = 1

@@ -105,6 +105,13 @@ struct FRAppIconView: View {
 	}
 	
 	private func _load() {
+		// Zenith v2.2: a custom icon picked at sign time wins over the
+		// bundle's own icon.
+		if let identifier = app?.identifier, let custom = CustomAppIconStore.shared.image(for: identifier) {
+			loader.image = custom
+			return
+		}
+
 		let bundleURL: URL
 
 		if let app {

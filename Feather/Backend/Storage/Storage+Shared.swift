@@ -22,6 +22,8 @@ extension Storage {
 	}
 	
 	func deleteApp(for app: AppInfoPresentable) {
+		// Zenith v2.2: drop the stored custom icon with the app.
+		CustomAppIconStore.shared.remove(for: app.identifier)
 		if let url = getUuidDirectory(for: app) {
 			try? FileManager.default.removeItem(at: url)
 		}

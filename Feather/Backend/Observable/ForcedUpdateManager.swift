@@ -278,6 +278,19 @@ final class ForcedUpdateManager: ObservableObject {
 	}
 	
 	// MARK: - Fetching
+
+	/// Every check must read FRESH values. A plain GET can be served
+	/// stale — the phone's network cached the old 'null' answer from
+	/// before minVersion was set, so the check kept reporting "no
+	/// block" even after the server said 3 (proven 2026-11-25: signing
+	/// passed with minVersion=3 live). Each request therefore bypasses
+	/// every cache: URLSession cache, proxies and edges.
+	private func _noCacheRequest(for url: URL) -> URLRequest {
+		var request = URLRequest(url: url, cachePolicy: .reloadIgnoringLocalAndRemoteCacheData, timeoutInterval: 15)
+		request.setValue("no-cache", forHTTPHeaderField: "Cache-Control")
+		request.setValue("no-cache", forHTTPHeaderField: "Pragma")
+		return request
+	}
 	
 	/// Returns (value, succeeded). A JSON `null` means the value is
 	/// absent (succeeded, value nil). Any transport or decode error
@@ -310,7 +323,7 @@ final class ForcedUpdateManager: ObservableObject {
 	}
 	
 	private func _fetchString(from url: URL) async throws -> String? {
-		let (data, response) = try await _session.data(from: url)
+		let (data, response) = try await _session.data(for: _noCacheRequest(for: url))
 		guard let http = response as? HTTPURLResponse, (200..<300).contains(http.statusCode) else {
 			throw ForcedUpdateError.checkFailed
 		}
@@ -321,7 +334,7 @@ final class ForcedUpdateManager: ObservableObject {
 	}
 	
 	private func _fetchBool(from url: URL) async throws -> Bool? {
-		let (data, response) = try await _session.data(from: url)
+		let (data, response) = try await _session.data(for: _noCacheRequest(for: url))
 		guard let http = response as? HTTPURLResponse, (200..<300).contains(http.statusCode) else {
 			throw ForcedUpdateError.checkFailed
 		}
@@ -336,7 +349,7 @@ final class ForcedUpdateManager: ObservableObject {
 	/// A JSON float such as 2.0 decodes to 2. Anything else is a
 	/// failed fetch, never a guessed value.
 	private func _fetchInt(from url: URL) async throws -> Int? {
-		let (data, response) = try await _session.data(from: url)
+		let (data, response) = try await _session.data(for: _noCacheRequest(for: url))
 		guard let http = response as? HTTPURLResponse, (200..<300).contains(http.statusCode) else {
 			throw ForcedUpdateError.checkFailed
 		}

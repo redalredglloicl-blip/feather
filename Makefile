@@ -31,6 +31,7 @@ $(PLATFORMS): deps
 	# cannot carry raw binary through this tooling) — decode them back
 	# to real PNGs before the build reads the asset catalog.
 	base64 -D < Feather/Resources/zenith-icon-b64/zenith.png.b64 > Feather/Resources/Assets.xcassets/AppIcon.appiconset/zenith.png
+	base64 -D < Feather/Resources/zenith-icon-b64/zenith.png.b64 > Feather/Resources/Assets.xcassets/zenith.imageset/zenith.png
 	base64 -D < Feather/Resources/zenith-icon-b64/zenith_dark.png.b64 > Feather/Resources/Assets.xcassets/AppIcon.appiconset/zenith_dark.png
 	base64 -D < Feather/Resources/zenith-icon-b64/zenith_tint.png.b64 > Feather/Resources/Assets.xcassets/AppIcon.appiconset/zenith_tint.png
 

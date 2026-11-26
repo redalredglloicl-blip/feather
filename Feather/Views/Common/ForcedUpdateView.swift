@@ -59,6 +59,6 @@ struct ForcedUpdateView: View {
 			
 			Spacer()
 		}
-		.background(Color(UIColor.systemBackground))
+		.starfieldBackground()
 	}
 }

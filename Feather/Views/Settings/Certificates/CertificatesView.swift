@@ -58,8 +58,10 @@ struct CertificatesView: View {
 							_actions(for: selected)
 						}
 					}
+
+				CertificateHealthView(cert: selected)
 			}
-			
+
 			_dnsProtectionCard
 			
 			Button {
@@ -70,6 +72,7 @@ struct CertificatesView: View {
 			.buttonStyle(.bordered)
 			.padding(.vertical, 8)
 		}
+		.starfieldBackground()
 		.navigationTitle(.localized("Certificates"))
 		.overlay {
 			if _certificates.isEmpty {
@@ -127,6 +130,8 @@ struct CertificatesView: View {
 			Button(.localized("OK")) {
 				cert.nickname = _newNickname.isEmpty ? nil : _newNickname
 				Storage.shared.saveContext()
+				// Zenith v2.2: the widget shows the nickname.
+				WidgetDataStore.shared.sync()
 			}
 		}
 		.alert(.localized("Refresh"), isPresented: $_isRefreshResultPresenting) {

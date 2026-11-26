@@ -16,8 +16,10 @@ struct LibraryView: View {
 	@State private var _selectedInfoAppPresenting: AnyApp?
 	@State private var _selectedSigningAppPresenting: AnyApp?
 	@State private var _selectedInstallAppPresenting: AnyApp?
+	@State private var _selectedPassportAppPresenting: AnyApp?
 	@State private var _isImportingPresenting = false
 	@State private var _isDownloadingPresenting = false
+	@State private var _isSigningQueuePresenting = false
 	@State private var _alertDownloadString: String = "" // for _isDownloadingPresenting
 	
 	// MARK: Selection State
@@ -205,6 +207,7 @@ struct LibraryView: View {
 					}
 				}
 			}
+			.scrollContentBackground(.hidden)
 			.searchable(text: $_searchText, placement: .platform())
 			.compatSearchScopes($_selectedScope) {
 				ForEach(Scope.allCases, id: \.displayName) { scope in
@@ -261,11 +264,22 @@ struct LibraryView: View {
 					) {
 						_importActions()
 					}
+					NBToolbarButton(
+						.localized("Batch Sign"),
+						image: "icon-sign",
+						placement: .topBarTrailing
+					) {
+						_isSigningQueuePresenting = true
+					}
 				}
 			}
 			.environment(\.editMode, $_editMode)
 			.sheet(item: $_selectedInfoAppPresenting) { app in
 				LibraryInfoView(app: app.base)
+					.zenithSheetBackground()
+			}
+			.sheet(item: $_selectedPassportAppPresenting) { app in
+				AppPassportView(app: app.base)
 					.zenithSheetBackground()
 			}
 			.sheet(item: $_selectedInstallAppPresenting) { app in
@@ -294,6 +308,10 @@ struct LibraryView: View {
 				)
 				.ignoresSafeArea()
 				.zenithSheetBackground()
+			}
+			.sheet(isPresented: $_isSigningQueuePresenting) {
+				SigningQueueView()
+					.zenithSheetBackground()
 			}
 			.alert(.localized("Import from URL"), isPresented: $_isDownloadingPresenting) {
 				TextField(.localized("URL"), text: $_alertDownloadString)
@@ -340,6 +358,7 @@ struct LibraryView: View {
 				}
 			}
 		}
+		.starfieldBackground()
 	}
 }
 
@@ -440,6 +459,7 @@ extension LibraryView {
 			selectedInfoAppPresenting: $_selectedInfoAppPresenting,
 			selectedSigningAppPresenting: $_selectedSigningAppPresenting,
 			selectedInstallAppPresenting: $_selectedInstallAppPresenting,
+			selectedPassportAppPresenting: $_selectedPassportAppPresenting,
 			selectedAppUUIDs: $_selectedAppUUIDs,
 			onDeleteRequest: { app in
 				_appPendingDelete = AnyApp(base: app)

@@ -299,6 +299,9 @@ final class AutoRefreshManager {
 				try? await handler.clean()
 			}.value
 		} catch {
+			// Zenith v2.2: background re-sign failures also surface in
+			// the Help Center diagnostics.
+			ZenithLastError.record(error)
 			throw AutoRefreshError.resignFailed(appName: app.name ?? "", underlying: error)
 		}
 		

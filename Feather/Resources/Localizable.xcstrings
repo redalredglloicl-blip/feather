@@ -6665,89 +6665,6 @@
         }
       }
     },
-    "General": {
-      "extractionState": "manual",
-      "localizations": {
-        "ar": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "عام"
-          }
-        },
-        "cs": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Obecné"
-          }
-        },
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Allgemein"
-          }
-        },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "General"
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Général"
-          }
-        },
-        "id": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Umum"
-          }
-        },
-        "it": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Generale"
-          }
-        },
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "기본"
-          }
-        },
-        "pl": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Ogólne"
-          }
-        },
-        "ru": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Общие"
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Genel"
-          }
-        },
-        "vi": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Chung"
-          }
-        },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "一般"
-          }
-        }
-      }
-    },
     "Get": {
       "extractionState": "manual",
       "localizations": {
@@ -13554,19 +13471,19 @@
         }
       }
     },
-    "Reset the applications certificates, apps, and general contents.": {
+    "Reset the application's certificates, apps, and files.": {
       "extractionState": "manual",
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Reset the applications certificates, apps, and general contents."
+            "value": "Reset the application's certificates, apps, and files."
           }
         },
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "هاي تصفّر شهادات التطبيق وتطبيقاته ومحتوياته العامة."
+            "value": "هاي تصفّر شهادات التطبيق وتطبيقاته وملفاته."
           }
         }
       }
@@ -18743,6 +18660,1927 @@
           "stringUnit": {
             "state": "translated",
             "value": "هالشي يوقّع زينيث نفسه ويثبّت النسخة الجديدة فوق هاي النسخة. إذا الشهادة من أبل، تنجاب شهادة جديدة أولاً؛ وإلا تنستخدم الشهادة الحالية. إذا فشل أي شي، تبقى النسخة القديمة تشتغل."
+          }
+        }
+      }
+    },
+    "Loading apps": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "جاي نحمّل تطبيقاتك"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Loading apps"
+          }
+        }
+      }
+    },
+    "Loading certificates": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "جاي نجهّز الشهادات"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Loading certificates"
+          }
+        }
+      }
+    },
+    "Setting up reminders": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "جاي نفعّل التذكيرات"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Setting up reminders"
+          }
+        }
+      }
+    },
+    "Checking for updates": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "جاي نتحقق من التحديثات"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Checking for updates"
+          }
+        }
+      }
+    },
+    "Almost done": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "شوي ويخلص"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Almost done"
+          }
+        }
+      }
+    },
+    "Device Name": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "اسم الجهاز"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Device Name"
+          }
+        }
+      }
+    },
+    "Downloads": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "التحميلات"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Downloads"
+          }
+        }
+      }
+    },
+    "Paste IPA Link": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "الصق رابط IPA"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Paste IPA Link"
+          }
+        }
+      }
+    },
+    "Download": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "حمّل"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Download"
+          }
+        }
+      }
+    },
+    "Download IPA": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "تحميل IPA"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Download IPA"
+          }
+        }
+      }
+    },
+    "Paste a direct link to an IPA file and it will download here, then appear in your library.": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "الصق رابط مباشر لملف IPA وراح يتحمل هنا، وبعدين يطلع بمكتبتك."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Paste a direct link to an IPA file and it will download here, then appear in your library."
+          }
+        }
+      }
+    },
+    "Active Downloads": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "التحميلات الجارية"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Active Downloads"
+          }
+        }
+      }
+    },
+    "Download History": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "سجل التحميلات"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Download History"
+          }
+        }
+      }
+    },
+    "Clear History": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "امسح السجل"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Clear History"
+          }
+        }
+      }
+    },
+    "No Downloads Yet": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ماكو تحميلات بعد"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No Downloads Yet"
+          }
+        }
+      }
+    },
+    "Downloaded IPA files will show up here.": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ملفات IPA الي تحملها راح تطلع هنا."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Downloaded IPA files will show up here."
+          }
+        }
+      }
+    },
+    "Invalid Link": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "الرابط مو صحيح"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Invalid Link"
+          }
+        }
+      }
+    },
+    "Paste a valid link starting with http or https.": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "الصق رابط صحيح يبدي بـ http أو https."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Paste a valid link starting with http or https."
+          }
+        }
+      }
+    },
+    "Slow Connection": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "النت بطيء"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Slow Connection"
+          }
+        }
+      }
+    },
+    "Download Anyway": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "حمّل على كل حال"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Download Anyway"
+          }
+        }
+      }
+    },
+    "Slow Connection Warning": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "حجم الملف %@ وسرعة النت %@، يعني راح ياخذ تقريباً %lld دقيقة. تريد تكمل التحميل؟"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "File size %@ and connection speed %@ — this will take about %lld minutes. Continue downloading?"
+          }
+        }
+      }
+    },
+    "Fast": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "سريع"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fast"
+          }
+        }
+      }
+    },
+    "Download Failed": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "فشل التحميل"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Download Failed"
+          }
+        }
+      }
+    },
+    "Paused": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "متوقف مؤقتاً"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Paused"
+          }
+        }
+      }
+    },
+    "Pause": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "إيقاف مؤقت"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pause"
+          }
+        }
+      }
+    },
+    "Resume": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "كمّل"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Resume"
+          }
+        }
+      }
+    },
+    "Retry": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "حاول مرة ثانية"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Retry"
+          }
+        }
+      }
+    },
+    "Seconds Left (%lld)": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "باقي (%lld) ثانية"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Seconds Left (%lld)"
+          }
+        }
+      }
+    },
+    "Batch Signing": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "توقيع جماعي"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Batch Signing"
+          }
+        }
+      }
+    },
+    "Pick Apps to Sign": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "اختار التطبيقات الي تريد توقعها"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pick Apps to Sign"
+          }
+        }
+      }
+    },
+    "No unsigned apps. Import an IPA first.": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ماكو تطبيقات بدون توقيع. استورد ملف IPA أول شي."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No unsigned apps. Import an IPA first."
+          }
+        }
+      }
+    },
+    "Signing Queue": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "طابور التوقيع"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Signing Queue"
+          }
+        }
+      }
+    },
+    "Retry All Failed": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "عيد محاولة كل الفاشلات"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Retry All Failed"
+          }
+        }
+      }
+    },
+    "Clear Signed": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "امسح الموقّعات"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Clear Signed"
+          }
+        }
+      }
+    },
+    "Signing one by one — keep the app open.": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "التوقيع واحد ورا الثاني — خلي التطبيق مفتوح."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Signing one by one — keep the app open."
+          }
+        }
+      }
+    },
+    "Sign Selected (%lld)": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "وقّع المحددات (%lld)"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sign Selected (%lld)"
+          }
+        }
+      }
+    },
+    "Waiting": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "بالانتظار"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Waiting"
+          }
+        }
+      }
+    },
+    "Signing…": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "جاي يوقع…"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Signing…"
+          }
+        }
+      }
+    },
+    "Signing Failed": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "فشل التوقيع"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Signing Failed"
+          }
+        }
+      }
+    },
+    "Batch Sign": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "توقيع جماعي"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Batch Sign"
+          }
+        }
+      }
+    },
+    "مركز المساعدة": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "مركز المساعدة"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "مركز المساعدة"
+          }
+        }
+      }
+    },
+    "أخطاء شائعة": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "أخطاء شائعة"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "أخطاء شائعة"
+          }
+        }
+      }
+    },
+    "المطور غير موثوق": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "المطور غير موثوق"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "المطور غير موثوق"
+          }
+        }
+      }
+    },
+    "افتح إعدادات الآيفون وابحث عن «VPN وإدارة الجهاز».": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "افتح إعدادات الآيفون وابحث عن «VPN وإدارة الجهاز»."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "افتح إعدادات الآيفون وابحث عن «VPN وإدارة الجهاز»."
+          }
+        }
+      }
+    },
+    "اضغط على اسم الشهادة أو الفريق.": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "اضغط على اسم الشهادة أو الفريق."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "اضغط على اسم الشهادة أو الفريق."
+          }
+        }
+      }
+    },
+    "اضغط «الوثوق» وبعدين أكّد.": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "اضغط «الوثوق» وبعدين أكّد."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "اضغط «الوثوق» وبعدين أكّد."
+          }
+        }
+      }
+    },
+    "ارجع وافتح التطبيق — لازم يشتغل هسه.": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ارجع وافتح التطبيق — لازم يشتغل هسه."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ارجع وافتح التطبيق — لازم يشتغل هسه."
+          }
+        }
+      }
+    },
+    "فشل التثبيت": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "فشل التثبيت"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "فشل التثبيت"
+          }
+        }
+      }
+    },
+    "تأكد عندك مساحة فاضية بالآيفون.": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "تأكد عندك مساحة فاضية بالآيفون."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "تأكد عندك مساحة فاضية بالآيفون."
+          }
+        }
+      }
+    },
+    "إذا التطبيق مثبّت قبل، احذف النسخة القديمة وثبّت من جديد.": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "إذا التطبيق مثبّت قبل، احذف النسخة القديمة وثبّت من جديد."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "إذا التطبيق مثبّت قبل، احذف النسخة القديمة وثبّت من جديد."
+          }
+        }
+      }
+    },
+    "تأكد الشهادة ما منتهية — شوف تبويب الشهادات.": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "تأكد الشهادة ما منتهية — شوف تبويب الشهادات."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "تأكد الشهادة ما منتهية — شوف تبويب الشهادات."
+          }
+        }
+      }
+    },
+    "إذا تكرر، وقّع التطبيق من جديد وبعدين ثبّته.": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "إذا تكرر، وقّع التطبيق من جديد وبعدين ثبّته."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "إذا تكرر، وقّع التطبيق من جديد وبعدين ثبّته."
+          }
+        }
+      }
+    },
+    "الشهادة مسحوبة": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "الشهادة مسحوبة"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "الشهادة مسحوبة"
+          }
+        }
+      }
+    },
+    "روح لتبويب الشهادات واضغط «تحديث» على صحة الشهادة حتى تتأكد.": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "روح لتبويب الشهادات واضغط «تحديث» على صحة الشهادة حتى تتأكد."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "روح لتبويب الشهادات واضغط «تحديث» على صحة الشهادة حتى تتأكد."
+          }
+        }
+      }
+    },
+    "إذا طلعت مسحوبة، جيب شهادة جديدة من تبويب الشهادات.": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "إذا طلعت مسحوبة، جيب شهادة جديدة من تبويب الشهادات."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "إذا طلعت مسحوبة، جيب شهادة جديدة من تبويب الشهادات."
+          }
+        }
+      }
+    },
+    "وقّع كل تطبيقاتك بالشهادة الجديدة وثبّتها من جديد.": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "وقّع كل تطبيقاتك بالشهادة الجديدة وثبّتها من جديد."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "وقّع كل تطبيقاتك بالشهادة الجديدة وثبّتها من جديد."
+          }
+        }
+      }
+    },
+    "ثبّت الحماية ضد السحب من تبويب الشهادات حتى ما تتكرر المشكلة.": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ثبّت الحماية ضد السحب من تبويب الشهادات حتى ما تتكرر المشكلة."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ثبّت الحماية ضد السحب من تبويب الشهادات حتى ما تتكرر المشكلة."
+          }
+        }
+      }
+    },
+    "فشل التوقيع": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "فشل التوقيع"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "فشل التوقيع"
+          }
+        }
+      }
+    },
+    "تأكد مختار شهادة من شاشة التوقيع وإنها ما منتهية.": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "تأكد مختار شهادة من شاشة التوقيع وإنها ما منتهية."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "تأكد مختار شهادة من شاشة التوقيع وإنها ما منتهية."
+          }
+        }
+      }
+    },
+    "إذا الشهادة من أبل، جرّب تجديدها من تبويب الشهادات.": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "إذا الشهادة من أبل، جرّب تجديدها من تبويب الشهادات."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "إذا الشهادة من أبل، جرّب تجديدها من تبويب الشهادات."
+          }
+        }
+      }
+    },
+    "شوف آخر خطأ مسجّل تحت — هو يقول شنو صار بالضبط.": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "شوف آخر خطأ مسجّل تحت — هو يقول شنو صار بالضبط."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "شوف آخر خطأ مسجّل تحت — هو يقول شنو صار بالضبط."
+          }
+        }
+      }
+    },
+    "إذا الخطأ يذكر كلمة المرور، أعد إضافة الشهادة بكلمة المرور الصحيحة.": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "إذا الخطأ يذكر كلمة المرور، أعد إضافة الشهادة بكلمة المرور الصحيحة."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "إذا الخطأ يذكر كلمة المرور، أعد إضافة الشهادة بكلمة المرور الصحيحة."
+          }
+        }
+      }
+    },
+    "التشخيص": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "التشخيص"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "التشخيص"
+          }
+        }
+      }
+    },
+    "آخر خطأ مسجّل": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "آخر خطأ مسجّل"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "آخر خطأ مسجّل"
+          }
+        }
+      }
+    },
+    "ما صار أي خطأ مسجّل — إذا صار خطأ بالتوقيع أو التثبيت، راح يطلع هنا.": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ما صار أي خطأ مسجّل — إذا صار خطأ بالتوقيع أو التثبيت، راح يطلع هنا."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ما صار أي خطأ مسجّل — إذا صار خطأ بالتوقيع أو التثبيت، راح يطلع هنا."
+          }
+        }
+      }
+    },
+    "مسح السجل": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "مسح السجل"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "مسح السجل"
+          }
+        }
+      }
+    },
+    "معلومات التطبيق": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "معلومات التطبيق"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "معلومات التطبيق"
+          }
+        }
+      }
+    },
+    "الإصدار": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "الإصدار"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "الإصدار"
+          }
+        }
+      }
+    },
+    "الإصدار %@": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "الإصدار %@"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "الإصدار %@"
+          }
+        }
+      }
+    },
+    "المعرّف": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "المعرّف"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "المعرّف"
+          }
+        }
+      }
+    },
+    "حجم الملف": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "حجم الملف"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "حجم الملف"
+          }
+        }
+      }
+    },
+    "جارٍ الحساب...": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "جارٍ الحساب..."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "جارٍ الحساب..."
+          }
+        }
+      }
+    },
+    "غير معروف": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "غير معروف"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "غير معروف"
+          }
+        }
+      }
+    },
+    "تاريخ التثبيت": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "تاريخ التثبيت"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "تاريخ التثبيت"
+          }
+        }
+      }
+    },
+    "آخر مرة انفتح": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "آخر مرة انفتح"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "آخر مرة انفتح"
+          }
+        }
+      }
+    },
+    "ما انفتح بعد": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ما انفتح بعد"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ما انفتح بعد"
+          }
+        }
+      }
+    },
+    "أقل iOS مطلوب": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "أقل iOS مطلوب"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "أقل iOS مطلوب"
+          }
+        }
+      }
+    },
+    "الشهادة": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "الشهادة"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "الشهادة"
+          }
+        }
+      }
+    },
+    "تنتهي": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "تنتهي"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "تنتهي"
+          }
+        }
+      }
+    },
+    "باقي على الشهادة": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "باقي على الشهادة"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "باقي على الشهادة"
+          }
+        }
+      }
+    },
+    "%lld يوم": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld يوم"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld يوم"
+          }
+        }
+      }
+    },
+    "هالتطبيق ما موقع بعد — وقّعه حتى يشتغل على الآيفون.": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "هالتطبيق ما موقع بعد — وقّعه حتى يشتغل على الآيفون."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "هالتطبيق ما موقع بعد — وقّعه حتى يشتغل على الآيفون."
+          }
+        }
+      }
+    },
+    "أعد توقيع التطبيق": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "أعد توقيع التطبيق"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "أعد توقيع التطبيق"
+          }
+        }
+      }
+    },
+    "وقّع التطبيق": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "وقّع التطبيق"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "وقّع التطبيق"
+          }
+        }
+      }
+    },
+    "صحة الشهادة": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "صحة الشهادة"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "صحة الشهادة"
+          }
+        }
+      }
+    },
+    "تحديث": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "تحديث"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "تحديث"
+          }
+        }
+      }
+    },
+    "ما انفحصت بعد": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ما انفحصت بعد"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ما انفحصت بعد"
+          }
+        }
+      }
+    },
+    "جارٍ الفحص...": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "جارٍ الفحص..."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "جارٍ الفحص..."
+          }
+        }
+      }
+    },
+    "سليمة — أبل ما ساحبتها": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "سليمة — أبل ما ساحبتها"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "سليمة — أبل ما ساحبتها"
+          }
+        }
+      }
+    },
+    "مسحوبة من أبل": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "مسحوبة من أبل"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "مسحوبة من أبل"
+          }
+        }
+      }
+    },
+    "ما گدرنا نتأكد — تحقق من النت وحاول مرة ثانية": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ما گدرنا نتأكد — تحقق من النت وحاول مرة ثانية"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ما گدرنا نتأكد — تحقق من النت وحاول مرة ثانية"
+          }
+        }
+      }
+    },
+    "الشهادة مسحوبة — التطبيقات الموقعة بيها ما راح تنفتح. جيب شهادة جديدة ووقّع التطبيقات من جديد.": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "الشهادة مسحوبة — التطبيقات الموقعة بيها ما راح تنفتح. جيب شهادة جديدة ووقّع التطبيقات من جديد."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "الشهادة مسحوبة — التطبيقات الموقعة بيها ما راح تنفتح. جيب شهادة جديدة ووقّع التطبيقات من جديد."
+          }
+        }
+      }
+    },
+    "آخر فحص: %@": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "آخر فحص: %@"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "آخر فحص: %@"
+          }
+        }
+      }
+    },
+    "ملفات الشهادة مو موجودة": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ملفات الشهادة مو موجودة"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ملفات الشهادة مو موجودة"
+          }
+        }
+      }
+    },
+    "هالتطبيق يحتاج iOS أحدث": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "هالتطبيق يحتاج iOS أحدث"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "هالتطبيق يحتاج iOS أحدث"
+          }
+        }
+      }
+    },
+    "هالتطبيق يحتاج iOS %@ على الأقل، وجهازك عليه iOS %@. ممكن ما يشتغل بعد التوقيع.": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "هالتطبيق يحتاج iOS %@ على الأقل، وجهازك عليه iOS %@. ممكن ما يشتغل بعد التوقيع."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "هالتطبيق يحتاج iOS %@ على الأقل، وجهازك عليه iOS %@. ممكن ما يشتغل بعد التوقيع."
+          }
+        }
+      }
+    },
+    "إلغاء": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "إلغاء"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "إلغاء"
+          }
+        }
+      }
+    },
+    "وقّع على أي حال": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "وقّع على أي حال"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "وقّع على أي حال"
+          }
+        }
+      }
+    },
+    "New Zenith version available": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "نزل إصدار جديد من Zenith"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "New Zenith version available"
+          }
+        }
+      }
+    },
+    "New Zenith build %lld is available. Update now.": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "نزل بناء جديد من Zenith (رقم %lld). حدّث هسه."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "New Zenith build %lld is available. Update now."
+          }
+        }
+      }
+    },
+    "جدّد الشهادة": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "جدّد الشهادة"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "جدّد الشهادة"
+          }
+        }
+      }
+    },
+    "جدّد شهادة Zenith بصوتك.": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "جدّد شهادة Zenith بصوتك."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "جدّد شهادة Zenith بصوتك."
+          }
+        }
+      }
+    },
+    "ما عندك شي يحتاج تجديد هسه، كل التطبيقات موقّعة بشهادة سارية.": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ما عندك شي يحتاج تجديد هسه، كل التطبيقات موقّعة بشهادة سارية."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ما عندك شي يحتاج تجديد هسه، كل التطبيقات موقّعة بشهادة سارية."
+          }
+        }
+      }
+    },
+    "جدّدت الشهادة ووقّعت %@.": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "جدّدت الشهادة ووقّعت %@."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "جدّدت الشهادة ووقّعت %@."
+          }
+        }
+      }
+    },
+    "ما قدرت أجدّد الشهادة: %@": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ما قدرت أجدّد الشهادة: %@"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ما قدرت أجدّد الشهادة: %@"
+          }
+        }
+      }
+    },
+    "جدّدت الشهادة ووقّعت %@، بس ما قدرت أجدّد %@.": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "جدّدت الشهادة ووقّعت %@، بس ما قدرت أجدّد %@."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "جدّدت الشهادة ووقّعت %@، بس ما قدرت أجدّد %@."
+          }
+        }
+      }
+    },
+    "افتح التطبيق لتحديث العدّاد": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "افتح التطبيق لتحديث العدّاد"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "افتح التطبيق لتحديث العدّاد"
+          }
+        }
+      }
+    },
+    "الشهادة منتهية": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "الشهادة منتهية"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "الشهادة منتهية"
+          }
+        }
+      }
+    },
+    "يوم باقي": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "يوم باقي"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "يوم باقي"
+          }
+        }
+      }
+    },
+    "يوم واحد باقي": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "يوم واحد باقي"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "يوم واحد باقي"
+          }
+        }
+      }
+    },
+    "يومين باقيات": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "يومين باقيات"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "يومين باقيات"
+          }
+        }
+      }
+    },
+    "يخلص اليوم": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "يخلص اليوم"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "يخلص اليوم"
+          }
+        }
+      }
+    },
+    "عدّاد الأيام الباقية لشهادتك.": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "عدّاد الأيام الباقية لشهادتك."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "عدّاد الأيام الباقية لشهادتك."
           }
         }
       }

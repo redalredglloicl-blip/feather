@@ -57,6 +57,8 @@ enum FR {
 				let error: Error = updateRequired
 					? ForcedUpdateError.updateRequired
 					: ForcedUpdateError.checkFailed
+				// Zenith v2.2: the Help Center shows this as the last error.
+				ZenithLastError.record(error)
 				await MainActor.run {
 					completion(error)
 				}
@@ -76,6 +78,8 @@ enum FR {
 				}
 			} catch {
 				try? await handler.clean()
+				// Zenith v2.2: the Help Center shows this as the last error.
+				ZenithLastError.record(error)
 				await MainActor.run {
 					completion(error)
 				}

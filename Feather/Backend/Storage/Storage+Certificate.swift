@@ -36,6 +36,8 @@ extension Storage {
 		
 		// Remind the user before this certificate expires.
 		NotificationManager.shared.scheduleExpiryReminders(for: new)
+		// Zenith v2.2: share the certificate with the home-screen widget.
+		WidgetDataStore.shared.sync()
 		
 		completion(nil)
 	}
@@ -48,6 +50,8 @@ extension Storage {
 		}
 		context.delete(cert)
 		saveContext()
+		// Zenith v2.2: the widget must stop showing the deleted cert.
+		WidgetDataStore.shared.sync()
 	}
 	
 	func getCertificate(for index: Int) -> CertificatePair? {

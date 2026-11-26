@@ -31,6 +31,9 @@ struct SettingsView: View {
 					NavigationLink(destination: InstallationView()) {
 						Label(.localized("Installation"), image: "icon-install")
 					}
+					NavigationLink(destination: HelpCenterView()) {
+						Label(.localized("مركز المساعدة"), image: "icon-info")
+					}
 				} footer: {
 					Text(.localized("Configure the apps way of installing, its zip compression levels, and custom modifications to apps."))
 				}
@@ -42,10 +45,16 @@ struct SettingsView: View {
 						Label(.localized("Reset"), image: "icon-delete")
 					}
 				} footer: {
-					Text(.localized("Reset the applications certificates, apps, and general contents."))
+					Text(.localized("Reset the application's certificates, apps, and files."))
 				}
 				
 				Section {
+					HStack {
+						Text(.localized("Device Name"))
+						Spacer()
+						Text(UIDevice.current.name)
+							.foregroundStyle(.secondary)
+					}
 					HStack {
 						Text(.localized("Version"))
 						Spacer()
@@ -54,7 +63,9 @@ struct SettingsView: View {
 					}
 				}
 			}
+			.scrollContentBackground(.hidden)
 		}
+		.starfieldBackground()
 	}
 }
 

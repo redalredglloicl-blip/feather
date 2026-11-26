@@ -28,21 +28,6 @@ struct SigningOptionsView: View {
 			}
 		}
 		
-		NBSection(.localized("General")) {
-			Self.picker(
-				.localized("Appearance"),
-				systemImage: "paintpalette",
-				selection: $options.appAppearance,
-				values: Options.AppAppearance.allCases
-			)
-			
-			Self.picker(
-				.localized("Minimum Requirement"),
-				systemImage: "ruler",
-				selection: $options.minimumAppRequirement,
-				values: Options.MinimumAppRequirement.allCases
-			)
-		}
 		
 		Section {
 			Self.picker(

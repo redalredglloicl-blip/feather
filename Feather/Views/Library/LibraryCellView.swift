@@ -27,6 +27,8 @@ struct LibraryCellView: View {
 	@Binding var selectedInfoAppPresenting: AnyApp?
 	@Binding var selectedSigningAppPresenting: AnyApp?
 	@Binding var selectedInstallAppPresenting: AnyApp?
+	/// Opens the app passport (detail screen) on a plain row tap.
+	@Binding var selectedPassportAppPresenting: AnyApp?
 	@Binding var selectedAppUUIDs: Set<String>
 	/// Called when the user asks to delete an app (swipe or menu).
 	/// The confirmation alert lives on the Library list, not on the
@@ -94,6 +96,8 @@ struct LibraryCellView: View {
 		.onTapGesture {
 			if isEditing {
 				_toggleSelection()
+			} else {
+				selectedPassportAppPresenting = AnyApp(base: app)
 			}
 		}
 		.swipeActions {
