@@ -29,6 +29,14 @@
 //    A cached minVersion saying this build is old STAYS blocked; only
 //    with no cached value at all does the app fail open. The block
 //    screen never appears on a failed check alone.
+//  * The same per-field fallback applies when only SOME fetches fail:
+//    a failed minVersion/killed fetch reads its cached value, never
+//    nil/false — a single dropped request can never lift a block (or
+//    pass the check) while its sibling fetches succeed. Only a field
+//    that succeeded fresh may clear or overwrite its cache.
+//  * Every check (launch and foreground) applies the cached decision
+//    FIRST, before any network, so a cached block shows instantly
+//    and a backgrounded old app re-blocks the moment it foregrounds.
 //  * Signing and installing refuse to run unless a fresh check has
 //    passed (in-memory flag, set only by a real check that found no
 //    block). A failed check with no cached values leaves the flag
@@ -43,6 +51,14 @@
 //  instead of allowing it), and it cannot be bypassed by editing the
 //  app's stored data (the pass flag lives only in memory; the minimum
 //  version comes from the server, not the device).
+//
+//  Already-installed old builds run their own frozen gate code and
+//  cannot be fixed by changing this file: v1 has no gate at all, and
+//  v2.2 (build 4, old bundle ID) fetches without the ?cb cache-buster
+//  and was proven to keep serving a stale "not blocked" answer. Only
+//  the server values can reach those builds, through their own
+//  stale-prone fetch path — deleting the old app from the phone is
+//  the reliable stop for them.
 
 import Foundation
 import SwiftUI
@@ -110,17 +126,31 @@ final class ForcedUpdateManager: ObservableObject {
 	}()
 	
 	private init() {
+		// Cache first: if a previous run already learned this build
+		// is old, stay blocked from the very first frame — the network
+		// check below can only lift the block, never delay it.
+		_applyCachedDecision()
+	}
+
+	/// Applies the cached decision synchronously, with no network.
+	/// Called from init (first frame) and at the start of every
+	/// check (launch + foreground): if a previous run already learned
+	/// this build is old, the app blocks instantly instead of staying
+	/// usable while the fresh fetch runs. It NEVER un-blocks: a live
+	/// block can only be lifted by a fresh fetch that says so (in
+	/// _apply), never by the cache — so a flaky fetch can never undo
+	/// a cached block.
+	private func _applyCachedDecision() {
 		// The cached version name (if any) shows from the first frame.
 		latestVersionName = Self.cachedLatestVersionName
-		// If a previous run already learned this build is old, stay
-		// blocked from the very first frame — the network check below
-		// can only lift the block, never delay it.
 		if let cached = Self.cachedMinVersion,
 		   Self.installedBuildNumber < cached {
 			isUpdateRequired = true
+			hasPassedCheck = false
 			updateURL = Self.cachedUpdateURL
 		} else if Self.cachedKilled {
 			isUpdateRequired = true
+			hasPassedCheck = false
 			updateURL = Self.cachedUpdateURL
 		}
 	}
@@ -153,6 +183,12 @@ final class ForcedUpdateManager: ObservableObject {
 	/// every launch and on every foreground return. Concurrent callers
 	/// share the same in-flight check instead of starting another.
 	func checkForUpdate() async {
+		// Cache first, before any network: a backgrounded old app
+		// re-blocks the moment it foregrounds, with no wait for the
+		// fresh fetch — and no wait for its failure either. Runs
+		// before the in-flight join below, so it applies even while
+		// another check is still running.
+		_applyCachedDecision()
 		if let inFlight = _checkTask {
 			await inFlight.value
 			return
@@ -220,11 +256,20 @@ final class ForcedUpdateManager: ObservableObject {
 					UserDefaults.standard.removeObject(forKey: Self.cachedLatestVersionNameKey)
 				}
 			}
+			// A failed fetch must NEVER read as "no enforcement":
+			// fall back to the cached value for that one field, so a
+			// single dropped request cannot lift a block (or pass the
+			// check) while its siblings succeed. Only a field that
+			// succeeded fresh may clear or overwrite its cache (above).
+			// When a decisive field (minVersion / killed) came from
+			// the cache, the pass flag follows the cached-value rule.
+			let usedCacheForDecision = !minVersionResult.succeeded || !killedResult.succeeded
 			_apply(
-				minVersion: minVersionResult.value,
-				killed: killedResult.value ?? false,
-				updateURLString: updateURLResult.value,
-				latestVersionName: nameResult.value
+				minVersion: minVersionResult.succeeded ? minVersionResult.value : Self.cachedMinVersion,
+				killed: killedResult.succeeded ? (killedResult.value ?? false) : Self.cachedKilled,
+				updateURLString: updateURLResult.succeeded ? updateURLResult.value : Self.cachedUpdateURLString,
+				latestVersionName: nameResult.succeeded ? nameResult.value : Self.cachedLatestVersionName,
+				fromCache: usedCacheForDecision
 			)
 		} else {
 			// All fetches failed (offline): fall back to the cache.

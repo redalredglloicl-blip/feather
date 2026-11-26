@@ -211,6 +211,7 @@ extension SigningView {
 				}
 			}
 			.zenithGlassCard(cornerRadius: 12)
+			.padding(.vertical, 6)
 			.listRowSeparator(.hidden)
 			
 			_infoCell(.localized("Name"), desc: _temporaryOptions.appName ?? app.name) {
@@ -253,6 +254,7 @@ extension SigningView {
 					.font(.footnote)
 					.foregroundColor(.disabled())
 					.zenithGlassCard(cornerRadius: 12)
+					.padding(.vertical, 6)
 					.listRowSeparator(.hidden)
 			}
 		}
@@ -269,6 +271,11 @@ extension SigningView {
 					)
 				}
 				.zenithGlassCard(cornerRadius: 12)
+				.overlay(
+					RoundedRectangle(cornerRadius: 12, style: .continuous)
+						.fill(Color.white.opacity(0.04))
+				)
+				.padding(.vertical, 6)
 				.listRowSeparator(.hidden)
 				
 				NavigationLink(.localized("Frameworks & PlugIns")) {
@@ -278,6 +285,11 @@ extension SigningView {
 					)
 				}
 				.zenithGlassCard(cornerRadius: 12)
+				.overlay(
+					RoundedRectangle(cornerRadius: 12, style: .continuous)
+						.fill(Color.white.opacity(0.04))
+				)
+				.padding(.vertical, 6)
 				.listRowSeparator(.hidden)
 			
 				NavigationLink(.localized("Entitlements") + " (BETA)") {
@@ -286,6 +298,11 @@ extension SigningView {
 					)
 				}
 				.zenithGlassCard(cornerRadius: 12)
+				.overlay(
+					RoundedRectangle(cornerRadius: 12, style: .continuous)
+						.fill(Color.white.opacity(0.04))
+				)
+				.padding(.vertical, 6)
 				.listRowSeparator(.hidden)
 				
 				NavigationLink(.localized("Tweaks")) {
@@ -294,9 +311,15 @@ extension SigningView {
 					)
 				}
 				.zenithGlassCard(cornerRadius: 12)
+				.overlay(
+					RoundedRectangle(cornerRadius: 12, style: .continuous)
+						.fill(Color.white.opacity(0.04))
+				)
+				.padding(.vertical, 6)
 				.listRowSeparator(.hidden)
 			}
 			.zenithGlassCard(cornerRadius: 12)
+			.padding(.vertical, 6)
 			.listRowSeparator(.hidden)
 			
 			NavigationLink(.localized("Properties")) {
@@ -312,6 +335,7 @@ extension SigningView {
 				.navigationTitle(.localized("Properties"))
 			}
 			.zenithGlassCard(cornerRadius: 12)
+			.padding(.vertical, 6)
 			.listRowSeparator(.hidden)
 		}
 	}
@@ -326,6 +350,7 @@ extension SigningView {
 			}
 		}
 		.zenithGlassCard(cornerRadius: 12)
+		.padding(.vertical, 6)
 		.listRowSeparator(.hidden)
 	}
 }

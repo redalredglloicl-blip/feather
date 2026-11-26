@@ -398,7 +398,7 @@ extension LibraryView {
 	/// category the user assigned to each app (uncategorized apps show under All).
 	private var _categoryChips: some View {
 		ScrollView(.horizontal, showsIndicators: false) {
-			HStack(spacing: 8) {
+			HStack(spacing: 12) {
 				ForEach(HomeCategory.allCases, id: \.self) { category in
 					Button {
 						_selectedCategory = category
@@ -415,17 +415,13 @@ extension LibraryView {
 							)
 							.foregroundStyle(_selectedCategory == category ? .black : .primary)
 							.clipShape(Capsule())
-							.overlay(
-								Capsule()
-									.stroke(Color.white.opacity(0.35), lineWidth: 1)
-							)
 					}
 					.buttonStyle(ZenithPressButtonStyle())
 				}
 			}
 			.padding(.horizontal)
 		}
-		.padding(.vertical, 8)
+		.padding(.vertical, 12)
 	}
 }
 

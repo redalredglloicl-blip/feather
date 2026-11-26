@@ -25,6 +25,7 @@ struct ConfigurationDictView: View {
 					}
 					.zenithGlassCard(cornerRadius: 12)
 					.listRowSeparator(.hidden)
+					.listRowInsets(EdgeInsets(top: 7, leading: 16, bottom: 7, trailing: 16))
 				}
 			}
 		}

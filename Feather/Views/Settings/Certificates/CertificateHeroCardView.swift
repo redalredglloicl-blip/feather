@@ -133,11 +133,6 @@ struct CertificateHeroCardView: View {
 		}
 		.padding()
 		.zenithGlassCard(cornerRadius: 18, fallback: Color(uiColor: .secondarySystemFill))
-		.overlay(
-			RoundedRectangle(cornerRadius: 18)
-				.strokeBorder(Color.accentColor.opacity(0.35), lineWidth: 1)
-		)
-		.shadow(color: .black.opacity(0.2), radius: 12, x: 0, y: 6)
 		.padding(.horizontal)
 		.padding(.top, 8)
 		.onAppear {

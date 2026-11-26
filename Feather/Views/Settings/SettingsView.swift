@@ -27,21 +27,25 @@ struct SettingsView: View {
 						}
 						.zenithGlassCard(cornerRadius: 12)
 						.listRowSeparator(.hidden)
+						.listRowInsets(EdgeInsets(top: 7, leading: 16, bottom: 7, trailing: 16))
 						NavigationLink(destination: ArchiveView()) {
 							_settingsRow(title: .localized("Archive & Compression"), icon: "icon-archive")
 						}
 						.zenithGlassCard(cornerRadius: 12)
 						.listRowSeparator(.hidden)
+						.listRowInsets(EdgeInsets(top: 7, leading: 16, bottom: 7, trailing: 16))
 						NavigationLink(destination: InstallationView()) {
 							_settingsRow(title: .localized("Installation"), icon: "icon-install")
 						}
 						.zenithGlassCard(cornerRadius: 12)
 						.listRowSeparator(.hidden)
+						.listRowInsets(EdgeInsets(top: 7, leading: 16, bottom: 7, trailing: 16))
 						NavigationLink(destination: HelpCenterView()) {
 							_settingsRow(title: .localized("مركز المساعدة"), icon: "icon-info")
 						}
 						.zenithGlassCard(cornerRadius: 12)
 						.listRowSeparator(.hidden)
+						.listRowInsets(EdgeInsets(top: 7, leading: 16, bottom: 7, trailing: 16))
 					} footer: {
 						Text(.localized("Configure the apps way of installing, its zip compression levels, and custom modifications to apps."))
 					}
@@ -54,6 +58,7 @@ struct SettingsView: View {
 						}
 						.zenithGlassCard(cornerRadius: 12)
 						.listRowSeparator(.hidden)
+						.listRowInsets(EdgeInsets(top: 7, leading: 16, bottom: 7, trailing: 16))
 					} footer: {
 						Text(.localized("Reset the application's certificates, apps, and files."))
 					}
@@ -65,16 +70,20 @@ struct SettingsView: View {
 							Text(UIDevice.current.name)
 								.foregroundStyle(.secondary)
 						}
+						.background(Color.white.opacity(0.04), in: RoundedRectangle(cornerRadius: 12, style: .continuous))
 						.zenithGlassCard(cornerRadius: 12)
 						.listRowSeparator(.hidden)
+						.listRowInsets(EdgeInsets(top: 7, leading: 16, bottom: 7, trailing: 16))
 						HStack {
 							Text(.localized("Version"))
 							Spacer()
 							Text(Bundle.main.version)
 								.foregroundStyle(.secondary)
 						}
+						.background(Color.white.opacity(0.04), in: RoundedRectangle(cornerRadius: 12, style: .continuous))
 						.zenithGlassCard(cornerRadius: 12)
 						.listRowSeparator(.hidden)
+						.listRowInsets(EdgeInsets(top: 7, leading: 16, bottom: 7, trailing: 16))
 					}
 				}
 				.scrollContentBackground(.hidden)
@@ -117,16 +126,19 @@ extension SettingsView {
 			}
 			.zenithGlassCard(cornerRadius: 12)
 			.listRowSeparator(.hidden)
+			.listRowInsets(EdgeInsets(top: 7, leading: 16, bottom: 7, trailing: 16))
 			Button(.localized("Open Archives"), systemImage: "folder") {
 				UIApplication.open(FileManager.default.archives.toSharedDocumentsURL()!)
 			}
 			.zenithGlassCard(cornerRadius: 12)
 			.listRowSeparator(.hidden)
+			.listRowInsets(EdgeInsets(top: 7, leading: 16, bottom: 7, trailing: 16))
 			Button(.localized("Open Certificates"), systemImage: "folder") {
 				UIApplication.open(FileManager.default.certificates.toSharedDocumentsURL()!)
 			}
 			.zenithGlassCard(cornerRadius: 12)
 			.listRowSeparator(.hidden)
+			.listRowInsets(EdgeInsets(top: 7, leading: 16, bottom: 7, trailing: 16))
 		} footer: {
 			Text(.localized("All of the apps files are contained in the documents directory, here are some quick links to these."))
 		}

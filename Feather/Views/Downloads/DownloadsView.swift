@@ -28,7 +28,7 @@ struct DownloadsView: View {
 		NBNavigationView(.localized("Downloads")) {
 			List {
 				Section {
-					VStack(alignment: .leading, spacing: 12) {
+					VStack(alignment: .leading, spacing: 16) {
 						TextField(.localized("Paste File Link"), text: $_linkText)
 							.textFieldStyle(.plain)
 							.textInputAutocapitalization(.never)
@@ -36,11 +36,7 @@ struct DownloadsView: View {
 							.autocorrectionDisabled()
 							.padding(.vertical, 10)
 							.padding(.horizontal, 12)
-							.background(Color.white.opacity(0.06), in: RoundedRectangle(cornerRadius: 10))
-							.overlay(
-								RoundedRectangle(cornerRadius: 10)
-									.stroke(Color.white.opacity(0.35), lineWidth: 1)
-							)
+							.background(Color.white.opacity(0.10), in: RoundedRectangle(cornerRadius: 10))
 						
 						Button {
 							_startDownloadFlow()
@@ -97,7 +93,7 @@ struct DownloadsView: View {
 				}
 			
 				if _downloadManager.downloads.isEmpty && _downloadManager.history.isEmpty {
-					VStack(spacing: 10) {
+					VStack(spacing: 16) {
 						Image("icon-download")
 							.resizable()
 							.scaledToFit()
@@ -246,7 +242,7 @@ struct DownloadRowView: View {
 	@State private var _isWaitingForInternet = false
 	
 	var body: some View {
-		VStack(alignment: .leading, spacing: 6) {
+		VStack(alignment: .leading, spacing: 12) {
 			HStack {
 				Text(download.fileName)
 					.font(.subheadline)
@@ -284,8 +280,10 @@ struct DownloadRowView: View {
 				} else if _status == .paused {
 					Text(.localized("Paused"))
 						.foregroundStyle(.secondary)
-				} else if _speed > 0 {
-					Text(verbatim: "\(_speed.formattedByteCount)/s")
+				} else {
+					// Downloading: the smoothed real speed; "—"
+					// while nothing is moving yet (waiting, not 0).
+					Text(verbatim: _speed > 0 ? _formatSpeed(_speed) : "—")
 				}
 				Spacer()
 				if _totalBytes > 0 {
@@ -293,6 +291,10 @@ struct DownloadRowView: View {
 				}
 				if let remaining = _timeRemaining, _status == .downloading {
 					Text(verbatim: "· \(_formatTimeRemaining(remaining))")
+				} else if _status == .downloading, _totalBytes > 0 {
+					// No usable speed yet: waiting, never a huge
+					// number from dividing by ~0.
+					Text(verbatim: "· —")
 				}
 			}
 			.font(.caption)
@@ -340,10 +342,32 @@ struct DownloadRowView: View {
 		.onReceive(download.$isWaitingForInternet) { _isWaitingForInternet = $0 }
 	}
 	
+	/// Real measured throughput, formatted for the row: one
+	/// decimal in MB/s at/above 1 MB/s, whole KB/s below that,
+	/// whole B/s at the bottom. Decimal units (1 MB = 1,000,000
+	/// bytes), matching the file sizes in the same row
+	/// (ByteCountFormatter .file). The value is the smoothed
+	/// speed from DownloadManager — never inflated.
+	private func _formatSpeed(_ bytesPerSec: Int64) -> String {
+		if bytesPerSec >= 1_000_000 {
+			return String(format: "%.1f MB/s", Double(bytesPerSec) / 1_000_000)
+		} else if bytesPerSec >= 1_000 {
+			return "\(bytesPerSec / 1_000) KB/s"
+		} else {
+			return "\(bytesPerSec) B/s"
+		}
+	}
+	
 	private func _formatTimeRemaining(_ interval: TimeInterval) -> String {
 		let totalSeconds = Int(interval)
 		if totalSeconds < 60 {
 			return .localized("Seconds Left (%lld)", arguments: totalSeconds)
+		}
+		if totalSeconds >= 3600 {
+			let hours = totalSeconds / 3600
+			let minutes = (totalSeconds % 3600) / 60
+			let seconds = totalSeconds % 60
+			return String(format: "%d:%02d:%02d", hours, minutes, seconds)
 		}
 		let minutes = totalSeconds / 60
 		let seconds = totalSeconds % 60

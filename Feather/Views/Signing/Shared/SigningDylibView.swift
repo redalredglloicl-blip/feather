@@ -35,6 +35,7 @@ struct SigningDylibView: View {
 					.font(.footnote)
 					.foregroundColor(.disabled())
 					.zenithGlassCard(cornerRadius: 12)
+					.padding(.vertical, 6)
 					.listRowSeparator(.hidden)
 			}
 		}

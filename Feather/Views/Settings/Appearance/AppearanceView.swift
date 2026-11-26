@@ -50,6 +50,7 @@ struct AppearanceView: View {
 				.pickerStyle(.segmented)
 				.zenithGlassCard(cornerRadius: 12)
 				.listRowSeparator(.hidden)
+				.listRowInsets(EdgeInsets(top: 7, leading: 16, bottom: 7, trailing: 16))
 			}
 			
 			NBSection(.localized("Theme")) {
@@ -68,6 +69,7 @@ struct AppearanceView: View {
 				)
 				.zenithGlassCard(cornerRadius: 12)
 				.listRowSeparator(.hidden)
+				.listRowInsets(EdgeInsets(top: 7, leading: 16, bottom: 7, trailing: 16))
 			}
 			
 			if #available(iOS 18.0, *) {
@@ -75,10 +77,12 @@ struct AppearanceView: View {
 					Toggle(.localized("Dynamic Icons"), isOn: $_shouldChangeIconsBasedOffStyle)
 						.zenithGlassCard(cornerRadius: 12)
 						.listRowSeparator(.hidden)
+						.listRowInsets(EdgeInsets(top: 7, leading: 16, bottom: 7, trailing: 16))
 					if #available(iOS 18.2, *) {
 						Toggle(.localized("Tinted Icons"), isOn: $_shouldTintIcons)
 							.zenithGlassCard(cornerRadius: 12)
 							.listRowSeparator(.hidden)
+							.listRowInsets(EdgeInsets(top: 7, leading: 16, bottom: 7, trailing: 16))
 					}
 				}
 			}
@@ -99,6 +103,7 @@ struct AppearanceView: View {
 				.pickerStyle(.inline)
 				.zenithGlassCard(cornerRadius: 12)
 				.listRowSeparator(.hidden)
+				.listRowInsets(EdgeInsets(top: 7, leading: 16, bottom: 7, trailing: 16))
 			}
 		}
 		.starfieldBackground()

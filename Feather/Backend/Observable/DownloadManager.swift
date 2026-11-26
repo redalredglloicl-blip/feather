@@ -52,9 +52,88 @@ class Download: Identifiable, @unchecked Sendable {
 	/// pause/resume logic works unchanged.
 	@Published var isWaitingForInternet = false
 	
-	/// Last speed-sample point, for the throughput window in didWriteData.
-	var _speedSampleBytes: Int64 = 0
-	var _speedSampleDate: Date?
+	/// Smoothed throughput (bytes/sec): an exponential moving
+	/// average of the real measured samples, so the number on
+	/// screen never jumps or collapses on one short sample. Only
+	/// ever fed real measured bytes — never inflated. Time
+	/// constant 2 s: alpha = 1 - exp(-elapsed / 2).
+	/// Main-actor only: both transports hop to the main actor
+	/// before reporting, and only _updateSpeedAndETA touches these.
+	var _smoothedSpeed: Double = 0
+	/// Last raw sample point feeding the EMA.
+	var _emaSampleBytes: Int64 = 0
+	var _emaSampleDate: Date?
+	/// Smoothed ETA (seconds) actually shown, and when it was
+	/// last published (at most once a second).
+	var _smoothedETA: TimeInterval?
+	var _lastETAPublishDate: Date?
+	
+	/// Feeds one real byte-count sample into the smoothed speed
+	/// and ETA. Must be called on the main actor. `totalDownloaded`
+	/// and `totalBytes` are the live counts; `now` is the sample
+	/// time. Samples arrive at most ~4 Hz from either transport;
+	/// the EMA (tau = 2 s) turns them into a stable displayed
+	/// speed, and the ETA is published at most once a second,
+	/// itself smoothed, so the seconds never jump wildly.
+	/// Honest edges: a stalled stream decays the speed toward
+	/// zero instead of freezing the last value; with no usable
+	/// speed the ETA is nil (the row shows "—"), never a huge
+	/// number from dividing by ~0; finished means ETA 0.
+	func _updateSpeedAndETA(totalDownloaded: Int64, totalBytes: Int64, now: Date) {
+		guard let lastDate = _emaSampleDate else {
+			_emaSampleDate = now
+			_emaSampleBytes = totalDownloaded
+			return
+		}
+		let elapsed = now.timeIntervalSince(lastDate)
+		guard elapsed >= 0.25 else { return }
+		let delta = totalDownloaded - _emaSampleBytes
+		_emaSampleBytes = totalDownloaded
+		_emaSampleDate = now
+		// A gap over 10 s means the transport was paused / stalled
+		// between samples: re-seed instead of letting one stale
+		// sample collapse the average.
+		if elapsed > 10 {
+			_smoothedSpeed = 0
+			speedBytesPerSec = 0
+			return
+		}
+		guard delta >= 0 else { return }
+		let instant = Double(delta) / elapsed
+		if _smoothedSpeed <= 0 {
+			_smoothedSpeed = instant
+		} else {
+			let alpha = 1.0 - exp(-elapsed / 2.0)
+			_smoothedSpeed = alpha * instant + (1.0 - alpha) * _smoothedSpeed
+		}
+		speedBytesPerSec = Int64(_smoothedSpeed)
+		
+		if totalBytes > 0, totalDownloaded >= totalBytes {
+			_smoothedETA = 0
+			estimatedTimeRemaining = 0
+			return
+		}
+		// No usable speed (stalled, or barely moving): no ETA,
+		// never a huge number from dividing by ~0.
+		guard _smoothedSpeed >= 1024, totalBytes > 0 else {
+			_smoothedETA = nil
+			estimatedTimeRemaining = nil
+			return
+		}
+		let rawETA = TimeInterval(totalBytes - totalDownloaded) / _smoothedSpeed
+		// Publish the ETA at most once a second, and smooth the
+		// ETA itself (alpha 0.5) so the seconds move gradually.
+		if let lastPublish = _lastETAPublishDate, now.timeIntervalSince(lastPublish) < 1.0 {
+			return
+		}
+		_lastETAPublishDate = now
+		if let previous = _smoothedETA {
+			_smoothedETA = 0.5 * rawETA + 0.5 * previous
+		} else {
+			_smoothedETA = rawETA
+		}
+		estimatedTimeRemaining = _smoothedETA
+	}
 	
 	/// Active multi-connection download, if this download uses it.
 	var multipart: ZenithMultipartDownload?
@@ -211,6 +290,13 @@ class DownloadManager: NSObject, ObservableObject {
 	/// watcher below and the active-download persistence sink.
 	private var _cancellables = Set<AnyCancellable>()
 	
+	/// Last time a progress tick rewrote the active-download JSON.
+	/// Progress ticks arrive many times a second; the throttle in
+	/// _saveActiveDownloadsThrottled keeps the rewrite to at most
+	/// one per 2 seconds. Main thread only (both progress paths
+	/// report on main).
+	private var _lastProgressSaveDate: Date?
+	
 	#if !targetEnvironment(macCatalyst)
 	private func _updateBackgroundAudioState() {
 		if #unavailable(iOS 26.0){
@@ -240,6 +326,18 @@ class DownloadManager: NSObject, ObservableObject {
 			}
 			.store(in: &_cancellables)
 		
+		// Zenith v2.10: restore BEFORE subscribing the $downloads
+		// sink below. A @Published publisher emits its current
+		// value the moment it is subscribed to — subscribing first
+		// delivered the still-empty list, _saveActiveDownloads([])
+		// overwrote ZenithActiveDownloads.json with [], and the
+		// restore that ran afterwards read [] and found nothing.
+		// That is why every download vanished on restart: each
+		// launch wiped the file before reading it. Restoring first
+		// also means the sink's initial emission re-saves the
+		// restored list, which is harmless (identical records).
+		_restoreActiveDownloads()
+		
 		// Persist the active list whenever it changes (a download
 		// added, finished or cancelled), so a relaunch never loses
 		// or resurrects one. The sink's delivered array is used,
@@ -251,7 +349,19 @@ class DownloadManager: NSObject, ObservableObject {
 			.sink { [weak self] downloads in self?._saveActiveDownloads(downloads) }
 			.store(in: &_cancellables)
 		
-		_restoreActiveDownloads()
+		// Zenith v2.10: the app can be killed at any moment while a
+		// download runs, and progress ticks are throttled (see
+		// _saveActiveDownloadsThrottled) — so take a fresh snapshot
+		// when the app backgrounds, and best-effort on terminate,
+		// or the JSON on disk holds stale 0% progress when the
+		// next launch restores it. This never pauses a download:
+		// it only persists where it stands.
+		NotificationCenter.default.publisher(for: UIApplication.didEnterBackgroundNotification)
+			.sink { [weak self] _ in self?._saveActiveDownloadsOnExit() }
+			.store(in: &_cancellables)
+		NotificationCenter.default.publisher(for: UIApplication.willTerminateNotification)
+			.sink { [weak self] _ in self?._saveActiveDownloadsOnExit() }
+			.store(in: &_cancellables)
 	}
 	
 	// MARK: - Connectivity pause / resume (Zenith v2.8)
@@ -360,8 +470,7 @@ class DownloadManager: NSObject, ObservableObject {
 		downloads.append(download)
 		
 		do {
-			let tempDirectory = FileManager.default.temporaryDirectory
-			let customTempDir = tempDirectory.appendingPathComponent("ZenithDownloads", isDirectory: true)
+			let customTempDir = Self._finishedDownloadsDirectory()
 			try FileManager.default.createDirectoryIfNeeded(at: customTempDir)
 			let destinationURL = customTempDir.appendingPathComponent(download.fileName)
 			try FileManager.default.removeFileIfNeeded(at: destinationURL)
@@ -678,15 +787,28 @@ class DownloadManager: NSObject, ObservableObject {
 		_ = startDownload(from: url, id: "ZenithManualDownload_\(UUID().uuidString)")
 	}
 	
+	/// Home of finished downloads. Caches, not temporaryDirectory:
+	/// tmp may be purged while the app is not running, which would
+	/// orphan a completed history entry from its file after a
+	/// restart. Caches survives restarts (purged only under storage
+	/// pressure). Every writer uses this helper — never a literal.
+	static func _finishedDownloadsDirectory() -> URL {
+		FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask)[0]
+			.appendingPathComponent("ZenithDownloads", isDirectory: true)
+	}
+	
 	/// URL of the finished file on disk for a completed history
 	/// entry, or nil when the entry has no recorded file or the file
 	/// is no longer in the ZenithDownloads dir.
 	func downloadedFileURL(for entry: DownloadHistoryEntry) -> URL? {
 		guard let name = entry.localFileName, !name.isEmpty else { return nil }
-		let url = FileManager.default.temporaryDirectory
+		let url = Self._finishedDownloadsDirectory().appendingPathComponent(name)
+		if FileManager.default.fileExists(atPath: url.path) { return url }
+		// Files finished before the v2.10 move still live in tmp.
+		let legacyURL = FileManager.default.temporaryDirectory
 			.appendingPathComponent("ZenithDownloads", isDirectory: true)
 			.appendingPathComponent(name)
-		return FileManager.default.fileExists(atPath: url.path) ? url : nil
+		return FileManager.default.fileExists(atPath: legacyURL.path) ? legacyURL : nil
 	}
 	
 	// MARK: - Resume data persistence (single-connection)
@@ -742,6 +864,39 @@ class DownloadManager: NSObject, ObservableObject {
 	/// its persisted resume data orphaned. Archive downloads
 	/// (Library file-picker imports) are local files, not network
 	/// downloads, and are never restored.
+	
+	/// Saves the active list from a progress tick, throttled to at
+	/// most one write per 2 seconds. Without this the JSON on disk
+	/// keeps the 0% snapshot written when the download was added
+	/// (progress/byte counts only change on the Download object,
+	/// never on the array, so the $downloads sink never fires for
+	/// them) and a relaunch restores 0% with an unknown size.
+	/// Returns true when it actually wrote, so the multipart
+	/// reporter can persist its per-part manifest on the same beat.
+	/// Main thread only: didWriteData and the multipart progress
+	/// reporter both run on main.
+	@discardableResult
+	func _saveActiveDownloadsThrottled() -> Bool {
+		let now = Date()
+		if let last = _lastProgressSaveDate, now.timeIntervalSince(last) < 2 { return false }
+		_lastProgressSaveDate = now
+		_saveActiveDownloads()
+		return true
+	}
+	
+	/// Fresh snapshot when the app leaves the foreground (and
+	/// best-effort on terminate): the active-list JSON plus every
+	/// multipart manifest, so a kill after backgrounding still
+	/// resumes from the real byte counts instead of the last
+	/// throttled tick. Called from the background/terminate
+	/// observers in init; it never pauses or cancels anything.
+	private func _saveActiveDownloadsOnExit() {
+		_saveActiveDownloads()
+		for download in downloads {
+			download.multipart?.persistManifest()
+		}
+	}
+	
 	func _saveActiveDownloads(_ list: [Download]? = nil) {
 		let records = (list ?? downloads)
 			.filter { !$0.onlyArchiving }
@@ -905,8 +1060,7 @@ extension DownloadManager: URLSessionDownloadDelegate {
 			}
 		}
 		
-		let tempDirectory = FileManager.default.temporaryDirectory
-		let customTempDir = tempDirectory.appendingPathComponent("ZenithDownloads", isDirectory: true)
+		let customTempDir = Self._finishedDownloadsDirectory()
 		
 		do {
 			try FileManager.default.createDirectoryIfNeeded(at: customTempDir)
@@ -947,31 +1101,31 @@ extension DownloadManager: URLSessionDownloadDelegate {
 			download.bytesDownloaded = totalBytesWritten
 			download.totalBytes = totalBytesExpectedToWrite
 			
-			// Real throughput + ETA from the live byte counts: a new
-			// sample every half second, so the numbers never jump wildly.
-			let now = Date()
-			if let lastDate = download._speedSampleDate {
-				let elapsed = now.timeIntervalSince(lastDate)
-				let delta = totalBytesWritten - download._speedSampleBytes
-				if elapsed >= 0.5, delta > 0 {
-					let speed = Int64(Double(delta) / elapsed)
-					download.speedBytesPerSec = speed
-					if speed > 0, totalBytesExpectedToWrite > 0 {
-						download.estimatedTimeRemaining = TimeInterval(totalBytesExpectedToWrite - totalBytesWritten) / TimeInterval(speed)
-					}
-					download._speedSampleBytes = totalBytesWritten
-					download._speedSampleDate = now
-				}
-			} else {
-				download._speedSampleDate = now
-				download._speedSampleBytes = totalBytesWritten
-			}
+			// Real throughput + ETA from the live byte counts,
+			// smoothed (see Download._updateSpeedAndETA) so the
+			// numbers never jump wildly on one short sample.
+			download._updateSpeedAndETA(
+				totalDownloaded: totalBytesWritten,
+				totalBytes: totalBytesExpectedToWrite,
+				now: Date()
+			)
 			
 			#if !targetEnvironment(macCatalyst)
 			if #available(iOS 26.0, *) {
 				BackgroundTaskManager.shared.updateProgress(for: download.id, progress: download.overallProgress)
 			}
 			#endif
+			
+			// Zenith v2.10: persist progress as it moves
+			// (throttled to one write per 2s) — otherwise the
+			// JSON on disk keeps the 0% snapshot from when the
+			// download was added, and a relaunch restores 0%.
+			// A single-connection download killed mid-flight has
+			// no resume data on disk, so its resume restarts the
+			// transport automatically (never asks for the link
+			// again); the saved byte counts still show the real
+			// progress it had reached.
+			self._saveActiveDownloadsThrottled()
 		}
 	}
 	
@@ -1116,7 +1270,6 @@ final class ZenithMultipartDownload: @unchecked Sendable {
 	private var fileHandle: FileHandle?
 	private var startTime = Date()
 	private var lastReportDate = Date()
-	private var lastReportedBytes: Int64 = 0
 	private var _failedError: Error?
 	private var _didFailOver = false
 	private var _cancelled = false
@@ -1147,7 +1300,17 @@ final class ZenithMultipartDownload: @unchecked Sendable {
 	}
 	
 	static func _multipartDirectory() -> URL {
-		FileManager.default.temporaryDirectory
+		// Zenith v2.10: the part temp file + manifest must survive
+		// an app restart — temporaryDirectory may be purged while
+		// the app is not running, which would drop the part file
+		// and the offsets and force a resume from zero. Caches
+		// survives restarts (purged only under storage pressure)
+		// and is the same home the single-connection resume data
+		// already uses. Downloads started before this move keep
+		// their tmp files, but a resume after the move finds no
+		// manifest/temp file here and restarts that one download
+		// from zero automatically — the entry itself is not lost.
+		FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask)[0]
 			.appendingPathComponent("ZenithMultipart", isDirectory: true)
 	}
 	
@@ -1196,7 +1359,6 @@ final class ZenithMultipartDownload: @unchecked Sendable {
 		
 		startTime = Date()
 		lastReportDate = Date()
-		lastReportedBytes = _totalDownloaded()
 		
 		for index in 0..<partCount {
 			_launchPart(index)
@@ -1224,6 +1386,14 @@ final class ZenithMultipartDownload: @unchecked Sendable {
 		Task { @MainActor in
 			download.status = .paused
 		}
+	}
+	
+	/// Persists the per-part byte counts now. Used by the
+	/// throttled progress save and by the background/terminate
+	/// save in DownloadManager: a kill mid-download must find
+	/// the offsets on disk, or resume restarts from zero.
+	func persistManifest() {
+		_persistManifest()
 	}
 	
 	/// Zenith v2.8: connectivity dropped mid-part. Stop the parts
@@ -1479,8 +1649,7 @@ final class ZenithMultipartDownload: @unchecked Sendable {
 		fileHandle = nil
 		lock.unlock()
 		
-		let customTempDir = FileManager.default.temporaryDirectory
-			.appendingPathComponent("ZenithDownloads", isDirectory: true)
+		let customTempDir = DownloadManager._finishedDownloadsDirectory()
 		do {
 			try FileManager.default.createDirectoryIfNeeded(at: customTempDir)
 			let destinationURL = customTempDir.appendingPathComponent(download.fileName)
@@ -1506,28 +1675,37 @@ final class ZenithMultipartDownload: @unchecked Sendable {
 	}
 	
 	private func _reportProgressIfNeeded() {
-		var snapshot: (total: Int64, speed: Int64, remaining: TimeInterval?)?
+		var snapshot: Int64?
 		lock.lock()
 		let now = Date()
 		let interval = now.timeIntervalSince(lastReportDate)
 		if interval >= 0.25 {
-			let total = partDownloaded.reduce(0, +)
-			let speed = interval > 0 ? Int64(Double(total - lastReportedBytes) / interval) : 0
-			lastReportedBytes = total
+			snapshot = partDownloaded.reduce(0, +)
 			lastReportDate = now
-			let remaining: TimeInterval? = speed > 0
-				? TimeInterval(totalBytes - total) / TimeInterval(speed)
-				: nil
-			snapshot = (total, speed, remaining)
 		}
 		lock.unlock()
-		guard let snapshot else { return }
+		guard let total = snapshot else { return }
 		Task { @MainActor in
-			download.progress = totalBytes > 0 ? Double(snapshot.total) / Double(totalBytes) : 0
-			download.bytesDownloaded = snapshot.total
+			download.progress = totalBytes > 0 ? Double(total) / Double(totalBytes) : 0
+			download.bytesDownloaded = total
 			download.totalBytes = totalBytes
-			download.speedBytesPerSec = snapshot.speed
-			download.estimatedTimeRemaining = snapshot.remaining
+			// Speed + ETA from the same live counts, smoothed
+			// (see Download._updateSpeedAndETA) — never the raw
+			// per-sample instantaneous value.
+			download._updateSpeedAndETA(
+				totalDownloaded: total,
+				totalBytes: totalBytes,
+				now: Date()
+			)
+			// Zenith v2.10: persist progress + the per-part
+			// manifest as the download moves (throttled to one
+			// write per 2s inside the manager). Before this the
+			// manifest was only written on pause/finish, so a
+			// kill mid-download left no offsets on disk and
+			// resume restarted from zero.
+			if DownloadManager.shared._saveActiveDownloadsThrottled() {
+				persistManifest()
+			}
 		}
 	}
 	

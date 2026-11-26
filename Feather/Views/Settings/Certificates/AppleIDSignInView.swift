@@ -49,9 +49,11 @@ struct AppleIDSignInView: View {
 						.autocorrectionDisabled()
 						.keyboardType(.emailAddress)
 						.zenithGlassCard(cornerRadius: 12)
+						.padding(.vertical, 6)
 						.listRowSeparator(.hidden)
 					SecureField(.localized("Password"), text: $_password)
 						.zenithGlassCard(cornerRadius: 12)
+						.padding(.vertical, 6)
 						.listRowSeparator(.hidden)
 				} footer: {
 					Text(.localized("Your Apple ID password is used only for this sign-in and is never stored."))
@@ -71,6 +73,7 @@ struct AppleIDSignInView: View {
 					}
 					.disabled(_appleID.isEmpty || _password.isEmpty || _isBusy)
 					.zenithGlassCard(cornerRadius: 12)
+					.padding(.vertical, 6)
 					.listRowSeparator(.hidden)
 				} footer: {
 					Text(_manager.localizedStatusText)
@@ -83,6 +86,7 @@ struct AppleIDSignInView: View {
 							.font(.footnote)
 							.foregroundStyle(.red)
 							.zenithGlassCard(cornerRadius: 12)
+							.padding(.vertical, 6)
 							.listRowSeparator(.hidden)
 					}
 				}
@@ -170,6 +174,7 @@ struct AppleIDSignInView: View {
 								}
 							}
 							.zenithGlassCard(cornerRadius: 12)
+							.padding(.vertical, 6)
 							.listRowSeparator(.hidden)
 						}
 					}
@@ -180,12 +185,14 @@ struct AppleIDSignInView: View {
 						_manager.resolveRevocation(.revokeOldest)
 					}
 					.zenithGlassCard(cornerRadius: 12)
+					.padding(.vertical, 6)
 					.listRowSeparator(.hidden)
 					Button(.localized("Cancel"), role: .cancel) {
 						_isRevocationSheetPresenting = false
 						_manager.cancel()
 					}
 					.zenithGlassCard(cornerRadius: 12)
+					.padding(.vertical, 6)
 					.listRowSeparator(.hidden)
 				} footer: {
 					Text(.localized("Revoking deletes the oldest certificate from your Apple ID. Apps signed with it stop working."))

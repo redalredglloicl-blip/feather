@@ -52,7 +52,7 @@ struct CertificatesView: View {
 	// can ever sit on top of another view's text or button.
 	var body: some View {
 		ScrollView {
-			VStack(spacing: 8) {
+			VStack(spacing: 20) {
 				_expiryBanner
 				
 				if let selected = _selectedCertificate {
@@ -235,10 +235,6 @@ struct CertificatesView: View {
 			}
 			.padding()
 			.zenithGlassCard(cornerRadius: 14, fallback: Color(uiColor: .secondarySystemFill))
-			.overlay(
-				RoundedRectangle(cornerRadius: 14)
-					.strokeBorder(info.color, lineWidth: 1.5)
-			)
 			.padding(.horizontal)
 			.padding(.top, 8)
 		}
@@ -252,7 +248,7 @@ extension CertificatesView {
 	/// or any other view.
 	@ViewBuilder
 	private var _emptyState: some View {
-		VStack(spacing: 12) {
+		VStack(spacing: 16) {
 			// Real certificate icon, not the grey "?" placeholder.
 			Image("icon-certificates")
 				.resizable()
@@ -287,7 +283,7 @@ extension CertificatesView {
 	
 	@ViewBuilder
 	private var _dnsProtectionCard: some View {
-		VStack(alignment: .leading, spacing: 10) {
+		VStack(alignment: .leading, spacing: 14) {
 			HStack(spacing: 10) {
 				Image("icon-protection")
 					.renderingMode(.template)
@@ -361,7 +357,7 @@ extension CertificatesView {
 					.foregroundStyle(.secondary)
 			}
 			
-			Text(.localized("1. اختر «حفظ في الملفات»\n2. افتح الملف من تطبيق الملفات\n3. من الإعدادات → VPN وإدارة الأجهزة → ثبّت الملف"))
+			Text(.localized("1. اختر «حفظ في الملفات»\n2. اضغط على الملف من تطبيق الملفات — وإذا ما صار شي، اضغط «مشاركة» ← «الإعدادات»\n3. افتح الإعدادات واضغط «ملف تعريفي تم تنزيله» بأعلى الشاشة، ثم «تثبيت» واكتب رمز القفل\n4. تأكد من الإعدادات ← عام ← VPN وDNS وإدارة الأجهزة أن الملف موجود، وبعدين اضغط «أكملت التثبيت»"))
 				.font(.caption2)
 				.foregroundStyle(.secondary)
 			
@@ -370,7 +366,7 @@ extension CertificatesView {
 				.foregroundStyle(.secondary)
 			
 			if _dnsProtectionInstalled {
-				Text(.localized("To remove the protection: Settings → VPN & Device Management."))
+				Text(.localized("To remove the protection: Settings → General → VPN, DNS & Device Management."))
 					.font(.caption2)
 					.foregroundStyle(.secondary)
 			}
@@ -383,8 +379,12 @@ extension CertificatesView {
 	
 	/// PRIMARY route: copy the bundled profile to a temp file and hand
 	/// it straight to the share sheet, so the user can save it to
-	/// Files (then tap it there and iOS offers the install) or send
-	/// it to Safari. The share sheet always appears, has Cancel, and
+	/// Files and tap it there — or Share → Settings if a plain tap
+	/// only previews it — which queues "Profile Downloaded" in
+	/// Settings. The install itself happens in Settings, never
+	/// inside Files: tapping the file shows no install prompt of its
+	/// own, and that missing prompt is what made the old 3-step card
+	/// read as fake. The share sheet always appears, has Cancel, and
 	/// cannot hang — the old route presented the profile through a
 	/// sheet-hosted UIDocumentInteractionController whose empty view
 	/// stayed black forever when iOS 27 offered no "Open In" menu

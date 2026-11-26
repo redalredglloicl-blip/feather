@@ -60,6 +60,7 @@ struct AppPassportView: View {
 							}
 						}
 						.frame(maxWidth: .infinity, alignment: .center)
+						.padding(.bottom, 8)
 					}
 
 					_infoSection
@@ -88,6 +89,7 @@ struct AppPassportView: View {
 						}
 						.buttonStyle(ZenithPressButtonStyle())
 						.zenithGlassCard(cornerRadius: 12, fallback: Color.accentColor.opacity(0.15))
+						.padding(.vertical, 6)
 						.listRowSeparator(.hidden)
 					}
 					.listRowBackground(Color.accentColor.opacity(0.15))
@@ -160,6 +162,11 @@ struct AppPassportView: View {
 					.font(.footnote)
 					.foregroundStyle(.secondary)
 					.zenithGlassCard(cornerRadius: 12)
+					.overlay(
+						RoundedRectangle(cornerRadius: 12, style: .continuous)
+							.fill(Color.white.opacity(0.04))
+					)
+					.padding(.vertical, 6)
 					.listRowSeparator(.hidden)
 			}
 		}
@@ -172,6 +179,7 @@ struct AppPassportView: View {
 		}
 		.copyableText(desc)
 		.zenithGlassCard(cornerRadius: 12)
+		.padding(.vertical, 6)
 		.listRowSeparator(.hidden)
 	}
 

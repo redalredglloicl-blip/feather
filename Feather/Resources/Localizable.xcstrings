@@ -205,19 +205,19 @@
         }
       }
     },
-    "1. اختر «حفظ في الملفات»\n2. افتح الملف من تطبيق الملفات\n3. من الإعدادات → VPN وإدارة الأجهزة → ثبّت الملف": {
+    "1. اختر «حفظ في الملفات»\n2. اضغط على الملف من تطبيق الملفات — وإذا ما صار شي، اضغط «مشاركة» ← «الإعدادات»\n3. افتح الإعدادات واضغط «ملف تعريفي تم تنزيله» بأعلى الشاشة، ثم «تثبيت» واكتب رمز القفل\n4. تأكد من الإعدادات ← عام ← VPN وDNS وإدارة الأجهزة أن الملف موجود، وبعدين اضغط «أكملت التثبيت»": {
       "extractionState": "manual",
       "localizations": {
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "1. اختر «حفظ في الملفات»\n2. افتح الملف من تطبيق الملفات\n3. من الإعدادات → VPN وإدارة الأجهزة → ثبّت الملف"
+            "value": "1. اختر «حفظ في الملفات»\n2. اضغط على الملف من تطبيق الملفات — وإذا ما صار شي، اضغط «مشاركة» ← «الإعدادات»\n3. افتح الإعدادات واضغط «ملف تعريفي تم تنزيله» بأعلى الشاشة، ثم «تثبيت» واكتب رمز القفل\n4. تأكد من الإعدادات ← عام ← VPN وDNS وإدارة الأجهزة أن الملف موجود، وبعدين اضغط «أكملت التثبيت»"
           }
         },
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "1. Choose “Save to Files”\n2. Open the file from the Files app\n3. From Settings → VPN & Device Management → install the file"
+            "value": "1. Choose “Save to Files”\n2. Tap the file in the Files app — if nothing happens, tap Share → Settings\n3. Open Settings and tap “Profile Downloaded” at the top, then “Install” and enter your passcode\n4. Check Settings → General → VPN, DNS & Device Management to see the profile listed, then tap “I finished installing”"
           }
         }
       }
@@ -18681,19 +18681,19 @@
         }
       }
     },
-    "To remove the protection: Settings → VPN & Device Management.": {
+    "To remove the protection: Settings → General → VPN, DNS & Device Management.": {
       "extractionState": "manual",
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "To remove the protection: Settings → VPN & Device Management."
+            "value": "To remove the protection: Settings → General → VPN, DNS & Device Management."
           }
         },
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "حتى تشيل الحماية: الإعدادات ← VPN وإدارة الجهاز."
+            "value": "حتى تشيل الحماية: الإعدادات ← عام ← VPN وDNS وإدارة الأجهزة."
           }
         }
       }
@@ -20648,7 +20648,7 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "ثبّتها من سفاري"
+            "value": "Install it from Safari"
           }
         }
       }
@@ -20665,7 +20665,7 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "بعد ما ينفتح الملف، كمّل التثبيت من الإعدادات: ملف تعريفي تم تنزيله."
+            "value": "After the file opens, finish the install from Settings: Profile Downloaded."
           }
         }
       }

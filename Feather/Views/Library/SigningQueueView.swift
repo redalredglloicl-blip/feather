@@ -32,6 +32,7 @@ struct SigningQueueView: View {
 								.font(.subheadline)
 								.foregroundStyle(.secondary)
 								.zenithGlassCard(cornerRadius: 12)
+								.padding(.vertical, 6)
 								.listRowSeparator(.hidden)
 						} else {
 							ForEach(_importedApps, id: \.uuid) { app in
@@ -53,6 +54,7 @@ struct SigningQueueView: View {
 									}
 								}
 								.zenithGlassCard(cornerRadius: 12)
+								.padding(.vertical, 6)
 								.listRowSeparator(.hidden)
 							}
 						
@@ -61,6 +63,7 @@ struct SigningQueueView: View {
 									_queue.clearFinished()
 								}
 								.zenithGlassCard(cornerRadius: 12)
+								.padding(.vertical, 6)
 								.listRowSeparator(.hidden)
 							}
 						} header: {
@@ -73,6 +76,7 @@ struct SigningQueueView: View {
 										.foregroundStyle(.secondary)
 								}
 							}
+							.padding(.bottom, 6)
 						} footer: {
 							if _queue.isRunning {
 								Text(.localized("Signing one by one — keep the app open."))
@@ -98,6 +102,8 @@ struct SigningQueueView: View {
 							}
 						}
 						.buttonStyle(.borderedProminent)
+						.shadow(color: .black.opacity(0.35), radius: 10, x: 0, y: 4)
+						.padding(.vertical, 6)
 						.disabled(_selectedUUIDs.isEmpty || _queue.isRunning)
 					}
 					.listRowBackground(Color.clear)
@@ -148,6 +154,7 @@ struct SigningQueueView: View {
 		}
 		.buttonStyle(.plain)
 		.zenithGlassCard(cornerRadius: 12)
+		.padding(.vertical, 6)
 		.listRowSeparator(.hidden)
 	}
 }
@@ -203,6 +210,7 @@ struct SigningQueueItemRowView: View {
 		}
 		.padding(.vertical, 2)
 		.zenithGlassCard(cornerRadius: 12)
+		.padding(.vertical, 6)
 		.listRowSeparator(.hidden)
 	}
 	

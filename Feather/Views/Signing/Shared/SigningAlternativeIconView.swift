@@ -32,6 +32,7 @@ struct SigningAlternativeIconView: View {
 						}
 						.disabled(!isModifing)
 						.zenithGlassCard(cornerRadius: 12)
+						.padding(.vertical, 6)
 						.listRowSeparator(.hidden)
 					}
 				} else {
@@ -39,6 +40,7 @@ struct SigningAlternativeIconView: View {
 						.font(.footnote)
 						.foregroundColor(.disabled())
 						.zenithGlassCard(cornerRadius: 12)
+						.padding(.vertical, 6)
 						.listRowSeparator(.hidden)
 				}
 			}

@@ -38,6 +38,7 @@ struct CertificatesCellView: View {
 		.contentTransition(.opacity)
 		.frame(maxWidth: .infinity, alignment: .leading)
 		.zenithGlassCard(cornerRadius: 12)
+		.padding(.vertical, 6)
 		.listRowSeparator(.hidden)
 		.onAppear {
 			withAnimation {

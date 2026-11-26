@@ -20,6 +20,7 @@ struct LibraryInfoView: View {
 				Section {} header: {
 					ZenithAppIconView(app: app)
 						.frame(maxWidth: .infinity, alignment: .center)
+						.padding(.bottom, 8)
 				}
 				
 				_infoSection(for: app)
@@ -32,6 +33,7 @@ struct LibraryInfoView: View {
 						UIApplication.open(Storage.shared.getUuidDirectory(for: app)!.toSharedDocumentsURL()!)
 					}
 					.zenithGlassCard(cornerRadius: 12)
+					.padding(.vertical, 6)
 					.listRowSeparator(.hidden)
 				}
 			}
@@ -109,11 +111,13 @@ extension LibraryInfoView {
 				SigningAlternativeIconView(app: app, appIcon: .constant(nil), isModifing: .constant(false))
 			}
 			.zenithGlassCard(cornerRadius: 12)
+			.padding(.vertical, 6)
 			.listRowSeparator(.hidden)
 			NavigationLink(.localized("Frameworks & PlugIns")) {
 				SigningFrameworksView(app: app, options: .constant(nil))
 			}
 			.zenithGlassCard(cornerRadius: 12)
+			.padding(.vertical, 6)
 			.listRowSeparator(.hidden)
 		}
 	}
@@ -125,6 +129,7 @@ extension LibraryInfoView {
 				SigningDylibView(app: app, options: .constant(nil))
 			}
 			.zenithGlassCard(cornerRadius: 12)
+			.padding(.vertical, 6)
 			.listRowSeparator(.hidden)
 			NavigationLink(.localized("Entitlements")) {
 				if 
@@ -145,6 +150,7 @@ extension LibraryInfoView {
 				}
 			}
 			.zenithGlassCard(cornerRadius: 12)
+			.padding(.vertical, 6)
 			.listRowSeparator(.hidden)
 		}
 	}
@@ -156,6 +162,7 @@ extension LibraryInfoView {
 		}
 		.copyableText(desc)
 		.zenithGlassCard(cornerRadius: 12)
+		.padding(.vertical, 6)
 		.listRowSeparator(.hidden)
 	}
 }

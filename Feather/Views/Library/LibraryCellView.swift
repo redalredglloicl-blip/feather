@@ -64,7 +64,7 @@ struct LibraryCellView: View {
 	var body: some View {
 		let isEditing = editMode?.wrappedValue == .active
 		
-		VStack(alignment: .leading, spacing: 10) {
+		VStack(alignment: .leading, spacing: 12) {
 			HStack(alignment: .top, spacing: 8) {
 				_appIcon(for: app)
 				
@@ -98,14 +98,14 @@ struct LibraryCellView: View {
 		.padding(14)
 		.frame(maxWidth: .infinity, alignment: .leading)
 		.zenithGlassCard(cornerRadius: 24, fallback: Color.white.opacity(0.08))
-		.overlay(
-			RoundedRectangle(cornerRadius: 24, style: .continuous)
-				.strokeBorder(
-					_isSelected && isEditing ? Color.accentColor : Color.accentColor.opacity(0.25),
-					lineWidth: _isSelected && isEditing ? 2 : 1
-				)
-		)
-		.shadow(color: .black.opacity(0.25), radius: 12, x: 0, y: 6)
+		.overlay {
+			// Selection ring only, shown in edit mode on a selected
+			// card — the always-on accent rim is gone (v2.10).
+			if _isSelected && isEditing {
+				RoundedRectangle(cornerRadius: 24, style: .continuous)
+					.strokeBorder(Color.accentColor, lineWidth: 2)
+			}
+		}
 		.contentShape(Rectangle())
 		.overlay(alignment: .topLeading) {
 			if isEditing {

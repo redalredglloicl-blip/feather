@@ -26,7 +26,7 @@ struct AppearanceTintColorView: View {
 	// MARK: Body
 	var body: some View {
 		ScrollView(.horizontal, showsIndicators: false) {
-			LazyHGrid(rows: [GridItem(.fixed(100))], spacing: 12) {
+			LazyHGrid(rows: [GridItem(.fixed(100))], spacing: 14) {
 				ForEach(_tintOptions, id: \.hex) { option in
 					let color = Color(hex: option.hex)
 					let cornerRadius = {

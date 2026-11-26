@@ -26,6 +26,7 @@ struct CertificatesInfoView: View {
 						.scaledToFit()
 						.frame(width: 107, height: 107)
 						.frame(maxWidth: .infinity, alignment: .center)
+						.padding(.bottom, 8)
 				}
 				
 				if let data {
@@ -39,6 +40,7 @@ struct CertificatesInfoView: View {
 						UIApplication.open(Storage.shared.getUuidDirectory(for: cert)!.toSharedDocumentsURL()!)
 					}
 					.zenithGlassCard(cornerRadius: 12)
+					.padding(.vertical, 6)
 					.listRowSeparator(.hidden)
 				}
 			}
@@ -88,6 +90,7 @@ extension CertificatesInfoView {
 					CertificatesInfoEntitlementView(entitlements: entitlements)
 				}
 				.zenithGlassCard(cornerRadius: 12)
+				.padding(.vertical, 6)
 				.listRowSeparator(.hidden)
 			}
 		}
@@ -121,6 +124,7 @@ extension CertificatesInfoView {
 		}
 		.copyableText(description)
 		.zenithGlassCard(cornerRadius: 12)
+		.padding(.vertical, 6)
 		.listRowSeparator(.hidden)
 	}
 	
@@ -134,6 +138,7 @@ extension CertificatesInfoView {
 			}
 		}
 		.zenithGlassCard(cornerRadius: 12)
+		.padding(.vertical, 6)
 		.listRowSeparator(.hidden)
 	}
 }

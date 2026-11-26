@@ -29,9 +29,12 @@ struct ConfigurationDictAddView: View {
 				TextField(.localized("Value"), text: $_newKey)
 					.zenithGlassCard(cornerRadius: 12)
 					.listRowSeparator(.hidden)
+					.listRowInsets(EdgeInsets(top: 7, leading: 16, bottom: 7, trailing: 16))
 				TextField(.localized("Replacement"), text: $_newValue)
+					.background(Color.white.opacity(0.04), in: RoundedRectangle(cornerRadius: 12, style: .continuous))
 					.zenithGlassCard(cornerRadius: 12)
 					.listRowSeparator(.hidden)
+					.listRowInsets(EdgeInsets(top: 7, leading: 16, bottom: 7, trailing: 16))
 			}
 			.autocapitalization(.none)
 		}
