@@ -1,6 +1,6 @@
 //
 //  LibraryAppIconView.swift
-//  Feather
+//  Zenith
 //
 //  Created by samara on 11.04.2025.
 //
@@ -224,7 +224,7 @@ struct LibraryCellView: View {
 // MARK: - Extension: View
 extension LibraryCellView {
 	private func _appIcon(for app: AppInfoPresentable) -> some View {
-		FRAppIconView(app: app, size: 64)
+		ZenithAppIconView(app: app, size: 64)
 	}
 	
 	@ViewBuilder

@@ -1,6 +1,6 @@
 //
 //  SettingsTunnelView.swift
-//  Feather (idevice)
+//  Zenith (idevice)
 //
 //  Created by samara on 29.04.2025.
 //
@@ -61,7 +61,7 @@ struct TunnelView: View {
 			NBSection(.localized("Help")) {
 				if isLocalDevVpnAvailable {
 					Button(.localized("Connect to LocalDevVPN"), systemImage: "link") {
-						UIApplication.open("localdevvpn://enable?scheme=feather")
+						UIApplication.open("localdevvpn://enable?scheme=zenith")
 					}
 				} else {
 					Button(.localized("Download LocalDevVPN"), systemImage: "arrow.down.app") {
@@ -75,7 +75,7 @@ struct TunnelView: View {
 				allowedContentTypes:  [.xmlPropertyList, .plist, .mobiledevicepairing],
 				onDocumentsPicked: { urls in
 					guard let selectedFileURL = urls.first else { return }
-					FR.movePairing(selectedFileURL)
+					Zenith.movePairing(selectedFileURL)
 					doesHavePairingFile = true
 				}
 			)

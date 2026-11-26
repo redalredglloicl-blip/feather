@@ -1,6 +1,6 @@
 //
 //  CertificatesInfoEntitlementView.swift
-//  Feather
+//  Zenith
 //
 //  Created by samara on 27.04.2025.
 //

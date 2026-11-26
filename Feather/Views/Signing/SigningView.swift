@@ -1,6 +1,6 @@
 //
 //  SigningView.swift
-//  Feather
+//  Zenith
 //
 //  Created by samara on 14.04.2025.
 //
@@ -44,7 +44,7 @@ struct SigningView: View {
 	
 	init(app: AppInfoPresentable) {
 		self.app = app
-		let storedCert = UserDefaults.standard.integer(forKey: "feather.selectedCert")
+		let storedCert = UserDefaults.standard.integer(forKey: "zenith.selectedCert")
 		__temporaryCertificate = State(initialValue: storedCert)
 	}
 		
@@ -79,7 +79,7 @@ struct SigningView: View {
 				}
 				if _temporaryOptions.post_installAppAfterSigned {
 					DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
-						NotificationCenter.default.post(name: Notification.Name("Feather.installApp"), object: nil)
+						NotificationCenter.default.post(name: Notification.Name("Zenith.installApp"), object: nil)
 					}
 				}
 				DispatchQueue.main.asyncAfter(deadline: .now() + 0.35) {
@@ -201,7 +201,7 @@ extension SigningView {
 					Image(uiImage: icon)
 						.appIconStyle()
 				} else {
-					FRAppIconView(app: app, size: 56)
+					ZenithAppIconView(app: app, size: 56)
 				}
 			}
 			
@@ -334,7 +334,7 @@ extension SigningView {
 		generator.impactOccurred()
 		_isSigning = true
 		
-		FR.signPackageFile(
+		Zenith.signPackageFile(
 			app,
 			using: _temporaryOptions,
 			icon: appIcon,

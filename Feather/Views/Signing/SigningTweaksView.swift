@@ -1,6 +1,6 @@
 //
 //  SigningTweaksView.swift
-//  Feather
+//  Zenith
 //
 //  Created by samara on 20.04.2025.
 //
@@ -65,7 +65,7 @@ struct SigningTweaksView: View {
 					guard !urls.isEmpty else { return }
 					
 					for url in urls {
-						FileManager.default.moveAndStore(url, with: "FeatherTweak") { url in
+						FileManager.default.moveAndStore(url, with: "ZenithTweak") { url in
 							options.injectionFiles.append(url)
 						}
 					}

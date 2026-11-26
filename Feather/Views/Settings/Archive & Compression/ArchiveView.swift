@@ -1,6 +1,6 @@
 //
 //  ArchiveView.swift
-//  Feather
+//  Zenith
 //
 //  Created by samara on 6.05.2025.
 //
@@ -11,8 +11,8 @@ import NimbleViews
 
 // MARK: - View
 struct ArchiveView: View {
-	@AppStorage("Feather.compressionLevel") private var _compressionLevel: Int = ZipCompression.DefaultCompression.rawValue
-	@AppStorage("Feather.useShareSheetForArchiving") private var _useShareSheet: Bool = false
+	@AppStorage("Zenith.compressionLevel") private var _compressionLevel: Int = ZipCompression.DefaultCompression.rawValue
+	@AppStorage("Zenith.useShareSheetForArchiving") private var _useShareSheet: Bool = false
 	
 	// MARK: Body
 	var body: some View {

@@ -1,6 +1,6 @@
 //
 //  SettingsView.swift
-//  Feather
+//  Zenith
 //
 //  Created by samara on 10.04.2025.
 //

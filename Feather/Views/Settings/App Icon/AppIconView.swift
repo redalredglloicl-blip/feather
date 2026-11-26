@@ -1,6 +1,6 @@
 //
 //  AppIconView.swift
-//  Feather
+//  Zenith
 //
 //  Created by samara on 19.06.2025.
 //
@@ -38,14 +38,14 @@ struct AppIconView: View {
 	// dont translate
 	var sections: [String: [AltIcon]] = [
 		"Main": [
-			AltIcon(displayName: "Feather", author: "", key: nil),
-			AltIcon(displayName: "Feather (macOS)", author: "", key: "V2Mac"),
-			AltIcon(displayName: "Feather v1", author: "", key: "V1"),
-			AltIcon(displayName: "Feather v1 (macOS)", author: "", key: "V1Mac"),
-			AltIcon(displayName: "Feather v0", author: "", key: "V0")
+			AltIcon(displayName: "Zenith", author: "", key: nil),
+			AltIcon(displayName: "Zenith (macOS)", author: "", key: "V2Mac"),
+			AltIcon(displayName: "Zenith v1", author: "", key: "V1"),
+			AltIcon(displayName: "Zenith v1 (macOS)", author: "", key: "V1Mac"),
+			AltIcon(displayName: "Zenith v0", author: "", key: "V0")
 		],
 		"Alt": [
-			AltIcon(displayName: "Feather", author: "", key: "Wing"),
+			AltIcon(displayName: "Zenith", author: "", key: "Wing"),
 		]
 	]
 	

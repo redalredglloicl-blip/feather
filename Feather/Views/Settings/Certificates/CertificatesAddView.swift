@@ -1,6 +1,6 @@
 //
 //  CertificatesAddView.swift
-//  Feather
+//  Zenith
 //
 //  Created by samara on 15.04.2025.
 //
@@ -123,7 +123,7 @@ extension CertificatesAddView {
 		guard
 			let p12URL = _p12URL,
 			let provisionURL = _provisionURL,
-			FR.checkPasswordForCertificate(for: p12URL, with: _p12Password, using: provisionURL)
+			Zenith.checkPasswordForCertificate(for: p12URL, with: _p12Password, using: provisionURL)
 		else {
 			UIAlertController.showAlertWithOk(
 				title: .localized("Bad Password"),
@@ -132,7 +132,7 @@ extension CertificatesAddView {
 			return
 		}
 		
-		FR.handleCertificateFiles(
+		Zenith.handleCertificateFiles(
 			p12URL: p12URL,
 			provisionURL: provisionURL,
 			p12Password: _p12Password,

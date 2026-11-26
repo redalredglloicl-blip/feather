@@ -1,10 +1,10 @@
 //
 //  SigningQueueView.swift
-//  Feather
+//  Zenith
 //
 //  Zenith v2.2 — batch signing queue: pick several imported IPAs, sign
 //  them one after another, watch each item's real status, retry the
-//  ones that fail. Signing itself goes through FR.signPackageFile.
+//  ones that fail. Signing itself goes through Zenith.signPackageFile.
 
 import SwiftUI
 import CoreData

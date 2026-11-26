@@ -1,18 +1,18 @@
 //
 //  TabbarController.swift
-//  feather
+//  zenith
 //
 //  Created by samara on 5/17/24.
 //  Copyright (c) 2024 Samara M (khcrysalis)
 //
 //  Four tabs: Home, Certificates, Downloads and Settings. The Sources section
-//  was removed entirely (see FEATHER_MOD_PLAN.md).
+//  was removed entirely (see ZENITH_MOD_PLAN.md).
 
 import SwiftUI
 
 @available(iOS 18, *)
 struct ExtendedTabbarView: View {
-	@AppStorage("Feather.tabCustomization") var customization = TabViewCustomization()
+	@AppStorage("Zenith.tabCustomization") var customization = TabViewCustomization()
 	
 	var body: some View {
 		TabView {

@@ -1,6 +1,6 @@
 //
 //  CertificateHealthView.swift
-//  Feather
+//  Zenith
 //
 //  Zenith v2.3: health card shown under the certificate hero card in
 //  the Certificates tab. The verdict comes from the LOCAL file check

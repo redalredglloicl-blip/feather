@@ -1,6 +1,6 @@
 //
 //  AppearanceView.swift
-//  Feather
+//  Zenith
 //
 //  Created by samara on 7.05.2025.
 //
@@ -12,23 +12,23 @@ import UIKit
 // MARK: - View
 // dear god help me
 struct AppearanceView: View {
-	@AppStorage("Feather.userInterfaceStyle")
+	@AppStorage("Zenith.userInterfaceStyle")
 	private var _userIntefacerStyle: Int = UIUserInterfaceStyle.unspecified.rawValue
 	
-	@AppStorage("Feather.shouldTintIcons")
+	@AppStorage("Zenith.shouldTintIcons")
 	private var _shouldTintIcons: Bool = false
 	
-	@AppStorage("Feather.shouldChangeIconsBasedOffStyle")
+	@AppStorage("Zenith.shouldChangeIconsBasedOffStyle")
 	private var _shouldChangeIconsBasedOffStyle: Bool = false
 	
-	@AppStorage("Feather.storeCellAppearance")
+	@AppStorage("Zenith.storeCellAppearance")
 	private var _storeCellAppearance: Int = 0
 	private let _storeCellAppearanceMethods: [(name: String, desc: String)] = [
 		(.localized("Standard"), .localized("Default style for the app, only includes subtitle.")),
 		(.localized("Big Description"), .localized("Adds the localized description of the app."))
 	]
 	
-	@AppStorage("Feather.userTintColor")
+	@AppStorage("Zenith.userTintColor")
 	private var _selectedColorHex: String = "#848ef9"
 	
 	private var _tintColorBinding: Binding<Color> {

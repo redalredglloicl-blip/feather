@@ -1,6 +1,6 @@
 //
 //  ServerView.swift
-//  Feather
+//  Zenith
 //
 //  Created by samara on 6.05.2025.
 //
@@ -48,8 +48,8 @@ extension ServerView {
 
 // MARK: - View
 struct ServerView: View {
-	@AppStorage("Feather.ipFix") private var _ipFix: Bool = false
-	@AppStorage("Feather.serverMethod") private var _serverMethod: Int = 0
+	@AppStorage("Zenith.ipFix") private var _ipFix: Bool = false
+	@AppStorage("Zenith.serverMethod") private var _serverMethod: Int = 0
 	private let _serverMethods: [String] = [.localized("Fully Local"), .localized("Semi Local")]
 	
 	private let _dataService = NBFetchService()
@@ -70,7 +70,7 @@ struct ServerView: View {
 			
 			Section {
 				Button(.localized("Update SSL Certificates"), systemImage: "arrow.down.doc") {
-					FR.downloadSSLCertificates(from: _serverPackUrl) { success in
+					Zenith.downloadSSLCertificates(from: _serverPackUrl) { success in
 						if success {
 							DispatchQueue.main.async {
 								UIAlertController.showAlertWithOk(

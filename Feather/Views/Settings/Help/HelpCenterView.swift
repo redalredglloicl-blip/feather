@@ -1,6 +1,6 @@
 //
 //  HelpCenterView.swift
-//  Feather
+//  Zenith
 //
 //  Zenith v2.2: Help Center — plain-language Iraqi-Arabic fixes for
 //  the errors users actually hit, plus a diagnostics section showing

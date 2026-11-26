@@ -1,6 +1,6 @@
 //
 //  StarfieldBackground.swift
-//  Feather
+//  Zenith
 //
 //  Zenith v2.2 (shared UI foundation): a soft white starfield on black
 //  used behind the Home, Certificates and Settings screens, the signing

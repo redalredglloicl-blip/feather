@@ -1,6 +1,6 @@
 //
 //  CertificatesView.swift
-//  Feather
+//  Zenith
 //
 //  Created by samara on 15.04.2025.
 //
@@ -11,7 +11,7 @@ import NimbleViews
 
 // MARK: - View
 struct CertificatesView: View {
-	@AppStorage("feather.selectedCert") private var _storedSelectedCert: Int = 0
+	@AppStorage("zenith.selectedCert") private var _storedSelectedCert: Int = 0
 	
 	@State private var _isAddingPresenting = false
 	@State private var _isRenamingPresenting = false

@@ -1,7 +1,7 @@
 
 //
 //  AppleIDSignInView.swift
-//  Feather
+//  Zenith
 //
 //  Sign in with the user's own Apple ID to fetch a FREE Apple Developer
 //  certificate (7 days, max 3 apps) entirely on-device. No computer,
@@ -13,7 +13,7 @@
 //
 //  Honest limits: this flow has never run against Apple from this
 //  workspace. The handshake, the 2FA round trip and the portal calls
-//  are only proven by a real build + device test (see FEATHER_MOD_PLAN.md §5).
+//  are only proven by a real build + device test (see ZENITH_MOD_PLAN.md §5).
 
 import SwiftUI
 import NimbleViews

@@ -1,6 +1,6 @@
 //
 //  CertificateHeroCardView.swift
-//  Feather
+//  Zenith
 //
 //  Zenith v2: the selected certificate as a beautiful card with an
 //  animated countdown ring. Every number comes from the certificate
