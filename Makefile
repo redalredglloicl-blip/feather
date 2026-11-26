@@ -38,25 +38,33 @@ $(PLATFORMS): deps
 	base64 -D < Feather/Resources/icon-b64/archive.png.b64 > Feather/Resources/Assets.xcassets/icon-archive.imageset/archive.png
 	base64 -D < Feather/Resources/icon-b64/category.png.b64 > Feather/Resources/Assets.xcassets/icon-category.imageset/category.png
 	base64 -D < Feather/Resources/icon-b64/certificates.png.b64 > Feather/Resources/Assets.xcassets/icon-certificates.imageset/certificates.png
+	base64 -D < Feather/Resources/icon-b64/certificates@2x.png.b64 > Feather/Resources/Assets.xcassets/icon-certificates.imageset/certificates@2x.png
+	base64 -D < Feather/Resources/icon-b64/certificates@3x.png.b64 > Feather/Resources/Assets.xcassets/icon-certificates.imageset/certificates@3x.png
 	base64 -D < Feather/Resources/icon-b64/delete.png.b64 > Feather/Resources/Assets.xcassets/icon-delete.imageset/delete.png
 	base64 -D < Feather/Resources/icon-b64/download.png.b64 > Feather/Resources/Assets.xcassets/icon-download.imageset/download.png
+	base64 -D < Feather/Resources/icon-b64/download@2x.png.b64 > Feather/Resources/Assets.xcassets/icon-download.imageset/download@2x.png
+	base64 -D < Feather/Resources/icon-b64/download@3x.png.b64 > Feather/Resources/Assets.xcassets/icon-download.imageset/download@3x.png
 	base64 -D < Feather/Resources/icon-b64/export.png.b64 > Feather/Resources/Assets.xcassets/icon-export.imageset/export.png
 	base64 -D < Feather/Resources/icon-b64/favorite.png.b64 > Feather/Resources/Assets.xcassets/icon-favorite.imageset/favorite.png
 	base64 -D < Feather/Resources/icon-b64/import.png.b64 > Feather/Resources/Assets.xcassets/icon-import.imageset/import.png
 	base64 -D < Feather/Resources/icon-b64/info.png.b64 > Feather/Resources/Assets.xcassets/icon-info.imageset/info.png
 	base64 -D < Feather/Resources/icon-b64/install.png.b64 > Feather/Resources/Assets.xcassets/icon-install.imageset/install.png
 	base64 -D < Feather/Resources/icon-b64/library.png.b64 > Feather/Resources/Assets.xcassets/icon-library.imageset/library.png
+	base64 -D < Feather/Resources/icon-b64/library@2x.png.b64 > Feather/Resources/Assets.xcassets/icon-library.imageset/library@2x.png
+	base64 -D < Feather/Resources/icon-b64/library@3x.png.b64 > Feather/Resources/Assets.xcassets/icon-library.imageset/library@3x.png
 	base64 -D < Feather/Resources/icon-b64/protection.png.b64 > Feather/Resources/Assets.xcassets/icon-protection.imageset/protection.png
 	base64 -D < Feather/Resources/icon-b64/renew.png.b64 > Feather/Resources/Assets.xcassets/icon-renew.imageset/renew.png
 	base64 -D < Feather/Resources/icon-b64/resign.png.b64 > Feather/Resources/Assets.xcassets/icon-resign.imageset/resign.png
 	base64 -D < Feather/Resources/icon-b64/search.png.b64 > Feather/Resources/Assets.xcassets/icon-search.imageset/search.png
 	base64 -D < Feather/Resources/icon-b64/settings.png.b64 > Feather/Resources/Assets.xcassets/icon-settings.imageset/settings.png
+	base64 -D < Feather/Resources/icon-b64/settings@2x.png.b64 > Feather/Resources/Assets.xcassets/icon-settings.imageset/settings@2x.png
+	base64 -D < Feather/Resources/icon-b64/settings@3x.png.b64 > Feather/Resources/Assets.xcassets/icon-settings.imageset/settings@3x.png
 	base64 -D < Feather/Resources/icon-b64/sign.png.b64 > Feather/Resources/Assets.xcassets/icon-sign.imageset/sign.png
 	base64 -D < Feather/Resources/icon-b64/sort.png.b64 > Feather/Resources/Assets.xcassets/icon-sort.imageset/sort.png
 	base64 -D < Feather/Resources/zenith-icon-b64/zenith_extension.png.b64 > Feather/Resources/zenith_extension.png
 	base64 -D < Feather/Resources/icon-b64/glyph.png.b64 > Feather/Resources/Assets.xcassets/Glyph.imageset/zenith.png
-	base64 -D < Feather/Resources/icon-b64/appicon-feather.png.b64 > Feather/Resources/AppIcon.icon/Assets/zenith.png
-	base64 -D < Feather/Resources/icon-b64/appicon-feather-5.png.b64 > Feather/Resources/AppIcon.icon/Assets/zenith-5.png
+	base64 -D < Feather/Resources/icon-b64/appicon-zenith.png.b64 > Feather/Resources/AppIcon.icon/Assets/zenith.png
+	base64 -D < Feather/Resources/icon-b64/appicon-zenith-5.png.b64 > Feather/Resources/AppIcon.icon/Assets/zenith-5.png
 
 	@if [ "$@" = "iphoneos" ]; then \
 		DEST="generic/platform=iOS"; \

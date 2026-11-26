@@ -14,7 +14,6 @@ struct CertificatesView: View {
 	@AppStorage("zenith.selectedCert") private var _storedSelectedCert: Int = 0
 	
 	@State private var _isAddingPresenting = false
-	@State private var _isDirectDownloadPresenting = false
 	@State private var _isRenamingPresenting = false
 	@State private var _isSelectedInfoPresenting: CertificatePair?
 	@State private var _certToRename: CertificatePair?
@@ -27,8 +26,6 @@ struct CertificatesView: View {
 	@State private var _isSelfRefreshResultPresenting = false
 	@AppStorage("Zenith.dnsProtectionInstalled") private var _dnsProtectionInstalled = false
 	@State private var _isProfileNotFoundPresenting = false
-	@State private var _dnsProfileURL: URL?
-	@State private var _isDNSDocumentPresenterPresented = false
 
 	// MARK: Fetch
 	@FetchRequest(
@@ -91,20 +88,6 @@ struct CertificatesView: View {
 				}
 				.buttonStyle(.bordered)
 				.padding(.vertical, 8)
-				
-				Button {
-					_isDirectDownloadPresenting = true
-				} label: {
-					HStack(spacing: 8) {
-						Image("icon-download")
-							.resizable()
-							.scaledToFit()
-							.frame(width: 20, height: 20)
-						Text(.localized("تحميل شهادة من رابط"))
-					}
-				}
-				.buttonStyle(.bordered)
-				.padding(.vertical, 8)
 			}
 		}
 		.starfieldBackground()
@@ -141,30 +124,6 @@ struct CertificatesView: View {
 			CertificatesAddView()
 				.presentationDetents([.medium])
 				.zenithSheetBackground()
-		}
-		.sheet(isPresented: $_isDirectDownloadPresenting) {
-			CertificateDirectDownloadView()
-				.zenithSheetBackground()
-		}
-		.sheet(isPresented: $_isDNSDocumentPresenterPresented) {
-			if let url = _dnsProfileURL {
-				_DNSProfileDocumentView(url: url) { presented in
-					_isDNSDocumentPresenterPresented = false
-					if presented {
-						// iOS offered an open route for the profile:
-						// record the tap. iOS still gives the app no
-						// way to confirm the profile really installed.
-						_dnsProtectionInstalled = true
-					} else if let url = _dnsProfileURL {
-						// No app offered to open the profile: fall back
-						// to the share sheet so the user can send it to
-						// Safari or Files themselves.
-						Task { @MainActor in
-							UIActivityViewController.show(activityItems: [url])
-						}
-					}
-				}
-			}
 		}
 		.alert(.localized("Change Nickname"), isPresented: $_isRenamingPresenting, presenting: _certToRename) { cert in
 			TextField(.localized("Nickname"), text: $_newNickname)
@@ -312,12 +271,6 @@ extension CertificatesView {
 			} label: {
 				NBButton(.localized("Import"), style: .text)
 			}
-			
-			Button {
-				_isDirectDownloadPresenting = true
-			} label: {
-				NBButton(.localized("تحميل شهادة من رابط"), style: .text)
-			}
 		}
 		.padding()
 		.frame(maxWidth: .infinity)
@@ -393,6 +346,10 @@ extension CertificatesView {
 					.foregroundStyle(.secondary)
 			}
 			
+			Text(.localized("من قائمة المشاركة اختر «حفظ في الملفات»، وبعدين افتح الملف من تطبيق الملفات وكمّل التثبيت."))
+				.font(.caption2)
+				.foregroundStyle(.secondary)
+			
 			Text(.localized("iOS does not let the app verify installation. This status is based on your install tap."))
 				.font(.caption2)
 				.foregroundStyle(.secondary)
@@ -410,10 +367,13 @@ extension CertificatesView {
 	}
 	
 	/// PRIMARY route: copy the bundled profile to a temp file and hand
-	/// it to UIDocumentInteractionController (via the sheet below), so
-	/// iOS offers the system route for opening a configuration
-	/// profile. `UIApplication.open` on a local .mobileconfig does
-	/// nothing visible — that was the old, broken behaviour.
+	/// it straight to the share sheet, so the user can save it to
+	/// Files (then tap it there and iOS offers the install) or send
+	/// it to Safari. The share sheet always appears, has Cancel, and
+	/// cannot hang — the old route presented the profile through a
+	/// sheet-hosted UIDocumentInteractionController whose empty view
+	/// stayed black forever when iOS 27 offered no "Open In" menu
+	/// for a .mobileconfig (proven on Reda's phone, v2.4).
 	/// The install tap is recorded locally because iOS gives the app
 	/// no API to verify that a specific profile is installed.
 	private func _installDNSProtection() {
@@ -421,8 +381,8 @@ extension CertificatesView {
 			_isProfileNotFoundPresenting = true
 			return
 		}
-		_dnsProfileURL = tempURL
-		_isDNSDocumentPresenterPresented = true
+		UIActivityViewController.show(activityItems: [tempURL])
+		_dnsProtectionInstalled = true
 	}
 	
 	/// FALLBACK route: open the hosted copy in Safari, where iOS
@@ -502,96 +462,6 @@ extension CertificatesView {
 		Divider()
 		Button(.localized("Check Revokage"), systemImage: "person.text.rectangle") {
 			Storage.shared.revokagedCertificate(for: cert)
-		}
-	}
-}
-
-// MARK: - DNS profile document interaction
-//
-// Presents the bundled .mobileconfig with UIDocumentInteractionController
-// so iOS offers the system route for opening a configuration profile.
-// The interaction controller needs a view controller to present from,
-// so it lives in a sheet-hosted view controller that presents the
-// "Open In" menu (QuickLook preview as a second try) as soon as it
-// appears, then reports back and closes the sheet.
-
-private struct _DNSProfileDocumentView: UIViewControllerRepresentable {
-	let url: URL
-	/// Called on the main thread when the menu/preview closes.
-	/// `presented` is true when iOS actually offered an open route.
-	let onFinished: (Bool) -> Void
-	
-	func makeUIViewController(context: Context) -> _DNSProfileDocumentViewController {
-		_DNSProfileDocumentViewController(url: url, onFinished: onFinished)
-	}
-	
-	func updateUIViewController(_ uiViewController: _DNSProfileDocumentViewController, context: Context) {}
-}
-
-private final class _DNSProfileDocumentViewController: UIViewController, UIDocumentInteractionControllerDelegate {
-	private let _url: URL
-	private let _onFinished: (Bool) -> Void
-	private var _interactionController: UIDocumentInteractionController?
-	private var _didPresent = false
-	private var _didFinish = false
-	
-	init(url: URL, onFinished: @escaping (Bool) -> Void) {
-		self._url = url
-		self._onFinished = onFinished
-		super.init(nibName: nil, bundle: nil)
-	}
-	
-	required init?(coder: NSCoder) {
-		fatalError("init(coder:) has not been implemented")
-	}
-	
-	override func viewDidAppear(_ animated: Bool) {
-		super.viewDidAppear(animated)
-		guard !_didPresent else {
-			return
-		}
-		_didPresent = true
-		
-		let controller = UIDocumentInteractionController(url: _url)
-		controller.delegate = self
-		// Retained: the interaction controller must stay alive while
-		// its menu or preview is on screen.
-		_interactionController = controller
-		
-		// "Open In" menu first: it lists the apps that can take the
-		// profile. QuickLook preview as a second try. If neither can
-		// be shown, report failure so the caller can fall back to the
-		// share sheet.
-		if controller.presentOpenInMenu(from: view.bounds, in: view, animated: true) {
-			return
-		}
-		if controller.presentPreview(animated: true) {
-			return
-		}
-		_finish(presented: false)
-	}
-	
-	// MARK: UIDocumentInteractionControllerDelegate
-	
-	func documentInteractionControllerViewControllerForPreview(_ controller: UIDocumentInteractionController) -> UIViewController {
-		self
-	}
-	
-	func documentInteractionControllerDidDismissOpenInMenu(_ controller: UIDocumentInteractionController) {
-		_finish(presented: true)
-	}
-	
-	func documentInteractionControllerDidEndPreview(_ controller: UIDocumentInteractionController) {
-		_finish(presented: true)
-	}
-	
-	private func _finish(presented: Bool) {
-		guard !_didFinish else {
-			return
-		}
-		_didFinish = true
-		DispatchQueue.main.async { [onFinished = _onFinished] in
-			onFinished(presented)
 		}
 	}
 }

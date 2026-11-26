@@ -33,9 +33,6 @@ struct SettingsView: View {
 						NavigationLink(destination: InstallationView()) {
 							_settingsRow(title: .localized("Installation"), icon: "icon-install")
 						}
-						NavigationLink(destination: CertificateDirectDownloadView()) {
-							_settingsRow(title: .localized("تحميل شهادة من رابط"), icon: "icon-download")
-						}
 						NavigationLink(destination: HelpCenterView()) {
 							_settingsRow(title: .localized("مركز المساعدة"), icon: "icon-info")
 						}
