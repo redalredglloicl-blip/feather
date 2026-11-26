@@ -85,7 +85,7 @@ struct SigningQueueView: View {
 							ProgressView()
 								.frame(maxWidth: .infinity)
 						} else {
-							Text(.localized("Sign Selected (%lld)", arguments: _selectedUUIDs.count))
+							Text(verbatim: .localized("Sign Selected (%lld)", arguments: _selectedUUIDs.count))
 								.frame(maxWidth: .infinity)
 						}
 					}

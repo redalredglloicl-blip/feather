@@ -111,7 +111,7 @@ struct DownloadsView: View {
 					}
 				}
 			} message: {
-				Text(
+				Text(verbatim:
 					.localized(
 						"Slow Connection Warning",
 						arguments: _pendingSize.formattedByteCount,

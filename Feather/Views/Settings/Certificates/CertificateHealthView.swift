@@ -70,7 +70,7 @@ struct CertificateHealthView: View {
 			}
 
 			if let lastChecked = _checker.lastChecked {
-				Text(.localized("آخر فحص: %@", arguments: Self._checkedFormatter.string(from: lastChecked)))
+				Text(verbatim: .localized("آخر فحص: %@", arguments: Self._checkedFormatter.string(from: lastChecked)))
 					.font(.caption2)
 					.foregroundStyle(.secondary)
 			}

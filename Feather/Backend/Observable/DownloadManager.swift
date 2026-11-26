@@ -802,11 +802,26 @@ final class ZenithMultipartDownload: @unchecked Sendable {
 				_failOverToSingleConnection()
 				return
 			}
-			for try await chunk in bytes {
+			// URLSession.bytes yields single UInt8 values, not Data
+			// chunks: collect them into a 64 KB buffer and write the
+			// buffer, so the file still lands at the right offsets.
+			var buffer = Data()
+			buffer.reserveCapacity(64 * 1024)
+			for try await byte in bytes {
 				try Task.checkCancellation()
-				_write(chunk, at: offset)
-				offset += Int64(chunk.count)
-				_addPartDownloaded(index, Int64(chunk.count))
+				buffer.append(byte)
+				if buffer.count >= 64 * 1024 {
+					_write(buffer, at: offset)
+					offset += Int64(buffer.count)
+					_addPartDownloaded(index, Int64(buffer.count))
+					buffer.removeAll(keepingCapacity: true)
+					_reportProgressIfNeeded()
+				}
+			}
+			if !buffer.isEmpty {
+				_write(buffer, at: offset)
+				offset += Int64(buffer.count)
+				_addPartDownloaded(index, Int64(buffer.count))
 				_reportProgressIfNeeded()
 			}
 		} catch {

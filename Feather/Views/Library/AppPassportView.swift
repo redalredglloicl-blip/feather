@@ -52,7 +52,7 @@ struct AppPassportView: View {
 						Text(app.name ?? .localized("Unknown"))
 							.font(.headline)
 						if let version = app.version {
-							Text(.localized("الإصدار %@", arguments: version))
+							Text(verbatim: .localized("الإصدار %@", arguments: version))
 								.font(.subheadline)
 								.foregroundStyle(.secondary)
 						}

@@ -152,7 +152,7 @@ struct LoadingView: View {
 							.fill(Color.white.opacity(0.15))
 						Capsule()
 							.fill(Color(hex: "#FFC778"))
-							.frame(width: max(0, geo.size.width * _progress))
+							.frame(width: max(0, geo.size.width * CGFloat(_progress.progress)))
 					}
 				}
 				.frame(height: 5)

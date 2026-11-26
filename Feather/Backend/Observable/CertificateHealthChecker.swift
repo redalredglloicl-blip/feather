@@ -26,6 +26,7 @@
 //
 
 import Foundation
+import Zsign
 
 // MARK: - Result
 enum CertificateHealth: Equatable {

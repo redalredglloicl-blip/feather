@@ -48,6 +48,48 @@ struct SigningView: View {
 		__temporaryCertificate = State(initialValue: storedCert)
 	}
 		
+	// MARK: - Extracted subviews (kept separate so the compiler
+	// can type-check `body` in reasonable time).
+	private var _bottomBar: some View {
+		VStack(spacing: 0) {
+			Spacer()
+			NBVariableBlurView()
+				.frame(height: UIDevice.current.userInterfaceIdiom == .pad ? 60 : 80)
+				.rotationEffect(.degrees(180))
+				.overlay {
+					Button {
+						_start()
+					} label: {
+						NBSheetButton(title: .localized("Start Signing"), style: .prominent)
+							.padding()
+					}
+					.buttonStyle(ZenithPressButtonStyle())
+					.offset(y: UIDevice.current.userInterfaceIdiom == .pad ? -20 : -40)
+				}
+		}
+		.ignoresSafeArea(edges: .bottom)
+	}
+
+	@ViewBuilder
+	private var _successOverlay: some View {
+		if _isSuccessPresenting {
+			SigningSuccessView(appName: app.name ?? .localized("Unknown")) {
+				withAnimation(.easeOut(duration: 0.25)) {
+					_isSuccessPresenting = false
+				}
+				if _temporaryOptions.post_installAppAfterSigned {
+					DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
+						NotificationCenter.default.post(name: Notification.Name("Feather.installApp"), object: nil)
+					}
+				}
+				DispatchQueue.main.asyncAfter(deadline: .now() + 0.35) {
+					dismiss()
+				}
+			}
+			.transition(.opacity.combined(with: .scale(scale: 0.95)))
+		}
+	}
+
 	// MARK: Body
 	var body: some View {
 		NBNavigationView("", displayMode: .inline) {
@@ -62,25 +104,7 @@ struct SigningView: View {
 					.frame(height: 30)
 					.listRowBackground(EmptyView())
 			}
-			.overlay {
-				VStack(spacing: 0) {
-					Spacer()
-					NBVariableBlurView()
-						.frame(height: UIDevice.current.userInterfaceIdiom == .pad ? 60 : 80)
-						.rotationEffect(.degrees(180))
-						.overlay {
-							Button {
-								_start()
-							} label: {
-								NBSheetButton(title: .localized("Start Signing"), style: .prominent)
-									.padding()
-							}
-							.buttonStyle(ZenithPressButtonStyle())
-							.offset(y: UIDevice.current.userInterfaceIdiom == .pad ? -20 : -40)
-						}
-				}
-				.ignoresSafeArea(edges: .bottom)
-			}
+			.overlay { _bottomBar }
 
 			.toolbar {
 				NBToolbarButton(role: .dismiss)
@@ -124,33 +148,17 @@ struct SigningView: View {
 			}
 			.disabled(_isSigning)
 			.animation(.smooth, value: _isSigning)
-			.alert(.localized("هالتطبيق يحتاج iOS أحدث"), isPresented: $_isCompatAlertPresenting) {
-				Button(.localized("إلغاء"), role: .cancel) { }
-				Button(.localized("وقّع على أي حال")) {
-					_start(confirmed: true)
-				}
-			} message: {
-				Text(.localized("هالتطبيق يحتاج iOS %@ على الأقل، وجهازك عليه iOS %@. ممكن ما يشتغل بعد التوقيع.", arguments: _compatMinimumOS, _compatDeviceOS))
-			}
+
 		}
-		.overlay {
-			if _isSuccessPresenting {
-				SigningSuccessView(appName: app.name ?? .localized("Unknown")) {
-					withAnimation(.easeOut(duration: 0.25)) {
-						_isSuccessPresenting = false
-					}
-					if _temporaryOptions.post_installAppAfterSigned {
-						DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
-							NotificationCenter.default.post(name: Notification.Name("Feather.installApp"), object: nil)
-						}
-					}
-					DispatchQueue.main.asyncAfter(deadline: .now() + 0.35) {
-						dismiss()
-					}
-				}
-				.transition(.opacity.combined(with: .scale(scale: 0.95)))
+		.alert(.localized("هالتطبيق يحتاج iOS أحدث"), isPresented: $_isCompatAlertPresenting) {
+			Button(.localized("إلغاء"), role: .cancel) { }
+			Button(.localized("وقّع على أي حال")) {
+				_start(confirmed: true)
 			}
+		} message: {
+			Text(verbatim: .localized("هالتطبيق يحتاج iOS %@ على الأقل، وجهازك عليه iOS %@. ممكن ما يشتغل بعد التوقيع.", arguments: _compatMinimumOS, _compatDeviceOS))
 		}
+		.overlay { _successOverlay }
 		.onAppear {
 			// ppq protection
 			if
