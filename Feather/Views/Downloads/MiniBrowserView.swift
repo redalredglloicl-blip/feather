@@ -1,6 +1,6 @@
 //
 //  MiniBrowserView.swift
-//  Feather
+//  Zenith
 //
 //  Zenith v2.3 — small in-app browser for IPA downloads.
 //

@@ -1,6 +1,6 @@
 //
 //  InstallProgressView.swift
-//  Feather
+//  Zenith
 //
 //  Created by samara on 23.04.2025.
 //
@@ -28,12 +28,12 @@ struct InstallProgressView: View {
 	@ViewBuilder
 	private func _appIcon() -> some View {
 		ZStack {
-			FRAppIconView(app: app)
+			ZenithAppIconView(app: app)
 				.opacity(0.2)
 				.frame(width: 54, height: 54)
 				.foregroundStyle(Color.black)
 			
-			FRAppIconView(app: app)
+			ZenithAppIconView(app: app)
 				.frame(width: 54, height: 54)
 				.mask(
 					ZStack {

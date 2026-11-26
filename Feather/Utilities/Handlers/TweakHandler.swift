@@ -1,6 +1,6 @@
 //
 //  DylibHandler.swift
-//  feather
+//  zenith
 //
 //  Created by samara on 8/17/24.
 //  Copyright (c) 2024 Samara M (khcrysalis)
@@ -71,7 +71,7 @@ class TweakHandler {
 
 		try await _checkEllekit()
 
-		let baseTmpDir = _fileManager.temporaryDirectory.appendingPathComponent("FeatherTweak_\(UUID().uuidString)")
+		let baseTmpDir = _fileManager.temporaryDirectory.appendingPathComponent("ZenithTweak_\(UUID().uuidString)")
 		try _fileManager.createDirectoryIfNeeded(at: baseTmpDir)
 		
 		// check for appropriate files, if theres debs

@@ -1,6 +1,6 @@
 //
 //  ZenithPolish.swift
-//  Feather
+//  Zenith
 //
 //  Zenith v2 Phase 7 polish: liquid-glass surfaces, press-scale buttons,
 //  blurred popup backgrounds and the animated signing-success screen.

@@ -1,6 +1,6 @@
 //
 //  WidgetDataStore.swift
-//  Feather
+//  Zenith
 //
 //  Zenith v2.2 — shares the selected certificate with the home-screen
 //  widget (ZenithWidget target) through the App Group
@@ -45,7 +45,7 @@ final class WidgetDataStore {
 			return
 		}
 
-		let selectedIndex = UserDefaults.standard.integer(forKey: "feather.selectedCert")
+		let selectedIndex = UserDefaults.standard.integer(forKey: "zenith.selectedCert")
 		let cert = Storage.shared.getCertificate(for: selectedIndex)
 			?? Storage.shared.getAllCertificates().first
 

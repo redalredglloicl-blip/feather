@@ -1,6 +1,6 @@
 //
 //  IPAHandler.swift
-//  Feather
+//  Zenith
 //
 //  Created by samara on 11.04.2025.
 //
@@ -28,7 +28,7 @@ final class AppFileHandler: NSObject, @unchecked Sendable {
 		self._install = install
 		self._download = download
 		self._uniqueWorkDir = _fileManager.temporaryDirectory
-			.appendingPathComponent("FeatherImport_\(_uuid)", isDirectory: true)
+			.appendingPathComponent("ZenithImport_\(_uuid)", isDirectory: true)
 		
 		super.init()
 	}
@@ -122,7 +122,7 @@ final class AppFileHandler: NSObject, @unchecked Sendable {
 	}
 	
 	private func _directory() async throws -> URL {
-		// Documents/Feather/Unsigned/\(UUID)
+		// Documents/Zenith/Unsigned/\(UUID)
 		_fileManager.unsigned(_uuid)
 	}
 	

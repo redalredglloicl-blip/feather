@@ -1,6 +1,6 @@
 //
 //  LibraryInfoView.swift
-//  Feather
+//  Zenith
 //
 //  Created by samara on 14.04.2025.
 //
@@ -18,7 +18,7 @@ struct LibraryInfoView: View {
 		NBNavigationView(app.name ?? "", displayMode: .inline) {
 			List {
 				Section {} header: {
-					FRAppIconView(app: app)
+					ZenithAppIconView(app: app)
 						.frame(maxWidth: .infinity, alignment: .center)
 				}
 				

@@ -1,6 +1,6 @@
 //
 //  MachOUtils.m
-//  Feather
+//  Zenith
 //
 //  Created by samara on 12.06.2025.
 //

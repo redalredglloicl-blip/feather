@@ -1,6 +1,6 @@
 //
 //  KeychainHelper.swift
-//  Feather
+//  Zenith
 //
 //  Small Keychain wrapper for the Apple ID flow: the Anisette identity blob
 //  (adi.pb) and the Apple ID session. No passwords are ever stored here —

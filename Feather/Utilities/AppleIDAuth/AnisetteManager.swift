@@ -1,6 +1,6 @@
 //
 //  AnisetteManager.swift
-//  Feather
+//  Zenith
 //
 //  On-device Anisette data (Apple device identity) for Apple ID sign-in.
 //  Built on SideSign's AnisetteDataManager (GPLv3) over AnisetteKit (AGPLv3).
@@ -14,7 +14,7 @@
 //  the anisette servers list and the on-device-anisette (ODA) package
 //  metadata. No server of ours is involved and nothing is paid.
 //
-//  Honest limits (see FEATHER_MOD_PLAN.md §5):
+//  Honest limits (see ZENITH_MOD_PLAN.md §5):
 //  - The ODA package download and the Apple handshake are only exercised on
 //    a real device; this code has never run against Apple from here.
 //  - If Apple changes the protocol, sign-in fails with a clear error —
@@ -33,10 +33,10 @@ actor AnisetteManager {
 	/// On-device-anisette package metadata (SideStore's public default).
 	static let defaultODAURLString = "https://zzz.haus/oda.json"
 	
-	private static let _serversURLKey = "Feather.anisetteServersURL"
-	private static let _odaURLKey = "Feather.anisetteODAURL"
-	private static let _deviceIDKey = "Feather.anisetteDeviceID"
-	private static let _keychainService = "feather.anisette"
+	private static let _serversURLKey = "Zenith.anisetteServersURL"
+	private static let _odaURLKey = "Zenith.anisetteODAURL"
+	private static let _deviceIDKey = "Zenith.anisetteDeviceID"
+	private static let _keychainService = "zenith.anisette"
 	private static let _keychainAccount = "adiPb"
 	
 	private init() {}
@@ -73,7 +73,7 @@ actor AnisetteManager {
 			for: .applicationSupportDirectory,
 			in: .userDomainMask
 		).first ?? FileManager.default.temporaryDirectory
-		return support.appendingPathComponent("Feather/Anisette", isDirectory: true)
+		return support.appendingPathComponent("Zenith/Anisette", isDirectory: true)
 	}
 	
 	private var _existingAdiBlob: Data? {

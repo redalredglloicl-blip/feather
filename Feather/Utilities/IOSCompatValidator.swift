@@ -1,6 +1,6 @@
 //
 //  IOSCompatValidator.swift
-//  Feather
+//  Zenith
 //
 //  Zenith v2.2: iOS-compatibility check, run before signing. Reads the
 //  IPA's MinimumOSVersion from its own Info.plist and compares it with

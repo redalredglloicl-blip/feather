@@ -1,6 +1,6 @@
 //
 //  NotificationManager.swift
-//  Feather
+//  Zenith
 //
 //  Local-only alternative to background auto-refresh: iOS does not reliably
 //  wake the app to re-sign itself, so we remind the user to renew the
@@ -78,7 +78,7 @@ final class NotificationManager {
 		content.sound = .default
 		
 		let request = UNNotificationRequest(
-			identifier: "feather.auto-refresh.\(Int(Date().timeIntervalSince1970))",
+			identifier: "zenith.auto-refresh.\(Int(Date().timeIntervalSince1970))",
 			content: content,
 			trigger: UNTimeIntervalNotificationTrigger(timeInterval: 1, repeats: false)
 		)
@@ -86,6 +86,6 @@ final class NotificationManager {
 	}
 
 	private func _reminderID(for uuid: String, daysBefore: Int) -> String {
-		"feather.cert-expiry.\(uuid).\(daysBefore)d"
+		"zenith.cert-expiry.\(uuid).\(daysBefore)d"
 	}
 }

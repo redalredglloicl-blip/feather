@@ -1,6 +1,6 @@
 //
 //  LoadingView.swift
-//  Feather
+//  Zenith
 //
 //  Zenith v2.3 startup screen: black starfield, the Zenith planet and a
 //  1→100 counter. The counter is driven ONLY by real startup steps —
@@ -10,11 +10,11 @@
 //  actually runs. A short settle pause per step keeps the counter
 //  readable when a step finishes instantly.
 //
-//  Wiring (FeatherApp.swift): shown as the first screen while
+//  Wiring (ZenithApp.swift): shown as the first screen while
 //  `_startupDone` is false; the forced-update gate above it is
 //  untouched, so a cached block still shows ForcedUpdateView first.
 //  The steps below intentionally repeat idempotent startup work
-//  (reminders, theme) that FeatherApp also runs on appear — running
+//  (reminders, theme) that ZenithApp also runs on appear — running
 //  them twice is harmless, and moving them here would drop other
 //  agents' concurrent additions to that onAppear.
 
@@ -87,10 +87,10 @@ final class StartupProgress: ObservableObject {
 		_setStep(0.9, .localized("Almost done"))
 		UIApplication.topViewController()?.view.window?.overrideUserInterfaceStyle = .dark
 		UIApplication.topViewController()?.view.window?.tintColor = UIColor(Color(hex: "#FFC778"))
-		UserDefaults.standard.removeObject(forKey: "Feather.userInterfaceStyle")
-		UserDefaults.standard.removeObject(forKey: "Feather.shouldTintIcons")
-		UserDefaults.standard.removeObject(forKey: "Feather.shouldChangeIconsBasedOffStyle")
-		UserDefaults.standard.set("#FFC778", forKey: "Feather.userTintColor")
+		UserDefaults.standard.removeObject(forKey: "Zenith.userInterfaceStyle")
+		UserDefaults.standard.removeObject(forKey: "Zenith.shouldTintIcons")
+		UserDefaults.standard.removeObject(forKey: "Zenith.shouldChangeIconsBasedOffStyle")
+		UserDefaults.standard.set("#FFC778", forKey: "Zenith.userTintColor")
 		await _settle()
 		guard !Task.isCancelled else { return }
 

@@ -1,6 +1,6 @@
 //
 //  CertificateProvisioningFlow.swift
-//  Feather
+//  Zenith
 //
 //  Resolves a free iOS Development certificate for a team: reuse the portal
 //  state when possible, request a new certificate when there is none, and

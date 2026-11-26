@@ -1,6 +1,6 @@
 //
 //  AppleIDAuthManager.swift
-//  Feather
+//  Zenith
 //
 //  Fetches a FREE Apple Developer certificate with the user's own Apple ID,
 //  entirely on-device (no computer, no paid account, no paid service).
@@ -8,14 +8,14 @@
 //  Flow: anisette -> Apple ID sign-in (+ 2FA when Apple asks) -> pick the
 //  free team -> resolve a development certificate -> download the free
 //  (wildcard) team provisioning profile -> build a .p12 + .mobileprovision
-//  pair -> save it through Feather's normal certificate import path.
+//  pair -> save it through Zenith's normal certificate import path.
 //
 //  The password is used only for this one sign-in and is never stored.
 //  The session (AuthSession, Codable) is kept in the Keychain so a later
 //  background refresh can fetch a new certificate without asking for the
 //  password again. Signing out deletes it.
 //
-//  Honest limits (see FEATHER_MOD_PLAN.md §5): this flow has never run
+//  Honest limits (see ZENITH_MOD_PLAN.md §5): this flow has never run
 //  against Apple from this workspace. The Apple handshake, the 2FA round
 //  trip and the portal calls are only proven by a real build + device test.
 
@@ -150,7 +150,7 @@ final class AppleIDAuthManager: ObservableObject {
 	private var _revocationBox: RevocationDecisionBox?
 	private var _currentTask: Task<Void, Never>?
 	
-	private static let _sessionService = "feather.appleid.session"
+	private static let _sessionService = "zenith.appleid.session"
 	private static let _xcodeVersion = "16.0" // client identifier sent to Apple, not a local Xcode install
 	
 	private init() {}
@@ -241,7 +241,7 @@ final class AppleIDAuthManager: ObservableObject {
 	
 	/// The Apple ID the stored session belongs to, if any.
 	var storedAppleID: String? {
-		UserDefaults.standard.string(forKey: "Feather.appleIDSessionAccount")
+		UserDefaults.standard.string(forKey: "Zenith.appleIDSessionAccount")
 	}
 	
 	private var _storedSessionAccount: String {
@@ -250,7 +250,7 @@ final class AppleIDAuthManager: ObservableObject {
 	
 	func signOut() {
 		KeychainHelper.delete(service: Self._sessionService, account: _storedSessionAccount)
-		UserDefaults.standard.removeObject(forKey: "Feather.appleIDSessionAccount")
+		UserDefaults.standard.removeObject(forKey: "Zenith.appleIDSessionAccount")
 	}
 	
 	// MARK: - Flow
@@ -429,7 +429,7 @@ final class AppleIDAuthManager: ObservableObject {
 			wildcard = existing
 		} else {
 			wildcard = try await DeveloperPortal.shared.addAppID(
-				withName: "Feather",
+				withName: "Zenith",
 				bundleIdentifier: "*",
 				team: team,
 				session: session
@@ -452,7 +452,7 @@ final class AppleIDAuthManager: ObservableObject {
 		keyStore: KeyStore,
 		profile: ProvisioningProfile
 	) async throws -> CertificatePair {
-		// A random password for the exported .p12; Feather stores it with
+		// A random password for the exported .p12; Zenith stores it with
 		// the certificate pair, exactly like an imported certificate.
 		let p12Password = UUID().uuidString
 		
@@ -464,7 +464,7 @@ final class AppleIDAuthManager: ObservableObject {
 		}
 		
 		let workDir = FileManager.default.temporaryDirectory
-			.appendingPathComponent("FeatherAppleID_\(UUID().uuidString)", isDirectory: true)
+			.appendingPathComponent("ZenithAppleID_\(UUID().uuidString)", isDirectory: true)
 		try FileManager.default.createDirectory(at: workDir, withIntermediateDirectories: true)
 		defer { try? FileManager.default.removeItem(at: workDir) }
 		
@@ -477,7 +477,7 @@ final class AppleIDAuthManager: ObservableObject {
 		
 		do {
 			try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
-				FR.handleCertificateFiles(
+				Zenith.handleCertificateFiles(
 					p12URL: p12URL,
 					provisionURL: provisionURL,
 					p12Password: p12Password,
@@ -509,11 +509,11 @@ final class AppleIDAuthManager: ObservableObject {
 	private func _saveSession(_ session: AuthSession, for appleID: String) {
 		guard let data = try? JSONEncoder().encode(session) else { return }
 		KeychainHelper.save(data, service: Self._sessionService, account: appleID)
-		UserDefaults.standard.set(appleID, forKey: "Feather.appleIDSessionAccount")
+		UserDefaults.standard.set(appleID, forKey: "Zenith.appleIDSessionAccount")
 	}
 	
 	private func _machineName() -> String {
-		"Feather - \(UIDevice.current.name)"
+		"Zenith - \(UIDevice.current.name)"
 	}
 	
 	private func _reset() {

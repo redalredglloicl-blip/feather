@@ -1,7 +1,7 @@
 
 //
 //  LibraryPrefs.swift
-//  Feather
+//  Zenith
 //
 //  Zenith — per-app Library preferences stored locally in UserDefaults,
 //  keyed by app UUID. No Core Data model change, so existing Library data

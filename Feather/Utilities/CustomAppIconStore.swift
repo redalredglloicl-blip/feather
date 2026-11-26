@@ -1,6 +1,6 @@
 //
 //  CustomAppIconStore.swift
-//  Feather
+//  Zenith
 //
 //  Zenith v2.2: a custom icon picked at sign time, kept per app and
 //  used for the app's Library icon. Keyed by bundle identifier — the

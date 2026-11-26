@@ -1,7 +1,7 @@
 
 //
 //  ForcedUpdateView.swift
-//  Feather
+//  Zenith
 //
 //  Zenith forced update screen (v2, Phase 5). Shown instead of the
 //  whole app while the server says this build must update. There is

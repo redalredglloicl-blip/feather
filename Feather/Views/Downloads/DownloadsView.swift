@@ -1,6 +1,6 @@
 //
 //  DownloadsView.swift
-//  Feather
+//  Zenith
 //
 //  Zenith v2.2 — Downloads tab: paste an IPA link, watch live progress
 //  (real %, speed and time left from DownloadManager), pause/resume,
@@ -114,7 +114,7 @@ struct DownloadsView: View {
 							DownloadManager.shared.startDownloadFromCapturedFile(
 								fileURL,
 								originalURL: url,
-								id: "FeatherManualDownload_\(UUID().uuidString)"
+								id: "ZenithManualDownload_\(UUID().uuidString)"
 							)
 						},
 						onClose: {

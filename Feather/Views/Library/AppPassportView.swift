@@ -1,6 +1,6 @@
 //
 //  AppPassportView.swift
-//  Feather
+//  Zenith
 //
 //  Zenith v2.2: the app "passport" — a detail screen for one Library
 //  app. Every number shown comes from real data: the version and
@@ -50,7 +50,7 @@ struct AppPassportView: View {
 				List {
 					Section {} header: {
 						VStack(spacing: 10) {
-							FRAppIconView(app: app, size: 87)
+							ZenithAppIconView(app: app, size: 87)
 							Text(app.name ?? .localized("Unknown"))
 								.font(.headline)
 							if let version = app.version {

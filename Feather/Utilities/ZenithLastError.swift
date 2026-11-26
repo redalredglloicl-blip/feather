@@ -1,6 +1,6 @@
 //
 //  ZenithLastError.swift
-//  Feather
+//  Zenith
 //
 //  Zenith v2.2: tiny last-error store for the Help Center diagnostics.
 //  Sign/install error paths record the real error text here (UserDefaults,
