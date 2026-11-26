@@ -16,6 +16,15 @@ struct CertificatesInfoEntitlementCellView: View {
 	/// as a separate surface from its parent card (v2.10, no lines).
 	let isNested: Bool = false
 	@State private var _isExpanded = false
+
+	// v2.10 fix: explicit init — the synthesized memberwise init does not
+	// expose `isNested` (it only takes key/value), so the nested call below
+	// failed the build with "extra argument 'isNested' in call".
+	init(key: String, value: Any, isNested: Bool = false) {
+		self.key = key
+		self.value = value
+		self.isNested = isNested
+	}
 	
 	// MARK: Body
 	var body: some View {
