@@ -19,53 +19,80 @@ import IDeviceSwift
 struct SettingsView: View {
 	// MARK: Body
 	var body: some View {
-		NBNavigationView(.localized("Settings")) {
-			Form {
-				NBSection(.localized("Features")) {
-					NavigationLink(destination: ConfigurationView()) {
-						Label(.localized("Signing Options"), image: "icon-sign")
+		ZStack {
+			StarfieldBackground()
+			NBNavigationView(.localized("Settings")) {
+				Form {
+					NBSection(.localized("Features")) {
+						NavigationLink(destination: ConfigurationView()) {
+							_settingsRow(title: .localized("Signing Options"), icon: "icon-sign")
+						}
+						NavigationLink(destination: ArchiveView()) {
+							_settingsRow(title: .localized("Archive & Compression"), icon: "icon-archive")
+						}
+						NavigationLink(destination: InstallationView()) {
+							_settingsRow(title: .localized("Installation"), icon: "icon-install")
+						}
+						NavigationLink(destination: HelpCenterView()) {
+							_settingsRow(title: .localized("مركز المساعدة"), icon: "icon-info")
+						}
+					} footer: {
+						Text(.localized("Configure the apps way of installing, its zip compression levels, and custom modifications to apps."))
 					}
-					NavigationLink(destination: ArchiveView()) {
-						Label(.localized("Archive & Compression"), image: "icon-archive")
+
+					_directories()
+
+					Section {
+						NavigationLink(destination: ResetView()) {
+							_settingsRow(title: .localized("Reset"), icon: "icon-delete")
+						}
+					} footer: {
+						Text(.localized("Reset the application's certificates, apps, and files."))
 					}
-					NavigationLink(destination: InstallationView()) {
-						Label(.localized("Installation"), image: "icon-install")
+
+					Section {
+						HStack {
+							_rowIcon("icon-settings")
+							Text(.localized("Device Name"))
+							Spacer()
+							Text(UIDevice.current.name)
+								.foregroundStyle(.secondary)
+						}
+						HStack {
+							_rowIcon("icon-info")
+							Text(.localized("Version"))
+							Spacer()
+							Text(Bundle.main.version)
+								.foregroundStyle(.secondary)
+						}
 					}
-					NavigationLink(destination: HelpCenterView()) {
-						Label(.localized("مركز المساعدة"), image: "icon-info")
-					}
-				} footer: {
-					Text(.localized("Configure the apps way of installing, its zip compression levels, and custom modifications to apps."))
 				}
-                
-				_directories()
-                
-				Section {
-					NavigationLink(destination: ResetView()) {
-						Label(.localized("Reset"), image: "icon-delete")
-					}
-				} footer: {
-					Text(.localized("Reset the application's certificates, apps, and files."))
-				}
-				
-				Section {
-					HStack {
-						Text(.localized("Device Name"))
-						Spacer()
-						Text(UIDevice.current.name)
-							.foregroundStyle(.secondary)
-					}
-					HStack {
-						Text(.localized("Version"))
-						Spacer()
-						Text(Bundle.main.version)
-							.foregroundStyle(.secondary)
-					}
-				}
+				.scrollContentBackground(.hidden)
+				.background(Color.clear)
+				.listRowBackground(Color.clear)
 			}
-			.scrollContentBackground(.hidden)
 		}
-		.starfieldBackground()
+	}
+
+	/// One settings row: a peach line icon at 24pt next to the title,
+	/// matching the settings mockup (glass rows, peach icons, stars
+	/// showing through the gaps).
+	private func _settingsRow(title: String, icon: String) -> some View {
+		HStack(spacing: 12) {
+			_rowIcon(icon)
+			Text(title)
+		}
+	}
+
+	/// A peach line icon PNG (transparent, 96px asset) rendered as a
+	/// 24pt template image tinted with the peach accent color.
+	private func _rowIcon(_ name: String) -> some View {
+		Image(name)
+			.renderingMode(.template)
+			.resizable()
+			.scaledToFit()
+			.frame(width: 24, height: 24)
+			.foregroundStyle(Color.accentColor)
 	}
 }
 
@@ -74,14 +101,20 @@ extension SettingsView {
 	@ViewBuilder
 	private func _directories() -> some View {
 		NBSection(.localized("Misc")) {
-			Button(.localized("Open Documents"), systemImage: "folder") {
+			Button {
 				UIApplication.open(URL.documentsDirectory.toSharedDocumentsURL()!)
+			} label: {
+				_settingsRow(title: .localized("Open Documents"), icon: "icon-library")
 			}
-			Button(.localized("Open Archives"), systemImage: "folder") {
+			Button {
 				UIApplication.open(FileManager.default.archives.toSharedDocumentsURL()!)
+			} label: {
+				_settingsRow(title: .localized("Open Archives"), icon: "icon-archive")
 			}
-			Button(.localized("Open Certificates"), systemImage: "folder") {
+			Button {
 				UIApplication.open(FileManager.default.certificates.toSharedDocumentsURL()!)
+			} label: {
+				_settingsRow(title: .localized("Open Certificates"), icon: "icon-certificates")
 			}
 		} footer: {
 			Text(.localized("All of the apps files are contained in the documents directory, here are some quick links to these."))

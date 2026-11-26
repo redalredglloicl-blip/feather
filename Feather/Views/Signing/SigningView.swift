@@ -109,7 +109,7 @@ struct SigningView: View {
 			.toolbar {
 				NBToolbarButton(role: .dismiss)
 				ToolbarItem(placement: .principal) {
-					Image("zenith")
+					Image("zenith-transparent")
 						.resizable()
 						.scaledToFit()
 						.frame(height: 38)

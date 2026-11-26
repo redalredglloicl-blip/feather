@@ -37,6 +37,7 @@ final class NewVersionNotifier: ObservableObject {
 
 	private static let baseURL = "https://spychat-4f8d5-default-rtdb.firebaseio.com/feather-app"
 	private static var latestVersionURL: URL { URL(string: "\(baseURL)/latestVersion.json")! }
+	private static var latestVersionNameURL: URL { URL(string: "\(baseURL)/latestVersionName.json")! }
 
 	private static let lastNotifiedBuildKey = "Zenith.lastNotifiedBuild"
 
@@ -44,6 +45,9 @@ final class NewVersionNotifier: ObservableObject {
 	@Published private(set) var showBanner = false
 	/// The newer build the banner is about, when known.
 	@Published private(set) var latestBuild: Int?
+	/// The new version's display name (e.g. "2.3") from
+	/// /feather-app/latestVersionName, when the server knows it.
+	@Published private(set) var latestVersionName: String?
 	/// Where the banner's update button goes, when known.
 	@Published private(set) var updateURL: URL?
 
@@ -70,11 +74,16 @@ final class NewVersionNotifier: ObservableObject {
 			return
 		}
 
+		// The display name is best-effort: the banner shows the
+		// plain headline when the field is absent.
+		latestVersionName = await _fetchLatestVersionName()
+
 		let installed = ForcedUpdateManager.installedBuildNumber
 		guard latest > installed else {
 			// Already on the newest build (or newer): hide the banner.
 			showBanner = false
 			latestBuild = nil
+			latestVersionName = nil
 			updateURL = nil
 			return
 		}
@@ -177,10 +186,42 @@ final class NewVersionNotifier: ObservableObject {
 		}
 	}
 
+	private func _fetchLatestVersionName() async -> String? {
+		do {
+			return try await _fetchString(from: Self.latestVersionNameURL)
+		} catch {
+			return nil
+		}
+	}
+
+	/// Decodes a JSON string (e.g. "2.3"). A JSON null means the
+	/// value is absent. Anything else is nil.
+	private func _fetchString(from url: URL) async throws -> String? {
+		let (data, response) = try await _session.data(for: _noCacheRequest(for: url))
+		guard let http = response as? HTTPURLResponse, (200..<300).contains(http.statusCode) else {
+			throw ForcedUpdateError.checkFailed
+		}
+		if String(data: data, encoding: .utf8)?.trimmingCharacters(in: .whitespacesAndNewlines) == "null" {
+			return nil
+		}
+		return try JSONDecoder().decode(String.self, from: data)
+	}
+
 	/// Every check must read FRESH values: plain GETs can be served
-	/// stale from a cache. Each request bypasses every cache.
+	/// stale from a cache. Each request bypasses every cache — and
+	/// carries a unique ?cb=<milliseconds> query parameter, because
+	/// no-cache headers alone were proven insufficient on device
+	/// (2026-11-26: the forced-update check kept reading a stale
+	/// answer despite them). A cache keyed by URL can never serve a
+	/// stale answer for a never-seen URL; the RTDB REST API ignores
+	/// unknown query params.
 	private func _noCacheRequest(for url: URL) -> URLRequest {
-		var request = URLRequest(url: url, cachePolicy: .reloadIgnoringLocalAndRemoteCacheData, timeoutInterval: 15)
+		var components = URLComponents(url: url, resolvingAgainstBaseURL: false)
+		var items = components?.queryItems ?? []
+		items.append(URLQueryItem(name: "cb", value: String(Int(Date().timeIntervalSince1970 * 1000))))
+		components?.queryItems = items
+		let freshURL = components?.url ?? url
+		var request = URLRequest(url: freshURL, cachePolicy: .reloadIgnoringLocalAndRemoteCacheData, timeoutInterval: 15)
 		request.setValue("no-cache", forHTTPHeaderField: "Cache-Control")
 		request.setValue("no-cache", forHTTPHeaderField: "Pragma")
 		return request
@@ -218,9 +259,17 @@ struct NewVersionBannerView: View {
 				.foregroundStyle(Color(hex: "#FFC778"))
 				.font(.title3)
 
-			Text(.localized("New Zenith version available"))
-				.font(.headline)
-				.lineLimit(2)
+			VStack(alignment: .leading, spacing: 2) {
+				Text(.localized("New Zenith version available"))
+					.font(.headline)
+					.lineLimit(2)
+
+				if let name = notifier.latestVersionName {
+					Text(verbatim: "Zenith \(name)")
+						.font(.footnote)
+						.foregroundStyle(.secondary)
+				}
+			}
 
 			Spacer()
 

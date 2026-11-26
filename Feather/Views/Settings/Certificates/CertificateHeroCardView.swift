@@ -67,7 +67,9 @@ struct CertificateHeroCardView: View {
 	}
 	
 	private var _ringColor: Color {
-		Color.expiration(days: _daysRemaining)
+		// Mockup look: peach ring (the dream style). Red only when the
+		// certificate is expired, so urgency is never hidden.
+		_isExpired ? .red : Color(hex: "#FFC778")
 	}
 	
 	private var _title: String {
@@ -90,7 +92,7 @@ struct CertificateHeroCardView: View {
 	
 	// MARK: Body
 	var body: some View {
-		HStack(spacing: 16) {
+		VStack(spacing: 20) {
 			CertificateCountdownRingView(
 				fraction: _animatedFraction,
 				hasFraction: _fraction != nil,
@@ -98,12 +100,14 @@ struct CertificateHeroCardView: View {
 				isExpired: _isExpired,
 				color: _ringColor
 			)
-			.frame(width: 96, height: 96)
+			.frame(width: 220, height: 220)
 			
-			VStack(alignment: .leading, spacing: 4) {
+			VStack(spacing: 4) {
 				Text(_title)
-					.font(.headline)
+					.font(.title2)
+					.fontWeight(.bold)
 					.lineLimit(2)
+					.multilineTextAlignment(.center)
 				
 				if !_subtitle.isEmpty {
 					Text(_subtitle)
@@ -128,8 +132,6 @@ struct CertificateHeroCardView: View {
 						.foregroundStyle(.secondary)
 				}
 			}
-			
-			Spacer()
 		}
 		.padding()
 		.zenithGlassCard(cornerRadius: 18, fallback: Color(uiColor: .secondarySystemFill))
@@ -162,21 +164,22 @@ struct CertificateCountdownRingView: View {
 	var body: some View {
 		ZStack {
 			Circle()
-				.stroke(color.opacity(0.18), lineWidth: 9)
+				.stroke(color.opacity(0.18), lineWidth: 14)
 			
 			if hasFraction {
 				Circle()
 					.trim(from: 0, to: fraction)
-					.stroke(color, style: StrokeStyle(lineWidth: 9, lineCap: .round))
+					.stroke(color, style: StrokeStyle(lineWidth: 14, lineCap: .round))
 					.rotationEffect(.degrees(-90))
+					.shadow(color: color.opacity(0.75), radius: 16)
 			}
 			
-			VStack(spacing: 0) {
+			VStack(spacing: 4) {
 				Text("\(daysLeft)")
-					.font(.system(size: 26, weight: .bold, design: .rounded))
-					.foregroundStyle(isExpired ? .secondary : .primary)
+					.font(.system(size: 64, weight: .bold, design: .rounded))
+					.foregroundStyle(isExpired ? .secondary : Color.accentColor)
 				Text(.localized("Days Remaining"))
-					.font(.system(size: 10, weight: .medium))
+					.font(.system(size: 13, weight: .medium))
 					.foregroundStyle(.secondary)
 			}
 		}

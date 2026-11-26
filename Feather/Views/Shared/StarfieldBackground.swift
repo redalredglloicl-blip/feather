@@ -7,10 +7,10 @@
 //  success screen, the forced-update screen and the startup screen.
 //  Apply with `.starfieldBackground()` — stars always sit BEHIND content.
 //
-//  Performance (iPhone 11: 60 Hz, 4 GB RAM): one Canvas redraws ~80
+//  Performance (iPhone 11: 60 Hz, 4 GB RAM): one Canvas redraws ~200
 //  pre-computed star positions per frame — no per-star views, no images,
 //  no per-frame allocation. Twinkle is a cheap sine on opacity only.
-//  The shooting star is a single stroked line per cycle.
+//  The shooting stars are two stroked lines per cycle at most.
 
 import SwiftUI
 
@@ -19,7 +19,7 @@ struct StarfieldBackground: View {
 	private let _stars: [Star]
 	private let _starCount: Int
 
-	init(starCount: Int = 80) {
+	init(starCount: Int = 200) {
 		_starCount = starCount
 		var rng = SeededRandom(seed: 20261126)
 		var stars: [Star] = []
@@ -59,37 +59,43 @@ struct StarfieldBackground: View {
 						context.fill(Path(ellipseIn: rect), with: .color(.white))
 					}
 
-					// Shooting star (item 14): one streak every 8 s,
-					// visible for the first 0.9 s of its cycle.
-					let cycleLength = 8.0
-					let cycle = Int(time / cycleLength)
-					let cycleTime = time.truncatingRemainder(dividingBy: cycleLength)
-					if cycleTime < 0.9 {
-						let progress = cycleTime / 0.9
-						var rng = SeededRandom(seed: UInt64(cycle &* 2654435761 &+ 97))
-						let startX = (0.15 + rng.next() * 0.55) * size.width
-						let startY = rng.next() * 0.35 * size.height
-						let travel = 0.35 * size.width
-						let head = CGPoint(
-							x: startX + progress * travel,
-							y: startY + progress * travel * 0.45
-						)
-						let tail = CGPoint(
-							x: head.x - travel * 0.28,
-							y: head.y - travel * 0.28 * 0.45
-						)
-						context.opacity = 1 - progress
-						let gradient = Gradient(colors: [.clear, .white])
-						var path = Path()
-						path.move(to: tail)
-						path.addLine(to: head)
-						context.stroke(
-							path,
-							with: .linearGradient(gradient, startPoint: tail, endPoint: head),
-							lineWidth: 1.5
-						)
-						let dot = CGRect(x: head.x - 1, y: head.y - 1, width: 2, height: 2)
-						context.fill(Path(ellipseIn: dot), with: .color(.white))
+					// Shooting stars (item 14): a 3 s cycle with up to
+					// two streaks — the second is offset by half a
+					// cycle, so a streak is visible roughly every
+					// 1.5 s. Each streak is visible for the first
+					// 0.9 s of its own cycle.
+					let cycleLength = 3.0
+					for streak in 0..<2 {
+						let streakTime = time + Double(streak) * cycleLength / 2
+						let cycle = Int(streakTime / cycleLength)
+						let cycleTime = streakTime.truncatingRemainder(dividingBy: cycleLength)
+						if cycleTime < 0.9 {
+							let progress = cycleTime / 0.9
+							var rng = SeededRandom(seed: UInt64(cycle &* 2654435761 &+ 97 &+ streak &* 1_000_003))
+							let startX = (0.15 + rng.next() * 0.55) * size.width
+							let startY = rng.next() * 0.35 * size.height
+							let travel = 0.35 * size.width
+							let head = CGPoint(
+								x: startX + progress * travel,
+								y: startY + progress * travel * 0.45
+							)
+							let tail = CGPoint(
+								x: head.x - travel * 0.28,
+								y: head.y - travel * 0.28 * 0.45
+							)
+							context.opacity = 1 - progress
+							let gradient = Gradient(colors: [.clear, .white])
+							var path = Path()
+							path.move(to: tail)
+							path.addLine(to: head)
+							context.stroke(
+								path,
+								with: .linearGradient(gradient, startPoint: tail, endPoint: head),
+								lineWidth: 1.5
+							)
+							let dot = CGRect(x: head.x - 1, y: head.y - 1, width: 2, height: 2)
+							context.fill(Path(ellipseIn: dot), with: .color(.white))
+						}
 					}
 
 					context.opacity = 1

@@ -20584,6 +20584,261 @@
           }
         }
       }
+    },
+    "Tap the download button on the page and the file will download automatically.": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "اضغط زر التنزيل بالصفحة، والملف راح يتنزّل تلقائياً."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tap the download button on the page and the file will download automatically."
+          }
+        }
+      }
+    },
+    "Paste a valid link, like example.com/app.ipa.": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "الصق رابط صحيح، مثل example.com/app.ipa."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Paste a valid link, like example.com/app.ipa."
+          }
+        }
+      }
+    },
+    "ثبّتها من سفاري": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ثبّتها من سفاري"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ثبّتها من سفاري"
+          }
+        }
+      }
+    },
+    "بعد ما ينفتح الملف، كمّل التثبيت من الإعدادات: ملف تعريفي تم تنزيله.": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "بعد ما ينفتح الملف، كمّل التثبيت من الإعدادات: ملف تعريفي تم تنزيله."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "بعد ما ينفتح الملف، كمّل التثبيت من الإعدادات: ملف تعريفي تم تنزيله."
+          }
+        }
+      }
+    },
+    "ما گدرنا نقرا تاريخ انتهاء الشهادة": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ما گدرنا نقرا تاريخ انتهاء الشهادة"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ما گدرنا نقرا تاريخ انتهاء الشهادة"
+          }
+        }
+      }
+    },
+    "ملف البروفايل ما ينقرا": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ملف البروفايل ما ينقرا"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ملف البروفايل ما ينقرا"
+          }
+        }
+      }
+    },
+    "كلمة مرور الشهادة غلط": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "كلمة مرور الشهادة غلط"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "كلمة مرور الشهادة غلط"
+          }
+        }
+      }
+    },
+    "ملف الشهادة ما ينقرا — أعد استيراد الشهادة": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ملف الشهادة ما ينقرا — أعد استيراد الشهادة"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ملف الشهادة ما ينقرا — أعد استيراد الشهادة"
+          }
+        }
+      }
+    },
+    "الفحص الأونلاين مو متوفر هسه — هاي النتيجة من فحص ملفات الشهادة نفسها.": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "الفحص الأونلاين مو متوفر هسه — هاي النتيجة من فحص ملفات الشهادة نفسها."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "الفحص الأونلاين مو متوفر هسه — هاي النتيجة من فحص ملفات الشهادة نفسها."
+          }
+        }
+      }
+    },
+    "راح تنتهي قريباً — باقي %lld يوم": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "راح تنتهي قريباً — باقي %lld يوم"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "راح تنتهي قريباً — باقي %lld يوم"
+          }
+        }
+      }
+    },
+    "راح تنتهي قريباً": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "راح تنتهي قريباً"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "راح تنتهي قريباً"
+          }
+        }
+      }
+    },
+    "الشهادة منتهية — جدّدها ووقّع التطبيقات من جديد.": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "الشهادة منتهية — جدّدها ووقّع التطبيقات من جديد."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "الشهادة منتهية — جدّدها ووقّع التطبيقات من جديد."
+          }
+        }
+      }
+    },
+    "ما گدرنا نتأكد من الشهادة": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ما گدرنا نتأكد من الشهادة"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ما گدرنا نتأكد من الشهادة"
+          }
+        }
+      }
+    },
+    "App ID": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "معرّف التطبيق"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "App ID"
+          }
+        }
+      }
+    },
+    "المُصدِر": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "المُصدِر"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "المُصدِر"
+          }
+        }
+      }
     }
   },
   "version": "1.0"

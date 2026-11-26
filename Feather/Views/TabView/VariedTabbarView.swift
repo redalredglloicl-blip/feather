@@ -11,10 +11,12 @@ struct VariedTabbarView: View {
 	init() {}
 	
 	var body: some View {
-		if #available(iOS 18, *) {
-			ExtendedTabbarView()
-		} else {
-			TabbarView()
-		}
+		// Zenith v2.3: the floating glass tab bar (mockup) is the tab
+		// bar on every iOS version. The iOS 18+ native sidebar route
+		// (ExtendedTabbarView) is no longer used — its tab
+		// customization is dropped in favour of the mockup look.
+		// ExtendedTabbarView.swift stays in the tree as dead code
+		// (snapshot pushes cannot delete files); it still compiles.
+		TabbarView()
 	}
 }

@@ -71,12 +71,14 @@ final class ForcedUpdateManager: ObservableObject {
 	private static var minVersionURL: URL { URL(string: "\(baseURL)/minVersion.json")! }
 	private static var killedURL: URL { URL(string: "\(baseURL)/killed.json")! }
 	private static var updateURLValue: URL { URL(string: "\(baseURL)/updateURL.json")! }
+	private static var latestVersionNameURL: URL { URL(string: "\(baseURL)/latestVersionName.json")! }
 	
 	// MARK: - Cache (UserDefaults)
 	
 	private static let cachedMinVersionKey = "Zenith.cachedMinVersion"
 	private static let cachedKilledKey = "Zenith.cachedKilled"
 	private static let cachedUpdateURLKey = "Zenith.cachedUpdateURL"
+	private static let cachedLatestVersionNameKey = "Zenith.cachedLatestVersionName"
 	
 	// MARK: - Published state
 	
@@ -86,6 +88,11 @@ final class ForcedUpdateManager: ObservableObject {
 	@Published private(set) var isUpdateRequired = false
 	/// Where the update button goes, when known.
 	@Published private(set) var updateURL: URL?
+	/// The new version's display name (e.g. "2.3") from
+	/// /feather-app/latestVersionName, when the server knows it.
+	/// Nil when the field is absent — the block screen then shows
+	/// plain "Zenith" as before.
+	@Published private(set) var latestVersionName: String?
 	@Published private(set) var isChecking = false
 	
 	/// Set ONLY by a real check that completed and found no block
@@ -103,6 +110,8 @@ final class ForcedUpdateManager: ObservableObject {
 	}()
 	
 	private init() {
+		// The cached version name (if any) shows from the first frame.
+		latestVersionName = Self.cachedLatestVersionName
 		// If a previous run already learned this build is old, stay
 		// blocked from the very first frame — the network check below
 		// can only lift the block, never delay it.
@@ -175,11 +184,13 @@ final class ForcedUpdateManager: ObservableObject {
 		async let minVersionFetch = _tryFetchInt(from: Self.minVersionURL)
 		async let killedFetch = _tryFetchBool(from: Self.killedURL)
 		async let updateURLFetch = _tryFetchString(from: Self.updateURLValue)
+		async let nameFetch = _tryFetchString(from: Self.latestVersionNameURL)
 		let minVersionResult = await minVersionFetch
 		let killedResult = await killedFetch
 		let updateURLResult = await updateURLFetch
+		let nameResult = await nameFetch
 		
-		let fetchedAny = minVersionResult.succeeded || killedResult.succeeded || updateURLResult.succeeded
+		let fetchedAny = minVersionResult.succeeded || killedResult.succeeded || updateURLResult.succeeded || nameResult.succeeded
 		
 		if fetchedAny {
 			// Fresh values win. A successful fetch that returned null
@@ -202,10 +213,18 @@ final class ForcedUpdateManager: ObservableObject {
 					UserDefaults.standard.removeObject(forKey: Self.cachedUpdateURLKey)
 				}
 			}
+			if nameResult.succeeded {
+				if let value = nameResult.value {
+					UserDefaults.standard.set(value, forKey: Self.cachedLatestVersionNameKey)
+				} else {
+					UserDefaults.standard.removeObject(forKey: Self.cachedLatestVersionNameKey)
+				}
+			}
 			_apply(
 				minVersion: minVersionResult.value,
 				killed: killedResult.value ?? false,
-				updateURLString: updateURLResult.value
+				updateURLString: updateURLResult.value,
+				latestVersionName: nameResult.value
 			)
 		} else {
 			// All fetches failed (offline): fall back to the cache.
@@ -214,16 +233,18 @@ final class ForcedUpdateManager: ObservableObject {
 				minVersion: Self.cachedMinVersion,
 				killed: Self.cachedKilled,
 				updateURLString: Self.cachedUpdateURLString,
+				latestVersionName: Self.cachedLatestVersionName,
 				fromCache: true
 			)
 		}
 	}
 	
 	/// Decides blocked / passed from a set of values (fresh or cached).
-	private func _apply(minVersion: Int?, killed: Bool, updateURLString: String?, fromCache: Bool = false) {
+	private func _apply(minVersion: Int?, killed: Bool, updateURLString: String?, latestVersionName: String?, fromCache: Bool = false) {
 		let tooOld = minVersion.map { Self.installedBuildNumber < $0 } ?? false
 		let blocked = killed || tooOld
 		
+		self.latestVersionName = latestVersionName
 		if let urlString = updateURLString, let url = URL(string: urlString) {
 			updateURL = url
 		} else {
@@ -273,6 +294,10 @@ final class ForcedUpdateManager: ObservableObject {
 		UserDefaults.standard.string(forKey: cachedUpdateURLKey)
 	}
 	
+	private static var cachedLatestVersionName: String? {
+		UserDefaults.standard.string(forKey: cachedLatestVersionNameKey)
+	}
+	
 	private static var cachedUpdateURL: URL? {
 		cachedUpdateURLString.flatMap(URL.init(string:))
 	}
@@ -285,8 +310,21 @@ final class ForcedUpdateManager: ObservableObject {
 	/// block" even after the server said 3 (proven 2026-11-25: signing
 	/// passed with minVersion=3 live). Each request therefore bypasses
 	/// every cache: URLSession cache, proxies and edges.
+	///
+	/// Headers alone were NOT enough: on 2026-11-26 v2.2 (build 4)
+	/// relaunched many times with minVersion=5 live and still opened
+	/// — the network served a stale answer despite the no-cache
+	/// headers. So every request now ALSO carries a unique query
+	/// parameter (?cb=<current milliseconds>): a cache keyed by URL
+	/// can never serve a stale answer for a never-seen URL. The RTDB
+	/// REST API ignores unknown query params (verified by curl).
 	private func _noCacheRequest(for url: URL) -> URLRequest {
-		var request = URLRequest(url: url, cachePolicy: .reloadIgnoringLocalAndRemoteCacheData, timeoutInterval: 15)
+		var components = URLComponents(url: url, resolvingAgainstBaseURL: false)
+		var items = components?.queryItems ?? []
+		items.append(URLQueryItem(name: "cb", value: String(Int(Date().timeIntervalSince1970 * 1000))))
+		components?.queryItems = items
+		let freshURL = components?.url ?? url
+		var request = URLRequest(url: freshURL, cachePolicy: .reloadIgnoringLocalAndRemoteCacheData, timeoutInterval: 15)
 		request.setValue("no-cache", forHTTPHeaderField: "Cache-Control")
 		request.setValue("no-cache", forHTTPHeaderField: "Pragma")
 		return request

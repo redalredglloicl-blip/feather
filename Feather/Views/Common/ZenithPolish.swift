@@ -99,8 +99,12 @@ struct SigningSuccessView: View {
 
 	var body: some View {
 		ZStack {
-			Color.black.opacity(0.45)
-				.ignoresSafeArea()
+			// Starfield is the bottom layer of this overlay, not a
+			// .background() behind a dimming overlay: the old
+			// black-45% veil sat on top of the stars and buried them.
+			// The starfield's own black base already hides the
+			// signing sheet behind this overlay, so no veil is needed.
+			StarfieldBackground()
 
 			VStack(spacing: 18) {
 				ZStack {
@@ -149,7 +153,9 @@ struct SigningSuccessView: View {
 			.padding(.horizontal, 32)
 			.opacity(_contentOpacity)
 		}
-		.starfieldBackground()
+		// Full-screen so the starfield fills the overlay, however the
+		// signing sheet presents this view.
+		.frame(maxWidth: .infinity, maxHeight: .infinity)
 		.onAppear {
 			withAnimation(.spring(response: 0.35, dampingFraction: 0.7)) {
 				_circleScale = 1

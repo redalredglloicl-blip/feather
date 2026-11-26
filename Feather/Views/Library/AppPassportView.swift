@@ -44,54 +44,62 @@ struct AppPassportView: View {
 
 	// MARK: Body
 	var body: some View {
-		NBNavigationView(app.name ?? .localized("Unknown"), displayMode: .inline) {
-			List {
-				Section {} header: {
-					VStack(spacing: 10) {
-						FRAppIconView(app: app, size: 87)
-						Text(app.name ?? .localized("Unknown"))
-							.font(.headline)
-						if let version = app.version {
-							Text(verbatim: .localized("الإصدار %@", arguments: version))
-								.font(.subheadline)
-								.foregroundStyle(.secondary)
+		ZStack {
+			StarfieldBackground()
+			NBNavigationView(app.name ?? .localized("Unknown"), displayMode: .inline) {
+				List {
+					Section {} header: {
+						VStack(spacing: 10) {
+							FRAppIconView(app: app, size: 87)
+							Text(app.name ?? .localized("Unknown"))
+								.font(.headline)
+							if let version = app.version {
+								Text(verbatim: .localized("الإصدار %@", arguments: version))
+									.font(.subheadline)
+									.foregroundStyle(.secondary)
+							}
 						}
+						.frame(maxWidth: .infinity, alignment: .center)
 					}
-					.frame(maxWidth: .infinity, alignment: .center)
-				}
 
-				_infoSection
-				_certSection
+					_infoSection
+					_certSection
 
-				Section {
-					Button {
-						_signingPresented = true
-					} label: {
-						HStack {
-							Spacer()
-							Label(
-								app.isSigned ? .localized("أعد توقيع التطبيق") : .localized("وقّع التطبيق"),
-								image: "icon-sign"
-							)
-							.font(.headline)
-							Spacer()
+					Section {
+						Button {
+							_signingPresented = true
+						} label: {
+							HStack {
+								Spacer()
+								Label(
+									app.isSigned ? .localized("أعد توقيع التطبيق") : .localized("وقّع التطبيق"),
+									image: "icon-sign"
+								)
+								.font(.headline)
+								Spacer()
+							}
 						}
+						.buttonStyle(ZenithPressButtonStyle())
 					}
-					.buttonStyle(ZenithPressButtonStyle())
+					.listRowBackground(Color.accentColor.opacity(0.15))
 				}
-				.listRowBackground(Color.accentColor.opacity(0.15))
-			}
-			.toolbar {
-				NBToolbarButton(role: .close)
-			}
-			.task {
-				_fileSizeText = await _measuredFileSizeText()
-			}
-			.fullScreenCover(isPresented: $_signingPresented) {
-				SigningView(app: app)
+				// Transparent list so the starfield shows through the gaps
+				// between rows; rows themselves stay clear as well. The
+				// sign button row keeps its translucent peach tint.
+				.scrollContentBackground(.hidden)
+				.background(Color.clear)
+				.listRowBackground(Color.clear)
+				.toolbar {
+					NBToolbarButton(role: .close)
+				}
+				.task {
+					_fileSizeText = await _measuredFileSizeText()
+				}
+				.fullScreenCover(isPresented: $_signingPresented) {
+					SigningView(app: app)
+				}
 			}
 		}
-		.starfieldBackground()
 	}
 
 	// MARK: Sections

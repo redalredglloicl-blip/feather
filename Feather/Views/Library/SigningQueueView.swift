@@ -22,86 +22,93 @@ struct SigningQueueView: View {
 	@Environment(\.dismiss) private var _dismiss
 	
 	var body: some View {
-		NBNavigationView(.localized("Batch Signing")) {
-			List {
-				Section(.localized("Pick Apps to Sign")) {
-					if _importedApps.isEmpty {
-						Text(.localized("No unsigned apps. Import an IPA first."))
-							.font(.subheadline)
-							.foregroundStyle(.secondary)
-					} else {
-						ForEach(_importedApps, id: \.uuid) { app in
-							_signingPickRow(for: app)
+		ZStack {
+			StarfieldBackground()
+			NBNavigationView(.localized("Batch Signing")) {
+				List {
+					Section(.localized("Pick Apps to Sign")) {
+						if _importedApps.isEmpty {
+							Text(.localized("No unsigned apps. Import an IPA first."))
+								.font(.subheadline)
+								.foregroundStyle(.secondary)
+						} else {
+							ForEach(_importedApps, id: \.uuid) { app in
+								_signingPickRow(for: app)
+							}
 						}
 					}
-				}
 				
-				if !_queue.items.isEmpty {
-					Section {
-						ForEach(_queue.items) { item in
-							SigningQueueItemRowView(item: item)
-						}
+					if !_queue.items.isEmpty {
+						Section {
+							ForEach(_queue.items) { item in
+								SigningQueueItemRowView(item: item)
+							}
 						
-						if _queue.failedCount > 0 {
-							Button(.localized("Retry All Failed")) {
-								for item in _queue.items where item.status == .failed {
-									_queue.retry(item)
+							if _queue.failedCount > 0 {
+								Button(.localized("Retry All Failed")) {
+									for item in _queue.items where item.status == .failed {
+										_queue.retry(item)
+									}
 								}
 							}
-						}
 						
-						if _queue.doneCount > 0, !_queue.isRunning {
-							Button(.localized("Clear Signed")) {
-								_queue.clearFinished()
+							if _queue.doneCount > 0, !_queue.isRunning {
+								Button(.localized("Clear Signed")) {
+									_queue.clearFinished()
+								}
 							}
-						}
-					} header: {
-						HStack {
-							Text(.localized("Signing Queue"))
-							Spacer()
-							if !_queue.items.isEmpty {
-								Text(verbatim: "\(_queue.doneCount)/\(_queue.items.count)")
-									.font(.caption)
-									.foregroundStyle(.secondary)
+						} header: {
+							HStack {
+								Text(.localized("Signing Queue"))
+								Spacer()
+								if !_queue.items.isEmpty {
+									Text(verbatim: "\(_queue.doneCount)/\(_queue.items.count)")
+										.font(.caption)
+										.foregroundStyle(.secondary)
+								}
 							}
-						}
-					} footer: {
-						if _queue.isRunning {
-							Text(.localized("Signing one by one — keep the app open."))
+						} footer: {
+							if _queue.isRunning {
+								Text(.localized("Signing one by one — keep the app open."))
+							}
 						}
 					}
-				}
 				
-				Section {
-					Button {
-						let selected = _importedApps.filter { app in
-							_selectedUUIDs.contains(app.uuid ?? "")
+					Section {
+						Button {
+							let selected = _importedApps.filter { app in
+								_selectedUUIDs.contains(app.uuid ?? "")
+							}
+							_queue.enqueue(selected)
+							_selectedUUIDs.removeAll()
+							_queue.start()
+						} label: {
+							if _queue.isRunning {
+								ProgressView()
+									.frame(maxWidth: .infinity)
+							} else {
+								Text(verbatim: .localized("Sign Selected (%lld)", arguments: _selectedUUIDs.count))
+									.frame(maxWidth: .infinity)
+							}
 						}
-						_queue.enqueue(selected)
-						_selectedUUIDs.removeAll()
-						_queue.start()
-					} label: {
-						if _queue.isRunning {
-							ProgressView()
-								.frame(maxWidth: .infinity)
-						} else {
-							Text(verbatim: .localized("Sign Selected (%lld)", arguments: _selectedUUIDs.count))
-								.frame(maxWidth: .infinity)
-						}
+						.buttonStyle(.borderedProminent)
+						.disabled(_selectedUUIDs.isEmpty || _queue.isRunning)
 					}
-					.buttonStyle(.borderedProminent)
-					.disabled(_selectedUUIDs.isEmpty || _queue.isRunning)
+					.listRowBackground(Color.clear)
 				}
+				// Transparent list so the starfield shows through the gaps
+				// between rows; rows themselves stay clear as well.
+				.scrollContentBackground(.hidden)
+				.background(Color.clear)
 				.listRowBackground(Color.clear)
-			}
-			.starfieldBackground()
-			.toolbar {
-				NBToolbarButton(role: .close)
-			}
-			.alert(.localized("No Certificate"), isPresented: $_queue.showNoCertificateAlert) {
-				Button(.localized("OK"), role: .cancel) {}
-			} message: {
-				Text(.localized("Please go to settings and import a valid certificate"))
+				.toolbar {
+					NBToolbarButton(role: .close)
+				}
+				.alert(.localized("No Certificate"), isPresented: $_queue.showNoCertificateAlert) {
+					Button(.localized("OK"), role: .cancel) {}
+				} message: {
+					Text(.localized("Please go to settings and import a valid certificate"))
+				}
 			}
 		}
 	}

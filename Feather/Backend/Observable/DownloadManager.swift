@@ -61,12 +61,22 @@ class Download: Identifiable, @unchecked Sendable {
 	init(
 		id: String,
 		url: URL,
-		onlyArchiving: Bool = false
+		onlyArchiving: Bool = false,
+		fileName: String? = nil
 	) {
 		self.id = id
 		self.url = url
 		self.onlyArchiving = onlyArchiving
-		self.fileName = url.lastPathComponent
+		// A pasted link can end in "/" or in a bare "download" path
+		// with no usable file name — never ship an empty name into
+		// the install flow, and give extension-less names the .ipa
+		// suffix the installer expects.
+		let rawName = (fileName ?? url.lastPathComponent)
+			.trimmingCharacters(in: .whitespacesAndNewlines)
+		let baseName = rawName.isEmpty ? "download.ipa" : rawName
+		self.fileName = (baseName as NSString).pathExtension.isEmpty
+			? baseName + ".ipa"
+			: baseName
 	}
 }
 
@@ -88,6 +98,12 @@ class DownloadManager: NSObject, ObservableObject {
 	static let largeDownloadThreshold: Int64 = 50 * 1024 * 1024
 	/// Minimum size for parallel range connections.
 	static let multipartMinimumSize: Int64 = 8 * 1024 * 1024
+	
+	/// A real mobile-Safari user agent. Some file hosts refuse the
+	/// default URLSession agent (or a HEAD with no browser agent) and
+	/// the download then fails before a byte moves — every request
+	/// DownloadManager makes carries this instead.
+	static let browserUserAgent = "Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Mobile/15E148 Safari/604.1"
 	
 	private var _session: URLSession!
 	
@@ -141,12 +157,57 @@ class DownloadManager: NSObject, ObservableObject {
 		return download
 	}
 	
+	/// Starts the install flow for a file the in-app browser already
+	/// downloaded: WebKit hands us a finished temp file, so there is
+	/// nothing left to fetch — move it into the app's downloads area
+	/// and hand it to the package flow exactly like a finished
+	/// single-connection download.
+	func startDownloadFromCapturedFile(
+		_ fileURL: URL,
+		originalURL: URL,
+		id: String = UUID().uuidString
+	) {
+		let download = Download(id: id, url: originalURL, fileName: fileURL.lastPathComponent)
+		download.progress = 1
+		if let attributes = try? FileManager.default.attributesOfItem(atPath: fileURL.path),
+		   let size = attributes[.size] as? NSNumber {
+			download.totalBytes = size.int64Value
+			download.bytesDownloaded = size.int64Value
+		}
+		downloads.append(download)
+		
+		do {
+			let tempDirectory = FileManager.default.temporaryDirectory
+			let customTempDir = tempDirectory.appendingPathComponent("FeatherDownloads", isDirectory: true)
+			try FileManager.default.createDirectoryIfNeeded(at: customTempDir)
+			let destinationURL = customTempDir.appendingPathComponent(download.fileName)
+			try FileManager.default.removeFileIfNeeded(at: destinationURL)
+			try FileManager.default.moveItem(at: fileURL, to: destinationURL)
+			try handlePachageFile(url: destinationURL, dl: download)
+		} catch {
+			// The browser already finished the file — if moving it
+			// into place fails, the download failed honestly instead
+			// of hanging in the list forever.
+			DispatchQueue.main.async {
+				download.status = .failed
+				download.errorMessage = error.localizedDescription
+				self._recordHistory(for: download, status: .failed)
+				if let index = self.getDownloadIndex(by: download.id) {
+					self.downloads.remove(at: index)
+				}
+			}
+		}
+	}
+	
 	/// Picks the transport for a new download: multi-connection when the
 	/// server supports ranges and the file is big enough, single task
 	/// otherwise. Returns after the transport has started.
 	private func _beginDownload(_ download: Download) async {
 		if download._transportStarted { return }
 		if await _startMultipartIfSupported(download) { return }
+		// Cancelled while the HEAD probe was in flight: the download
+		// is gone, do not start a zombie task for it.
+		guard downloads.contains(where: { $0.id == download.id }) else { return }
 		// Paused while the HEAD probe was in flight: stay paused.
 		if download.status == .paused { return }
 		// Resumed while the probe was in flight: the resume already
@@ -157,17 +218,21 @@ class DownloadManager: NSObject, ObservableObject {
 	}
 	
 	/// HEAD-probes the server; starts a parallel range download when
-	/// possible. Returns true when multipart was started.
+	/// possible. Returns true when multipart was started. Any probe
+	/// failure (server refuses HEAD, no route, timeout) returns false
+	/// and the caller falls back to the single-connection task —
+	/// a failed probe must never fail the download.
 	private func _startMultipartIfSupported(_ download: Download) async -> Bool {
 		do {
 			var request = URLRequest(url: download.url)
 			request.httpMethod = "HEAD"
 			request.timeoutInterval = 15
+			request.setValue(Self.browserUserAgent, forHTTPHeaderField: "User-Agent")
 			let (_, response) = try await URLSession.shared.data(for: request)
 			guard
 				let http = response as? HTTPURLResponse,
 				http.expectedContentLength > Self.multipartMinimumSize,
-				http.value(forHTTPHeaderField: "Accept-Ranges") == "bytes",
+				http.value(forHTTPHeaderField: "Accept-Ranges")?.trimmingCharacters(in: .whitespaces).lowercased() == "bytes",
 				download.status != .paused
 			else { return false }
 			
@@ -189,10 +254,16 @@ class DownloadManager: NSObject, ObservableObject {
 	}
 	
 	/// Starts (or restarts) the plain single-connection download task.
+	/// A browser user agent is attached: some hosts refuse the
+	/// default URLSession agent and the download would fail at once.
+	/// Redirects are followed by URLSession's default handling — no
+	/// delegate method overrides it anywhere in this file.
 	func _startSingleTask(for download: Download) {
 		download.multipart = nil
 		download.isAccelerated = false
-		let task = _session.downloadTask(with: download.url)
+		var request = URLRequest(url: download.url)
+		request.setValue(Self.browserUserAgent, forHTTPHeaderField: "User-Agent")
+		let task = _session.downloadTask(with: request)
 		download.task = task
 		task.resume()
 	}
@@ -259,7 +330,9 @@ class DownloadManager: NSObject, ObservableObject {
 			_updateBackgroundAudioState()
 			#endif
 		} else if let url = download.task?.originalRequest?.url {
-			let task = _session.downloadTask(with: url)
+			var request = URLRequest(url: url)
+			request.setValue(Self.browserUserAgent, forHTTPHeaderField: "User-Agent")
+			let task = _session.downloadTask(with: request)
 			download.task = task
 			task.resume()
 			
@@ -427,6 +500,7 @@ class DownloadManager: NSObject, ObservableObject {
 		var request = URLRequest(url: url)
 		request.httpMethod = "HEAD"
 		request.timeoutInterval = 15
+		request.setValue(Self.browserUserAgent, forHTTPHeaderField: "User-Agent")
 		guard
 			let (_, response) = try? await URLSession.shared.data(for: request),
 			let http = response as? HTTPURLResponse,
@@ -438,15 +512,29 @@ class DownloadManager: NSObject, ObservableObject {
 	/// Measures real throughput by fetching the first 256 KiB of the
 	/// file with a Range request. Returns bytes/sec, or nil when the
 	/// probe fails (inconclusive — the download proceeds unwarned).
+	/// Streams the bytes and stops at 256 KiB: a server that ignores
+	/// Range and answers 200 must never dump the whole file into
+	/// memory here (on a big IPA that would kill the app outright).
 	func probeConnectionSpeed(for url: URL) async -> Double? {
 		var request = URLRequest(url: url)
 		request.setValue("bytes=0-262143", forHTTPHeaderField: "Range")
 		request.timeoutInterval = 12
+		request.setValue(Self.browserUserAgent, forHTTPHeaderField: "User-Agent")
 		let start = Date()
-		guard let (data, _) = try? await URLSession.shared.data(for: request) else { return nil }
-		let elapsed = Date().timeIntervalSince(start)
-		guard !data.isEmpty, elapsed > 0 else { return nil }
-		return Double(data.count) / elapsed
+		do {
+			let (bytes, response) = try await URLSession.shared.bytes(for: request)
+			guard (response as? HTTPURLResponse)?.statusCode == 206 else { return nil }
+			var received = 0
+			for try await _ in bytes {
+				received += 1
+				if received >= 262144 { break }
+			}
+			let elapsed = Date().timeIntervalSince(start)
+			guard received > 0, elapsed > 0 else { return nil }
+			return Double(received) / elapsed
+		} catch {
+			return nil
+		}
 	}
 }
 
@@ -488,6 +576,26 @@ extension DownloadManager: URLSessionDownloadDelegate {
 	
 	func urlSession(_ session: URLSession, downloadTask: URLSessionDownloadTask, didFinishDownloadingTo location: URL) {
 		guard let download = getDownloadTask(by: downloadTask) else { return }
+		
+		// A 4xx/5xx answer still "finishes" as a download — it is an
+		// error page, not the IPA. The same goes for a 200 that
+		// serves a web page instead of a file. Fail honestly here
+		// instead of feeding an HTML page to the installer.
+		if let http = downloadTask.response as? HTTPURLResponse {
+			let isErrorPage = !(200...299).contains(http.statusCode)
+				|| (http.mimeType?.lowercased().hasPrefix("text/") ?? false)
+			if isErrorPage {
+				DispatchQueue.main.async {
+					download.status = .failed
+					download.errorMessage = "HTTP \(http.statusCode)"
+					DownloadManager.shared._recordHistory(for: download, status: .failed)
+					if let index = DownloadManager.shared.getDownloadIndex(by: download.id) {
+						DownloadManager.shared.downloads.remove(at: index)
+					}
+				}
+				return
+			}
+		}
 		
 		let tempDirectory = FileManager.default.temporaryDirectory
 		let customTempDir = tempDirectory.appendingPathComponent("FeatherDownloads", isDirectory: true)
@@ -793,6 +901,7 @@ final class ZenithMultipartDownload: @unchecked Sendable {
 		
 		var request = URLRequest(url: url)
 		request.setValue("bytes=\(offset)-\(end)", forHTTPHeaderField: "Range")
+		request.setValue(DownloadManager.browserUserAgent, forHTTPHeaderField: "User-Agent")
 		
 		do {
 			let (bytes, response) = try await session.bytes(for: request)
@@ -811,7 +920,13 @@ final class ZenithMultipartDownload: @unchecked Sendable {
 				try Task.checkCancellation()
 				buffer.append(byte)
 				if buffer.count >= 64 * 1024 {
-					_write(buffer, at: offset)
+					guard _write(buffer, at: offset) else {
+						// The part file is unwritable — the
+						// single-connection task writes through
+						// URLSession's own temp file instead.
+						_failOverToSingleConnection()
+						return
+					}
 					offset += Int64(buffer.count)
 					_addPartDownloaded(index, Int64(buffer.count))
 					buffer.removeAll(keepingCapacity: true)
@@ -819,44 +934,47 @@ final class ZenithMultipartDownload: @unchecked Sendable {
 				}
 			}
 			if !buffer.isEmpty {
-				_write(buffer, at: offset)
+				guard _write(buffer, at: offset) else {
+					_failOverToSingleConnection()
+					return
+				}
 				offset += Int64(buffer.count)
 				_addPartDownloaded(index, Int64(buffer.count))
 				_reportProgressIfNeeded()
 			}
 		} catch {
 			if Task.isCancelled { return }
-			_markFailed(error)
+			// Any part failure — dropped connection, truncated byte
+			// stream, timeout — falls back to the single-connection
+			// download instead of failing the whole download. The
+			// single task is the last resort: if it fails too, the
+			// download fails honestly through its own delegate.
+			_failOverToSingleConnection()
 		}
 	}
 	
-	private func _write(_ data: Data, at offset: Int64) {
-		var writeError: Error?
+	/// Writes one buffered chunk at its file offset. Returns false
+	/// when the part file cannot be written (closed handle or disk
+	/// error); the caller fails over to the single-connection task.
+	private func _write(_ data: Data, at offset: Int64) -> Bool {
 		lock.lock()
-		if let handle = fileHandle {
-			do {
-				try handle.seek(toOffset: UInt64(offset))
-				handle.write(data)
-			} catch {
-				writeError = error
-				if _failedError == nil {
-					_failedError = error
-				}
+		guard let handle = fileHandle else {
+			lock.unlock()
+			return false
+		}
+		do {
+			try handle.seek(toOffset: UInt64(offset))
+			handle.write(data)
+		} catch {
+			if _failedError == nil {
+				_failedError = error
 			}
-		}
-		lock.unlock()
-		if writeError != nil {
+			lock.unlock()
 			_cancelAllParts()
-		}
-	}
-	
-	private func _markFailed(_ error: Error) {
-		lock.lock()
-		if _failedError == nil {
-			_failedError = error
+			return false
 		}
 		lock.unlock()
-		_cancelAllParts()
+		return true
 	}
 	
 	private func _cancelAllParts() {
@@ -875,6 +993,9 @@ final class ZenithMultipartDownload: @unchecked Sendable {
 			return
 		}
 		_didFailOver = true
+		// A stale part error must not surface later: the single
+		// task owns the download from here on.
+		_failedError = nil
 		let tasks = partTasks
 		lock.unlock()
 		for task in tasks {
@@ -890,22 +1011,29 @@ final class ZenithMultipartDownload: @unchecked Sendable {
 		if _isDead { return }
 		if _didFailOver { return }
 		
-		if _cancelled || _failedError != nil {
+		if _cancelled {
 			_persistManifest()
-			if let error = _failedError {
-				await MainActor.run {
-					download.status = .failed
-					download.errorMessage = error.localizedDescription
-				}
-				await MainActor.run {
-					DownloadManager.shared._recordHistory(for: download, status: .failed)
-				}
+			return
+		}
+		
+		if let error = _failedError {
+			_persistManifest()
+			await MainActor.run {
+				download.status = .failed
+				download.errorMessage = error.localizedDescription
+			}
+			await MainActor.run {
+				DownloadManager.shared._recordHistory(for: download, status: .failed)
 			}
 			return
 		}
 		
 		guard _totalDownloaded() >= totalBytes else {
-			_persistManifest()
+			// Every part ended without an error, but the file is
+			// short (the server closed a stream early): fall back
+			// to the single-connection download instead of stalling
+			// forever on a download that can never complete.
+			_failOverToSingleConnection()
 			return
 		}
 		

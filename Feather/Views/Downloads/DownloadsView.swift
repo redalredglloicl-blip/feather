@@ -20,81 +20,109 @@ struct DownloadsView: View {
 	@State private var _pendingURL: URL?
 	@State private var _pendingSize: Int64 = 0
 	@State private var _pendingSpeed: Double = 0
+	@State private var _isShowingBrowser = false
+	@State private var _browserURL: URL?
 	
 	var body: some View {
-		NBNavigationView(.localized("Downloads")) {
-			List {
-				Section {
-					VStack(alignment: .leading, spacing: 12) {
-						TextField(.localized("Paste IPA Link"), text: $_linkText)
-							.textInputAutocapitalization(.never)
-							.keyboardType(.URL)
-							.autocorrectionDisabled()
+		ZStack {
+			StarfieldBackground()
+			NBNavigationView(.localized("Downloads")) {
+				List {
+					Section {
+						VStack(alignment: .leading, spacing: 12) {
+							TextField(.localized("Paste IPA Link"), text: $_linkText)
+								.textInputAutocapitalization(.never)
+								.keyboardType(.URL)
+								.autocorrectionDisabled()
 						
-						Button {
-							_startDownloadFlow()
-						} label: {
-							if _isProbing {
-								ProgressView()
-									.frame(maxWidth: .infinity)
-							} else {
-								Label(.localized("Download"), image: "icon-download")
-									.frame(maxWidth: .infinity)
+							Button {
+								_startDownloadFlow()
+							} label: {
+								if _isProbing {
+									ProgressView()
+										.frame(maxWidth: .infinity)
+								} else {
+									Label(.localized("Download"), image: "icon-download")
+										.frame(maxWidth: .infinity)
+								}
+							}
+							.buttonStyle(.borderedProminent)
+							.disabled(_linkText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || _isProbing)
+						}
+					} header: {
+						Text(.localized("Download IPA"))
+					} footer: {
+						Text(.localized("Paste a direct link to an IPA file and it will download here, then appear in your library."))
+					}
+				
+					if !_downloadManager.downloads.isEmpty {
+						Section(.localized("Active Downloads")) {
+							ForEach(_downloadManager.downloads) { download in
+								DownloadRowView(download: download)
 							}
 						}
-						.buttonStyle(.borderedProminent)
-						.disabled(_linkText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || _isProbing)
 					}
-				} header: {
-					Text(.localized("Download IPA"))
-				} footer: {
-					Text(.localized("Paste a direct link to an IPA file and it will download here, then appear in your library."))
-				}
 				
-				if !_downloadManager.downloads.isEmpty {
-					Section(.localized("Active Downloads")) {
-						ForEach(_downloadManager.downloads) { download in
-							DownloadRowView(download: download)
-						}
-					}
-				}
-				
-				if !_downloadManager.history.isEmpty {
-					Section(.localized("Download History")) {
-						ForEach(_downloadManager.history) { entry in
-							DownloadHistoryRowView(entry: entry)
-						}
+					if !_downloadManager.history.isEmpty {
+						Section(.localized("Download History")) {
+							ForEach(_downloadManager.history) { entry in
+								DownloadHistoryRowView(entry: entry)
+							}
 						
-						Button(.localized("Clear History"), role: .destructive) {
-							_downloadManager.clearHistory()
+							Button(.localized("Clear History"), role: .destructive) {
+								_downloadManager.clearHistory()
+							}
 						}
 					}
-				}
 				
-				if _downloadManager.downloads.isEmpty && _downloadManager.history.isEmpty {
-					VStack(spacing: 10) {
-						Image("icon-download")
-							.resizable()
-							.scaledToFit()
-							.frame(width: 44, height: 44)
-							.opacity(0.6)
-						Text(.localized("No Downloads Yet"))
-							.font(.headline)
-						Text(.localized("Downloaded IPA files will show up here."))
-							.font(.subheadline)
-							.foregroundStyle(.secondary)
-							.multilineTextAlignment(.center)
+					if _downloadManager.downloads.isEmpty && _downloadManager.history.isEmpty {
+						VStack(spacing: 10) {
+							Image("icon-download")
+								.resizable()
+								.scaledToFit()
+								.frame(width: 44, height: 44)
+								.opacity(0.6)
+							Text(.localized("No Downloads Yet"))
+								.font(.headline)
+							Text(.localized("Downloaded IPA files will show up here."))
+								.font(.subheadline)
+								.foregroundStyle(.secondary)
+								.multilineTextAlignment(.center)
+						}
+						.frame(maxWidth: .infinity)
+						.padding(.vertical, 32)
+						.listRowBackground(Color.clear)
 					}
-					.frame(maxWidth: .infinity)
-					.padding(.vertical, 32)
-					.listRowBackground(Color.clear)
 				}
-			}
-			.starfieldBackground()
+				// Transparent list so the starfield shows through the gaps
+				// between rows; rows themselves stay clear as well.
+				.scrollContentBackground(.hidden)
+				.background(Color.clear)
+				.listRowBackground(Color.clear)
 			.alert(.localized("Invalid Link"), isPresented: $_isShowingInvalidLink) {
 				Button(.localized("OK"), role: .cancel) {}
 			} message: {
-				Text(.localized("Paste a valid link starting with http or https."))
+				Text(.localized("Paste a valid link, like example.com/app.ipa."))
+			}
+			.sheet(isPresented: $_isShowingBrowser) {
+				if let url = _browserURL {
+					MiniBrowserView(
+						url: url,
+						onFileCaptured: { fileURL in
+							_isShowingBrowser = false
+							_linkText = ""
+							DownloadManager.shared.startDownloadFromCapturedFile(
+								fileURL,
+								originalURL: url,
+								id: "FeatherManualDownload_\(UUID().uuidString)"
+							)
+						},
+						onClose: {
+							_isShowingBrowser = false
+						}
+					)
+					.ignoresSafeArea()
+				}
 			}
 			.alert(.localized("Slow Connection"), isPresented: $_isShowingSlowWarning) {
 				Button(.localized("Cancel"), role: .cancel) {
@@ -102,11 +130,7 @@ struct DownloadsView: View {
 				}
 				Button(.localized("Download Anyway")) {
 					if let url = _pendingURL {
-						_ = _downloadManager.startDownload(
-							from: url,
-							id: "FeatherManualDownload_\(UUID().uuidString)"
-						)
-						_linkText = ""
+						_openBrowser(with: url)
 						_pendingURL = nil
 					}
 				}
@@ -122,6 +146,7 @@ struct DownloadsView: View {
 			}
 		}
 	}
+}
 	
 	/// Minutes the pending download would take at the probed speed.
 	private func _pendingEstimatedMinutes() -> Int {
@@ -129,15 +154,36 @@ struct DownloadsView: View {
 		return Int(Double(_pendingSize) / _pendingSpeed / 60)
 	}
 	
-	/// Validates the link, probes the speed for big files, warns when
-	/// the connection is slow, then starts the download.
-	private func _startDownloadFlow() {
-		let text = _linkText.trimmingCharacters(in: .whitespacesAndNewlines)
+	/// Normalizes what the user pasted: a bare "example.com/app.ipa"
+	/// becomes https://example.com/app.ipa, so a link without a
+	/// scheme no longer fails at once.
+	private func _normalizedURL(from text: String) -> URL? {
+		var text = text.trimmingCharacters(in: .whitespacesAndNewlines)
+		guard !text.isEmpty else { return nil }
+		if !text.contains("://") {
+			text = "https://" + text
+		}
 		guard
 			let url = URL(string: text),
-			url.scheme == "http" || url.scheme == "https",
+			let scheme = url.scheme?.lowercased(),
+			scheme == "http" || scheme == "https",
 			url.host != nil
-		else {
+		else { return nil }
+		return url
+	}
+	
+	/// Opens the pasted link in the small in-app browser, where the
+	/// user taps the page's own download button (or the link is the
+	/// file itself and the browser intercepts it directly).
+	private func _openBrowser(with url: URL) {
+		_browserURL = url
+		_isShowingBrowser = true
+	}
+	
+	/// Validates the link, probes the speed for big files, warns when
+	/// the connection is slow, then opens the browser for the download.
+	private func _startDownloadFlow() {
+		guard let url = _normalizedURL(from: _linkText) else {
 			_isShowingInvalidLink = true
 			return
 		}
@@ -161,11 +207,7 @@ struct DownloadsView: View {
 					_pendingSpeed = speed
 					_isShowingSlowWarning = true
 				} else {
-					_ = _downloadManager.startDownload(
-						from: url,
-						id: "FeatherManualDownload_\(UUID().uuidString)"
-					)
-					_linkText = ""
+					_openBrowser(with: url)
 				}
 			}
 		}

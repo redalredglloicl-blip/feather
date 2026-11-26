@@ -26,6 +26,8 @@ struct CertificatesView: View {
 	@State private var _isSelfRefreshResultPresenting = false
 	@AppStorage("Zenith.dnsProtectionInstalled") private var _dnsProtectionInstalled = false
 	@State private var _isProfileNotFoundPresenting = false
+	@State private var _dnsProfileURL: URL?
+	@State private var _isDNSDocumentPresenterPresented = false
 
 	// MARK: Fetch
 	@FetchRequest(
@@ -44,53 +46,46 @@ struct CertificatesView: View {
 		self._bindingSelectedCert = selectedCert
 	}
 	
-	// MARK: Body
+	// The whole tab is ONE scrolling column: expiry banner, selected
+	// certificate hero + health, DNS protection card, refresh button,
+	// and — when there are no certificates — the empty state as a
+	// normal in-flow section. Nothing here is an overlay, so no card
+	// can ever sit on top of another view's text or button.
 	var body: some View {
-		VStack(spacing: 0) {
-			_expiryBanner
-			
-			if let selected = _selectedCertificate {
-				CertificateHeroCardView(cert: selected)
-					.contextMenu {
-						_contextActions(for: selected)
-						if selected.isDefault != true {
-							Divider()
-							_actions(for: selected)
+		ScrollView {
+			VStack(spacing: 8) {
+				_expiryBanner
+				
+				if let selected = _selectedCertificate {
+					CertificateHeroCardView(cert: selected)
+						.contextMenu {
+							_contextActions(for: selected)
+							if selected.isDefault != true {
+								Divider()
+								_actions(for: selected)
+							}
 						}
-					}
-
-				CertificateHealthView(cert: selected)
+					
+					CertificateHealthView(cert: selected)
+				}
+				
+				if _certificates.isEmpty {
+					_emptyState
+				}
+				
+				_dnsProtectionCard
+				
+				Button {
+					_isSelfRefreshConfirmPresenting = true
+				} label: {
+					Label(.localized("Refresh Zenith Itself"), image: "icon-renew")
+				}
+				.buttonStyle(.bordered)
+				.padding(.vertical, 8)
 			}
-
-			_dnsProtectionCard
-			
-			Button {
-				_isSelfRefreshConfirmPresenting = true
-			} label: {
-				Label(.localized("Refresh Zenith Itself"), image: "icon-renew")
-			}
-			.buttonStyle(.bordered)
-			.padding(.vertical, 8)
 		}
 		.starfieldBackground()
 		.navigationTitle(.localized("Certificates"))
-		.overlay {
-			if _certificates.isEmpty {
-				if #available(iOS 17, *) {
-					ContentUnavailableView {
-						Label(.localized("No Certificates"), systemImage: "questionmark.folder.fill")
-					} description: {
-						Text(.localized("Get started signing by importing your first certificate."))
-					} actions: {
-						Button {
-							_isAddingPresenting = true
-						} label: {
-							NBButton(.localized("Import"), style: .text)
-						}
-					}
-				}
-			}
-		}
 		.toolbar {
 			if _bindingSelectedCert == nil {
 				NBToolbarButton(
@@ -123,6 +118,26 @@ struct CertificatesView: View {
 			CertificatesAddView()
 				.presentationDetents([.medium])
 				.zenithSheetBackground()
+		}
+		.sheet(isPresented: $_isDNSDocumentPresenterPresented) {
+			if let url = _dnsProfileURL {
+				_DNSProfileDocumentView(url: url) { presented in
+					_isDNSDocumentPresenterPresented = false
+					if presented {
+						// iOS offered an open route for the profile:
+						// record the tap. iOS still gives the app no
+						// way to confirm the profile really installed.
+						_dnsProtectionInstalled = true
+					} else if let url = _dnsProfileURL {
+						// No app offered to open the profile: fall back
+						// to the share sheet so the user can send it to
+						// Safari or Files themselves.
+						Task { @MainActor in
+							UIActivityViewController.show(activityItems: [url])
+						}
+					}
+				}
+			}
 		}
 		.alert(.localized("Change Nickname"), isPresented: $_isRenamingPresenting, presenting: _certToRename) { cert in
 			TextField(.localized("Nickname"), text: $_newNickname)
@@ -245,6 +260,41 @@ struct CertificatesView: View {
 
 // MARK: - View extension
 extension CertificatesView {
+	/// Empty state, in the normal flow of the column — never an
+	/// overlay, so its icon and text cannot collide with the DNS card
+	/// or any other view.
+	@ViewBuilder
+	private var _emptyState: some View {
+		VStack(spacing: 12) {
+			Image(systemName: "questionmark.folder.fill")
+				.font(.system(size: 48))
+				.foregroundStyle(.secondary)
+			
+			Text(.localized("No Certificates"))
+				.font(.headline)
+			
+			Text(.localized("Get started signing by importing your first certificate."))
+				.font(.subheadline)
+				.foregroundStyle(.secondary)
+				.multilineTextAlignment(.center)
+			
+			Button {
+				_isAddingPresenting = true
+			} label: {
+				NBButton(.localized("Import"), style: .text)
+			}
+		}
+		.padding()
+		.frame(maxWidth: .infinity)
+	}
+	
+	/// Hosted copy of the protection profile, served by the Cloudflare
+	/// Worker in `zenith-dns-profile-worker.js` (repo root).
+	/// nil until the worker is deployed — the Safari button stays
+	/// hidden so it can never open a dead link. Set to the real
+	/// deployed worker URL when it exists.
+	private static let _dnsProfileHostedURL: String? = nil
+	
 	@ViewBuilder
 	private var _dnsProtectionCard: some View {
 		VStack(alignment: .leading, spacing: 10) {
@@ -282,6 +332,23 @@ extension CertificatesView {
 			}
 			.buttonStyle(.borderedProminent)
 			
+			// Second route, shown only once the hosted worker URL is
+			// set: Safari opens the hosted copy, and iOS offers the
+			// profile install from there. Use it whenever the first
+			// button does not produce an install prompt.
+			if Self._dnsProfileHostedURL != nil {
+				Button {
+					_installDNSProtectionViaSafari()
+				} label: {
+					Label(.localized("ثبّتها من سفاري"), systemImage: "safari")
+				}
+				.buttonStyle(.bordered)
+				
+				Text(.localized("بعد ما ينفتح الملف، كمّل التثبيت من الإعدادات: ملف تعريفي تم تنزيله."))
+					.font(.caption2)
+					.foregroundStyle(.secondary)
+			}
+			
 			Text(.localized("iOS does not let the app verify installation. This status is based on your install tap."))
 				.font(.caption2)
 				.foregroundStyle(.secondary)
@@ -298,36 +365,47 @@ extension CertificatesView {
 		.padding(.top, 8)
 	}
 	
-	/// Opens the bundled anti-revoke profile so iOS can install it.
-	/// The user confirms once in Settings. The install tap is recorded
-	/// locally because iOS gives the app no API to verify that a
-	/// specific profile is installed.
+	/// PRIMARY route: copy the bundled profile to a temp file and hand
+	/// it to UIDocumentInteractionController (via the sheet below), so
+	/// iOS offers the system route for opening a configuration
+	/// profile. `UIApplication.open` on a local .mobileconfig does
+	/// nothing visible — that was the old, broken behaviour.
+	/// The install tap is recorded locally because iOS gives the app
+	/// no API to verify that a specific profile is installed.
 	private func _installDNSProtection() {
-		guard let bundleURL = Bundle.main.url(forResource: "ZenithAntiRevoke", withExtension: "mobileconfig") else {
+		guard let tempURL = _dnsProfileTempURL() else {
 			_isProfileNotFoundPresenting = true
 			return
+		}
+		_dnsProfileURL = tempURL
+		_isDNSDocumentPresenterPresented = true
+	}
+	
+	/// FALLBACK route: open the hosted copy in Safari, where iOS
+	/// offers the profile install from the download. Same honest
+	/// basis as the primary route: the tap is recorded, installation
+	/// itself cannot be verified by the app.
+	private func _installDNSProtectionViaSafari() {
+		guard let hosted = Self._dnsProfileHostedURL, let url = URL(string: hosted) else {
+			return
+		}
+		UIApplication.shared.open(url)
+		_dnsProtectionInstalled = true
+	}
+	
+	/// Copies the bundled profile to a temp file for handing to the
+	/// system. Returns nil when the bundled profile is missing.
+	private func _dnsProfileTempURL() -> URL? {
+		guard let bundleURL = Bundle.main.url(forResource: "ZenithAntiRevoke", withExtension: "mobileconfig") else {
+			return nil
 		}
 		let tempURL = FileManager.default.temporaryDirectory
 			.appendingPathComponent("ZenithAntiRevoke.mobileconfig")
 		try? FileManager.default.removeItem(at: tempURL)
 		guard (try? FileManager.default.copyItem(at: bundleURL, to: tempURL)) != nil else {
-			_isProfileNotFoundPresenting = true
-			return
+			return nil
 		}
-		UIApplication.shared.open(tempURL) { success in
-			if success {
-				// Record the tap in UserDefaults directly: the open
-				// completion runs outside the view struct, and the
-				// @AppStorage wrapper observes the same keys.
-				UserDefaults.standard.set(true, forKey: "Zenith.dnsProtectionInstalled")
-			} else {
-				// iOS would not open the profile directly: offer the
-				// share sheet so the user can open it in Safari/Files.
-				Task { @MainActor in
-					UIActivityViewController.show(activityItems: [tempURL])
-				}
-			}
-		}
+		return tempURL
 	}
 	
 	@ViewBuilder
@@ -359,6 +437,96 @@ extension CertificatesView {
 		Divider()
 		Button(.localized("Check Revokage"), systemImage: "person.text.rectangle") {
 			Storage.shared.revokagedCertificate(for: cert)
+		}
+	}
+}
+
+// MARK: - DNS profile document interaction
+//
+// Presents the bundled .mobileconfig with UIDocumentInteractionController
+// so iOS offers the system route for opening a configuration profile.
+// The interaction controller needs a view controller to present from,
+// so it lives in a sheet-hosted view controller that presents the
+// "Open In" menu (QuickLook preview as a second try) as soon as it
+// appears, then reports back and closes the sheet.
+
+private struct _DNSProfileDocumentView: UIViewControllerRepresentable {
+	let url: URL
+	/// Called on the main thread when the menu/preview closes.
+	/// `presented` is true when iOS actually offered an open route.
+	let onFinished: (Bool) -> Void
+	
+	func makeUIViewController(context: Context) -> _DNSProfileDocumentViewController {
+		_DNSProfileDocumentViewController(url: url, onFinished: onFinished)
+	}
+	
+	func updateUIViewController(_ uiViewController: _DNSProfileDocumentViewController, context: Context) {}
+}
+
+private final class _DNSProfileDocumentViewController: UIViewController, UIDocumentInteractionControllerDelegate {
+	private let _url: URL
+	private let _onFinished: (Bool) -> Void
+	private var _interactionController: UIDocumentInteractionController?
+	private var _didPresent = false
+	private var _didFinish = false
+	
+	init(url: URL, onFinished: @escaping (Bool) -> Void) {
+		self._url = url
+		self._onFinished = onFinished
+		super.init(nibName: nil, bundle: nil)
+	}
+	
+	required init?(coder: NSCoder) {
+		fatalError("init(coder:) has not been implemented")
+	}
+	
+	override func viewDidAppear(_ animated: Bool) {
+		super.viewDidAppear(animated)
+		guard !_didPresent else {
+			return
+		}
+		_didPresent = true
+		
+		let controller = UIDocumentInteractionController(url: _url)
+		controller.delegate = self
+		// Retained: the interaction controller must stay alive while
+		// its menu or preview is on screen.
+		_interactionController = controller
+		
+		// "Open In" menu first: it lists the apps that can take the
+		// profile. QuickLook preview as a second try. If neither can
+		// be shown, report failure so the caller can fall back to the
+		// share sheet.
+		if controller.presentOpenInMenu(from: view.bounds, in: view, animated: true) {
+			return
+		}
+		if controller.presentPreview(animated: true) {
+			return
+		}
+		_finish(presented: false)
+	}
+	
+	// MARK: UIDocumentInteractionControllerDelegate
+	
+	func documentInteractionControllerViewControllerForPreview(_ controller: UIDocumentInteractionController) -> UIViewController {
+		self
+	}
+	
+	func documentInteractionControllerDidDismissOpenInMenu(_ controller: UIDocumentInteractionController) {
+		_finish(presented: true)
+	}
+	
+	func documentInteractionControllerDidEndPreview(_ controller: UIDocumentInteractionController) {
+		_finish(presented: true)
+	}
+	
+	private func _finish(presented: Bool) {
+		guard !_didFinish else {
+			return
+		}
+		_didFinish = true
+		DispatchQueue.main.async { [onFinished = _onFinished] in
+			onFinished(presented)
 		}
 	}
 }

@@ -2,7 +2,7 @@
 //  LoadingView.swift
 //  Feather
 //
-//  Zenith v2.2 startup screen: black starfield, the Zenith planet and a
+//  Zenith v2.3 startup screen: black starfield, the Zenith planet and a
 //  1→100 counter. The counter is driven ONLY by real startup steps —
 //  storage load, certificate load, expiry reminders, the forced-update
 //  check and the fixed theme — never a fake timer. Each step sets the
@@ -124,25 +124,23 @@ struct LoadingView: View {
 			VStack(spacing: 0) {
 				Spacer()
 
-				Image("zenith")
+				// Zenith v2.3 launch look (mockup): the realistic planet
+				// big and centred, then huge thin peach numerals and a
+				// thin glowing line. No wordmark — the planet is the mark.
+				Image("zenith-transparent")
 					.resizable()
 					.scaledToFit()
-					.frame(width: 128, height: 128)
-					.padding(.bottom, 20)
-
-				Text("Zenith")
-					.font(.system(size: 28, weight: .bold, design: .rounded))
-					.foregroundStyle(.white)
+					.frame(width: 270, height: 270)
 
 				Spacer()
 
 				HStack(alignment: .lastTextBaseline, spacing: 2) {
 					Text("\(Int(_progress.progress * 100))")
-						.font(.system(size: 56, weight: .bold, design: .rounded))
+						.font(.system(size: 68, weight: .thin))
 						.monospacedDigit()
 						.foregroundStyle(Color(hex: "#FFC778"))
 					Text("%")
-						.font(.system(size: 28, weight: .semibold, design: .rounded))
+						.font(.system(size: 30, weight: .light))
 						.foregroundStyle(Color(hex: "#FFC778"))
 				}
 
@@ -153,17 +151,18 @@ struct LoadingView: View {
 						Capsule()
 							.fill(Color(hex: "#FFC778"))
 							.frame(width: max(0, geo.size.width * CGFloat(_progress.progress)))
+							.shadow(color: Color(hex: "#FFC778").opacity(0.8), radius: 6, x: 0, y: 0)
 					}
 				}
-				.frame(height: 5)
-				.padding(.horizontal, 48)
-				.padding(.top, 12)
+				.frame(height: 3)
+				.padding(.horizontal, 64)
+				.padding(.top, 16)
 
-				Text(_progress.stepLabel)
+				Text(verbatim: _progress.stepLabel)
 					.font(.subheadline)
 					.foregroundStyle(.secondary)
 					.padding(.top, 14)
-					.padding(.bottom, 48)
+					.padding(.bottom, 56)
 			}
 		}
 		.starfieldBackground()

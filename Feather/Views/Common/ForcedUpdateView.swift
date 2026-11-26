@@ -35,7 +35,9 @@ struct ForcedUpdateView: View {
 				.font(.title2)
 				.fontWeight(.bold)
 			
-			Text("Zenith")
+			// The new version's name (e.g. "2.3") when the server
+			// knows it — plain "Zenith" when the field is absent.
+			Text(_manager.latestVersionName.map { "Zenith \($0)" } ?? "Zenith")
 				.font(.subheadline)
 				.foregroundStyle(.secondary)
 				.padding(.top, 6)

@@ -2,10 +2,13 @@
 //  CertificateHealthView.swift
 //  Feather
 //
-//  Zenith v2.2: health card shown under the certificate hero card in
-//  the Certificates tab. Shows the honest result of the OCSP check
-//  (healthy / revoked / could-not-verify) with a refresh button.
-//  A "could not verify" result is never dressed up as healthy.
+//  Zenith v2.3: health card shown under the certificate hero card in
+//  the Certificates tab. The verdict comes from the LOCAL file check
+//  (p12 + provisioning profile expiry, parsed on device) — the online
+//  OCSP check is best-effort only and can never make the headline a
+//  network error. There is no "check the internet and try again"
+//  state anywhere in this view: when nothing can be verified, the
+//  card says so with the real reason.
 //
 
 import SwiftUI
@@ -21,6 +24,13 @@ struct CertificateHealthView: View {
 		let formatter = DateFormatter()
 		formatter.dateStyle = .none
 		formatter.timeStyle = .short
+		return formatter
+	}()
+
+	private static let _dateFormatter: DateFormatter = {
+		let formatter = DateFormatter()
+		formatter.dateStyle = .medium
+		formatter.timeStyle = .none
 		return formatter
 	}()
 
@@ -57,13 +67,34 @@ struct CertificateHealthView: View {
 					.foregroundStyle(_statusColor)
 			}
 
-			if case .unverified(let reason) = _checker.status, let reason, !reason.isEmpty {
+			// The real reason when nothing could be verified — wrong
+			// password, damaged file, missing files, ... Never a
+			// network error as the headline.
+			if let reason = _reasonText, !reason.isEmpty {
 				Text(reason)
 					.font(.footnote)
 					.foregroundStyle(.secondary)
 			}
 
-			if _checker.status == .revoked {
+			// The local verdict stands; only this note says the
+			// online check could not run.
+			if _isOnlineUnavailable {
+				Text(.localized("الفحص الأونلاين مو متوفر هسه — هاي النتيجة من فحص ملفات الشهادة نفسها."))
+					.font(.footnote)
+					.foregroundStyle(.secondary)
+			}
+
+			if let details = _details {
+				_detailsRows(details)
+			}
+
+			if case .expired = _checker.status {
+				Text(.localized("الشهادة منتهية — جدّدها ووقّع التطبيقات من جديد."))
+					.font(.footnote)
+					.foregroundStyle(.secondary)
+			}
+
+			if case .revoked = _checker.status {
 				Text(.localized("الشهادة مسحوبة — التطبيقات الموقعة بيها ما راح تنفتح. جيب شهادة جديدة ووقّع التطبيقات من جديد."))
 					.font(.footnote)
 					.foregroundStyle(.secondary)
@@ -103,7 +134,10 @@ struct CertificateHealthView: View {
 		case .unknown: .secondary
 		case .checking: .secondary
 		case .healthy: .green
+		case .expiringSoon: .orange
+		case .expired: .red
 		case .revoked: .red
+		case .invalid: .orange
 		case .unverified: .orange
 		}
 	}
@@ -116,10 +150,111 @@ struct CertificateHealthView: View {
 			.localized("جارٍ الفحص...")
 		case .healthy:
 			.localized("سليمة — أبل ما ساحبتها")
+		case .expiringSoon(let details, _):
+			if let daysLeft = details.daysLeft {
+				return .localized("راح تنتهي قريباً — باقي %lld يوم", arguments: daysLeft)
+			}
+			return .localized("راح تنتهي قريباً")
+		case .expired:
+			.localized("الشهادة منتهية")
 		case .revoked:
 			.localized("مسحوبة من أبل")
-		case .unverified:
-			.localized("ما گدرنا نتأكد — تحقق من النت وحاول مرة ثانية")
+		case .invalid, .unverified:
+			.localized("ما گدرنا نتأكد من الشهادة")
+		}
+	}
+
+	/// Local details to show under the verdict, when the local parse
+	/// produced any.
+	private var _details: LocalCertificateDetails? {
+		switch _checker.status {
+		case .healthy(let details, _):
+			details
+		case .expiringSoon(let details, _):
+			details
+		case .expired(let details):
+			details
+		case .revoked(let details):
+			details
+		default:
+			nil
+		}
+	}
+
+	/// True when the local verdict is shown but the online check
+	/// could not run.
+	private var _isOnlineUnavailable: Bool {
+		switch _checker.status {
+		case .healthy(_, let onlineUnavailable):
+			onlineUnavailable
+		case .expiringSoon(_, let onlineUnavailable):
+			onlineUnavailable
+		default:
+			false
+		}
+	}
+
+	/// The real reason when the certificate could not be verified.
+	private var _reasonText: String? {
+		switch _checker.status {
+		case .invalid(let reason):
+			reason
+		case .unverified(let reason):
+			reason
+		default:
+			nil
+		}
+	}
+
+	// MARK: Details rows
+
+	@ViewBuilder
+	private func _detailsRows(_ details: LocalCertificateDetails) -> some View {
+		if let expiry = details.effectiveExpiry {
+			Text(verbatim: .localized("Expires on %@", arguments: Self._dateFormatter.string(from: expiry)))
+				.font(.footnote)
+				.foregroundStyle(.secondary)
+		}
+
+		if let teamName = details.provisionTeamName, !teamName.isEmpty {
+			HStack(spacing: 4) {
+				Text(.localized("Team Name"))
+					.font(.footnote)
+					.foregroundStyle(.secondary)
+				Text(teamName)
+					.font(.footnote)
+					.foregroundStyle(.secondary)
+			}
+		}
+
+		if let appIDName = details.provisionAppIDName, !appIDName.isEmpty {
+			HStack(spacing: 4) {
+				Text(.localized("App ID"))
+					.font(.footnote)
+					.foregroundStyle(.secondary)
+				Text(appIDName)
+					.font(.footnote)
+					.foregroundStyle(.secondary)
+					.lineLimit(1)
+			}
+		}
+
+		if let issuer = details.p12Issuer, !issuer.isEmpty {
+			HStack(spacing: 4) {
+				Text(.localized("المُصدِر"))
+					.font(.footnote)
+					.foregroundStyle(.secondary)
+				Text(issuer)
+					.font(.footnote)
+					.foregroundStyle(.secondary)
+					.lineLimit(1)
+			}
+		}
+
+		if let p12Problem = details.p12Problem, !p12Problem.isEmpty {
+			Text(p12Problem)
+				.font(.footnote)
+				.foregroundStyle(.secondary)
 		}
 	}
 }
