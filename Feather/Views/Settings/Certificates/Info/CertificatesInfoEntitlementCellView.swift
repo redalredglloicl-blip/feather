@@ -14,12 +14,14 @@ struct CertificatesInfoEntitlementCellView: View {
 	/// True when this cell is nested inside another cell's disclosure
 	/// group: it gets a faintly lighter fill so the inner card reads
 	/// as a separate surface from its parent card (v2.10, no lines).
-	let isNested: Bool = false
+	let isNested: Bool
 	@State private var _isExpanded = false
 
 	// v2.10 fix: explicit init — the synthesized memberwise init does not
-	// expose `isNested` (it only takes key/value), so the nested call below
-	// failed the build with "extra argument 'isNested' in call".
+	// expose `isNested` (it only takes key/value). Note: the property has
+	// NO default value here — a `let` with `= false` is already initialized
+	// by its default, so assigning it in init fails with "may only be
+	// initialized once"; the default lives on the parameter instead.
 	init(key: String, value: Any, isNested: Bool = false) {
 		self.key = key
 		self.value = value
