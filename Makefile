@@ -1,5 +1,5 @@
-NAME := Feather
-SCHEME := Feather
+NAME := Zenith
+SCHEME := Zenith
 PLATFORMS := iphoneos maccatalyst
 
 TMP := $(TMPDIR)/$(NAME)
@@ -53,6 +53,10 @@ $(PLATFORMS): deps
 	base64 -D < Feather/Resources/icon-b64/settings.png.b64 > Feather/Resources/Assets.xcassets/icon-settings.imageset/settings.png
 	base64 -D < Feather/Resources/icon-b64/sign.png.b64 > Feather/Resources/Assets.xcassets/icon-sign.imageset/sign.png
 	base64 -D < Feather/Resources/icon-b64/sort.png.b64 > Feather/Resources/Assets.xcassets/icon-sort.imageset/sort.png
+	base64 -D < Feather/Resources/zenith-icon-b64/zenith_extension.png.b64 > Feather/Resources/zenith_extension.png
+	base64 -D < Feather/Resources/icon-b64/glyph.png.b64 > Feather/Resources/Assets.xcassets/Glyph.imageset/zenith.png
+	base64 -D < Feather/Resources/icon-b64/appicon-feather.png.b64 > Feather/Resources/AppIcon.icon/Assets/zenith.png
+	base64 -D < Feather/Resources/icon-b64/appicon-feather-5.png.b64 > Feather/Resources/AppIcon.icon/Assets/zenith-5.png
 
 	@if [ "$@" = "iphoneos" ]; then \
 		DEST="generic/platform=iOS"; \
@@ -70,15 +74,15 @@ $(PLATFORMS): deps
 		ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES=NO
 
 	mkdir -p _build/Payload
-	cp -R _build/Applications/*.app _build/Payload/Feather.app
-	chmod -R 0755 _build/Payload/Feather.app
-	codesign --force --sign - --timestamp=none _build/Payload/Feather.app
-	cp deps/* _build/Payload/Feather.app/ || true
+	cp -R _build/Applications/*.app _build/Payload/Zenith.app
+	chmod -R 0755 _build/Payload/Zenith.app
+	codesign --force --sign - --timestamp=none _build/Payload/Zenith.app
+	cp deps/* _build/Payload/Zenith.app/ || true
 
 	mkdir -p packages
 
 	@if [ "$@" = "iphoneos" ]; then \
 		ditto -c -k --sequesterRsrc --keepParent _build/Payload "packages/Zenith.ipa"; \
 	else \
-		ditto -c -k --sequesterRsrc --keepParent _build/Payload/Feather.app "packages/Feather_Catalyst.zip"; \
+		ditto -c -k --sequesterRsrc --keepParent _build/Payload/Zenith.app "packages/Zenith_Catalyst.zip"; \
 	fi

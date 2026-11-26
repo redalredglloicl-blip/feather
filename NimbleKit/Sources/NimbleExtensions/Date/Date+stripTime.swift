@@ -1,6 +1,6 @@
 //
 //  Date+stripTime.swift
-//  Feather
+//  Zenith
 //
 //  Created by samara on 21.06.2025.
 //

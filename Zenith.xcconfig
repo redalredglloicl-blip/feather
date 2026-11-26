@@ -1,0 +1,15 @@
+//
+//  default.xcconfig
+//  Ventrica
+//
+//  Created by samsam on 2/5/26.
+//
+
+ZENITH_PROJECT_VERSION=2.0
+ZENITH_PRODUCT_BUNDLE_IDENTIFIER=com.zenith.app
+ZENITH_DISAMBIGUATOR=${DEVELOPMENT_TEAM}
+
+AD_HOC_CODE_SIGNING_ALLOWED = YES
+
+DEPLOYMENT_LOCATION = YES
+DSTROOT = $(SRCROOT)/_build/

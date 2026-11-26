@@ -1,6 +1,6 @@
 //
 //  TabEnum.swift
-//  feather
+//  zenith
 //
 //  Created by samara on 22.03.2025.
 //

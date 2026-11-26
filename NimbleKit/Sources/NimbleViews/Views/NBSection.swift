@@ -1,6 +1,6 @@
 //
 //  SectionProminentHeaderWrapper.swift
-//  Feather
+//  Zenith
 //
 //  Created by samara on 11.04.2025.
 //

@@ -1,6 +1,6 @@
 //
 //  UIImage+resize.swift
-//  feather
+//  Zenith
 //
 //  Created by samara on 8/13/24.
 //

@@ -1,6 +1,6 @@
 //
 //  View+copyable.swift
-//  Feather
+//  Zenith
 //
 //  Created by samara on 5.06.2025.
 //

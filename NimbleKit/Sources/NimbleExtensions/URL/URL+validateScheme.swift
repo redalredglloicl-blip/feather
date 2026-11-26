@@ -1,6 +1,6 @@
 //
 //  URL+scheme.swift
-//  Feather
+//  Zenith
 //
 //  Created by samara on 8.05.2025.
 //
