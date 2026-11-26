@@ -36,6 +36,7 @@ struct SigningDylibView: View {
 					.foregroundColor(.disabled())
 			}
 		}
+		.starfieldBackground()
 		.onAppear(perform: _loadDylibs)
 	}
 }

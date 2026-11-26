@@ -19310,6 +19310,23 @@
         }
       }
     },
+    "Waiting for Internet": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "متوقف مؤقتاً — بانتظار النت"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Paused — waiting for internet"
+          }
+        }
+      }
+    },
     "Signing…": {
       "extractionState": "manual",
       "localizations": {

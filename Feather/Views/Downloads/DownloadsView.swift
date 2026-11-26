@@ -243,6 +243,7 @@ struct DownloadRowView: View {
 	@State private var _timeRemaining: TimeInterval?
 	@State private var _status: DownloadStatus = .downloading
 	@State private var _isAccelerated = false
+	@State private var _isWaitingForInternet = false
 	
 	var body: some View {
 		VStack(alignment: .leading, spacing: 6) {
@@ -274,6 +275,12 @@ struct DownloadRowView: View {
 				if _status == .failed {
 					Text(.localized("Download Failed"))
 						.foregroundStyle(.red)
+				} else if _isWaitingForInternet {
+					// Zenith v2.8: auto-paused for lost internet —
+					// never a failure state. The download resumes
+					// itself when the internet returns.
+					Text(.localized("Waiting for Internet"))
+						.foregroundStyle(.secondary)
 				} else if _status == .paused {
 					Text(.localized("Paused"))
 						.foregroundStyle(.secondary)
@@ -330,6 +337,7 @@ struct DownloadRowView: View {
 		.onReceive(download.$estimatedTimeRemaining) { _timeRemaining = $0 }
 		.onReceive(download.$status) { _status = $0 }
 		.onReceive(download.$isAccelerated) { _isAccelerated = $0 }
+		.onReceive(download.$isWaitingForInternet) { _isWaitingForInternet = $0 }
 	}
 	
 	private func _formatTimeRemaining(_ interval: TimeInterval) -> String {

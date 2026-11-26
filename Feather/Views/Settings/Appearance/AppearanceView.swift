@@ -89,6 +89,7 @@ struct AppearanceView: View {
 				.pickerStyle(.inline)
 			}
 		}
+		.starfieldBackground()
 		.onChange(of: _userIntefacerStyle) { value in
 			if let style = UIUserInterfaceStyle(rawValue: value) {
 				UIApplication.topViewController()?.view.window?.overrideUserInterfaceStyle = style

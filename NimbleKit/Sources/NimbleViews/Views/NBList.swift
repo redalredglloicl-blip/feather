@@ -37,10 +37,21 @@ public struct NBList<Content>: View where Content: View {
 				Form {
 					_content
 				}
+				// Zenith v2.8: every NBList caller is a pushed
+				// sub-screen — the scroll background and the rows
+				// stay clear so the starfield each caller layers
+				// behind (`.starfieldBackground()`) shows through,
+				// exactly like the tab roots do it.
+				.scrollContentBackground(.hidden)
+				.background(Color.clear)
+				.listRowBackground(Color.clear)
 			case .list:
 				List {
 					_content
 				}
+				.scrollContentBackground(.hidden)
+				.background(Color.clear)
+				.listRowBackground(Color.clear)
 			}
 		}
 		.navigationTitle(_title)

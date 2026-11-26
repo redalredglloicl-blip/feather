@@ -18,6 +18,18 @@ enum DownloadStatus {
 	case completed
 }
 
+extension DownloadStatus {
+	/// Stable name for the active-download record persisted to disk.
+	var _persistedName: String {
+		switch self {
+		case .downloading: return "downloading"
+		case .paused: return "paused"
+		case .failed: return "failed"
+		case .completed: return "completed"
+		}
+	}
+}
+
 class Download: Identifiable, @unchecked Sendable {
 	@Published var progress: Double = 0.0
 	@Published var bytesDownloaded: Int64 = 0
@@ -31,6 +43,14 @@ class Download: Identifiable, @unchecked Sendable {
 	@Published var errorMessage: String?
 	/// True when the download runs on parallel range connections.
 	@Published var isAccelerated: Bool = false
+	
+	/// True when the download was auto-paused because the internet
+	/// dropped (or it was created while offline): it resumes itself
+	/// as soon as connectivity returns. Never set for a manual
+	/// pause — a download the user paused by hand is never
+	/// auto-resumed. Status stays `.paused` so the existing
+	/// pause/resume logic works unchanged.
+	@Published var isWaitingForInternet = false
 	
 	/// Last speed-sample point, for the throughput window in didWriteData.
 	var _speedSampleBytes: Int64 = 0
@@ -58,6 +78,12 @@ class Download: Identifiable, @unchecked Sendable {
 	/// hosts that only serve the file to the logged-in session keep
 	/// working on the retry.
 	var cookies: [HTTPCookie]?
+	
+	/// "Cookie" header value built from `cookies` at download start:
+	/// a plain string, so the browser-session cookies survive the
+	/// relaunch-restore of this download (HTTPCookie objects cannot
+	/// be persisted). `_cookieHeaderValue` prefers this when set.
+	var cookieHeader: String?
 	
 	/// True when the finished file is an app package (by extension).
 	/// Only .ipa files go through the install flow; anything else
@@ -120,6 +146,11 @@ class DownloadManager: NSObject, ObservableObject {
 	/// fileprivate (not private) so the multi-connection downloader
 	/// in this same file can attach it to its part requests too.
 	fileprivate func _cookieHeaderValue(for download: Download) -> String? {
+		// The stored header survives a relaunch-restore, where the
+		// HTTPCookie objects themselves are gone.
+		if let header = download.cookieHeader, !header.isEmpty {
+			return header
+		}
 		guard let cookies = download.cookies, !cookies.isEmpty else { return nil }
 		return HTTPCookie.requestHeaderFields(with: cookies)["Cookie"]
 	}
@@ -176,6 +207,10 @@ class DownloadManager: NSObject, ObservableObject {
 	
 	private var _session: URLSession!
 	
+	/// Combine subscriptions owned by the manager: the connectivity
+	/// watcher below and the active-download persistence sink.
+	private var _cancellables = Set<AnyCancellable>()
+	
 	#if !targetEnvironment(macCatalyst)
 	private func _updateBackgroundAudioState() {
 		if #unavailable(iOS 26.0){
@@ -193,6 +228,67 @@ class DownloadManager: NSObject, ObservableObject {
 		let configuration = URLSessionConfiguration.default
 		_session = URLSession(configuration: configuration, delegate: self, delegateQueue: nil)
 		_loadHistory()
+		
+		// Zenith v2.8: pause/resume follows connectivity. The
+		// monitor publishes on the main queue, so this runs on main.
+		// The first emission is the monitor's initial `false`
+		// (unknown) — harmless: there is nothing waiting yet, and
+		// the first real path update arrives right after start().
+		NetworkMonitor.shared.$isOffline
+			.sink { [weak self] isOffline in
+				self?._handleConnectivityChanged(isOffline: isOffline)
+			}
+			.store(in: &_cancellables)
+		
+		// Persist the active list whenever it changes (a download
+		// added, finished or cancelled), so a relaunch never loses
+		// or resurrects one. The sink's delivered array is used,
+		// not the stored property: @Published sends in willSet, so
+		// reading `downloads` inside the sink would see the list
+		// BEFORE the change. Flag/status changes save explicitly
+		// at the sites that make them.
+		$downloads
+			.sink { [weak self] downloads in self?._saveActiveDownloads(downloads) }
+			.store(in: &_cancellables)
+		
+		_restoreActiveDownloads()
+	}
+	
+	// MARK: - Connectivity pause / resume (Zenith v2.8)
+	
+	/// Connectivity changed: when the internet drops, auto-pause
+	/// every download that was actively downloading (never one the
+	/// user paused by hand); when it returns, auto-resume only the
+	/// downloads flagged waiting-for-internet.
+	private func _handleConnectivityChanged(isOffline: Bool) {
+		if isOffline {
+			for download in downloads where download.status == .downloading {
+				_pauseForConnectivity(download)
+			}
+		} else {
+			for download in downloads where download.isWaitingForInternet {
+				_resumeAfterConnectivity(download)
+			}
+		}
+	}
+	
+	/// Auto-pause for a connectivity loss: the same persistence as
+	/// a manual pause (resume data / multipart manifest), plus the
+	/// waiting flag so the download resumes itself when the
+	/// internet returns — and so a relaunch restores it as waiting
+	/// instead of losing it.
+	func _pauseForConnectivity(_ download: Download) {
+		download.isWaitingForInternet = true
+		pauseDownload(download)
+		_saveActiveDownloads()
+	}
+	
+	/// Auto-resume after connectivity returns. resumeDownload
+	/// clears the waiting flag and restarts the transport — and
+	/// re-parks the download as waiting if the internet is gone
+	/// again by the time it runs.
+	private func _resumeAfterConnectivity(_ download: Download) {
+		resumeDownload(download)
 	}
 	
 	func startDownload(
@@ -207,6 +303,9 @@ class DownloadManager: NSObject, ObservableObject {
 		
 		let download = Download(id: id, url: url)
 		download.cookies = cookies
+		if let cookies, !cookies.isEmpty {
+			download.cookieHeader = HTTPCookie.requestHeaderFields(with: cookies)["Cookie"]
+		}
 		downloads.append(download)
 		
 		#if !targetEnvironment(macCatalyst)
@@ -216,6 +315,18 @@ class DownloadManager: NSObject, ObservableObject {
 			_updateBackgroundAudioState()
 		}
 		#endif
+		
+		// Offline: park the download as waiting — no HEAD probe, no
+		// task. It starts itself when connectivity returns, and a
+		// relaunch restores it as waiting from disk (the no-internet
+		// gate blocks the app while offline, so this mainly guards
+		// the download against being lost or failed).
+		if NetworkMonitor.shared.isOffline {
+			download.isWaitingForInternet = true
+			download.status = .paused
+			_saveActiveDownloads()
+			return download
+		}
 		
 		// The transport is picked asynchronously: a HEAD request checks
 		// for Accept-Ranges + a known size, and big range-capable files
@@ -368,8 +479,23 @@ class DownloadManager: NSObject, ObservableObject {
 	}
 	
 	func resumeDownload(_ download: Download) {
+		// Offline: park as waiting — no transport until the
+		// internet returns. The connectivity watcher resumes it
+		// then; a manual resume while offline behaves the same
+		// (the user asked for the download to continue, so it
+		// continues on its own once the internet is back).
+		if NetworkMonitor.shared.isOffline {
+			download.isWaitingForInternet = true
+			download.status = .paused
+			download.errorMessage = nil
+			_saveActiveDownloads()
+			return
+		}
+		
+		download.isWaitingForInternet = false
 		download.status = .downloading
 		download.errorMessage = nil
+		_saveActiveDownloads()
 		// A transport is started below; tell the still-running HEAD
 		// probe (if any) not to start a second one.
 		download._transportStarted = true
@@ -434,14 +560,19 @@ class DownloadManager: NSObject, ObservableObject {
 	
 	/// Pauses a download, persisting resume data (single-connection) or
 	/// the per-part manifest (multi-connection) so it continues later.
+	/// A manual pause never sets the waiting flag, so it is never
+	/// auto-resumed: only the connectivity paths set the flag, and
+	/// resumeDownload clears it.
 	func pauseDownload(_ download: Download) {
 		if let multi = download.multipart {
 			multi.pause()
+			_saveActiveDownloads()
 			return
 		}
 		
 		guard let task = download.task else {
 			download.status = .paused
+			_saveActiveDownloads()
 			return
 		}
 		
@@ -452,6 +583,7 @@ class DownloadManager: NSObject, ObservableObject {
 			}
 			Task { @MainActor in
 				download.status = .paused
+				self?._saveActiveDownloads()
 			}
 		})
 	}
@@ -593,6 +725,78 @@ class DownloadManager: NSObject, ObservableObject {
 	func _deleteMultipartManifest(for id: String) {
 		try? FileManager.default.removeItem(at: ZenithMultipartDownload.manifestURL(for: id))
 		try? FileManager.default.removeItem(at: ZenithMultipartDownload.tempFileURL(for: id))
+	}
+	
+	// MARK: - Active-download persistence (relaunch restore)
+	
+	private var _activeDownloadsURL: URL {
+		FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
+			.appendingPathComponent("ZenithActiveDownloads.json")
+	}
+	
+	/// Persists the active (unfinished, non-archive) downloads so a
+	/// relaunch restores them instead of losing them. The resume
+	/// data / multipart manifest already live on disk — but the
+	/// Download object itself is in-memory only, so without this
+	/// record the download would be gone when the app restarts and
+	/// its persisted resume data orphaned. Archive downloads
+	/// (Library file-picker imports) are local files, not network
+	/// downloads, and are never restored.
+	func _saveActiveDownloads(_ list: [Download]? = nil) {
+		let records = (list ?? downloads)
+			.filter { !$0.onlyArchiving }
+			.map { download in
+				PersistedActiveDownload(
+					id: download.id,
+					urlString: download.url.absoluteString,
+					fileName: download.fileName,
+					isWaitingForInternet: download.isWaitingForInternet,
+					status: download.status._persistedName,
+					errorMessage: download.errorMessage,
+					progress: download.progress,
+					bytesDownloaded: download.bytesDownloaded,
+					totalBytes: download.totalBytes,
+					cookieHeader: download.cookieHeader
+				)
+			}
+		if let data = try? JSONEncoder().encode(records) {
+			try? data.write(to: _activeDownloadsURL, options: .atomic)
+		}
+	}
+	
+	/// Restores the downloads saved by _saveActiveDownloads: they
+	/// come back paused (waiting-for-internet when flagged), and
+	/// the connectivity watcher resumes the waiting ones as soon
+	/// as the internet is back. resumeDownload picks up the
+	/// persisted resume data / multipart manifest from disk, so a
+	/// resumed download continues from its byte counts instead of
+	/// restarting. A download killed mid-flight with no persisted
+	/// resume data restarts from zero — it is still not lost.
+	private func _restoreActiveDownloads() {
+		guard
+			let data = try? Data(contentsOf: _activeDownloadsURL),
+			let records = try? JSONDecoder().decode([PersistedActiveDownload].self, from: data)
+		else { return }
+		for record in records {
+			guard let url = URL(string: record.urlString) else { continue }
+			guard !downloads.contains(where: { $0.id == record.id }) else { continue }
+			let download = Download(id: record.id, url: url, fileName: record.fileName)
+			download.cookieHeader = record.cookieHeader
+			download.progress = record.progress
+			download.bytesDownloaded = record.bytesDownloaded
+			download.totalBytes = record.totalBytes
+			download.isWaitingForInternet = record.isWaitingForInternet
+			if record.status == "failed" {
+				download.status = .failed
+				download.errorMessage = record.errorMessage
+			} else {
+				// A download caught mid-flight (or mid-HEAD-probe)
+				// by a restart has no running transport: paused,
+				// waiting when flagged, and the watcher resumes it.
+				download.status = .paused
+			}
+			downloads.append(download)
+		}
 	}
 	
 	// MARK: - Speed probe (before big downloads)
@@ -790,10 +994,26 @@ extension DownloadManager: URLSessionDownloadDelegate {
 			_saveResumeData(resumeData, for: download.id)
 		}
 		
+		// Zenith v2.8: the internet dropped mid-download — pause and
+		// wait for it instead of failing. The resume data above is
+		// already on disk, so the auto-resume continues from the
+		// same byte counts. No failed history entry: this is not a
+		// failure, and the user must never see one for it.
+		if _isConnectivityError(error) || NetworkMonitor.shared.isOffline {
+			DispatchQueue.main.async {
+				download.isWaitingForInternet = true
+				download.status = .paused
+				download.errorMessage = nil
+				self._saveActiveDownloads()
+			}
+			return
+		}
+		
 		DispatchQueue.main.async {
 			download.status = .failed
 			download.errorMessage = error.localizedDescription
 			self._recordHistory(for: download, status: .failed)
+			self._saveActiveDownloads()
 			
 			#if !targetEnvironment(macCatalyst)
 			if #available(iOS 26.0, *) {
@@ -830,7 +1050,39 @@ struct DownloadHistoryEntry: Codable, Identifiable {
 	var localFileName: String? = nil
 }
 
+/// One active (not yet finished) download, persisted so a relaunch
+/// restores it instead of losing it. `status` is "failed" for a
+/// failed download (restored as failed, with its error message) and
+/// anything else restores as paused — a download caught
+/// mid-flight has no running transport after a restart.
+/// `cookieHeader` is the plain "Cookie" header string: it survives
+/// the restore where HTTPCookie objects cannot be persisted.
+struct PersistedActiveDownload: Codable {
+	var id: String
+	var urlString: String
+	var fileName: String
+	var isWaitingForInternet: Bool
+	var status: String
+	var errorMessage: String?
+	var progress: Double
+	var bytesDownloaded: Int64
+	var totalBytes: Int64
+	var cookieHeader: String?
+}
+
 // MARK: - Multi-connection download
+
+/// True when an error is a connectivity failure (no route to the
+/// host, or the connection dropped mid-transfer): the download
+/// must pause and wait for the internet, never fail. Used by the
+/// single-task delegate, the multi-connection parts, and the
+/// finish path, so every transport agrees on what counts.
+fileprivate func _isConnectivityError(_ error: Error) -> Bool {
+	let nsError = error as NSError
+	guard nsError.domain == NSURLErrorDomain else { return false }
+	return nsError.code == NSURLErrorNotConnectedToInternet
+		|| nsError.code == NSURLErrorNetworkConnectionLost
+}
 
 /// Persisted per-part progress of a multi-connection download, so a
 /// paused or interrupted download resumes from its parts' byte counts.
@@ -974,6 +1226,32 @@ final class ZenithMultipartDownload: @unchecked Sendable {
 		}
 	}
 	
+	/// Zenith v2.8: connectivity dropped mid-part. Stop the parts
+	/// and park the whole download as waiting-for-internet — never
+	/// fail over (the single-connection task would just fail too
+	/// with no route) and never fail the download. The manifest is
+	/// persisted here, and again by _finish, so resume continues
+	/// from the per-part byte counts.
+	func _parkAsWaitingForInternet() {
+		lock.lock()
+		if _didFailOver || _isDead {
+			lock.unlock()
+			return
+		}
+		_cancelled = true
+		let tasks = partTasks
+		lock.unlock()
+		for task in tasks {
+			task.cancel()
+		}
+		_persistManifest()
+		Task { @MainActor in
+			download.isWaitingForInternet = true
+			download.status = .paused
+		}
+		DownloadManager.shared._saveActiveDownloads()
+	}
+	
 	/// Resumes a paused download on the same object (no stale-manifest
 	/// race with a second object).
 	func resume() {
@@ -1070,8 +1348,18 @@ final class ZenithMultipartDownload: @unchecked Sendable {
 			}
 		} catch {
 			if Task.isCancelled { return }
-			// Any part failure — dropped connection, truncated byte
-			// stream, timeout — falls back to the single-connection
+			// Zenith v2.8: the internet dropped mid-part — park the
+			// whole download as waiting-for-internet instead of
+			// failing over to the single-connection task, which
+			// would just fail too with no route. The manifest is
+			// persisted, so resume continues from the per-part
+			// byte counts.
+			if _isConnectivityError(error) || NetworkMonitor.shared.isOffline {
+				_parkAsWaitingForInternet()
+				return
+			}
+			// Any other part failure — truncated byte stream,
+			// timeout — falls back to the single-connection
 			// download instead of failing the whole download. The
 			// single task is the last resort: if it fails too, the
 			// download fails honestly through its own delegate.
@@ -1114,7 +1402,10 @@ final class ZenithMultipartDownload: @unchecked Sendable {
 	
 	private func _failOverToSingleConnection() {
 		lock.lock()
-		if _didFailOver {
+		// Never fail over after a pause (manual or connectivity):
+		// the download is parked, and a single task started here
+		// would be a zombie transport behind the pause.
+		if _didFailOver || _cancelled {
 			lock.unlock()
 			return
 		}
@@ -1144,6 +1435,16 @@ final class ZenithMultipartDownload: @unchecked Sendable {
 		
 		if let error = _failedError {
 			_persistManifest()
+			// Zenith v2.8: a connectivity error surfacing here
+			// parks the download as waiting, never fails it.
+			if _isConnectivityError(error) || NetworkMonitor.shared.isOffline {
+				await MainActor.run {
+					download.isWaitingForInternet = true
+					download.status = .paused
+				}
+				DownloadManager.shared._saveActiveDownloads()
+				return
+			}
 			await MainActor.run {
 				download.status = .failed
 				download.errorMessage = error.localizedDescription
@@ -1151,6 +1452,7 @@ final class ZenithMultipartDownload: @unchecked Sendable {
 			await MainActor.run {
 				DownloadManager.shared._recordHistory(for: download, status: .failed)
 			}
+			DownloadManager.shared._saveActiveDownloads()
 			return
 		}
 		
@@ -1158,7 +1460,13 @@ final class ZenithMultipartDownload: @unchecked Sendable {
 			// Every part ended without an error, but the file is
 			// short (the server closed a stream early): fall back
 			// to the single-connection download instead of stalling
-			// forever on a download that can never complete.
+			// forever on a download that can never complete — unless
+			// the internet is gone, in which case park as waiting:
+			// a single task started now would just fail too.
+			if NetworkMonitor.shared.isOffline {
+				_parkAsWaitingForInternet()
+				return
+			}
 			_failOverToSingleConnection()
 			return
 		}
@@ -1192,6 +1500,7 @@ final class ZenithMultipartDownload: @unchecked Sendable {
 				download.status = .failed
 				download.errorMessage = error.localizedDescription
 				DownloadManager.shared._recordHistory(for: download, status: .failed)
+				DownloadManager.shared._saveActiveDownloads()
 			}
 		}
 	}

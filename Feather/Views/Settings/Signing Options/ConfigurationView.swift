@@ -37,6 +37,7 @@ struct ConfigurationView: View {
 			}
 			SigningOptionsView(options: $_optionsManager.options)
 		}
+		.starfieldBackground()
 		.toolbar {
 			NBToolbarMenu(
 				systemImage: "character.textbox",

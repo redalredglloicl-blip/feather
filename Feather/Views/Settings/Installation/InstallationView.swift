@@ -37,6 +37,7 @@ struct InstallationView: View {
 				TunnelView()
 			}
 		}
+		.starfieldBackground()
 		.onChange(of: _installationMethod) { newValue in
 			guard newValue == 1 else { return }
 			_showMethodChangedAlert = true

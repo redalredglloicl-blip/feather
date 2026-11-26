@@ -79,6 +79,12 @@ struct AppleIDSignInView: View {
 					}
 				}
 			}
+			// Zenith v2.8: stars on every pushed sub-screen — the
+			// starfield sits behind this form, same as the tab roots.
+			.scrollContentBackground(.hidden)
+			.background(Color.clear)
+			.starfieldBackground()
+			.listRowBackground(Color.clear)
 			.toolbar {
 				NBToolbarButton(
 					.localized("Cancel"),
@@ -169,6 +175,11 @@ struct AppleIDSignInView: View {
 					Text(.localized("Revoking deletes the oldest certificate from your Apple ID. Apps signed with it stop working."))
 				}
 			}
+			// Zenith v2.8: stars on this sheet too.
+			.scrollContentBackground(.hidden)
+			.background(Color.clear)
+			.starfieldBackground()
+			.listRowBackground(Color.clear)
 		}
 	}
 }

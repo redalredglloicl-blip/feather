@@ -19,6 +19,7 @@ struct ResetView: View {
 			_coredata()
 			_all()
 		}
+		.starfieldBackground()
 	}
 	
 	private func _cacheSize() -> String {

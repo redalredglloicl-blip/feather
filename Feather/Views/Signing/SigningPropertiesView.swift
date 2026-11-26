@@ -28,6 +28,7 @@ struct SigningPropertiesView: View {
 			TextField(initialValue, text: $text)
 				.textInputAutocapitalization(.none)
 		}
+		.starfieldBackground()
 		.toolbar {
 			NBToolbarButton(
 				.localized("Save"),

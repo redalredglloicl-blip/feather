@@ -48,6 +48,7 @@ struct SigningTweaksView: View {
 				}
 			}
 		}
+		.starfieldBackground()
 		.toolbar {
 			NBToolbarButton(
 				systemImage: "plus",

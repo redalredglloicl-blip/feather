@@ -21,6 +21,7 @@ struct CertificatesInfoEntitlementView: View {
 				}
 			}
 		}
+		.starfieldBackground()
 		.listStyle(.grouped)
 	}
 }

@@ -58,6 +58,7 @@ struct SigningFrameworksView: View {
 			}
 			.disabled(options == nil)
 		}
+		.starfieldBackground()
 		.onAppear(perform: _listFrameworksAndPlugins)
 	}
 }

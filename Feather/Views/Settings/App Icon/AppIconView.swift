@@ -62,6 +62,7 @@ struct AppIconView: View {
 				}
 			}
 		}
+		.starfieldBackground()
 		.onAppear {
 			currentIcon = UIApplication.shared.alternateIconName
 		}

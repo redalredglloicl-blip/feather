@@ -26,6 +26,7 @@ struct ConfigurationDictView: View {
 				}
 			}
 		}
+		.starfieldBackground()
 		.toolbar {
 			NBToolbarButton(
 				systemImage: "plus",

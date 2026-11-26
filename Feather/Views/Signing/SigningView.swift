@@ -104,6 +104,12 @@ struct SigningView: View {
 					.frame(height: 30)
 					.listRowBackground(EmptyView())
 			}
+			// Zenith v2.8: stars on every pushed sub-screen — the
+			// starfield sits behind this form, same as the tab roots.
+			.scrollContentBackground(.hidden)
+			.background(Color.clear)
+			.starfieldBackground()
+			.listRowBackground(Color.clear)
 			.overlay { _bottomBar }
 
 			.toolbar {
@@ -284,6 +290,11 @@ extension SigningView {
 					options: $_temporaryOptions,
 					temporaryOptions: _optionsManager.options
 				)}
+				// Zenith v2.8: stars on this pushed screen too.
+				.scrollContentBackground(.hidden)
+				.background(Color.clear)
+				.starfieldBackground()
+				.listRowBackground(Color.clear)
 				.navigationTitle(.localized("Properties"))
 			}
 		}

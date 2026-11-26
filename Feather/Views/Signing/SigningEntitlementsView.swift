@@ -32,6 +32,7 @@ struct SigningEntitlementsView: View {
 				}
 			}
 		}
+		.starfieldBackground()
 		.sheet(isPresented: $_isAddingPresenting) {
 			FileImporterRepresentableView(
 				allowedContentTypes:  [.xmlPropertyList, .plist, .entitlements],

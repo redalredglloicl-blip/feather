@@ -40,6 +40,12 @@ struct CertificatesInfoView: View {
 					}
 				}
 			}
+			// Zenith v2.8: stars on every pushed sub-screen — the
+			// starfield sits behind this form, same as the tab roots.
+			.scrollContentBackground(.hidden)
+			.background(Color.clear)
+			.starfieldBackground()
+			.listRowBackground(Color.clear)
 			.toolbar {
 				NBToolbarButton(role: .close)
 			}

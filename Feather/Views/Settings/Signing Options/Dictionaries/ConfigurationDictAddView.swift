@@ -31,6 +31,7 @@ struct ConfigurationDictAddView: View {
 			}
 			.autocapitalization(.none)
 		}
+		.starfieldBackground()
 		.toolbar {
 			NBToolbarButton(
 				.localized("Save"),
