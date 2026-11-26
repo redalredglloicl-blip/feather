@@ -1,10 +1,10 @@
 //
 //  Server.swift
-//  feather
+//  zenith
 //
 //  Created by samara on 22.08.2024.
 //  Copyright © 2024 Lakr Aream. All Rights Reserved.
-//  ORIGINALLY LICENSED UNDER GPL-3.0, MODIFIED FOR USE FOR FEATHER
+//  ORIGINALLY LICENSED UNDER GPL-3.0, MODIFIED FOR USE FOR ZENITH
 //
 
 import Foundation
@@ -102,10 +102,10 @@ class ServerInstaller: Identifiable, ObservableObject {
 	}
 		
 	func getServerMethod() -> Int {
-		UserDefaults.standard.integer(forKey: "Feather.serverMethod")
+		UserDefaults.standard.integer(forKey: "Zenith.serverMethod")
 	}
 	
 	func getIPFix() -> Bool {
-		UserDefaults.standard.bool(forKey: "Feather.ipFix")
+		UserDefaults.standard.bool(forKey: "Zenith.ipFix")
 	}
 }

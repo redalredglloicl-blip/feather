@@ -1,6 +1,6 @@
 //
 //  AppDataModel.swift
-//  Feather
+//  Zenith
 //
 //  Created by samara on 22.04.2025.
 //

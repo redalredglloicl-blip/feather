@@ -1,7 +1,7 @@
 
 //
 //  ForcedUpdateManager.swift
-//  Feather
+//  Zenith
 //
 //  Zenith forced update + anti-tamper (v2, Phase 5).
 //

@@ -1,6 +1,6 @@
 //
 //  RenewCertificateIntent.swift
-//  Feather
+//  Zenith
 //
 //  Zenith v2.2 — Siri Shortcut "جدّد الشهادة" (Renew Certificate).
 //

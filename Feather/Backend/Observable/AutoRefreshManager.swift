@@ -1,10 +1,10 @@
 
 //
 //  AutoRefreshManager.swift
-//  Feather
+//  Zenith
 //
 //  Background auto-refresh, modelled on SideStore's approach and adapted
-//  to what Feather already has:
+//  to what Zenith already has:
 //
 //  * Due apps: signed apps whose certificate expires within 3 days
 //    (free certificates last 7 days, so refresh every few days —
@@ -38,7 +38,7 @@
 //
 //  Honest limits: none of this has run on a real device from this
 //  workspace. The background task, the re-sign swap and self-refresh
-//  are only proven by a real build + device test (see FEATHER_MOD_PLAN.md §6).
+//  are only proven by a real build + device test (see ZENITH_MOD_PLAN.md §6).
 
 import Foundation
 import BackgroundTasks
@@ -215,8 +215,8 @@ final class AutoRefreshManager {
 		
 		// The server install path refuses self-install by design
 		// (InstallPreviewView); only the AFC pairing path can install
-		// Feather over itself, and it needs a pairing file + VPN.
-		guard UserDefaults.standard.integer(forKey: "Feather.installationMethod") == 1 else {
+		// Zenith over itself, and it needs a pairing file + VPN.
+		guard UserDefaults.standard.integer(forKey: "Zenith.installationMethod") == 1 else {
 			return .ipaReady(ipaURL)
 		}
 		
@@ -242,7 +242,7 @@ final class AutoRefreshManager {
 	/// which used to fail with "The saved Apple ID session expired.
 	/// Sign in again." even though no session was ever required.
 	private func _certificateForResigning() async throws -> CertificatePair {
-		let selectedIndex = UserDefaults.standard.integer(forKey: "feather.selectedCert")
+		let selectedIndex = UserDefaults.standard.integer(forKey: "zenith.selectedCert")
 		guard let current = Storage.shared.getCertificate(for: selectedIndex) else {
 			throw AutoRefreshError.noCertificate
 		}
@@ -292,7 +292,7 @@ final class AutoRefreshManager {
 		handler.appCertificate = cert
 		do {
 			// File + signing work off the main actor, like the manual
-			// Sign button (FR.signPackageFile uses Task.detached).
+			// Sign button (Zenith.signPackageFile uses Task.detached).
 			try await Task.detached {
 				try await handler.copy()
 				try await handler.modify()
@@ -319,7 +319,7 @@ final class AutoRefreshManager {
 		else {
 			throw AutoRefreshError.resignFailed(
 				appName: app.name ?? "",
-				underlying: NSError(domain: "Feather.AutoRefresh", code: 1, userInfo: [
+				underlying: NSError(domain: "Zenith.AutoRefresh", code: 1, userInfo: [
 					NSLocalizedDescriptionKey: "Signed bundle not found after re-signing."
 				])
 			)
@@ -345,7 +345,7 @@ final class AutoRefreshManager {
 	private func _prepareSelfRefreshIPA(with cert: CertificatePair) async throws -> URL {
 		let fileManager = FileManager.default
 		let workDir = fileManager.temporaryDirectory
-			.appendingPathComponent("FeatherSelfRefresh_\(UUID().uuidString)", isDirectory: true)
+			.appendingPathComponent("ZenithSelfRefresh_\(UUID().uuidString)", isDirectory: true)
 		let payloadDir = workDir.appendingPathComponent("Payload", isDirectory: true)
 		let appCopy = payloadDir.appendingPathComponent(Bundle.main.bundleURL.lastPathComponent)
 		
@@ -359,8 +359,8 @@ final class AutoRefreshManager {
 			throw error
 		}
 		
-		let zipURL = workDir.appendingPathComponent("Feather.zip")
-		let ipaURL = workDir.appendingPathComponent("Feather.ipa")
+		let zipURL = workDir.appendingPathComponent("Zenith.zip")
+		let ipaURL = workDir.appendingPathComponent("Zenith.ipa")
 		try await Zip.zipFiles(
 			paths: [payloadDir],
 			zipFilePath: zipURL,
@@ -372,7 +372,7 @@ final class AutoRefreshManager {
 		
 		let version = Bundle.main.version
 		let dest = fileManager.archives.appendingPathComponent(
-			"Feather_\(version)_\(Int(Date().timeIntervalSince1970)).ipa"
+			"Zenith_\(version)_\(Int(Date().timeIntervalSince1970)).ipa"
 		)
 		try fileManager.createDirectoryIfNeeded(at: fileManager.archives)
 		try? fileManager.moveItem(at: ipaURL, to: dest)

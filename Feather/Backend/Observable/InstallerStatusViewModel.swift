@@ -1,6 +1,6 @@
 //
 //  StatusViewModel.swift
-//  Feather
+//  Zenith
 //
 //  Created by samara on 24.04.2025.
 //

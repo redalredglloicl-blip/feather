@@ -1167,7 +1167,7 @@
         "cs": {
           "stringUnit": {
             "state": "needs_review",
-            "value": "Všechny soubory Featheru jsou v složce Dokumenty, zde jsou na ně rychlé odkazy."
+            "value": "Všechny soubory Zenithu jsou v složce Dokumenty, zde jsou na ně rychlé odkazy."
           }
         },
         "de": {
@@ -1185,7 +1185,7 @@
         "id": {
           "stringUnit": {
             "state": "needs_review",
-            "value": "Semua berkas Feather berada di direktori dokumen, berikut beberapa tautan cepat ke berkas-berkas tersebut."
+            "value": "Semua berkas Zenith berada di direktori dokumen, berikut beberapa tautan cepat ke berkas-berkas tersebut."
           }
         },
         "it": {
@@ -1203,7 +1203,7 @@
         "pl": {
           "stringUnit": {
             "state": "translated",
-            "value": "Wszystkie pliki Feather znajdują się w katalogu dokumentów, oto szybkie odnośniki do nich."
+            "value": "Wszystkie pliki Zenith znajdują się w katalogu dokumentów, oto szybkie odnośniki do nich."
           }
         },
         "tr": {
@@ -1215,7 +1215,7 @@
         "vi": {
           "stringUnit": {
             "state": "translated",
-            "value": "Tất cả các file của Feather có thể được tìm thấy trong ứng dụng Tệp, đây là một số liên kết nhanh đến chúng."
+            "value": "Tất cả các file của Zenith có thể được tìm thấy trong ứng dụng Tệp, đây là một số liên kết nhanh đến chúng."
           }
         },
         "zh-Hans": {
@@ -4783,66 +4783,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "为了保护你的Apple ID不被Apple标记，启用保护后，你的包标识符后面会被加入随机的字符串。如果你使用签名服务则可以忽略。"
-          }
-        }
-      }
-    },
-    "Enjoying %@?": {
-      "comment": "Enjoying Feather?",
-      "extractionState": "manual",
-      "localizations": {
-        "ar": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "عاجبك %@؟"
-          }
-        },
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Gefällt dir %@?"
-          }
-        },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Enjoying %@?"
-          }
-        },
-        "it": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Ti sta piacendo %@?"
-          }
-        },
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%@를 즐기시고 있나요?"
-          }
-        },
-        "pl": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Podoba Ci się %@?"
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%@’ı Beğeniyor Musunuz?"
-          }
-        },
-        "vi": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Tận hưởng %@?"
-          }
-        },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "感觉%@怎么样？"
           }
         }
       }
@@ -10876,65 +10816,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "打开文档目录"
-          }
-        }
-      }
-    },
-    "Open an [issue](https://github.com/khcrysalis/Feather/issues) on GitHub if you want your source to be featured.": {
-      "extractionState": "manual",
-      "localizations": {
-        "ar": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "افتح [issues](https://github.com/khcrysalis/Feather/issues) على GitHub إذا تريد مصدرك يتميّز."
-          }
-        },
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Erstelle ein [Issue](https://github.com/khcrysalis/Feather/issues) auf GitHub wenn du deine Quelle aufgelistet haben möchtest."
-          }
-        },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Open an [issue](https://github.com/khcrysalis/Feather/issues) on GitHub if you want your source to be featured."
-          }
-        },
-        "it": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Apri un [problema](https://github.com/khcrysalis/Feather/issues) su GitHub se vuoi che la tua fonte sia consigliata."
-          }
-        },
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "소스가 소개되기를 원하신다면 GitHub에서 [이슈](https://github.com/khcrysalis/Feather/issues)를 등록해 주세요."
-          }
-        },
-        "pl": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Otwórz [issue](https://github.com/khcrysalis/Feather/issues) na GitHubie, jeśli chcesz, aby Twoje źródło zostało wyróżnione."
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Kaynağınızın öne çıkarılmasını istiyorsanız GitHub’da bir [sorun kaydı](https://github.com/khcrysalis/Feather/issues) açın."
-          }
-        },
-        "vi": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Mở [issue](https://github.com/khcrysalis/Feather/issues) trên GitHub nếu bạn muốn nguồn của mình được giới thiệu."
-          }
-        },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "开启一个[issue](https://github.com/khcrysalis/Feather/issues)"
           }
         }
       }

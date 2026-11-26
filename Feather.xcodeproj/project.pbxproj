@@ -19,16 +19,16 @@
 		3349E7672DEFB46F00E317ED /* IDeviceSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 3349E7662DEFB46F00E317ED /* IDeviceSwift */; };
 		3371F7322DA9ECDD00281AC6 /* Zip in Frameworks */ = {isa = PBXBuildFile; productRef = 3371F7312DA9ECDD00281AC6 /* Zip */; };
 		33CF13392DB5ACFB0021D4C5 /* SWCompression in Frameworks */ = {isa = PBXBuildFile; productRef = 33CF13382DB5ACFB0021D4C5 /* SWCompression */; };
-		570920BE2F98A4F0008C4A83 /* Feather.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 570920BD2F98A4F0008C4A83 /* Feather.xcconfig */; };
+		570920BE2F98A4F0008C4A83 /* Zenith.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 570920BD2F98A4F0008C4A83 /* Zenith.xcconfig */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		3379C1B92DA869A1004372DA /* Feather.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Feather.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		570920BD2F98A4F0008C4A83 /* Feather.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Feather.xcconfig; sourceTree = "<group>"; };
+		3379C1B92DA869A1004372DA /* Zenith.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Zenith.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		570920BD2F98A4F0008C4A83 /* Zenith.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Zenith.xcconfig; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
-		3371F6492DA92A1800281AC6 /* Exceptions for "Feather" folder in "Feather" target */ = {
+		3371F6492DA92A1800281AC6 /* Exceptions for "Feather" folder in "Zenith" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Resources/ellekit.deb,
@@ -55,27 +55,34 @@
 				Views/Sources/SourcesCellView.swift,
 				Views/Sources/SourcesView.swift,
 				Views/Sources/SourcesViewModel.swift,
+				FeatherApp.swift,
+				Resources/feather_extension.png,
+				Resources/AppIcon.icon/Assets/feather.png,
+				"Resources/AppIcon.icon/Assets/feather 5.png",
 			);
-			target = 3379C1B82DA869A1004372DA /* Feather */;
+			target = 3379C1B82DA869A1004372DA /* Zenith */;
 		};
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet section */
-		33CF134C2DB5B9BC0021D4C5 /* Exceptions for "Feather" folder in "Copy Bundle Resources" phase from "Feather" target */ = {
+		33CF134C2DB5B9BC0021D4C5 /* Exceptions for "Feather" folder in "Copy Bundle Resources" phase from "Zenith" target */ = {
 			isa = PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet;
 			buildPhase = 3379C1B72DA869A1004372DA /* Resources */;
 			membershipExceptions = (
 				Resources/ellekit.deb,
+				Resources/feather_extension.png,
+				Resources/AppIcon.icon/Assets/feather.png,
+				"Resources/AppIcon.icon/Assets/feather 5.png",
 			);
 		};
 /* End PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
-		3379C1BB2DA869A1004372DA /* Feather */ = {
+		3379C1BB2DA869A1004372DA /* Zenith */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
-				3371F6492DA92A1800281AC6 /* Exceptions for "Feather" folder in "Feather" target */,
-				33CF134C2DB5B9BC0021D4C5 /* Exceptions for "Feather" folder in "Copy Bundle Resources" phase from "Feather" target */,
+				3371F6492DA92A1800281AC6 /* Exceptions for "Feather" folder in "Zenith" target */,
+				33CF134C2DB5B9BC0021D4C5 /* Exceptions for "Feather" folder in "Copy Bundle Resources" phase from "Zenith" target */,
 			);
 			path = Feather;
 			sourceTree = "<group>";
@@ -115,17 +122,17 @@
 		3379C1B02DA869A1004372DA = {
 			isa = PBXGroup;
 			children = (
-				3379C1BB2DA869A1004372DA /* Feather */,
+				3379C1BB2DA869A1004372DA /* Zenith */,
 				3371F7302DA9ECDD00281AC6 /* Frameworks */,
 				3379C1BA2DA869A1004372DA /* Products */,
-				570920BD2F98A4F0008C4A83 /* Feather.xcconfig */,
+				570920BD2F98A4F0008C4A83 /* Zenith.xcconfig */,
 			);
 			sourceTree = "<group>";
 		};
 		3379C1BA2DA869A1004372DA /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				3379C1B92DA869A1004372DA /* Feather.app */,
+				3379C1B92DA869A1004372DA /* Zenith.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -133,9 +140,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		3379C1B82DA869A1004372DA /* Feather */ = {
+		3379C1B82DA869A1004372DA /* Zenith */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 3379C1CD2DA869A3004372DA /* Build configuration list for PBXNativeTarget "Feather" */;
+			buildConfigurationList = 3379C1CD2DA869A3004372DA /* Build configuration list for PBXNativeTarget "Zenith" */;
 			buildPhases = (
 				3379C1B52DA869A1004372DA /* Sources */,
 				3379C1B62DA869A1004372DA /* Frameworks */,
@@ -146,9 +153,9 @@
 			dependencies = (
 			);
 			fileSystemSynchronizedGroups = (
-				3379C1BB2DA869A1004372DA /* Feather */,
+				3379C1BB2DA869A1004372DA /* Zenith */,
 			);
-			name = Feather;
+			name = Zenith;
 			packageProductDependencies = (
 				3371F7312DA9ECDD00281AC6 /* Zip */,
 				33CF13382DB5ACFB0021D4C5 /* SWCompression */,
@@ -163,8 +170,8 @@
 				3346F8482DC6D64800C7D508 /* NimbleJSON */,
 				3349E7662DEFB46F00E317ED /* IDeviceSwift */,
 			);
-			productName = Feather;
-			productReference = 3379C1B92DA869A1004372DA /* Feather.app */;
+			productName = Zenith;
+			productReference = 3379C1B92DA869A1004372DA /* Zenith.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -183,7 +190,7 @@
 					};
 				};
 			};
-			buildConfigurationList = 3379C1B42DA869A1004372DA /* Build configuration list for PBXProject "Feather" */;
+			buildConfigurationList = 3379C1B42DA869A1004372DA /* Build configuration list for PBXProject "Zenith" */;
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
@@ -218,7 +225,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				3379C1B82DA869A1004372DA /* Feather */,
+				3379C1B82DA869A1004372DA /* Zenith */,
 			);
 		};
 /* End PBXProject section */
@@ -228,7 +235,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				570920BE2F98A4F0008C4A83 /* Feather.xcconfig in Resources */,
+				570920BE2F98A4F0008C4A83 /* Zenith.xcconfig in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -247,7 +254,7 @@
 /* Begin XCBuildConfiguration section */
 		3379C1CB2DA869A3004372DA /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 570920BD2F98A4F0008C4A83 /* Feather.xcconfig */;
+			baseConfigurationReference = 570920BD2F98A4F0008C4A83 /* Zenith.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
@@ -311,7 +318,7 @@
 		};
 		3379C1CC2DA869A3004372DA /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 570920BD2F98A4F0008C4A83 /* Feather.xcconfig */;
+			baseConfigurationReference = 570920BD2F98A4F0008C4A83 /* Zenith.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
@@ -367,13 +374,13 @@
 		};
 		3379C1CE2DA869A3004372DA /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 570920BD2F98A4F0008C4A83 /* Feather.xcconfig */;
+			baseConfigurationReference = 570920BD2F98A4F0008C4A83 /* Zenith.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = "";
 				CLANG_CXX_LANGUAGE_STANDARD = "compiler-default";
 				CLANG_ENABLE_MODULES = YES;
-				CODE_SIGN_ENTITLEMENTS = "Feather/Supporting Files/Feather.entitlements";
+				CODE_SIGN_ENTITLEMENTS = "Feather/Supporting Files/Zenith.entitlements";
 				CODE_SIGN_IDENTITY = "";
 				CODE_SIGN_STYLE = Manual;
 				COMPRESS_PNG_FILES = NO;
@@ -410,9 +417,9 @@
 					"$(PROJECT_DIR)/Feather/Resources/idevice",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 15.2;
-				FEATHER_PROJECT_VERSION = 2.3;
-				MARKETING_VERSION = "$(FEATHER_PROJECT_VERSION)-debug";
-				PRODUCT_BUNDLE_IDENTIFIER = "$(FEATHER_PRODUCT_BUNDLE_IDENTIFIER)$(FEATHER_DISAMBIGUATOR)";
+				ZENITH_PROJECT_VERSION = 2.3;
+				MARKETING_VERSION = "$(ZENITH_PROJECT_VERSION)-debug";
+				PRODUCT_BUNDLE_IDENTIFIER = "$(ZENITH_PRODUCT_BUNDLE_IDENTIFIER)$(ZENITH_DISAMBIGUATOR)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SDKROOT = auto;
@@ -423,7 +430,7 @@
 				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
 				SWIFT_EMIT_LOC_STRINGS = NO;
-				SWIFT_OBJC_BRIDGING_HEADER = "Feather/Supporting Files/Feather-Bridging-Header.h";
+				SWIFT_OBJC_BRIDGING_HEADER = "Feather/Supporting Files/Zenith-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -434,13 +441,13 @@
 		};
 		3379C1CF2DA869A3004372DA /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 570920BD2F98A4F0008C4A83 /* Feather.xcconfig */;
+			baseConfigurationReference = 570920BD2F98A4F0008C4A83 /* Zenith.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = "";
 				CLANG_CXX_LANGUAGE_STANDARD = "compiler-default";
 				CLANG_ENABLE_MODULES = YES;
-				CODE_SIGN_ENTITLEMENTS = "Feather/Supporting Files/Feather.entitlements";
+				CODE_SIGN_ENTITLEMENTS = "Feather/Supporting Files/Zenith.entitlements";
 				CODE_SIGN_IDENTITY = "";
 				CODE_SIGN_STYLE = Manual;
 				COMPRESS_PNG_FILES = NO;
@@ -476,9 +483,9 @@
 					"$(PROJECT_DIR)/Feather/Resources/idevice",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 15.2;
-				FEATHER_PROJECT_VERSION = 2.3;
-				MARKETING_VERSION = "$(FEATHER_PROJECT_VERSION)";
-				PRODUCT_BUNDLE_IDENTIFIER = "$(FEATHER_PRODUCT_BUNDLE_IDENTIFIER)";
+				ZENITH_PROJECT_VERSION = 2.3;
+				MARKETING_VERSION = "$(ZENITH_PROJECT_VERSION)";
+				PRODUCT_BUNDLE_IDENTIFIER = "$(ZENITH_PRODUCT_BUNDLE_IDENTIFIER)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SDKROOT = auto;
@@ -489,7 +496,7 @@
 				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "";
 				SWIFT_EMIT_LOC_STRINGS = NO;
-				SWIFT_OBJC_BRIDGING_HEADER = "Feather/Supporting Files/Feather-Bridging-Header.h";
+				SWIFT_OBJC_BRIDGING_HEADER = "Feather/Supporting Files/Zenith-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TVOS_DEPLOYMENT_TARGET = 16.0;
@@ -500,7 +507,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		3379C1B42DA869A1004372DA /* Build configuration list for PBXProject "Feather" */ = {
+		3379C1B42DA869A1004372DA /* Build configuration list for PBXProject "Zenith" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				3379C1CB2DA869A3004372DA /* Debug */,
@@ -509,7 +516,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		3379C1CD2DA869A3004372DA /* Build configuration list for PBXNativeTarget "Feather" */ = {
+		3379C1CD2DA869A3004372DA /* Build configuration list for PBXNativeTarget "Zenith" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				3379C1CE2DA869A3004372DA /* Debug */,

@@ -1,6 +1,6 @@
 //
 //  CertificateHealthChecker.swift
-//  Feather
+//  Zenith
 //
 //  Zenith v2.3: certificate health is decided LOCALLY first, from the
 //  certificate files themselves — never from the network.

@@ -1,6 +1,6 @@
 //
 //  enum.swift
-//  Feather
+//  Zenith
 //
 //  Created by samara on 3.05.2025.
 //
@@ -178,7 +178,7 @@ class DownloadManager: NSObject, ObservableObject {
 		
 		do {
 			let tempDirectory = FileManager.default.temporaryDirectory
-			let customTempDir = tempDirectory.appendingPathComponent("FeatherDownloads", isDirectory: true)
+			let customTempDir = tempDirectory.appendingPathComponent("ZenithDownloads", isDirectory: true)
 			try FileManager.default.createDirectoryIfNeeded(at: customTempDir)
 			let destinationURL = customTempDir.appendingPathComponent(download.fileName)
 			try FileManager.default.removeFileIfNeeded(at: destinationURL)
@@ -395,7 +395,7 @@ class DownloadManager: NSObject, ObservableObject {
 	}
 	
 	func isManualDownload(_ string: String) -> Bool {
-		return string.contains("FeatherManualDownload")
+		return string.contains("ZenithManualDownload")
 	}
 	
 	func getDownload(by id: String) -> Download? {
@@ -452,7 +452,7 @@ class DownloadManager: NSObject, ObservableObject {
 	/// Retry a history entry: starts a fresh download of the same URL.
 	func retryHistoryEntry(_ entry: DownloadHistoryEntry) {
 		guard let url = URL(string: entry.urlString) else { return }
-		_ = startDownload(from: url, id: "FeatherManualDownload_\(UUID().uuidString)")
+		_ = startDownload(from: url, id: "ZenithManualDownload_\(UUID().uuidString)")
 	}
 	
 	// MARK: - Resume data persistence (single-connection)
@@ -541,7 +541,7 @@ class DownloadManager: NSObject, ObservableObject {
 extension DownloadManager: URLSessionDownloadDelegate {
 	
 	func handlePachageFile(url: URL, dl: Download) throws {
-		FR.handlePackageFile(url, download: dl) { err in
+		Zenith.handlePackageFile(url, download: dl) { err in
 			if err != nil {
 				let generator = UINotificationFeedbackGenerator()
 				generator.notificationOccurred(.error)
@@ -598,7 +598,7 @@ extension DownloadManager: URLSessionDownloadDelegate {
 		}
 		
 		let tempDirectory = FileManager.default.temporaryDirectory
-		let customTempDir = tempDirectory.appendingPathComponent("FeatherDownloads", isDirectory: true)
+		let customTempDir = tempDirectory.appendingPathComponent("ZenithDownloads", isDirectory: true)
 		
 		do {
 			try FileManager.default.createDirectoryIfNeeded(at: customTempDir)
@@ -1044,7 +1044,7 @@ final class ZenithMultipartDownload: @unchecked Sendable {
 		lock.unlock()
 		
 		let customTempDir = FileManager.default.temporaryDirectory
-			.appendingPathComponent("FeatherDownloads", isDirectory: true)
+			.appendingPathComponent("ZenithDownloads", isDirectory: true)
 		do {
 			try FileManager.default.createDirectoryIfNeeded(at: customTempDir)
 			let destinationURL = customTempDir.appendingPathComponent(download.fileName)

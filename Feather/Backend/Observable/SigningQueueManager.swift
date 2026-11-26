@@ -1,9 +1,9 @@
 //
 //  SigningQueueManager.swift
-//  Feather
+//  Zenith
 //
 //  Zenith v2.2 — batch signing queue: signs several IPAs one after
-//  another through the existing FR.signPackageFile entry point. No
+//  another through the existing Zenith.signPackageFile entry point. No
 //  signing engine code lives here — this only sequences the calls and
 //  tracks each item's real status.
 
@@ -111,7 +111,7 @@ final class SigningQueueManager: ObservableObject {
 	/// overall count — never a made-up %.
 	private func _sign(_ app: any AppInfoPresentable) async -> Error? {
 		await withCheckedContinuation { continuation in
-			FR.signPackageFile(
+			Zenith.signPackageFile(
 				app,
 				using: OptionsManager.shared.options,
 				icon: nil,

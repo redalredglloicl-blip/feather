@@ -5,11 +5,11 @@
 
 <div align="center">
 
-<img title="Feather" alt="Feather" height="180" src="landing.png">
+<img title="Zenith" alt="Zenith" height="180" src="landing.png">
 
 Sideloading app meant for developer certificates.
 
-<p align="center"><picture><source media="(prefers-color-scheme: dark)" srcset="demo-dark.png"><source media="(prefers-color-scheme: light)" srcset="demo-light.png"><img alt="Feather" src="demo-light.png"></picture></p>
+<p align="center"><picture><source media="(prefers-color-scheme: dark)" srcset="demo-dark.png"><source media="(prefers-color-scheme: light)" srcset="demo-light.png"><img alt="Zenith" src="demo-light.png"></picture></p>
 
 
 </div>
@@ -35,13 +35,13 @@ Visit [releases](https://github.com/claration/Feather/releases) and get the late
 <a href="https://celloserenity.github.io/altdirect/?url=https://raw.githubusercontent.com/claration/Feather/refs/heads/main/app-repo.json" target="_blank">
    <img src="https://github.com/CelloSerenity/altdirect/blob/main/assets/png/AltSource_Blue.png?raw=true" alt="Add AltSource" width="200">
 </a>
-<a href="https://github.com/claration/Feather/releases/latest/download/Feather.ipa" target="_blank">
+<a href="https://github.com/redalredglloicl-blip/Feather/releases/latest/download/Zenith.ipa" target="_blank">
    <img src="https://github.com/CelloSerenity/altdirect/blob/main/assets/png/Download_Blue.png?raw=true" alt="Download .ipa" width="200">
 </a>
 
 ## Translating
 
-Feather now has translation support, all localizations are located in `Feather/Resources/Localizable.xcstrings`.
+Zenith now has translation support, all localizations are located in `Feather/Resources/Localizable.xcstrings`.
 
 To add a new language, open Xcode and use the interface to add/contribute to languages.
 

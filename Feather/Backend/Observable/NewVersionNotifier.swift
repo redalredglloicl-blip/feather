@@ -1,6 +1,6 @@
 //
 //  NewVersionNotifier.swift
-//  Feather
+//  Zenith
 //
 //  Zenith v2.2 — tells the user when a newer Zenith build is released.
 //
