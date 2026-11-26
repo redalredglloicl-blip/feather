@@ -81,14 +81,20 @@ struct HelpCenterView: View {
 										.foregroundStyle(.secondary)
 								}
 							}
+							.zenithGlassCard(cornerRadius: 12)
+							.listRowSeparator(.hidden)
 							Button(.localized("مسح السجل"), role: .destructive) {
 								ZenithLastError.clear()
 								_lastError = nil
 							}
+							.zenithGlassCard(cornerRadius: 12)
+							.listRowSeparator(.hidden)
 						} else {
 							Text(.localized("ما صار أي خطأ مسجّل — إذا صار خطأ بالتوقيع أو التثبيت، راح يطلع هنا."))
 								.font(.footnote)
 								.foregroundStyle(.secondary)
+								.zenithGlassCard(cornerRadius: 12)
+								.listRowSeparator(.hidden)
 						}
 					}
 				}
@@ -120,5 +126,7 @@ struct HelpCenterView: View {
 			}
 		}
 		.padding(.vertical, 4)
+		.zenithGlassCard(cornerRadius: 12)
+		.listRowSeparator(.hidden)
 	}
 }

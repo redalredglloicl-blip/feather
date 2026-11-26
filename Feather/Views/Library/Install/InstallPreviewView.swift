@@ -50,8 +50,7 @@ struct InstallPreviewView: View {
 			_button()
 		}
 		.frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
-		.background(Color(UIColor.secondarySystemBackground))
-		.cornerRadius(cornerRadius)
+		.zenithGlassCard(cornerRadius: cornerRadius, fallback: Color(UIColor.secondarySystemBackground))
 		.padding()
 		.sheet(isPresented: $_isWebviewPresenting) {
 			SafariRepresentableView(url: installer.pageEndpoint).ignoresSafeArea()

@@ -15,19 +15,23 @@ struct CertificatesInfoEntitlementCellView: View {
 	
 	// MARK: Body
 	var body: some View {
-		if let dict = value as? [String: Any] {
-			_makeDisclosureGroup(items: dict.map { ($0.key, $0.value) }.sorted { $0.0 < $1.0 })
-		} else if let array = value as? [Any] {
-			_makeDisclosureGroup(items: array.enumerated().map { ("\($0)", $1) })
-		} else {
-			HStack {
-				Text(key)
-				Spacer()
-				Text(_formatted(value))
-					.foregroundStyle(.secondary)
-					.copyableText(_formatted(value))
+		Group {
+			if let dict = value as? [String: Any] {
+				_makeDisclosureGroup(items: dict.map { ($0.key, $0.value) }.sorted { $0.0 < $1.0 })
+			} else if let array = value as? [Any] {
+				_makeDisclosureGroup(items: array.enumerated().map { ("\($0)", $1) })
+			} else {
+				HStack {
+					Text(key)
+					Spacer()
+					Text(_formatted(value))
+						.foregroundStyle(.secondary)
+						.copyableText(_formatted(value))
+				}
 			}
 		}
+		.zenithGlassCard(cornerRadius: 12)
+		.listRowSeparator(.hidden)
 	}
 	
 	private func _makeDisclosureGroup(items: [(String, Any)]) -> some View {

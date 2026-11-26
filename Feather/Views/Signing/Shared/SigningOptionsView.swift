@@ -213,6 +213,8 @@ struct SigningOptionsView: View {
 				}
 			}
 		}
+		.zenithGlassCard(cornerRadius: 12)
+		.listRowSeparator(.hidden)
 	}
 	
 	@ViewBuilder
@@ -242,5 +244,7 @@ struct SigningOptionsView: View {
 				}
 			}
 		}
+		.zenithGlassCard(cornerRadius: 12)
+		.listRowSeparator(.hidden)
 	}
 }

@@ -54,6 +54,8 @@ struct SigningFrameworksView: View {
 					Text(.localized("No Frameworks or PlugIns Found."))
 						.font(.footnote)
 						.foregroundColor(.disabled())
+						.zenithGlassCard(cornerRadius: 12)
+						.listRowSeparator(.hidden)
 				}
 			}
 			.disabled(options == nil)

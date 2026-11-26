@@ -37,6 +37,8 @@ struct CertificatesCellView: View {
 		.frame(height: 80)
 		.contentTransition(.opacity)
 		.frame(maxWidth: .infinity, alignment: .leading)
+		.zenithGlassCard(cornerRadius: 12)
+		.listRowSeparator(.hidden)
 		.onAppear {
 			withAnimation {
 				data = Storage.shared.getProvisionFileDecoded(for: cert)

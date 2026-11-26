@@ -50,8 +50,7 @@ struct AppearanceTintColorView: View {
 							.foregroundColor(.secondary)
 					}
 					.frame(width: 120, height: 100)
-					.background(Color(uiColor: .secondarySystemGroupedBackground))
-					.clipShape(RoundedRectangle(cornerRadius: cornerRadius, style: .continuous))
+					.zenithGlassCard(cornerRadius: cornerRadius)
 					.overlay(
 						RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
 							.strokeBorder(_selectedColorHex == option.hex ? color : .clear, lineWidth: 2)

@@ -25,15 +25,23 @@ struct SettingsView: View {
 						NavigationLink(destination: ConfigurationView()) {
 							_settingsRow(title: .localized("Signing Options"), icon: "icon-sign")
 						}
+						.zenithGlassCard(cornerRadius: 12)
+						.listRowSeparator(.hidden)
 						NavigationLink(destination: ArchiveView()) {
 							_settingsRow(title: .localized("Archive & Compression"), icon: "icon-archive")
 						}
+						.zenithGlassCard(cornerRadius: 12)
+						.listRowSeparator(.hidden)
 						NavigationLink(destination: InstallationView()) {
 							_settingsRow(title: .localized("Installation"), icon: "icon-install")
 						}
+						.zenithGlassCard(cornerRadius: 12)
+						.listRowSeparator(.hidden)
 						NavigationLink(destination: HelpCenterView()) {
 							_settingsRow(title: .localized("مركز المساعدة"), icon: "icon-info")
 						}
+						.zenithGlassCard(cornerRadius: 12)
+						.listRowSeparator(.hidden)
 					} footer: {
 						Text(.localized("Configure the apps way of installing, its zip compression levels, and custom modifications to apps."))
 					}
@@ -44,6 +52,8 @@ struct SettingsView: View {
 						NavigationLink(destination: ResetView()) {
 							_settingsRow(title: .localized("Reset"), icon: "icon-delete")
 						}
+						.zenithGlassCard(cornerRadius: 12)
+						.listRowSeparator(.hidden)
 					} footer: {
 						Text(.localized("Reset the application's certificates, apps, and files."))
 					}
@@ -55,12 +65,16 @@ struct SettingsView: View {
 							Text(UIDevice.current.name)
 								.foregroundStyle(.secondary)
 						}
+						.zenithGlassCard(cornerRadius: 12)
+						.listRowSeparator(.hidden)
 						HStack {
 							Text(.localized("Version"))
 							Spacer()
 							Text(Bundle.main.version)
 								.foregroundStyle(.secondary)
 						}
+						.zenithGlassCard(cornerRadius: 12)
+						.listRowSeparator(.hidden)
 					}
 				}
 				.scrollContentBackground(.hidden)
@@ -101,12 +115,18 @@ extension SettingsView {
 			Button(.localized("Open Documents"), systemImage: "folder") {
 				UIApplication.open(URL.documentsDirectory.toSharedDocumentsURL()!)
 			}
+			.zenithGlassCard(cornerRadius: 12)
+			.listRowSeparator(.hidden)
 			Button(.localized("Open Archives"), systemImage: "folder") {
 				UIApplication.open(FileManager.default.archives.toSharedDocumentsURL()!)
 			}
+			.zenithGlassCard(cornerRadius: 12)
+			.listRowSeparator(.hidden)
 			Button(.localized("Open Certificates"), systemImage: "folder") {
 				UIApplication.open(FileManager.default.certificates.toSharedDocumentsURL()!)
 			}
+			.zenithGlassCard(cornerRadius: 12)
+			.listRowSeparator(.hidden)
 		} footer: {
 			Text(.localized("All of the apps files are contained in the documents directory, here are some quick links to these."))
 		}

@@ -27,7 +27,11 @@ struct ConfigurationDictAddView: View {
 		NBList(.localized("New")) {
 			Section {
 				TextField(.localized("Value"), text: $_newKey)
+					.zenithGlassCard(cornerRadius: 12)
+					.listRowSeparator(.hidden)
 				TextField(.localized("Replacement"), text: $_newValue)
+					.zenithGlassCard(cornerRadius: 12)
+					.listRowSeparator(.hidden)
 			}
 			.autocapitalization(.none)
 		}

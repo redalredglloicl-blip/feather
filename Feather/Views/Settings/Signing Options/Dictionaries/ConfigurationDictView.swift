@@ -23,6 +23,8 @@ struct ConfigurationDictView: View {
 					Text(value).swipeActions(edge: .trailing) {
 						_actions(key: key)
 					}
+					.zenithGlassCard(cornerRadius: 12)
+					.listRowSeparator(.hidden)
 				}
 			}
 		}

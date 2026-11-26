@@ -95,5 +95,7 @@ extension AppIconView {
 				}
 			}
 		}
+		.zenithGlassCard(cornerRadius: 12)
+		.listRowSeparator(.hidden)
 	}
 }

@@ -23,7 +23,11 @@ struct TunnelView: View {
 				if #available(iOS 17.4, *) {
 				} else {
 					_tunnelInfo()
+						.zenithGlassCard(cornerRadius: 12)
+						.listRowSeparator(.hidden)
 					TunnelHeaderView()
+						.zenithGlassCard(cornerRadius: 12)
+						.listRowSeparator(.hidden)
 				}
 			} footer: {
 				if doesHavePairingFile {
@@ -46,11 +50,12 @@ struct TunnelView: View {
 							.frame(width: 20, height: 20)
 					}
 				}
+				.zenithGlassCard(cornerRadius: 12)
+				.listRowSeparator(.hidden)
 				if #available(iOS 17.4, *) {
 				} else {
 					Button(.localized("Restart Heartbeat"), systemImage: "arrow.counterclockwise") {
-						HeartbeatManager.shared.start(true)
-						
+						HeartbeatManager.shared.start(true)	
 						DispatchQueue.global(qos: .userInitiated).async {
 							if !HeartbeatManager.shared.checkSocketConnection().isConnected {
 								DispatchQueue.main.async {
@@ -62,6 +67,8 @@ struct TunnelView: View {
 							}
 						}
 					}
+					.zenithGlassCard(cornerRadius: 12)
+					.listRowSeparator(.hidden)
 				}
 			}
 			
@@ -70,10 +77,14 @@ struct TunnelView: View {
 					Button(.localized("Connect to LocalDevVPN"), systemImage: "link") {
 						UIApplication.open("localdevvpn://enable?scheme=zenith")
 					}
+					.zenithGlassCard(cornerRadius: 12)
+					.listRowSeparator(.hidden)
 				} else {
 					Button(.localized("Download LocalDevVPN"), systemImage: "arrow.down.app") {
 						UIApplication.open("https://apps.apple.com/us/app/localdevvpn/id6755608044")
 					}
+					.zenithGlassCard(cornerRadius: 12)
+					.listRowSeparator(.hidden)
 				}
 			}
 		}

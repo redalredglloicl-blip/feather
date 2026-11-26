@@ -64,8 +64,12 @@ struct ServerView: View {
 						Text(_serverMethods[index]).tag(index)
 					}
 				}
+				.zenithGlassCard(cornerRadius: 12)
+				.listRowSeparator(.hidden)
 				Toggle(.localized("Only use localhost address"), systemImage: "lifepreserver", isOn: $_ipFix)
 					.disabled(_serverMethod != 1)
+					.zenithGlassCard(cornerRadius: 12)
+					.listRowSeparator(.hidden)
 			}
 			
 			Section {
@@ -88,6 +92,8 @@ struct ServerView: View {
 						}
 					}
 				}
+				.zenithGlassCard(cornerRadius: 12)
+				.listRowSeparator(.hidden)
 			}
 		}
 	}

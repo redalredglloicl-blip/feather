@@ -210,6 +210,8 @@ extension SigningView {
 					ZenithAppIconView(app: app, size: 56)
 				}
 			}
+			.zenithGlassCard(cornerRadius: 12)
+			.listRowSeparator(.hidden)
 			
 			_infoCell(.localized("Name"), desc: _temporaryOptions.appName ?? app.name) {
 				SigningPropertiesView(
@@ -250,6 +252,8 @@ extension SigningView {
 				Text(.localized("No Certificate"))
 					.font(.footnote)
 					.foregroundColor(.disabled())
+					.zenithGlassCard(cornerRadius: 12)
+					.listRowSeparator(.hidden)
 			}
 		}
 	}
@@ -264,6 +268,8 @@ extension SigningView {
 						options: $_temporaryOptions.optional()
 					)
 				}
+				.zenithGlassCard(cornerRadius: 12)
+				.listRowSeparator(.hidden)
 				
 				NavigationLink(.localized("Frameworks & PlugIns")) {
 					SigningFrameworksView(
@@ -271,19 +277,27 @@ extension SigningView {
 						options: $_temporaryOptions.optional()
 					)
 				}
+				.zenithGlassCard(cornerRadius: 12)
+				.listRowSeparator(.hidden)
 			
 				NavigationLink(.localized("Entitlements") + " (BETA)") {
 					SigningEntitlementsView(
 						bindingValue: $_temporaryOptions.appEntitlementsFile
 					)
 				}
+				.zenithGlassCard(cornerRadius: 12)
+				.listRowSeparator(.hidden)
 				
 				NavigationLink(.localized("Tweaks")) {
 					SigningTweaksView(
 						options: $_temporaryOptions
 					)
 				}
+				.zenithGlassCard(cornerRadius: 12)
+				.listRowSeparator(.hidden)
 			}
+			.zenithGlassCard(cornerRadius: 12)
+			.listRowSeparator(.hidden)
 			
 			NavigationLink(.localized("Properties")) {
 				Form { SigningOptionsView(
@@ -297,6 +311,8 @@ extension SigningView {
 				.listRowBackground(Color.clear)
 				.navigationTitle(.localized("Properties"))
 			}
+			.zenithGlassCard(cornerRadius: 12)
+			.listRowSeparator(.hidden)
 		}
 	}
 	
@@ -309,6 +325,8 @@ extension SigningView {
 				Text(desc ?? .localized("Unknown"))
 			}
 		}
+		.zenithGlassCard(cornerRadius: 12)
+		.listRowSeparator(.hidden)
 	}
 }
 

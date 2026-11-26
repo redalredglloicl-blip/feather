@@ -27,6 +27,8 @@ struct SigningPropertiesView: View {
 		NBList(title) {
 			TextField(initialValue, text: $text)
 				.textInputAutocapitalization(.none)
+				.zenithGlassCard(cornerRadius: 12)
+				.listRowSeparator(.hidden)
 		}
 		.starfieldBackground()
 		.toolbar {

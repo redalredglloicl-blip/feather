@@ -197,31 +197,53 @@ extension CertificatesAddView {
 	}
 	
 	/// Copies a file picked from the Files picker into the app sandbox.
-	/// The picker (asCopy: true) hands back a URL in a temp location;
-	/// the later reads (`checkPasswordForCertificate` reads by path
-	/// through C functions, `handleCertificateFiles` copies with
-	/// FileManager) never claim scoped access, and the temp copy can
-	/// be cleaned up, so storing the picked URL as-is made the import
-	/// silently die. Returns the sandbox-local copy, or nil (after
-	/// showing an alert) on failure.
+	/// Zenith v2.9 — REAL root cause of the "Could not access the
+	/// selected file" alert: the picker runs with asCopy: true, so it
+	/// hands back a plain file URL inside our own temp directory,
+	/// which is NOT security-scoped. startAccessingSecurityScopedResource
+	/// returns false for such a URL, and the old guard treated that as
+	/// a fatal failure — the copy never ran, so every import showed
+	/// the alert even though the picker had returned the file fine.
+	/// Scoped access is now only attempted, never required: if the URL
+	/// is scoped we hold it for the copy, otherwise we copy directly.
+	/// The read is coordinated (NSFileCoordinator) so an iCloud file
+	/// that is not downloaded yet is pulled down before the copy.
+	/// Returns the sandbox-local copy, or nil (after showing an alert
+	/// with the real error) on failure.
 	private func _copyImportedFileToSandbox(_ sourceURL: URL) -> URL? {
-		guard sourceURL.startAccessingSecurityScopedResource() else {
-			_showImportError(.localized("Could not access the selected file. Please try again."))
-			return nil
+		let didStartAccessing = sourceURL.startAccessingSecurityScopedResource()
+		defer {
+			if didStartAccessing {
+				sourceURL.stopAccessingSecurityScopedResource()
+			}
 		}
-		defer { sourceURL.stopAccessingSecurityScopedResource() }
-		
+	
 		let importDirectory = URL.documentsDirectory.appendingPathComponent("ZenithCertImport")
 		let destinationURL = importDirectory.appendingPathComponent(sourceURL.lastPathComponent)
-		
+	
 		do {
 			try FileManager.default.createDirectory(at: importDirectory, withIntermediateDirectories: true)
 			if FileManager.default.fileExists(atPath: destinationURL.path) {
 				try FileManager.default.removeItem(at: destinationURL)
 			}
-			try FileManager.default.copyItem(at: sourceURL, to: destinationURL)
+			var coordinationError: NSError?
+			var copyError: Error?
+			NSFileCoordinator().coordinate(readingItemAt: sourceURL, options: [], error: &coordinationError) { coordinatedURL in
+				do {
+					try FileManager.default.copyItem(at: coordinatedURL, to: destinationURL)
+				} catch {
+					copyError = error
+				}
+			}
+			if let coordinationError {
+				throw coordinationError
+			}
+			if let copyError {
+				throw copyError
+			}
 			return destinationURL
 		} catch {
+			print("[Zenith] cert import copy failed: \(sourceURL.lastPathComponent): \(error)")
 			_showImportError(error.localizedDescription)
 			return nil
 		}

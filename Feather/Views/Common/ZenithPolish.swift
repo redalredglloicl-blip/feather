@@ -15,6 +15,9 @@ import SwiftUI
 /// Applies a liquid-glass look to a card: real `.glassEffect` on iOS 26+,
 /// a translucent material fill on older iOS. Replaces a plain rounded
 /// background fill — do not stack it on top of an opaque fill.
+/// Zenith v2.9: every glass card also draws the thin white border
+/// (white 35%, 1pt) from the Downloads reference cards, so all cards
+/// across the app share the same visible outline.
 struct ZenithGlassCardModifier: ViewModifier {
 	var isEnabled: Bool = true
 	var cornerRadius: CGFloat = 18
@@ -24,9 +27,19 @@ struct ZenithGlassCardModifier: ViewModifier {
 	func body(content: Content) -> some View {
 		if isEnabled {
 			if #available(iOS 26.0, *) {
-				content.glassEffect(.regular, in: RoundedRectangle(cornerRadius: cornerRadius, style: .continuous))
+				content
+					.glassEffect(.regular, in: RoundedRectangle(cornerRadius: cornerRadius, style: .continuous))
+					.overlay(
+						RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
+							.stroke(Color.white.opacity(0.35), lineWidth: 1)
+					)
 			} else {
-				content.background(fallback, in: RoundedRectangle(cornerRadius: cornerRadius, style: .continuous))
+				content
+					.background(fallback, in: RoundedRectangle(cornerRadius: cornerRadius, style: .continuous))
+					.overlay(
+						RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
+							.stroke(Color.white.opacity(0.35), lineWidth: 1)
+					)
 			}
 		} else {
 			content
@@ -35,7 +48,8 @@ struct ZenithGlassCardModifier: ViewModifier {
 }
 
 extension View {
-	/// Liquid-glass card background (iOS 26 glass, material fill below).
+	/// Liquid-glass card background (iOS 26 glass, material fill below),
+	/// always with the thin white border from the Downloads cards.
 	func zenithGlassCard(
 		isEnabled: Bool = true,
 		cornerRadius: CGFloat = 18,
@@ -149,7 +163,7 @@ struct SigningSuccessView: View {
 				.buttonStyle(ZenithPressButtonStyle())
 			}
 			.padding(28)
-			.background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 24, style: .continuous))
+			.zenithGlassCard(cornerRadius: 24)
 			.padding(.horizontal, 32)
 			.opacity(_contentOpacity)
 		}

@@ -34,6 +34,8 @@ struct SigningDylibView: View {
 				Text(verbatim: .localized("%lld required system dylibs not shown.", arguments: _hiddenDylibCount))
 					.font(.footnote)
 					.foregroundColor(.disabled())
+					.zenithGlassCard(cornerRadius: 12)
+					.listRowSeparator(.hidden)
 			}
 		}
 		.starfieldBackground()

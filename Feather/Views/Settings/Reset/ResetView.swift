@@ -70,6 +70,8 @@ extension ResetView {
 					Self.clearWorkCache()
 				}
 			}
+			.zenithGlassCard(cornerRadius: 12)
+			.listRowSeparator(.hidden)
 			
 			Button(.localized("Reset Network Cache"), systemImage: "xmark.rectangle.portrait") {
 				Self.resetAlert(
@@ -79,6 +81,8 @@ extension ResetView {
 					Self.clearNetworkCache()
 				}
 			}
+			.zenithGlassCard(cornerRadius: 12)
+			.listRowSeparator(.hidden)
 		}
 	}
 	
@@ -93,6 +97,8 @@ extension ResetView {
 					Self.deleteSignedApps()
 				}
 			}
+			.zenithGlassCard(cornerRadius: 12)
+			.listRowSeparator(.hidden)
 			
 			Button(.localized("Reset Imported Apps"), systemImage: "xmark.circle") {
 				Self.resetAlert(
@@ -102,6 +108,8 @@ extension ResetView {
 					Self.deleteImportedApps()
 				}
 			}
+			.zenithGlassCard(cornerRadius: 12)
+			.listRowSeparator(.hidden)
 			
 			Button(.localized("Reset Certificates"), systemImage: "xmark.circle") {
 				Self.resetAlert(
@@ -111,6 +119,8 @@ extension ResetView {
 					Self.resetCertificates()
 				}
 			}
+			.zenithGlassCard(cornerRadius: 12)
+			.listRowSeparator(.hidden)
 		}
 	}
 	
@@ -122,12 +132,16 @@ extension ResetView {
 					Self.resetUserDefaults()
 				}
 			}
+			.zenithGlassCard(cornerRadius: 12)
+			.listRowSeparator(.hidden)
 			
 			Button(.localized("Reset All"), systemImage: "xmark.octagon") {
 				Self.resetAlert(title: .localized("Reset All")) {
 					Self.resetAll()
 				}
 			}
+			.zenithGlassCard(cornerRadius: 12)
+			.listRowSeparator(.hidden)
 		}
 		.foregroundStyle(.red)
 	}

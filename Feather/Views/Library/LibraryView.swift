@@ -204,6 +204,8 @@ struct LibraryView: View {
 									.foregroundStyle(Color.accentColor)
 							}
 						}
+						.zenithGlassCard(cornerRadius: 12)
+						.listRowSeparator(.hidden)
 					}
 				}
 			}
@@ -413,6 +415,10 @@ extension LibraryView {
 							)
 							.foregroundStyle(_selectedCategory == category ? .black : .primary)
 							.clipShape(Capsule())
+							.overlay(
+								Capsule()
+									.stroke(Color.white.opacity(0.35), lineWidth: 1)
+							)
 					}
 					.buttonStyle(ZenithPressButtonStyle())
 				}
@@ -506,6 +512,8 @@ extension LibraryView {
 			}
 			.buttonStyle(.borderless)
 		}
+		.zenithGlassCard(cornerRadius: 12)
+		.listRowSeparator(.hidden)
 	}
 	
 	private func _lastOpenedText(for app: AppInfoPresentable) -> String {

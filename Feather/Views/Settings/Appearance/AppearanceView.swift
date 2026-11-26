@@ -48,12 +48,16 @@ struct AppearanceView: View {
 					}
 				}
 				.pickerStyle(.segmented)
+				.zenithGlassCard(cornerRadius: 12)
+				.listRowSeparator(.hidden)
 			}
 			
 			NBSection(.localized("Theme")) {
 				AppearanceTintColorView()
 					.listRowInsets(EdgeInsets())
 					.listRowBackground(EmptyView())
+					.zenithGlassCard(cornerRadius: 12)
+					.listRowSeparator(.hidden)
 			}
 			
 			Section {
@@ -62,13 +66,19 @@ struct AppearanceView: View {
 					selection: _tintColorBinding,
 					supportsOpacity: false
 				)
+				.zenithGlassCard(cornerRadius: 12)
+				.listRowSeparator(.hidden)
 			}
 			
 			if #available(iOS 18.0, *) {
 				NBSection(.localized("Library")) {
 					Toggle(.localized("Dynamic Icons"), isOn: $_shouldChangeIconsBasedOffStyle)
+						.zenithGlassCard(cornerRadius: 12)
+						.listRowSeparator(.hidden)
 					if #available(iOS 18.2, *) {
 						Toggle(.localized("Tinted Icons"), isOn: $_shouldTintIcons)
+							.zenithGlassCard(cornerRadius: 12)
+							.listRowSeparator(.hidden)
 					}
 				}
 			}
@@ -87,6 +97,8 @@ struct AppearanceView: View {
 				}
 				.labelsHidden()
 				.pickerStyle(.inline)
+				.zenithGlassCard(cornerRadius: 12)
+				.listRowSeparator(.hidden)
 			}
 		}
 		.starfieldBackground()

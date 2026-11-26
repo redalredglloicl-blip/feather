@@ -25,6 +25,8 @@ struct ConfigurationView: View {
 				) {
 					Label(.localized("Display Names"), systemImage: "character.cursor.ibeam")
 				}
+				.zenithGlassCard(cornerRadius: 12)
+				.listRowSeparator(.hidden)
 				NavigationLink(destination: ConfigurationDictView(
 					title: .localized("Identifiers"),
 					dataDict: $_optionsManager.options.identifiers
@@ -32,6 +34,8 @@ struct ConfigurationView: View {
 				) {
 					Label(.localized("Identifiers"), systemImage: "person.text.rectangle")
 				}
+				.zenithGlassCard(cornerRadius: 12)
+				.listRowSeparator(.hidden)
 			}footer: {
 				Text(.localized("This allows you to set rules for automatically replacing the Bundle ID/Display Name when signing an app."))
 			}
