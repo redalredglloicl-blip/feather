@@ -1623,11 +1623,14 @@ final class ZenithMultipartDownload: NSObject, URLSessionDataDelegate, @unchecke
 	private let partCount: Int
 	private let tempURL: URL
 	private let manifestURL: URL
-	/// A var, not a let: the session takes self as its delegate,
-	/// and self only exists after super.init() — so the session
-	/// is created after super.init() (see init below). It is
-	/// assigned exactly once, in init, and never reassigned.
-	private var session: URLSession
+	/// An implicitly-unwrapped optional, not a plain var: the
+	/// session takes self as its delegate, so it can only be
+	/// created after super.init() — and Swift requires every
+	/// stored property to be initialized BEFORE super.init(), so
+	/// a plain var still fails the build. The IUO starts as nil
+	/// and is assigned exactly once in init, before any use
+	/// (same pattern as _session in DownloadManager above).
+	private var session: URLSession!
 	
 	/// Live per-part data tasks, by part index — so a pause /
 	/// cancel / failover can stop the network task itself, not
