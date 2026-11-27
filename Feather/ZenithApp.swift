@@ -236,6 +236,22 @@ class AppDelegate: NSObject, UIApplicationDelegate {
 		return true
 	}
 	
+	/// The system woke (or relaunched) the app to deliver events
+	/// for the background download session: a download finished
+	/// (or failed) while the app was not running. Hand the
+	/// completion handler to the DownloadManager — touching it
+	/// creates the session with the same identifier, so the
+	/// pending events are delivered to it — and it calls the
+	/// handler once they are all delivered.
+	func application(
+		_ application: UIApplication,
+		handleEventsForBackgroundURLSession identifier: String,
+		completionHandler: @escaping () -> Void
+	) {
+		guard identifier == DownloadManager.backgroundSessionIdentifier else { return }
+		DownloadManager.shared._handleBackgroundSessionEvents(completionHandler: completionHandler)
+	}
+	
 	private func _createPipeline() {
 		DataLoader.sharedUrlCache.diskCapacity = 0
 		

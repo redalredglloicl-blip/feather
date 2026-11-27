@@ -16,7 +16,6 @@ struct InstallPreviewView: View {
 
 	@AppStorage("Zenith.useShareSheetForArchiving") private var _useShareSheet: Bool = false
 	@AppStorage("Zenith.installationMethod") private var _installationMethod: Int = 0
-	@AppStorage("Zenith.serverMethod") private var _serverMethod: Int = 0
 	@State private var _isWebviewPresenting = false
 	@State private var progressTask: Task<Void, Never>?
 	
@@ -58,14 +57,20 @@ struct InstallPreviewView: View {
 		.onReceive(viewModel.$status) { newStatus in
 			if _installationMethod == 0 {
 				if case .ready = newStatus {
-					if _serverMethod == 0 {
-						UIApplication.shared.open(URL(string: installer.iTunesLink)!)
-					} else if _serverMethod == 1 {
+					// Zenith v2.15: ask the installer which server method
+					// is actually in effect — getServerMethod() falls
+					// back to Semi Local (1) when the "Fully Local" TLS
+					// pack is missing or expired, so this view must not
+					// trust its own stored default here, or it would
+					// open an http manifest URL iOS refuses.
+					if installer.getServerMethod() == 0 {
+						_openInstallLink()
+					} else {
 						_isWebviewPresenting = true
 					}
 				}
 				
-				if case .sendingPayload = newStatus, _serverMethod == 1 {
+				if case .sendingPayload = newStatus, installer.getServerMethod() == 1 {
 					_isWebviewPresenting = false
 				}
 				
@@ -136,6 +141,34 @@ struct InstallPreviewView: View {
 		}
 		.frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottomTrailing)
 		.animation(.easeInOut(duration: 0.3), value: viewModel.isCompleted)
+	}
+	
+	// Zenith v2.15: the old code force-unwrapped the itms-services URL
+	// and ignored open()'s result, so when iOS refused the link (dead
+	// TLS pack, unresolvable host) the sheet sat at "Ready" forever
+	// with no prompt and no error. A refused link now fails honestly:
+	// status becomes Error and the user is told, instead of hanging.
+	private func _openInstallLink() {
+		guard let itunesURL = URL(string: installer.iTunesLink) else {
+			viewModel.status = .broken(InstallLinkError.invalidLink)
+			return
+		}
+		
+		UIApplication.shared.open(itunesURL, options: [:]) { opened in
+			guard opened else {
+				DispatchQueue.main.async {
+					viewModel.status = .broken(InstallLinkError.systemRefused)
+					UIAlertController.showAlertWithOk(
+						title: .localized("Install"),
+						message: "ما گدرت أفتح رابط التثبيت. جرّب طريقة التثبيت الثانية من الإعدادات.",
+						action: {
+							dismiss()
+						}
+					)
+				}
+				return
+			}
+		}
 	}
 	
 	private func _install() {
@@ -263,5 +296,20 @@ struct InstallPreviewView: View {
 
 	private func _normalizeInstallProgress(_ rawProgress: Double) -> Double {
 		min(1.0, max(0.0, (rawProgress - 0.6) / 0.3))
+	}
+}
+
+// Zenith v2.15: errors for a refused itms-services link (see
+// _openInstallLink). No new xcstrings key: the messages are plain
+// literals, shown only in the install-failure alert path.
+private enum InstallLinkError: LocalizedError {
+	case invalidLink
+	case systemRefused
+	
+	var errorDescription: String? {
+		switch self {
+		case .invalidLink: "رابط التثبيت مو صحيح."
+		case .systemRefused: "النظام رفض رابط التثبيت."
+		}
 	}
 }

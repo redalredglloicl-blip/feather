@@ -102,7 +102,21 @@ class ServerInstaller: Identifiable, ObservableObject {
 	}
 		
 	func getServerMethod() -> Int {
-		UserDefaults.standard.integer(forKey: "Zenith.serverMethod")
+		// Zenith v2.15: "Fully Local" (0) serves the manifest over
+		// https with the backloop.dev TLS pack. That pack is not
+		// shipped in the app and the copy on backloop.dev expired
+		// 2026-10-29, so mode 0 can never serve a manifest iOS
+		// trusts: itms-services fails silently and the install hangs
+		// at "Ready" with no prompt and no home-screen icon. Honour
+		// mode 0 only while a valid (unexpired) pack is actually on
+		// disk; otherwise fall back to "Semi Local" (1), whose
+		// manifest comes from palera.in over real https and whose IPA
+		// comes from the local server. Fresh installs default to 1.
+		let stored = UserDefaults.standard.object(forKey: "Zenith.serverMethod") as? Int ?? 1
+		if stored == 0, !Self.hasValidTLSPack() {
+			return 1
+		}
+		return stored
 	}
 	
 	func getIPFix() -> Bool {

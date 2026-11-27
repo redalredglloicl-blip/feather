@@ -349,6 +349,31 @@ class DownloadManager: NSObject, ObservableObject {
 	
 	private var _session: URLSession!
 	
+	/// Fixed identifier for the background download session. The
+	/// system keeps a background session's tasks alive in its own
+	/// daemon across app backgrounding AND app termination, and
+	/// re-delivers their events to a session recreated with this
+	/// same identifier on the next launch. The old
+	/// `URLSessionConfiguration.default` session lived in the app
+	/// process: suspending or killing the app killed the task, and
+	/// a download killed mid-flight had no resume data at all
+	/// (nothing ever captured it — the process just died), so its
+	/// resume started from byte 0. That is the restart-from-zero
+	/// bug: the manifest remembered the progress, but the bytes
+	/// were gone and there was nothing to resume from.
+	static let backgroundSessionIdentifier = "com.zenith.app.background-downloads"
+	
+	/// Completion handler the system hands us when it wakes the app
+	/// to deliver background-session events; called from
+	/// urlSessionDidFinishEvents(forBackgroundURLSession:).
+	private var _backgroundSessionCompletionHandler: (() -> Void)?
+	
+	/// True from init until the background session's live tasks
+	/// have been re-attached (see _reattachBackgroundTasks):
+	/// auto-resume must wait until then, or it would start a
+	/// second task for a download the daemon is already fetching.
+	private var _backgroundReattachPending = true
+	
 	/// Combine subscriptions owned by the manager: the connectivity
 	/// watcher below and the active-download persistence sink.
 	private var _cancellables = Set<AnyCancellable>()
@@ -374,7 +399,8 @@ class DownloadManager: NSObject, ObservableObject {
 	
 	override init() {
 		super.init()
-		let configuration = URLSessionConfiguration.default
+		let configuration = URLSessionConfiguration.background(withIdentifier: Self.backgroundSessionIdentifier)
+		configuration.sessionSendsLaunchEvents = true
 		_session = URLSession(configuration: configuration, delegate: self, delegateQueue: nil)
 		_loadHistory()
 		
@@ -400,6 +426,11 @@ class DownloadManager: NSObject, ObservableObject {
 		// also means the sink's initial emission re-saves the
 		// restored list, which is harmless (identical records).
 		_restoreActiveDownloads()
+		
+		// Re-attach the background session's still-running tasks
+		// (see _reattachBackgroundTasks): a download the daemon
+		// kept fetching across a restart needs no resume at all.
+		_reattachBackgroundTasks()
 		
 		// Persist the active list whenever it changes (a download
 		// added, finished or cancelled), so a relaunch never loses
@@ -439,6 +470,12 @@ class DownloadManager: NSObject, ObservableObject {
 				_pauseForConnectivity(download)
 			}
 		} else {
+			// The background session's live tasks are not
+			// re-attached yet (see _backgroundReattachPending):
+			// resuming now would start a second task for a
+			// download the daemon is already fetching. The
+			// re-attach completion resumes the waiting ones.
+			guard !_backgroundReattachPending else { return }
 			for download in downloads where download.isWaitingForInternet {
 				_resumeAfterConnectivity(download)
 			}
@@ -632,8 +669,87 @@ class DownloadManager: NSObject, ObservableObject {
 			request.setValue(cookie, forHTTPHeaderField: "Cookie")
 		}
 		let task = _session.downloadTask(with: request)
+		// The download id, so a task the system kept alive across
+		// a relaunch can be matched back to its Download (see
+		// _download(for:) / _reattachBackgroundTasks).
+		task.taskDescription = download.id
 		download.task = task
 		task.resume()
+	}
+	
+	/// Finds the Download for a session task: by the live `task`
+	/// reference first, then by the taskDescription (the download
+	/// id). A task the system kept alive across a relaunch has a
+	/// Download whose `task` is nil until _reattachBackgroundTasks
+	/// runs, and a completion delivered before that must not be
+	/// dropped — the taskDescription is what matches it.
+	private func _download(for task: URLSessionTask) -> Download? {
+		if let downloadTask = task as? URLSessionDownloadTask,
+		   let found = getDownloadTask(by: downloadTask) {
+			return found
+		}
+		guard let id = task.taskDescription, !id.isEmpty else { return nil }
+		return getDownload(by: id)
+	}
+	
+	/// Called by the AppDelegate when the system wakes the app to
+	/// deliver background-session events. Touching
+	/// DownloadManager.shared creates the session (same
+	/// identifier), so the pending events are delivered to it;
+	/// the handler is called once they are all delivered (see
+	/// urlSessionDidFinishEvents(forBackgroundURLSession:)).
+	func _handleBackgroundSessionEvents(completionHandler: @escaping () -> Void) {
+		_backgroundSessionCompletionHandler = completionHandler
+	}
+	
+	/// Re-attaches the background session's still-running tasks to
+	/// their restored Download objects after a relaunch. A task
+	/// that is still alive in the daemon needs no resume at all —
+	/// it just keeps fetching, and its progress callbacks resume
+	/// the moment the app runs again. When the re-attach is done
+	/// the waiting downloads that have NO live task are resumed
+	/// (from persisted resume data / multipart manifest), which
+	/// also covers the launch-time auto-resume: the connectivity
+	/// watcher's initial emission fires before the restore, so it
+	/// cannot resume them itself.
+	private func _reattachBackgroundTasks() {
+		_session.getAllTasks { [weak self] tasks in
+			DispatchQueue.main.async {
+				guard let self else { return }
+				for task in tasks {
+					guard
+						let downloadTask = task as? URLSessionDownloadTask,
+						let id = downloadTask.taskDescription,
+						!id.isEmpty,
+						let download = self.getDownload(by: id)
+					else { continue }
+					// A fresh task was already started for this
+					// download (a resume beat the re-attach): the
+					// old daemon task is a duplicate — cancel it
+					// instead of running two tasks for one file.
+					if download.task != nil {
+						downloadTask.cancel()
+						continue
+					}
+					download.task = downloadTask
+					download._transportStarted = true
+					download.status = .downloading
+					download.isWaitingForInternet = false
+					download.errorMessage = nil
+					
+					#if !targetEnvironment(macCatalyst)
+					if #available(iOS 26.0, *) {
+						BackgroundTaskManager.shared.startTask(for: download.id, filename: download.fileName)
+					}
+					#endif
+				}
+				self._backgroundReattachPending = false
+				self._saveActiveDownloads()
+				// Now that the live tasks are known, resume the
+				// waiting ones that have none.
+				self._handleConnectivityChanged(isOffline: NetworkMonitor.shared.isOffline)
+			}
+		}
 	}
 	
 	func startArchive(
@@ -664,6 +780,29 @@ class DownloadManager: NSObject, ObservableObject {
 			return
 		}
 		
+		// The download already has a live task (re-attached from
+		// the background session after a relaunch, or started by
+		// an earlier resume): it is already fetching — starting
+		// a second task would download the same file twice and
+		// corrupt the progress. A suspended task is resumed.
+		if let task = download.task {
+			if task.state == .running {
+				download.isWaitingForInternet = false
+				download.status = .downloading
+				download.errorMessage = nil
+				_saveActiveDownloads()
+				return
+			}
+			if task.state == .suspended {
+				task.resume()
+				download.isWaitingForInternet = false
+				download.status = .downloading
+				download.errorMessage = nil
+				_saveActiveDownloads()
+				return
+			}
+		}
+		
 		download.isWaitingForInternet = false
 		download.status = .downloading
 		download.errorMessage = nil
@@ -671,6 +810,20 @@ class DownloadManager: NSObject, ObservableObject {
 		// A transport is started below; tell the still-running HEAD
 		// probe (if any) not to start a second one.
 		download._transportStarted = true
+		
+		// A resume must keep the download alive in the background
+		// too: startTask is not only for fresh downloads. The old
+		// code only submitted the background task in startDownload,
+		// so a download resumed after a pause (or after an
+		// expiry-pause) had no background time at all on iOS 26+
+		// — backgrounding again killed it at once. (On iOS 26+
+		// the background-audio keep-alive is a no-op, so the
+		// BGContinuedProcessingTask is the only keep-alive.)
+		#if !targetEnvironment(macCatalyst)
+		if #available(iOS 26.0, *) {
+			BackgroundTaskManager.shared.startTask(for: download.id, filename: download.fileName)
+		}
+		#endif
 		
 		// Multi-connection download that was paused: restart its parts
 		// from the persisted per-part byte counts.
@@ -706,6 +859,7 @@ class DownloadManager: NSObject, ObservableObject {
 		// data so an interrupted download continues, not restarts.
 		if let resumeData = _loadResumeData(for: download.id) ?? download.resumeData {
 			let task = _session.downloadTask(withResumeData: resumeData)
+			task.taskDescription = download.id
 			download.task = task
 			task.resume()
 			
@@ -719,6 +873,7 @@ class DownloadManager: NSObject, ObservableObject {
 				request.setValue(cookie, forHTTPHeaderField: "Cookie")
 			}
 			let task = _session.downloadTask(with: request)
+			task.taskDescription = download.id
 			download.task = task
 			task.resume()
 			
@@ -939,7 +1094,10 @@ class DownloadManager: NSObject, ObservableObject {
 	}
 	
 	func _saveResumeData(_ data: Data, for id: String) {
-		try? data.write(to: _resumeDataURL(for: id))
+		// Atomic: a kill mid-write must never leave a torn resume
+		// file behind — an unreadable resume file forces the
+		// resume from zero.
+		try? data.write(to: _resumeDataURL(for: id), options: .atomic)
 	}
 	
 	func _loadResumeData(for id: String) -> Data? {
@@ -1076,9 +1234,19 @@ class DownloadManager: NSObject, ObservableObject {
 				download.errorMessage = record.errorMessage
 			} else {
 				// A download caught mid-flight (or mid-HEAD-probe)
-				// by a restart has no running transport: paused,
-				// waiting when flagged, and the watcher resumes it.
+				// by a restart has no running transport: paused.
+				// A record saved mid-flight ("downloading") was
+				// NOT paused by the user — it was caught by a
+				// restart, so park it as waiting: the re-attach
+				// completion resumes it on launch (from its
+				// persisted resume data / multipart manifest), and
+				// the connectivity watcher resumes it whenever
+				// the internet returns. A record the user paused
+				// by hand ("paused") stays paused.
 				download.status = .paused
+				if record.status == "downloading" {
+					download.isWaitingForInternet = true
+				}
 			}
 			downloads.append(download)
 		}
@@ -1173,7 +1341,7 @@ extension DownloadManager: URLSessionDownloadDelegate {
 	}
 	
 	func urlSession(_ session: URLSession, downloadTask: URLSessionDownloadTask, didFinishDownloadingTo location: URL) {
-		guard let download = getDownloadTask(by: downloadTask) else { return }
+		guard let download = _download(for: downloadTask) else { return }
 		
 		// A 4xx/5xx answer still "finishes" as a download — it is an
 		// error page, not the file. The same goes for a 200 that
@@ -1232,7 +1400,7 @@ extension DownloadManager: URLSessionDownloadDelegate {
 	}
 	
 	func urlSession(_ session: URLSession, downloadTask: URLSessionDownloadTask, didWriteData bytesWritten: Int64, totalBytesWritten: Int64, totalBytesExpectedToWrite: Int64) {
-		guard let download = getDownloadTask(by: downloadTask) else { return }
+		guard let download = _download(for: downloadTask) else { return }
 		
 		DispatchQueue.main.async {
 			download.progress = totalBytesExpectedToWrite > 0
@@ -1273,7 +1441,7 @@ extension DownloadManager: URLSessionDownloadDelegate {
 		guard
 			let error,
 			let downloadTask = task as? URLSessionDownloadTask,
-			let download = getDownloadTask(by: downloadTask)
+			let download = _download(for: downloadTask)
 		else {
 			return
 		}
@@ -1303,6 +1471,20 @@ extension DownloadManager: URLSessionDownloadDelegate {
 			return
 		}
 		
+		// The resume data the system handed us (above) is the only
+		// trustworthy one. If this task received zero bytes and
+		// produced no resume data, the resume data it STARTED from
+		// is poison (e.g. written by an older build's session, or
+		// a torn file): keeping it would make every retry fail the
+		// same way. Drop it so the next retry starts clean instead
+		// of looping on the same bad data. A task that DID receive
+		// bytes keeps the older data — stale, but resumable.
+		if downloadTask.countOfBytesReceived == 0,
+		   (error as NSError).userInfo[NSURLSessionDownloadTaskResumeData] as? Data == nil {
+			download.resumeData = nil
+			_deleteResumeData(for: download.id)
+		}
+		
 		DispatchQueue.main.async {
 			download.status = .failed
 			download.errorMessage = error.localizedDescription
@@ -1316,6 +1498,16 @@ extension DownloadManager: URLSessionDownloadDelegate {
 			
 			self._updateBackgroundAudioState()
 			#endif
+		}
+	}
+	
+	/// All background-session events the system woke the app for
+	/// have been delivered: tell it we are done, so it can
+	/// suspend the app again (and snapshot the UI).
+	func urlSessionDidFinishEvents(forBackgroundURLSession session: URLSession) {
+		DispatchQueue.main.async {
+			self._backgroundSessionCompletionHandler?()
+			self._backgroundSessionCompletionHandler = nil
 		}
 	}
 }
@@ -1364,6 +1556,35 @@ struct PersistedActiveDownload: Codable {
 	var cookieHeader: String?
 }
 
+extension PersistedActiveDownload {
+	/// Tolerant decode (Zenith v2.15): every field falls back to
+	/// a safe default instead of failing the whole record. The
+	/// old synthesized decode dropped a download from the restore
+	/// whenever ONE field was bad (a torn write, a value saved by
+	/// an older build in another shape) — the row vanished and the
+	/// download looked lost / "restarted". Only a row with no
+	/// usable id or URL is unrecoverable, and the restore loop
+	/// already skips those.
+	init(from decoder: Decoder) throws {
+		let container = try decoder.container(keyedBy: CodingKeys.self)
+		id = (try? container.decode(String.self, forKey: .id)) ?? ""
+		urlString = (try? container.decode(String.self, forKey: .urlString)) ?? ""
+		fileName = (try? container.decode(String.self, forKey: .fileName)) ?? "download"
+		isWaitingForInternet = (try? container.decode(Bool.self, forKey: .isWaitingForInternet)) ?? false
+		// A record with no status was most likely saved mid-flight.
+		status = (try? container.decode(String.self, forKey: .status)) ?? "downloading"
+		errorMessage = try? container.decode(String.self, forKey: .errorMessage)
+		progress = (try? container.decode(Double.self, forKey: .progress)) ?? 0
+		bytesDownloaded = (try? container.decode(Int64.self, forKey: .bytesDownloaded))
+			?? (try? container.decode(Double.self, forKey: .bytesDownloaded)).map(Int64.init)
+			?? 0
+		totalBytes = (try? container.decode(Int64.self, forKey: .totalBytes))
+			?? (try? container.decode(Double.self, forKey: .totalBytes)).map(Int64.init)
+			?? 0
+		cookieHeader = try? container.decode(String.self, forKey: .cookieHeader)
+	}
+}
+
 // MARK: - Multi-connection download
 
 /// True when an error is a connectivity failure (no route to the
@@ -1395,7 +1616,7 @@ struct ZenithMultipartManifest: Codable {
 /// support ranges (no 206) falls back to the single-connection task.
 /// All mutable state is guarded by one lock; progress is reported to
 /// the shared Download object on the main actor, throttled to 4 Hz.
-final class ZenithMultipartDownload: @unchecked Sendable {
+final class ZenithMultipartDownload: NSObject, URLSessionDataDelegate, @unchecked Sendable {
 	private let download: Download
 	private let url: URL
 	private let totalBytes: Int64
@@ -1403,6 +1624,20 @@ final class ZenithMultipartDownload: @unchecked Sendable {
 	private let tempURL: URL
 	private let manifestURL: URL
 	private let session: URLSession
+	
+	/// Live per-part data tasks, by part index — so a pause /
+	/// cancel / failover can stop the network task itself, not
+	/// just the Swift Task awaiting it.
+	private var _partDataTasks: [Int: URLSessionDataTask] = [:]
+	/// Continuations the part Tasks are suspended in, by the
+	/// URLSession task identifier — resumed exactly once from
+	/// urlSession(_:task:didCompleteWithError:).
+	private var _partContinuations: [Int: CheckedContinuation<Void, Error>] = [:]
+	/// Part index + start() generation per live data task, by the
+	/// URLSession task identifier — the delegate validates the
+	/// generation before acting, so a stale task can never write
+	/// into a part a resume relaunched.
+	private var _partTaskInfo: [Int: (partIndex: Int, generation: Int)] = [:]
 	
 	private let lock = NSLock()
 	private var partDownloaded: [Int64]
@@ -1447,7 +1682,6 @@ final class ZenithMultipartDownload: @unchecked Sendable {
 		self.partCount = min(max(partCount, 2), 4)
 		self.tempURL = Self.tempFileURL(for: download.id)
 		self.manifestURL = Self.manifestURL(for: download.id)
-		self.session = URLSession(configuration: .ephemeral)
 		if
 			let resuming = resumingPartDownloaded,
 			resuming.count == self.partCount
@@ -1456,6 +1690,16 @@ final class ZenithMultipartDownload: @unchecked Sendable {
 		} else {
 			self.partDownloaded = Array(repeating: 0, count: self.partCount)
 		}
+		// The session takes self as its delegate (chunked data
+		// delivery — see _runPart and the URLSessionDataDelegate
+		// methods below), so it is created after super.init(),
+		// once every other property is set.
+		super.init()
+		self.session = URLSession(configuration: .ephemeral, delegate: self, delegateQueue: nil)
+	}
+	
+	deinit {
+		session.invalidateAndCancel()
 	}
 	
 	static func _multipartDirectory() -> URL {
@@ -1552,6 +1796,7 @@ final class ZenithMultipartDownload: @unchecked Sendable {
 		for task in tasks {
 			task.cancel()
 		}
+		_cancelDataTasks()
 		_persistManifest()
 		Task { @MainActor in
 			download.status = .paused
@@ -1584,6 +1829,7 @@ final class ZenithMultipartDownload: @unchecked Sendable {
 		for task in tasks {
 			task.cancel()
 		}
+		_cancelDataTasks()
 		_persistManifest()
 		Task { @MainActor in
 			download.isWaitingForInternet = true
@@ -1620,6 +1866,7 @@ final class ZenithMultipartDownload: @unchecked Sendable {
 		for task in tasks {
 			task.cancel()
 		}
+		_cancelDataTasks()
 		lock.lock()
 		try? fileHandle?.close()
 		fileHandle = nil
@@ -1639,56 +1886,47 @@ final class ZenithMultipartDownload: @unchecked Sendable {
 	private func _runPart(_ index: Int, generation: Int) async {
 		let start = Int64(index) * _partSize
 		let end = min(start + _partSize - 1, totalBytes - 1)
-		var offset = start + _partDownloaded(index)
+		let offset = start + _partDownloaded(index)
 		guard offset <= end else { return }
-		
+		// Paused again before this part launched: do not launch.
+		if _isCancelled() { return }
+
 		var request = URLRequest(url: url)
 		request.setValue("bytes=\(offset)-\(end)", forHTTPHeaderField: "Range")
 		request.setValue(DownloadManager.browserUserAgent, forHTTPHeaderField: "User-Agent")
 		if let cookie = DownloadManager.shared._cookieHeaderValue(for: download) {
 			request.setValue(cookie, forHTTPHeaderField: "Cookie")
 		}
-		
+
+		// Chunked delivery via a data task with this object as the
+		// delegate (see the URLSessionDataDelegate methods below).
+		// The old code used `session.bytes(for:)` and iterated it
+		// one UInt8 at a time — every byte an async-iterator step
+		// — which caps real throughput in the low MB/s: that is
+		// the "speed drops to megabits" on big files (the
+		// multipart path IS the big-file path). didReceive delivers
+		// real Data chunks instead, at full line speed.
+		let dataTask = session.dataTask(with: request)
+		let taskIdentifier = dataTask.taskIdentifier
+		lock.lock()
+		_partDataTasks[index] = dataTask
+		_partTaskInfo[taskIdentifier] = (partIndex: index, generation: generation)
+		lock.unlock()
 		do {
-			let (bytes, response) = try await session.bytes(for: request)
-			guard (response as? HTTPURLResponse)?.statusCode == 206 else {
-				// The server claimed ranges but answered with the whole
-				// file: fall back to the single-connection task.
-				_failOverToSingleConnection(generation: generation)
-				return
-			}
-			// URLSession.bytes yields single UInt8 values, not Data
-			// chunks: collect them into a 64 KB buffer and write the
-			// buffer, so the file still lands at the right offsets.
-			var buffer = Data()
-			buffer.reserveCapacity(64 * 1024)
-			for try await byte in bytes {
-				try Task.checkCancellation()
-				buffer.append(byte)
-				if buffer.count >= 64 * 1024 {
-					guard _write(buffer, at: offset, generation: generation) else {
-						// The part file is unwritable — the
-						// single-connection task writes through
-						// URLSession's own temp file instead.
-						_failOverToSingleConnection(generation: generation)
-						return
-					}
-					offset += Int64(buffer.count)
-					_addPartDownloaded(index, Int64(buffer.count))
-					buffer.removeAll(keepingCapacity: true)
-					_reportProgressIfNeeded()
+			try await withTaskCancellationHandler {
+				try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
+					self._storeContinuation(continuation, taskIdentifier: taskIdentifier)
+					self._resumeDataTask(partIndex: index)
 				}
-			}
-			if !buffer.isEmpty {
-				guard _write(buffer, at: offset, generation: generation) else {
-					_failOverToSingleConnection(generation: generation)
-					return
-				}
-				offset += Int64(buffer.count)
-				_addPartDownloaded(index, Int64(buffer.count))
-				_reportProgressIfNeeded()
+			} onCancel: { [weak self] in
+				// The part Task was cancelled (pause / cancel /
+				// failover): stop the network task too, so its
+				// didCompleteWithError resumes the continuation
+				// and this part ends instead of hanging.
+				self?._cancelDataTask(partIndex: index)
 			}
 		} catch {
+			_unregisterDataTask(partIndex: index, taskIdentifier: taskIdentifier)
 			if Task.isCancelled { return }
 			// Zenith v2.8: the internet dropped mid-part — park the
 			// whole download as waiting-for-internet instead of
@@ -1707,6 +1945,117 @@ final class ZenithMultipartDownload: @unchecked Sendable {
 			// download fails honestly through its own delegate.
 			_failOverToSingleConnection(generation: generation)
 		}
+		_unregisterDataTask(partIndex: index, taskIdentifier: taskIdentifier)
+	}
+
+	// MARK: - URLSessionDataDelegate (chunked part delivery)
+
+	func urlSession(_ session: URLSession, dataTask: URLSessionDataTask, didReceive response: URLResponse, completionHandler: @escaping (URLSession.ResponseDisposition) -> Void) {
+		lock.lock()
+		let info = _partTaskInfo[dataTask.taskIdentifier]
+		lock.unlock()
+		guard let info else {
+			completionHandler(.cancel)
+			return
+		}
+		guard (response as? HTTPURLResponse)?.statusCode == 206 else {
+			// The server claimed ranges but answered with the whole
+			// file: fall back to the single-connection task.
+			_failOverToSingleConnection(generation: info.generation)
+			completionHandler(.cancel)
+			return
+		}
+		completionHandler(.allow)
+	}
+
+	func urlSession(_ session: URLSession, dataTask: URLSessionDataTask, didReceive data: Data) {
+		lock.lock()
+		let info = _partTaskInfo[dataTask.taskIdentifier]
+		let failedOver = _didFailOver
+		let dead = _isDead
+		lock.unlock()
+		guard let info, !failedOver, !dead else { return }
+		let offset = Int64(info.partIndex) * _partSize + _partDownloaded(info.partIndex)
+		guard _write(data, at: offset, generation: info.generation) else {
+			// The part file is unwritable — the single-connection
+			// task writes through URLSession's own temp file
+			// instead.
+			_failOverToSingleConnection(generation: info.generation)
+			return
+		}
+		_addPartDownloaded(info.partIndex, Int64(data.count))
+		_reportProgressIfNeeded()
+	}
+
+	func urlSession(_ session: URLSession, task: URLSessionTask, didCompleteWithError error: Error?) {
+		lock.lock()
+		let continuation = _partContinuations.removeValue(forKey: task.taskIdentifier)
+		lock.unlock()
+		// No continuation: a stale task, or one whose part already
+		// ended — never resume twice.
+		guard let continuation else { return }
+		if let error {
+			continuation.resume(throwing: error)
+		} else {
+			continuation.resume()
+		}
+	}
+
+	/// Locked read of the cancelled flag.
+	private func _isCancelled() -> Bool {
+		lock.lock()
+		defer { lock.unlock() }
+		return _cancelled
+	}
+
+	/// Stores the continuation a part Task is suspended in (see
+	/// _runPart): kept as a method so the @Sendable awaiting
+	/// closures capture only self, never the lock itself.
+	private func _storeContinuation(_ continuation: CheckedContinuation<Void, Error>, taskIdentifier: Int) {
+		lock.lock()
+		_partContinuations[taskIdentifier] = continuation
+		lock.unlock()
+	}
+	
+	/// Resumes the live data task for a part (looked up by part
+	/// index so the @Sendable awaiting closures never capture the
+	/// task itself).
+	private func _resumeDataTask(partIndex: Int) {
+		lock.lock()
+		let dataTask = _partDataTasks[partIndex]
+		lock.unlock()
+		dataTask?.resume()
+	}
+
+	/// Cancels the live data task for a part, if any.
+	private func _cancelDataTask(partIndex: Int) {
+		lock.lock()
+		let dataTask = _partDataTasks[partIndex]
+		lock.unlock()
+		dataTask?.cancel()
+	}
+
+	/// Cancels every live per-part data task (the network side).
+	/// Called wherever the part Tasks are cancelled: the Swift
+	/// Task cancellation alone does not stop the URLSession task,
+	/// and a data task left running would keep writing into the
+	/// part file after the pause.
+	private func _cancelDataTasks() {
+		lock.lock()
+		let dataTasks = Array(_partDataTasks.values)
+		lock.unlock()
+		for dataTask in dataTasks {
+			dataTask.cancel()
+		}
+	}
+
+	/// Drops all bookkeeping for a finished part task.
+	private func _unregisterDataTask(partIndex: Int, taskIdentifier: Int) {
+		lock.lock()
+		_partDataTasks.removeValue(forKey: partIndex)
+		_partTaskInfo.removeValue(forKey: taskIdentifier)
+		_partContinuations.removeValue(forKey: taskIdentifier)
+		lock.unlock()
 	}
 	
 	/// Writes one buffered chunk at its file offset. Returns false
@@ -1745,6 +2094,7 @@ final class ZenithMultipartDownload: @unchecked Sendable {
 		for task in tasks {
 			task.cancel()
 		}
+		_cancelDataTasks()
 	}
 	
 	private func _failOverToSingleConnection(generation: Int) {
@@ -1768,6 +2118,7 @@ final class ZenithMultipartDownload: @unchecked Sendable {
 		for task in tasks {
 			task.cancel()
 		}
+		_cancelDataTasks()
 		_deleteTempAndManifest()
 		Task { @MainActor in
 			DownloadManager.shared._startSingleTask(for: download)
@@ -1902,7 +2253,12 @@ final class ZenithMultipartDownload: @unchecked Sendable {
 			partDownloaded: _snapshotPartDownloaded(),
 			tempFileName: tempURL.lastPathComponent
 		)
-		try? JSONEncoder().encode(manifest).write(to: manifestURL)
+		// Atomic: a kill mid-write must never leave a torn
+		// manifest behind — an unreadable manifest forces the
+		// resume from zero.
+		if let data = try? JSONEncoder().encode(manifest) {
+			try? data.write(to: manifestURL, options: .atomic)
+		}
 	}
 	
 	private func _deleteTempAndManifest() {

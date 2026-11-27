@@ -79,8 +79,7 @@ $(PLATFORMS): deps
 		-derivedDataPath $(TMP)/$@ \
 		-skipPackagePluginValidation \
 		CODE_SIGNING_ALLOWED=NO \
-		ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES=NO \
-		DYLIB_CURRENT_VERSION=1 DYLIB_COMPATIBILITY_VERSION=1
+		ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES=NO
 
 	mkdir -p _build/Payload
 	cp -R _build/Applications/*.app _build/Payload/Zenith.app

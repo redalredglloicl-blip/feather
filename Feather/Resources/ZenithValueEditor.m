@@ -27,6 +27,11 @@
 //  * Floating in-game menu: two states that toggle — a small
 //    draggable floating button showing the Zenith ringed-planet
 //    logo, and the full menu panel with its own close button.
+//    v2.15: the menu opens inside the game's own key window, not
+//    as a second UIWindow — the second window crashed the game
+//    on tap, before the menu drew a single frame. The button's
+//    own window refuses key-window status, so tapping it can
+//    never steal the key window from the game.
 //    Closing the menu collapses it back to the floating button,
 //    which stays on screen; tapping it reopens the menu. The
 //    button snaps to the nearest screen edge when the drag ends,
@@ -1120,11 +1125,33 @@ static void VEAddTiltedEllipseArc(CGContextRef ctx, CGPoint center, CGFloat a, C
 
 @end
 
-// MARK: - ZenithValueEditorOverlay (floating button + menu windows)
+// MARK: - ZenithValueEditorOverlay (floating button + menu)
 
-/// Owns the two windows: the small draggable floating button (the
-/// Zenith planet) and the full menu panel. Same pattern as
-/// ZenithFPSOverlay / ZenithTranslateOverlay.
+/// Owns the floating button window (the Zenith planet) and the
+/// menu panel. The menu is NOT a second window: v2.15 — opening
+/// it as its own UIWindow (initWithWindowScene: + hidden = NO)
+/// crashed the game on tap, so the menu now opens as a child
+/// view controller inside the game's own key window instead.
+/// The pill window is a ZenithValueEditorOverlayWindow, which
+/// refuses key-window status, so tapping it can never steal the
+/// key window from the game.
+@interface ZenithValueEditorOverlayWindow : UIWindow
+@end
+
+@implementation ZenithValueEditorOverlayWindow
+
+// The floating button must stay tappable without ever stealing
+// key-window status from the game: a tap inside a visible
+// non-key window can make that window key, and a game that
+// loses its key window mid-frame can crash. Refusing key
+// status is the standard way to keep an overlay window
+// non-key (the status bar window does the same thing).
+- (BOOL)canBecomeKeyWindow {
+	return NO;
+}
+
+@end
+
 @interface ZenithValueEditorOverlay : NSObject
 
 + (instancetype)shared;
@@ -1133,12 +1160,12 @@ static void VEAddTiltedEllipseArc(CGContextRef ctx, CGPoint center, CGFloat a, C
 - (void)hideMenu;
 - (void)pillTapped;
 - (void)dragged:(UIPanGestureRecognizer *)gesture;
+- (UIWindow *)keyWindow;
 
 @end
 
 @implementation ZenithValueEditorOverlay {
 	UIWindow *_pillWindow;
-	UIWindow *_menuWindow;
 	ZenithValueEditorMenuViewController *_menu;
 }
 
@@ -1187,9 +1214,9 @@ static void VEAddTiltedEllipseArc(CGContextRef ctx, CGPoint center, CGFloat a, C
 
 	UIWindowScene *scene = [self foregroundScene];
 	if (scene != nil) {
-		_pillWindow = [[UIWindow alloc] initWithWindowScene:scene];
+		_pillWindow = [[ZenithValueEditorOverlayWindow alloc] initWithWindowScene:scene];
 	} else {
-		_pillWindow = [[UIWindow alloc] initWithFrame:CGRectMake(16, 160, 52, 52)];
+		_pillWindow = [[ZenithValueEditorOverlayWindow alloc] initWithFrame:CGRectMake(16, 160, 52, 52)];
 	}
 	_pillWindow.frame = CGRectMake(16, 160, 52, 52);
 	_pillWindow.windowLevel = UIWindowLevelStatusBar + 1;
@@ -1202,45 +1229,98 @@ static void VEAddTiltedEllipseArc(CGContextRef ctx, CGPoint center, CGFloat a, C
 	[_pillWindow addGestureRecognizer:drag];
 }
 
+/// The game's key window, found the same way
+/// ZenithTranslateOverlay finds it: the foreground scene's
+/// window whose isKeyWindow is YES. Nil if the game has no
+/// key window right now — showMenu bails out instead of
+/// opening the menu anywhere else.
+- (UIWindow *)keyWindow {
+	for (UIScene *scene in [UIApplication sharedApplication].connectedScenes) {
+		if (scene.activationState != UISceneActivationStateForegroundActive) {
+			continue;
+		}
+		if (![scene isKindOfClass:[UIWindowScene class]]) {
+			continue;
+		}
+		for (UIWindow *window in ((UIWindowScene *)scene).windows) {
+			if (window.isKeyWindow) {
+				return window;
+			}
+		}
+	}
+	return nil;
+}
+
 - (void)showMenu {
-	if (_menuWindow != nil) {
-		_menuWindow.hidden = NO;
+	if (![NSThread isMainThread]) {
+		dispatch_async(dispatch_get_main_queue(), ^{
+			[self showMenu];
+		});
+		return;
+	}
+	// Already open and on screen: nothing to do.
+	if (_menu != nil && _menu.view.window != nil && !_menu.view.hidden) {
+		return;
+	}
+	// Reopen after a close: the menu is still attached to the
+	// game's window, just hidden.
+	if (_menu != nil && _menu.view.window != nil) {
+		_menu.view.hidden = NO;
+		return;
+	}
+	// First open, or the host view controller went away while
+	// the menu was hidden (its screen dismissed): drop the
+	// stale menu and rebuild it below.
+	if (_menu != nil) {
+		[_menu willMoveToParentViewController:nil];
+		[_menu.view removeFromSuperview];
+		[_menu removeFromParentViewController];
+		_menu = nil;
+	}
+	// NO second window (v2.15 fix): creating the menu as its
+	// own UIWindow and unhiding it on tap crashed the game
+	// before the menu drew a single frame. The menu opens
+	// inside the game's own key window instead, as a child
+	// view controller of the game's topmost view controller
+	// — proper containment, so the menu still presents its
+	// edit sheets from itself, and the game keeps its key
+	// window, its scene and its runloop untouched. No memory
+	// scan starts here: searching only starts when the user
+	// taps بحث.
+	UIWindow *keyWindow = [self keyWindow];
+	if (keyWindow == nil) {
+		return;
+	}
+	UIViewController *host = keyWindow.rootViewController;
+	while (host.presentedViewController != nil) {
+		host = host.presentedViewController;
+	}
+	if (host == nil) {
 		return;
 	}
 	_menu = [[ZenithValueEditorMenuViewController alloc] init];
-	UIViewController *host = [[UIViewController alloc] init];
-	host.view.backgroundColor = [UIColor clearColor];
-	// Proper containment: the menu presents its edit sheets from
-	// itself, and presentation only works from a view controller
-	// that is actually in the hierarchy — adding the view as a
-	// bare subview is not enough.
 	[host addChildViewController:_menu];
-	[host.view addSubview:_menu.view];
-	_menu.view.frame = host.view.bounds;
+	_menu.view.frame = CGRectInset(host.view.bounds, 16, 60);
 	_menu.view.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+	[host.view addSubview:_menu.view];
 	[_menu didMoveToParentViewController:host];
-
-	CGRect screenBounds = [UIScreen mainScreen].bounds;
-	CGRect frame = CGRectInset(screenBounds, 16, 60);
-	UIWindowScene *scene = [self foregroundScene];
-	if (scene != nil) {
-		_menuWindow = [[UIWindow alloc] initWithWindowScene:scene];
-	} else {
-		_menuWindow = [[UIWindow alloc] initWithFrame:frame];
-	}
-	_menuWindow.frame = frame;
-	_menuWindow.windowLevel = UIWindowLevelStatusBar + 2;
-	_menuWindow.backgroundColor = [UIColor clearColor];
-	_menuWindow.rootViewController = host;
-	_menuWindow.hidden = NO;
 }
 
 - (void)hideMenu {
-	_menuWindow.hidden = YES;
+	// Dismiss the keyboard too if the value field was editing,
+	// so it does not linger over the game after the menu closes.
+	[_menu.view endEditing:YES];
+	_menu.view.hidden = YES;
 }
 
 - (void)pillTapped {
-	if (_menuWindow != nil && !_menuWindow.hidden) {
+	if (![NSThread isMainThread]) {
+		dispatch_async(dispatch_get_main_queue(), ^{
+			[self pillTapped];
+		});
+		return;
+	}
+	if (_menu != nil && _menu.view.window != nil && !_menu.view.hidden) {
 		[self hideMenu];
 	} else {
 		[self showMenu];

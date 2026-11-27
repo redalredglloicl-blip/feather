@@ -19,9 +19,19 @@ class BackgroundTaskManager: ObservableObject {
 	
 	private var activeTasks: [String: BGContinuedProcessingTask] = [:]
 	private var registeredTasks: Set<String> = []
+	/// Identifiers already submitted and not yet finished/expired:
+	/// a second submit for the same identifier is rejected by the
+	/// scheduler, and resumeDownload re-submits on every resume.
+	private var submittedTasks: Set<String> = []
 	
 	func startTask(for downloadId: String, filename: String) {
 		let taskIdentifier = "\(baseId).\(downloadId.md5)"
+		
+		// Already running (or already submitted) for this download:
+		// do not submit a second request for the same identifier.
+		if activeTasks[taskIdentifier] != nil || submittedTasks.contains(taskIdentifier) {
+			return
+		}
 		
 		if !registeredTasks.contains(taskIdentifier) {
 			BGTaskScheduler.shared.register(forTaskWithIdentifier: taskIdentifier, using: nil) { task in
@@ -30,21 +40,31 @@ class BackgroundTaskManager: ObservableObject {
 				
 				task.expirationHandler = {
 					if let download = DownloadManager.shared.getDownload(by: downloadId) {
-						// Zenith v2.11: expiry is the system reclaiming
-						// background time, NOT a user cancel. Cancelling
-						// here removed the download from the list (and
-						// the $downloads sink then persisted [] over
-						// ZenithActiveDownloads.json) and deleted its
-						// resume data + multipart manifest — so a
-						// download that was backgrounded for a while
-						// vanished with no history entry, and the
-						// Downloads tab showed "no downloads yet" on
-						// the next launch. Pause instead: the entry,
-						// its real progress and its resume state all
-						// survive, and the user resumes it by hand.
-						DownloadManager.shared.pauseDownload(download)
+						if download.multipart != nil {
+							// Multi-connection parts run on an
+							// ephemeral session in the app process:
+							// they die when the app suspends, so
+							// pause now — the manifest persists and
+							// the download resumes from its part
+							// offsets. (Zenith v2.11: never cancel
+							// here — cancelling removed the download
+							// and deleted its resume state, so a
+							// backgrounded download vanished.)
+							DownloadManager.shared.pauseDownload(download)
+						} else {
+							// Single-connection downloads run on the
+							// background URLSession: the system
+							// daemon keeps fetching after the app
+							// suspends, so do NOT pause — pausing
+							// here would cancel the daemon task and
+							// throw the download back to a
+							// resume-data gamble. Just persist a
+							// snapshot of where it stands.
+							DownloadManager.shared._saveActiveDownloads()
+						}
 					}
 					self.activeTasks.removeValue(forKey: task.identifier)
+					self.submittedTasks.remove(task.identifier)
 				}
 			}
 			self.registeredTasks.insert(taskIdentifier)
@@ -54,6 +74,7 @@ class BackgroundTaskManager: ObservableObject {
 		request.strategy = .queue
 		do {
 			try BGTaskScheduler.shared.submit(request)
+			self.submittedTasks.insert(taskIdentifier)
 		} catch {
 			print(error)
 		}
@@ -79,6 +100,7 @@ class BackgroundTaskManager: ObservableObject {
 		
 		task.setTaskCompleted(success: success)
 		activeTasks.removeValue(forKey: taskIdentifier)
+		submittedTasks.remove(taskIdentifier)
 	}
 }
 

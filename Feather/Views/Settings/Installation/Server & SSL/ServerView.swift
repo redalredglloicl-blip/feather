@@ -49,7 +49,10 @@ extension ServerView {
 // MARK: - View
 struct ServerView: View {
 	@AppStorage("Zenith.ipFix") private var _ipFix: Bool = false
-	@AppStorage("Zenith.serverMethod") private var _serverMethod: Int = 0
+	// Zenith v2.15: "Semi Local" (1) is the working default. "Fully
+	// Local" (0) needs the backloop.dev TLS pack, whose certificate
+	// expired 2026-10-29 — installs over it hang silently at "Ready".
+	@AppStorage("Zenith.serverMethod") private var _serverMethod: Int = 1
 	private let _serverMethods: [String] = [.localized("Fully Local"), .localized("Semi Local")]
 	
 	private let _dataService = NBFetchService()
