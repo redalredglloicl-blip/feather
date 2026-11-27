@@ -44,6 +44,7 @@
 		F1BB50D76BB84EA1B9C6EE75 /* litehook.c in Sources */ = {isa = PBXBuildFile; fileRef = 0B0F960B8D834CC6B837134F /* litehook.c */; };
 		B4DDAFEBF6EB4E81ACD4FB95 /* LiveContainerShared.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BB5291884CF24898802484EA /* LiveContainerShared.framework */; };
 		003158BACE8247D99E5B18AD /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1FC7924340B840619F3FA85B /* SystemConfiguration.framework */; };
+		85F56ADB0A2142388A397AEE /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E465D5DD0B3C46708B76D504 /* IOKit.framework */; };
 		AB5C8E52CBE54EDCBD002B31 /* LiveContainerShared.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = BB5291884CF24898802484EA /* LiveContainerShared.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
 
@@ -113,6 +114,7 @@
 		ADFAF6B7317C4F26AF195E2C /* fixup-chains.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = fixup-chains.h; sourceTree = "<group>"; };
 		BB5291884CF24898802484EA /* LiveContainerShared.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = LiveContainerShared.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		1FC7924340B840619F3FA85B /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
+		E465D5DD0B3C46708B76D504 /* IOKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOKit.framework; path = System/Library/Frameworks/IOKit.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -215,6 +217,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				85F56ADB0A2142388A397AEE /* IOKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -225,6 +228,7 @@
 			isa = PBXGroup;
 			children = (
 				1FC7924340B840619F3FA85B /* SystemConfiguration.framework */,
+				E465D5DD0B3C46708B76D504 /* IOKit.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
