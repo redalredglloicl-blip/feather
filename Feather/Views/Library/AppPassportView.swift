@@ -22,6 +22,11 @@ struct AppPassportView: View {
 	@ObservedObject private var _prefs = LibraryPrefs.shared
 	@State private var _fileSizeText: String?
 	@State private var _signingPresented = false
+	@State private var _guestImportPresented = false
+	@State private var _launchFailed = false
+	// Bumped when a guest import finishes: the button below
+	// must flip from Import to Open without reopening the sheet.
+	@State private var _guestVersion = 0
 
 	private static let _dateFormatter: DateFormatter = {
 		let formatter = DateFormatter()
@@ -32,14 +37,6 @@ struct AppPassportView: View {
 
 	private var _certificate: CertificatePair? {
 		Storage.shared.getCertificate(from: app)
-	}
-
-	/// Days left on the signing certificate, never negative.
-	private var _certDaysRemaining: Int? {
-		guard let expiration = _certificate?.expiration else {
-			return nil
-		}
-		return max(0, Int(expiration.timeIntervalSinceNow / 86400))
 	}
 
 	// MARK: Body
@@ -90,6 +87,47 @@ struct AppPassportView: View {
 						.buttonStyle(ZenithPressButtonStyle())
 					}
 					.listRowBackground(Color.accentColor.opacity(0.15))
+					Section {
+						Button {
+							if ZenithGuestStore.isGuest(app) {
+								if !ZenithGuestLauncher.launch(app) {
+									_launchFailed = true
+								}
+							} else {
+								_guestImportPresented = true
+							}
+						} label: {
+							HStack {
+								Spacer()
+								if ZenithGuestStore.isGuest(app) {
+									Label {
+										Text(.localized("افتح داخل التطبيق"))
+									} icon: {
+										Image(systemName: "play.fill")
+											.font(.system(size: 20))
+									}
+									.font(.headline)
+								} else {
+									// icon-import is a 20pt asset: a bare
+									// Label(image:) would render it at
+									// intrinsic size. Explicit 20pt frame,
+									// same as the old sign button.
+									Label {
+										Text(.localized("استورد داخل التطبيق"))
+									} icon: {
+										Image("icon-import")
+											.resizable()
+											.scaledToFit()
+											.frame(width: 20, height: 20)
+									}
+									.font(.headline)
+								}
+								Spacer()
+							}
+						}
+						.buttonStyle(ZenithPressButtonStyle())
+					}
+					.listRowBackground(Color.accentColor.opacity(0.15))
 				}
 				// Transparent list so the starfield shows through the gaps
 				// between rows; rows themselves stay clear as well. The
@@ -105,6 +143,18 @@ struct AppPassportView: View {
 				}
 				.fullScreenCover(isPresented: $_signingPresented) {
 					SigningView(app: app)
+				}
+				.sheet(isPresented: $_guestImportPresented) {
+					GuestImportView(app: app)
+						.zenithSheetBackground()
+				}
+				.alert(.localized("ما قدرت أفتح هالتطبيق — ملفاته مو موجودة."), isPresented: $_launchFailed) {
+					Button(.localized("Dismiss"), role: .cancel) { }
+				}
+				.onReceive(NotificationCenter.default.publisher(for: ZenithGuestStore.didImportGuestNotification)) { _ in
+					// A finished import flips this sheet's button
+					// from Import to Open without reopening it.
+					_guestVersion += 1
 				}
 			}
 		}
@@ -146,11 +196,8 @@ struct AppPassportView: View {
 				CertificatesCellView(cert: cert)
 				if let expiration = cert.expiration {
 					let info = expiration.expirationInfo()
-					_infoCell(.localized("تنتهي"), desc: "\(Self._dateFormatter.string(from: expiration)) (\(info.formatted))")
+					_infoCell(.localized("تنتهي"), desc: Self._dateFormatter.string(from: expiration))
 						.foregroundStyle(info.color)
-				}
-				if let daysLeft = _certDaysRemaining {
-					_infoCell(.localized("باقي على الشهادة"), desc: .localized("%lld يوم", arguments: daysLeft))
 				}
 			}
 		} else {

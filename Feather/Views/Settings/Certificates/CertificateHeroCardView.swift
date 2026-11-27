@@ -112,7 +112,10 @@ struct CertificateHeroCardView: View {
 						.lineLimit(1)
 				}
 				
-				if let expiration = cert.expiration {
+				// The countdown ring already shows the days left, so the
+				// days count is not repeated here. Only the expired state
+				// gets its own line — "Expired" is a state, not a number.
+				if _isExpired, let expiration = cert.expiration {
 					let info = expiration.expirationInfo()
 					HStack(spacing: 6) {
 						Image(systemName: info.icon)

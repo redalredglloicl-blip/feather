@@ -20,11 +20,99 @@
 		3371F7322DA9ECDD00281AC6 /* Zip in Frameworks */ = {isa = PBXBuildFile; productRef = 3371F7312DA9ECDD00281AC6 /* Zip */; };
 		33CF13392DB5ACFB0021D4C5 /* SWCompression in Frameworks */ = {isa = PBXBuildFile; productRef = 33CF13382DB5ACFB0021D4C5 /* SWCompression */; };
 		570920BE2F98A4F0008C4A83 /* Zenith.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 570920BD2F98A4F0008C4A83 /* Zenith.xcconfig */; };
+		93490F4CC7864CEB84B18946 /* LCZenithCertificate.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC77870114584E11A010C73C /* LCZenithCertificate.swift */; };
+		24ED6226790D44308F3CDD27 /* main.c in Sources */ = {isa = PBXBuildFile; fileRef = D8A7658C212842F3BA2719A9 /* main.c */; };
+		0718B18ECC30409584AC5554 /* LCBootstrap.m in Sources */ = {isa = PBXBuildFile; fileRef = EE50285169534978A957DF37 /* LCBootstrap.m */; };
+		BC7C941AFDBE47498EA3AE88 /* LCSharedUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 14CAA1A000004C90A74D9C61 /* LCSharedUtils.m */; };
+		0126236B080F454ABB34BEDC /* LCUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 6FD144FA8F2F46DD913E6386 /* LCUtils.m */; };
+		B2462B62E381461BB5F6FD55 /* LCMachOUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 111B674F43AC40A0A6664B9E /* LCMachOUtils.m */; };
+		5B65BD418A5B4E28A877881F /* utils.m in Sources */ = {isa = PBXBuildFile; fileRef = 0AA98AA3C0294B258F932C67 /* utils.m */; };
+		85AF3A7B1A874CF297974EEC /* dyld_bypass_validation.m in Sources */ = {isa = PBXBuildFile; fileRef = 8EDEF3EF6EF74F72AF6D7AF9 /* dyld_bypass_validation.m */; };
+		96230635F4A84A14A70C2385 /* ZenithExtensionHookStubs.m in Sources */ = {isa = PBXBuildFile; fileRef = 649D9801AF1C43CB9E947B88 /* ZenithExtensionHookStubs.m */; };
+		78348CFEE7CE401AA8662485 /* LCAppInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = 0C8BD4EB7A0347A1A6098B6D /* LCAppInfo.m */; };
+		ED8A88AFBD2C442180C01ED4 /* IconServices.m in Sources */ = {isa = PBXBuildFile; fileRef = EEB90AD935EB4587A4D03437 /* IconServices.m */; };
+		FCB8AAEBA53F459289FB586D /* OfflineClassicModeProbe.m in Sources */ = {isa = PBXBuildFile; fileRef = AB0923485CF64398AA001362 /* OfflineClassicModeProbe.m */; };
+		87094886ACA943A8A1D41DA4 /* Dead10ccFix.m in Sources */ = {isa = PBXBuildFile; fileRef = E6C1F676045D4284A6EC2B68 /* Dead10ccFix.m */; };
+		841CF46C2EC44B6D9A649669 /* Dyld.m in Sources */ = {isa = PBXBuildFile; fileRef = 0B1D0B68765A4AC5AC96ACD5 /* Dyld.m */; };
+		45F1FD2F5D6D4B94AB08E030 /* IDFV.m in Sources */ = {isa = PBXBuildFile; fileRef = 02EE53A1E1CA49A49E47ECDE /* IDFV.m */; };
+		A54D6793D8E04FDDB0A816F0 /* NSBundle+FixCydiaSubstrate.m in Sources */ = {isa = PBXBuildFile; fileRef = 3CF299A14582458EA721F1C8 /* NSBundle+FixCydiaSubstrate.m */; };
+		535ACDD47B224359899AEF4B /* NSFileManager+GuestHooks.m in Sources */ = {isa = PBXBuildFile; fileRef = 07AA741E3D174978A2430804 /* NSFileManager+GuestHooks.m */; };
+		E9D6BBB191E545AEA6D56F8B /* NSURLSessionConfiguration+GuestHooks.m in Sources */ = {isa = PBXBuildFile; fileRef = EDE1970EF0C0447A9254D6BB /* NSURLSessionConfiguration+GuestHooks.m */; };
+		C59DADE9749A493D914F1DFC /* NSUserDefaults.m in Sources */ = {isa = PBXBuildFile; fileRef = 5FCBF7681D8B4EA5A662729C /* NSUserDefaults.m */; };
+		11BF2430685243AFBE672C43 /* SecItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 42F71E9521C244C088839B80 /* SecItem.m */; };
+		7C2579F809CB40E981BB55BD /* mach_excServer.c in Sources */ = {isa = PBXBuildFile; fileRef = B559438B51DA42E9B34972C6 /* mach_excServer.c */; };
+		F1BB50D76BB84EA1B9C6EE75 /* litehook.c in Sources */ = {isa = PBXBuildFile; fileRef = 0B0F960B8D834CC6B837134F /* litehook.c */; };
+		B4DDAFEBF6EB4E81ACD4FB95 /* LiveContainerShared.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BB5291884CF24898802484EA /* LiveContainerShared.framework */; };
+		003158BACE8247D99E5B18AD /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1FC7924340B840619F3FA85B /* SystemConfiguration.framework */; };
+		AB5C8E52CBE54EDCBD002B31 /* LiveContainerShared.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = BB5291884CF24898802484EA /* LiveContainerShared.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		FE426B71D7E743489DA6586E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 3379C1B12DA869A1004372DA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = FDE43A8813634896ADC9F555;
+			remoteInfo = LiveContainerShared;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		07401A870D924E4BBC325832 /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				AB5C8E52CBE54EDCBD002B31 /* LiveContainerShared.framework in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		3379C1B92DA869A1004372DA /* Zenith.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Zenith.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		570920BD2F98A4F0008C4A83 /* Zenith.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Zenith.xcconfig; sourceTree = "<group>"; };
+		FC77870114584E11A010C73C /* LCZenithCertificate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LCZenithCertificate.swift; sourceTree = "<group>"; };
+		D8A7658C212842F3BA2719A9 /* main.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c; path = main.c; sourceTree = "<group>"; };
+		EE50285169534978A957DF37 /* LCBootstrap.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = LCBootstrap.m; sourceTree = "<group>"; };
+		14CAA1A000004C90A74D9C61 /* LCSharedUtils.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = LCSharedUtils.m; sourceTree = "<group>"; };
+		6FD144FA8F2F46DD913E6386 /* LCUtils.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = LCUtils.m; sourceTree = "<group>"; };
+		111B674F43AC40A0A6664B9E /* LCMachOUtils.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = LCMachOUtils.m; sourceTree = "<group>"; };
+		0AA98AA3C0294B258F932C67 /* utils.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = utils.m; sourceTree = "<group>"; };
+		8EDEF3EF6EF74F72AF6D7AF9 /* dyld_bypass_validation.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = dyld_bypass_validation.m; sourceTree = "<group>"; };
+		649D9801AF1C43CB9E947B88 /* ZenithExtensionHookStubs.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ZenithExtensionHookStubs.m; sourceTree = "<group>"; };
+		0C8BD4EB7A0347A1A6098B6D /* LCAppInfo.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = LCAppInfo.m; sourceTree = "<group>"; };
+		EEB90AD935EB4587A4D03437 /* IconServices.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = IconServices.m; sourceTree = "<group>"; };
+		AB0923485CF64398AA001362 /* OfflineClassicModeProbe.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = OfflineClassicModeProbe.m; sourceTree = "<group>"; };
+		E6C1F676045D4284A6EC2B68 /* Dead10ccFix.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = Dead10ccFix.m; sourceTree = "<group>"; };
+		0B1D0B68765A4AC5AC96ACD5 /* Dyld.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = Dyld.m; sourceTree = "<group>"; };
+		02EE53A1E1CA49A49E47ECDE /* IDFV.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = IDFV.m; sourceTree = "<group>"; };
+		3CF299A14582458EA721F1C8 /* NSBundle+FixCydiaSubstrate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "NSBundle+FixCydiaSubstrate.m"; sourceTree = "<group>"; };
+		07AA741E3D174978A2430804 /* NSFileManager+GuestHooks.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "NSFileManager+GuestHooks.m"; sourceTree = "<group>"; };
+		EDE1970EF0C0447A9254D6BB /* NSURLSessionConfiguration+GuestHooks.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "NSURLSessionConfiguration+GuestHooks.m"; sourceTree = "<group>"; };
+		5FCBF7681D8B4EA5A662729C /* NSUserDefaults.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = NSUserDefaults.m; sourceTree = "<group>"; };
+		42F71E9521C244C088839B80 /* SecItem.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SecItem.m; sourceTree = "<group>"; };
+		B559438B51DA42E9B34972C6 /* mach_excServer.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c; path = mach_excServer.c; sourceTree = "<group>"; };
+		0B0F960B8D834CC6B837134F /* litehook.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c; path = litehook.c; sourceTree = "<group>"; };
+		73829C69C7C3470E8B37EB42 /* LCSharedUtils.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = LCSharedUtils.h; sourceTree = "<group>"; };
+		80AB7F43364C4DE591B88A16 /* LCUtils.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = LCUtils.h; sourceTree = "<group>"; };
+		430D361452E54E5587B6924C /* LCMachOUtils.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = LCMachOUtils.h; sourceTree = "<group>"; };
+		A216A3B6BFD84B4AAB01A82F /* utils.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = utils.h; sourceTree = "<group>"; };
+		F269492A4C4248DEA93FBCAB /* dyld_bypass_validation.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = dyld_bypass_validation.h; sourceTree = "<group>"; };
+		EA3AE34A5B2D4CE3980360E5 /* FoundationPrivate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FoundationPrivate.h; sourceTree = "<group>"; };
+		F8359FF7ECEA4F239289AF4A /* UIKitPrivate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UIKitPrivate.h; sourceTree = "<group>"; };
+		0C5DD365CCB147CB9D0AC6AC /* LCAppInfo.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = LCAppInfo.h; sourceTree = "<group>"; };
+		B327201976BA43B9A2E19241 /* Tweaks.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Tweaks.h; sourceTree = "<group>"; };
+		CE482456026B4125A5946665 /* libproc.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = libproc.h; sourceTree = "<group>"; };
+		8BBE057EFCFB4DC499F809E7 /* mach_excServer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = mach_excServer.h; sourceTree = "<group>"; };
+		CCBC0611A2D64FB89608398B /* proc_info.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = proc_info.h; sourceTree = "<group>"; };
+		0B4669C188F344A1B63863A9 /* litehook.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = litehook.h; sourceTree = "<group>"; };
+		4491028DC4F7424ABFE0FCA1 /* dyld_cache_format.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = dyld_cache_format.h; sourceTree = "<group>"; };
+		ADFAF6B7317C4F26AF195E2C /* fixup-chains.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = fixup-chains.h; sourceTree = "<group>"; };
+		BB5291884CF24898802484EA /* LiveContainerShared.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = LiveContainerShared.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		1FC7924340B840619F3FA85B /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -118,6 +206,15 @@
 				3305BBAC2DB8944200660D45 /* Vapor in Frameworks */,
 				8299EFD3A5557CA3E576BE62 /* SideSign in Frameworks */,
 				3346F83B2DC6C6D100C7D508 /* NukeUI in Frameworks */,
+				B4DDAFEBF6EB4E81ACD4FB95 /* LiveContainerShared.framework in Frameworks */,
+				003158BACE8247D99E5B18AD /* SystemConfiguration.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		5C269732C5F84F8DB14C62A6 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -127,6 +224,7 @@
 		3371F7302DA9ECDD00281AC6 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				1FC7924340B840619F3FA85B /* SystemConfiguration.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -136,6 +234,7 @@
 			children = (
 				3379C1BB2DA869A1004372DA /* Zenith */,
 				3371F7302DA9ECDD00281AC6 /* Frameworks */,
+				2AA4D0D3553D4037ABE4EF5E /* LiveContainer */,
 				3379C1BA2DA869A1004372DA /* Products */,
 				570920BD2F98A4F0008C4A83 /* Zenith.xcconfig */,
 			);
@@ -145,8 +244,126 @@
 			isa = PBXGroup;
 			children = (
 				3379C1B92DA869A1004372DA /* Zenith.app */,
+				BB5291884CF24898802484EA /* LiveContainerShared.framework */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		2AA4D0D3553D4037ABE4EF5E /* LiveContainer */ = {
+			isa = PBXGroup;
+			children = (
+				FC77870114584E11A010C73C /* LCZenithCertificate.swift */,
+				D8A7658C212842F3BA2719A9 /* main.c */,
+				6FD144FA8F2F46DD913E6386 /* LCUtils.m */,
+				80AB7F43364C4DE591B88A16 /* LCUtils.h */,
+				EE50285169534978A957DF37 /* LCBootstrap.m */,
+				14CAA1A000004C90A74D9C61 /* LCSharedUtils.m */,
+				73829C69C7C3470E8B37EB42 /* LCSharedUtils.h */,
+				111B674F43AC40A0A6664B9E /* LCMachOUtils.m */,
+				430D361452E54E5587B6924C /* LCMachOUtils.h */,
+				0AA98AA3C0294B258F932C67 /* utils.m */,
+				A216A3B6BFD84B4AAB01A82F /* utils.h */,
+				8EDEF3EF6EF74F72AF6D7AF9 /* dyld_bypass_validation.m */,
+				F269492A4C4248DEA93FBCAB /* dyld_bypass_validation.h */,
+				649D9801AF1C43CB9E947B88 /* ZenithExtensionHookStubs.m */,
+				EA3AE34A5B2D4CE3980360E5 /* FoundationPrivate.h */,
+				F8359FF7ECEA4F239289AF4A /* UIKitPrivate.h */,
+				D17BC0CCDCA34C76BE34C42F /* Tweaks */,
+				6DCE0BC16B344D14A8AB3428 /* litehook */,
+				4A7AB5F0BF9D4B9FA5122204 /* LiveContainerSwiftUI */,
+			);
+			name = LiveContainer;
+			path = LiveContainer;
+			sourceTree = "<group>";
+		};
+		D17BC0CCDCA34C76BE34C42F /* Tweaks */ = {
+			isa = PBXGroup;
+			children = (
+				E6C1F676045D4284A6EC2B68 /* Dead10ccFix.m */,
+				0B1D0B68765A4AC5AC96ACD5 /* Dyld.m */,
+				02EE53A1E1CA49A49E47ECDE /* IDFV.m */,
+				3CF299A14582458EA721F1C8 /* NSBundle+FixCydiaSubstrate.m */,
+				07AA741E3D174978A2430804 /* NSFileManager+GuestHooks.m */,
+				EDE1970EF0C0447A9254D6BB /* NSURLSessionConfiguration+GuestHooks.m */,
+				5FCBF7681D8B4EA5A662729C /* NSUserDefaults.m */,
+				42F71E9521C244C088839B80 /* SecItem.m */,
+				B327201976BA43B9A2E19241 /* Tweaks.h */,
+				CE482456026B4125A5946665 /* libproc.h */,
+				B559438B51DA42E9B34972C6 /* mach_excServer.c */,
+				8BBE057EFCFB4DC499F809E7 /* mach_excServer.h */,
+				CCBC0611A2D64FB89608398B /* proc_info.h */,
+			);
+			name = Tweaks;
+			path = Tweaks;
+			sourceTree = "<group>";
+		};
+		6DCE0BC16B344D14A8AB3428 /* litehook */ = {
+			isa = PBXGroup;
+			children = (
+				6DBAD4A666A64DEB921C17E7 /* src */,
+				6D71E5417E054D58B4875512 /* external */,
+			);
+			name = litehook;
+			path = litehook;
+			sourceTree = "<group>";
+		};
+		6DBAD4A666A64DEB921C17E7 /* src */ = {
+			isa = PBXGroup;
+			children = (
+				0B0F960B8D834CC6B837134F /* litehook.c */,
+				0B4669C188F344A1B63863A9 /* litehook.h */,
+			);
+			name = src;
+			path = src;
+			sourceTree = "<group>";
+		};
+		6D71E5417E054D58B4875512 /* external */ = {
+			isa = PBXGroup;
+			children = (
+				60CEF0D71E9D4D7997235790 /* include */,
+			);
+			name = external;
+			path = external;
+			sourceTree = "<group>";
+		};
+		60CEF0D71E9D4D7997235790 /* include */ = {
+			isa = PBXGroup;
+			children = (
+				4491028DC4F7424ABFE0FCA1 /* dyld_cache_format.h */,
+				ADFAF6B7317C4F26AF195E2C /* fixup-chains.h */,
+			);
+			name = include;
+			path = include;
+			sourceTree = "<group>";
+		};
+		4A7AB5F0BF9D4B9FA5122204 /* LiveContainerSwiftUI */ = {
+			isa = PBXGroup;
+			children = (
+				5ECB411594A04E699B832694 /* Models */,
+				17150971BC694A4CAEEF2C38 /* Utilities */,
+			);
+			name = LiveContainerSwiftUI;
+			path = LiveContainerSwiftUI;
+			sourceTree = "<group>";
+		};
+		5ECB411594A04E699B832694 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				0C5DD365CCB147CB9D0AC6AC /* LCAppInfo.h */,
+				0C8BD4EB7A0347A1A6098B6D /* LCAppInfo.m */,
+			);
+			name = Models;
+			path = Models;
+			sourceTree = "<group>";
+		};
+		17150971BC694A4CAEEF2C38 /* Utilities */ = {
+			isa = PBXGroup;
+			children = (
+				EEB90AD935EB4587A4D03437 /* IconServices.m */,
+				AB0923485CF64398AA001362 /* OfflineClassicModeProbe.m */,
+			);
+			name = Utilities;
+			path = Utilities;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -159,11 +376,13 @@
 				3379C1B52DA869A1004372DA /* Sources */,
 				D388BF3D322A8502591712DA /* Compile Zenith overlay dylibs */,
 				3379C1B62DA869A1004372DA /* Frameworks */,
+				07401A870D924E4BBC325832 /* Embed Frameworks */,
 				3379C1B72DA869A1004372DA /* Resources */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				26A3E50AC063486EAD9FD7BD /* LiveContainerShared */,
 			);
 			fileSystemSynchronizedGroups = (
 				3379C1BB2DA869A1004372DA /* Zenith */,
@@ -188,6 +407,22 @@
 			productName = Zenith;
 			productReference = 3379C1B92DA869A1004372DA /* Zenith.app */;
 			productType = "com.apple.product-type.application";
+		};
+		FDE43A8813634896ADC9F555 /* LiveContainerShared */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = E007145137D645F8816E4D11 /* Build configuration list for PBXNativeTarget "LiveContainerShared" */;
+			buildPhases = (
+				6AB5D60ACAE04E03A0E68556 /* Sources */,
+				5C269732C5F84F8DB14C62A6 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = LiveContainerShared;
+			productName = LiveContainerShared;
+			productReference = BB5291884CF24898802484EA /* LiveContainerShared.framework */;
+			productType = "com.apple.product-type.framework";
 		};
 /* End PBXNativeTarget section */
 
@@ -243,6 +478,7 @@
 			projectRoot = "";
 			targets = (
 				3379C1B82DA869A1004372DA /* Zenith */,
+				FDE43A8813634896ADC9F555 /* LiveContainerShared */,
 			);
 		};
 /* End PBXProject section */
@@ -284,10 +520,47 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				93490F4CC7864CEB84B18946 /* LCZenithCertificate.swift in Sources */,
+				24ED6226790D44308F3CDD27 /* main.c in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		6AB5D60ACAE04E03A0E68556 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				0718B18ECC30409584AC5554 /* LCBootstrap.m in Sources */,
+				BC7C941AFDBE47498EA3AE88 /* LCSharedUtils.m in Sources */,
+				0126236B080F454ABB34BEDC /* LCUtils.m in Sources */,
+				B2462B62E381461BB5F6FD55 /* LCMachOUtils.m in Sources */,
+				5B65BD418A5B4E28A877881F /* utils.m in Sources */,
+				85AF3A7B1A874CF297974EEC /* dyld_bypass_validation.m in Sources */,
+				96230635F4A84A14A70C2385 /* ZenithExtensionHookStubs.m in Sources */,
+				78348CFEE7CE401AA8662485 /* LCAppInfo.m in Sources */,
+				ED8A88AFBD2C442180C01ED4 /* IconServices.m in Sources */,
+				FCB8AAEBA53F459289FB586D /* OfflineClassicModeProbe.m in Sources */,
+				87094886ACA943A8A1D41DA4 /* Dead10ccFix.m in Sources */,
+				841CF46C2EC44B6D9A649669 /* Dyld.m in Sources */,
+				45F1FD2F5D6D4B94AB08E030 /* IDFV.m in Sources */,
+				A54D6793D8E04FDDB0A816F0 /* NSBundle+FixCydiaSubstrate.m in Sources */,
+				535ACDD47B224359899AEF4B /* NSFileManager+GuestHooks.m in Sources */,
+				E9D6BBB191E545AEA6D56F8B /* NSURLSessionConfiguration+GuestHooks.m in Sources */,
+				C59DADE9749A493D914F1DFC /* NSUserDefaults.m in Sources */,
+				11BF2430685243AFBE672C43 /* SecItem.m in Sources */,
+				7C2579F809CB40E981BB55BD /* mach_excServer.c in Sources */,
+				F1BB50D76BB84EA1B9C6EE75 /* litehook.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		26A3E50AC063486EAD9FD7BD /* LiveContainerShared */ = {
+			isa = PBXTargetDependency;
+			target = FDE43A8813634896ADC9F555 /* LiveContainerShared */;
+			targetProxy = FE426B71D7E743489DA6586E /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
 		3379C1CB2DA869A3004372DA /* Debug */ = {
@@ -427,14 +700,26 @@
 				DEVELOPMENT_TEAM = "";
 				ENABLE_PREVIEWS = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = NO;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(BUILT_PRODUCTS_DIR)",
+				);
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"DEBUG=1",
 					"$(inherited)",
 				);
 				GENERATE_INFOPLIST_FILE = YES;
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(SRCROOT)/LiveContainer",
+					"$(SRCROOT)/LiveContainer/Tweaks",
+					"$(SRCROOT)/LiveContainer/litehook/src",
+					"$(SRCROOT)/LiveContainer/litehook/external/include",
+					"$(SRCROOT)/LiveContainer/LiveContainerSwiftUI/Models",
+				);
 				INFOPLIST_FILE = Feather/Resources/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = Zenith;
-				INFOPLIST_KEY_ZenithBuildNumber = 15;
+				INFOPLIST_KEY_ZenithBuildNumber = 16;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright (c) 2024 Samara M";
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
@@ -455,8 +740,13 @@
 					"$(PROJECT_DIR)/Feather/Resources/idevice",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 15.2;
-				ZENITH_PROJECT_VERSION = 2.13;
+				ZENITH_PROJECT_VERSION = 2.14;
 				MARKETING_VERSION = "$(ZENITH_PROJECT_VERSION)-debug";
+				OTHER_LDFLAGS = (
+					"-e",
+					"_LiveContainerMainC",
+					"$(inherited)",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = "$(ZENITH_PRODUCT_BUNDLE_IDENTIFIER)$(ZENITH_DISAMBIGUATOR)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -496,11 +786,27 @@
 				DEVELOPMENT_TEAM = "";
 				ENABLE_PREVIEWS = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = NO;
-				GCC_PREPROCESSOR_DEFINITIONS = "";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(BUILT_PRODUCTS_DIR)",
+				);
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"NS_BLOCK_ASSERTIONS=1",
+					"NDEBUG=1",
+					"$(inherited)",
+				);
 				GENERATE_INFOPLIST_FILE = YES;
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(SRCROOT)/LiveContainer",
+					"$(SRCROOT)/LiveContainer/Tweaks",
+					"$(SRCROOT)/LiveContainer/litehook/src",
+					"$(SRCROOT)/LiveContainer/litehook/external/include",
+					"$(SRCROOT)/LiveContainer/LiveContainerSwiftUI/Models",
+				);
 				INFOPLIST_FILE = Feather/Resources/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = Zenith;
-				INFOPLIST_KEY_ZenithBuildNumber = 15;
+				INFOPLIST_KEY_ZenithBuildNumber = 16;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright (c) 2024 Samara M";
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
@@ -521,8 +827,13 @@
 					"$(PROJECT_DIR)/Feather/Resources/idevice",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 15.2;
-				ZENITH_PROJECT_VERSION = 2.13;
+				ZENITH_PROJECT_VERSION = 2.14;
 				MARKETING_VERSION = "$(ZENITH_PROJECT_VERSION)";
+				OTHER_LDFLAGS = (
+					"-e",
+					"_LiveContainerMainC",
+					"$(inherited)",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = "$(ZENITH_PRODUCT_BUNDLE_IDENTIFIER)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -538,6 +849,120 @@
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TVOS_DEPLOYMENT_TARGET = 16.0;
+				XROS_DEPLOYMENT_TARGET = 2.2;
+			};
+			name = Release;
+		};
+		F5B8A7CF92304C6B9C01F824 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CODE_SIGN_IDENTITY = "";
+				CODE_SIGN_STYLE = Manual;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEFINES_MODULE = YES;
+				DEVELOPMENT_TEAM = "";
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GENERATE_INFOPLIST_FILE = YES;
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(SRCROOT)/LiveContainer",
+					"$(SRCROOT)/LiveContainer/Tweaks",
+					"$(SRCROOT)/LiveContainer/litehook/src",
+					"$(SRCROOT)/LiveContainer/litehook/external/include",
+					"$(SRCROOT)/LiveContainer/LiveContainerSwiftUI/Models",
+				);
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 15.2;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "$(ZENITH_PRODUCT_BUNDLE_IDENTIFIER).LiveContainerShared";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = auto;
+				SKIP_INSTALL = YES;
+				STRIP_INSTALLED_PRODUCT = NO;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TVOS_DEPLOYMENT_TARGET = 16.0;
+				VERSIONING_SYSTEM = "apple-generic";
+				XROS_DEPLOYMENT_TARGET = 2.2;
+			};
+			name = Debug;
+		};
+		37FA56774DA84711B914FAC2 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CODE_SIGN_IDENTITY = "";
+				CODE_SIGN_STYLE = Manual;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEFINES_MODULE = YES;
+				DEVELOPMENT_TEAM = "";
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_NO_COMMON_BLOCKS = YES;
+				DEAD_CODE_STRIPPING = YES;
+				DEPLOYMENT_POSTPROCESSING = YES;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"NS_BLOCK_ASSERTIONS=1",
+					"NDEBUG=1",
+					"$(inherited)",
+				);
+				GENERATE_INFOPLIST_FILE = YES;
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(SRCROOT)/LiveContainer",
+					"$(SRCROOT)/LiveContainer/Tweaks",
+					"$(SRCROOT)/LiveContainer/litehook/src",
+					"$(SRCROOT)/LiveContainer/litehook/external/include",
+					"$(SRCROOT)/LiveContainer/LiveContainerSwiftUI/Models",
+				);
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 15.2;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "$(ZENITH_PRODUCT_BUNDLE_IDENTIFIER).LiveContainerShared";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = auto;
+				SKIP_INSTALL = YES;
+				STRIP_INSTALLED_PRODUCT = NO;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TVOS_DEPLOYMENT_TARGET = 16.0;
+				VERSIONING_SYSTEM = "apple-generic";
 				XROS_DEPLOYMENT_TARGET = 2.2;
 			};
 			name = Release;
@@ -559,6 +984,15 @@
 			buildConfigurations = (
 				3379C1CE2DA869A3004372DA /* Debug */,
 				3379C1CF2DA869A3004372DA /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		E007145137D645F8816E4D11 /* Build configuration list for PBXNativeTarget "LiveContainerShared" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				F5B8A7CF92304C6B9C01F824 /* Debug */,
+				37FA56774DA84711B914FAC2 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
