@@ -226,7 +226,7 @@ struct DownloadsView: View {
 		// original back in the Library; Delete is the only
 		// way a backup is ever removed.
 		if !_backupManager.backups.isEmpty {
-			Section(.localized("Backups")) {
+			Section {
 				ForEach(_backupManager.backups) { backup in
 					BackupRowView(
 						backup: backup,
@@ -240,6 +240,8 @@ struct DownloadsView: View {
 						}
 					)
 				}
+			} header: {
+				Text(.localized("Backups"))
 			} footer: {
 				Text(.localized("Backups Footer"))
 			}
@@ -250,8 +252,10 @@ struct DownloadsView: View {
 		// Zenith v2.12 item 7: OFF by default — when ON, a
 		// finished download offers the system export picker
 		// so the user picks where in Files it goes.
-		Section(.localized("Save to Files")) {
+		Section {
 			Toggle(.localized("Ask to save to Files after download"), isOn: $_downloadManager.askToSaveToFilesAfterDownload)
+		} header: {
+			Text(.localized("Save to Files"))
 		} footer: {
 			Text(.localized("Save to Files Footer"))
 		}
