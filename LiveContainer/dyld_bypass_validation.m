@@ -1,3 +1,5 @@
+// Modified for Zenith from LiveContainer upstream (khanhduytran0/LiveContainer, commit b0f53e89), 2026-11-27.
+// Licensed under the GNU Affero General Public License v3.0 (see LICENSE-AGPL).
 // Based on: https://blog.xpnsec.com/restoring-dyld-memory-loading
 // https://github.com/xpn/DyldDeNeuralyzer/blob/main/DyldDeNeuralyzer/DyldPatch/dyldpatch.m
 
@@ -17,6 +19,12 @@
 #include "dyld_bypass_validation.h"
 #include "litehook.h"
 #include "utils.h"
+
+// Single definitions of the globals declared extern in dyld_bypass_validation.h
+// (see the note there — without this, Tweaks/Dyld.m and this file each defined
+// their own copy and the framework link failed with duplicate symbols).
+int (*orig_dyld_fcntl)(int fildes, int cmd, void *param) = NULL;
+int (*orig_dyld_mmap)(int fildes, int cmd, void *param) = NULL;
 
 static int (*orig_fcntl)(int fildes, int cmd, void *param) = 0;
 
