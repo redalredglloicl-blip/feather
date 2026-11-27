@@ -1623,7 +1623,11 @@ final class ZenithMultipartDownload: NSObject, URLSessionDataDelegate, @unchecke
 	private let partCount: Int
 	private let tempURL: URL
 	private let manifestURL: URL
-	private let session: URLSession
+	/// A var, not a let: the session takes self as its delegate,
+	/// and self only exists after super.init() — so the session
+	/// is created after super.init() (see init below). It is
+	/// assigned exactly once, in init, and never reassigned.
+	private var session: URLSession
 	
 	/// Live per-part data tasks, by part index — so a pause /
 	/// cancel / failover can stop the network task itself, not
