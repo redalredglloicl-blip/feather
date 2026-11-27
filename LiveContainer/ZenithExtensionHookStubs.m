@@ -30,6 +30,17 @@
 //  error.
 //
 
+// Tweaks.h imports nothing itself — it needs Foundation (NSString /
+// NSURL / NSUUID / NSBundle), <stdbool.h> (bool), <stdint.h>
+// (uint32_t / uint64_t) and <mach-o/loader.h> (struct mach_header_64)
+// in scope BEFORE it. Every other Tweaks .m file imports these
+// first; this file did not, which failed build #48 with 18
+// "unknown type name" errors. Keep these imports above Tweaks.h.
+#import <Foundation/Foundation.h>
+#include <stdbool.h>
+#include <stdint.h>
+#include <mach-o/loader.h>
+
 #import "Tweaks/Tweaks.h"
 
 void GuestExtensionHooksInit(void) {
