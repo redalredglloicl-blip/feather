@@ -725,9 +725,14 @@ static int VECompareBits(uint64_t a, uint64_t b, VEValueType type) {
 /// The game's topmost view controller the menu's view hangs
 /// off. The menu is NOT a child view controller (v2.16), so it
 /// cannot present its edit sheets from itself — it presents
-/// them from the host instead. Weak: the host owns the view
-/// hierarchy, the menu must never keep it alive.
-@property (nonatomic, weak) UIViewController *presentingHost;
+/// them from the host instead. Assign, not weak: this file is
+/// compiled by the Run Script with plain clang (no -fobjc-arc,
+/// manual reference counting), and weak cannot be synthesized
+/// under MRC. Same non-owning semantics — the host owns the view
+/// hierarchy, the menu must never keep it alive — and safe:
+/// presentingHost is only read while the menu is visible, when
+/// the host is necessarily alive.
+@property (nonatomic, assign) UIViewController *presentingHost;
 
 - (void)refreshTable;
 - (void)setStatus:(NSString *)text;
