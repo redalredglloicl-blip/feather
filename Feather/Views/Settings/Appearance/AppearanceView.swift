@@ -48,17 +48,12 @@ struct AppearanceView: View {
 					}
 				}
 				.pickerStyle(.segmented)
-				.zenithGlassCard(cornerRadius: 12)
-				.listRowSeparator(.hidden)
-				.listRowInsets(EdgeInsets(top: 7, leading: 16, bottom: 7, trailing: 16))
 			}
 			
 			NBSection(.localized("Theme")) {
 				AppearanceTintColorView()
 					.listRowInsets(EdgeInsets())
 					.listRowBackground(EmptyView())
-					.zenithGlassCard(cornerRadius: 12)
-					.listRowSeparator(.hidden)
 			}
 			
 			Section {
@@ -67,22 +62,13 @@ struct AppearanceView: View {
 					selection: _tintColorBinding,
 					supportsOpacity: false
 				)
-				.zenithGlassCard(cornerRadius: 12)
-				.listRowSeparator(.hidden)
-				.listRowInsets(EdgeInsets(top: 7, leading: 16, bottom: 7, trailing: 16))
 			}
 			
 			if #available(iOS 18.0, *) {
 				NBSection(.localized("Library")) {
 					Toggle(.localized("Dynamic Icons"), isOn: $_shouldChangeIconsBasedOffStyle)
-						.zenithGlassCard(cornerRadius: 12)
-						.listRowSeparator(.hidden)
-						.listRowInsets(EdgeInsets(top: 7, leading: 16, bottom: 7, trailing: 16))
 					if #available(iOS 18.2, *) {
 						Toggle(.localized("Tinted Icons"), isOn: $_shouldTintIcons)
-							.zenithGlassCard(cornerRadius: 12)
-							.listRowSeparator(.hidden)
-							.listRowInsets(EdgeInsets(top: 7, leading: 16, bottom: 7, trailing: 16))
 					}
 				}
 			}
@@ -101,9 +87,6 @@ struct AppearanceView: View {
 				}
 				.labelsHidden()
 				.pickerStyle(.inline)
-				.zenithGlassCard(cornerRadius: 12)
-				.listRowSeparator(.hidden)
-				.listRowInsets(EdgeInsets(top: 7, leading: 16, bottom: 7, trailing: 16))
 			}
 		}
 		.starfieldBackground()

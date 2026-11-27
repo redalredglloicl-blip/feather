@@ -41,16 +41,10 @@ struct ModdingIPABrowserView: View {
 					Image(systemName: "folder")
 				}
 			}
-			.zenithGlassCard(cornerRadius: 12)
-			.padding(.vertical, 6)
-			.listRowSeparator(.hidden)
 		} else {
 			Text(.localized("Could not list files."))
 				.font(.footnote)
 				.foregroundColor(.disabled())
-				.zenithGlassCard(cornerRadius: 12)
-				.padding(.vertical, 6)
-				.listRowSeparator(.hidden)
 		}
 	}
 }
@@ -72,24 +66,15 @@ private struct ModdingIPABrowserListView: View {
 			Text(.localized("Browse the files inside the app before signing."))
 				.font(.footnote)
 				.foregroundColor(.secondary)
-				.zenithGlassCard(cornerRadius: 12)
-				.padding(.vertical, 6)
-				.listRowSeparator(.hidden)
 
 			if _loadFailed {
 				Text(.localized("Could not list files."))
 					.font(.footnote)
 					.foregroundColor(.disabled())
-					.zenithGlassCard(cornerRadius: 12)
-					.padding(.vertical, 6)
-					.listRowSeparator(.hidden)
 			} else if _loaded && _entries.isEmpty {
 				Text(.localized("Empty folder."))
 					.font(.footnote)
 					.foregroundColor(.disabled())
-					.zenithGlassCard(cornerRadius: 12)
-					.padding(.vertical, 6)
-					.listRowSeparator(.hidden)
 			} else {
 				ForEach(_entries) { entry in
 					_row(entry)
@@ -112,9 +97,6 @@ private struct ModdingIPABrowserListView: View {
 					Image(systemName: "folder")
 				}
 			}
-			.zenithGlassCard(cornerRadius: 12)
-			.padding(.vertical, 6)
-			.listRowSeparator(.hidden)
 		} else {
 			NavigationLink {
 				ModdingFilePreviewView(fileURL: entry.url, fileName: entry.name)
@@ -132,9 +114,6 @@ private struct ModdingIPABrowserListView: View {
 						.foregroundColor(.secondary)
 				}
 			}
-			.zenithGlassCard(cornerRadius: 12)
-			.padding(.vertical, 6)
-			.listRowSeparator(.hidden)
 		}
 	}
 
@@ -175,30 +154,18 @@ private struct ModdingFilePreviewView: View {
 		NBList(fileName, type: .list) {
 			if !_loaded {
 				ProgressView()
-					.zenithGlassCard(cornerRadius: 12)
-					.padding(.vertical, 6)
-					.listRowSeparator(.hidden)
 			} else if _isBinary {
 				Text(.localized("Cannot preview this file — it is not plain text."))
 					.font(.footnote)
 					.foregroundColor(.disabled())
-					.zenithGlassCard(cornerRadius: 12)
-					.padding(.vertical, 6)
-					.listRowSeparator(.hidden)
 			} else if _isTooLarge {
 				Text(.localized("File too large to preview here."))
 					.font(.footnote)
 					.foregroundColor(.disabled())
-					.zenithGlassCard(cornerRadius: 12)
-					.padding(.vertical, 6)
-					.listRowSeparator(.hidden)
 			} else if let text = _text {
 				Text(verbatim: text)
 					.font(.system(.body, design: .monospaced))
 					.textSelection(.enabled)
-					.zenithGlassCard(cornerRadius: 12)
-					.padding(.vertical, 6)
-					.listRowSeparator(.hidden)
 			}
 		}
 		.starfieldBackground()

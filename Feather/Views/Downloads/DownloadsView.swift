@@ -147,6 +147,9 @@ struct DownloadsView: View {
 	// split — every row, binding, action and string is unchanged.
 
 	private var downloadLinkSection: some View {
+		// Zenith v2.13: 2.0 revert — plain row, no glass card, no
+		// hidden separator. (The text field keeps its own subtle
+		// fill: it is an input field, not a row capsule.)
 		Section {
 			VStack(alignment: .leading, spacing: 16) {
 				TextField(.localized("Paste File Link"), text: $_linkText)
@@ -181,11 +184,9 @@ struct DownloadsView: View {
 				.buttonStyle(.borderedProminent)
 				.disabled(_linkText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || _isProbing)
 			}
-			.zenithGlassCard(cornerRadius: 14)
 			.padding(.horizontal, 16)
 			.listRowInsets(EdgeInsets())
 			.listRowBackground(Color.clear)
-			.listRowSeparator(.hidden)
 		} header: {
 			Text(.localized("Download File"))
 		} footer: {
@@ -279,7 +280,6 @@ struct DownloadsView: View {
 			}
 			.frame(maxWidth: .infinity)
 			.padding(.vertical, 32)
-			.zenithGlassCard(cornerRadius: 18)
 			.listRowBackground(Color.clear)
 		}
 	}
@@ -438,7 +438,7 @@ struct DownloadRowView: View {
 			.font(.subheadline)
 		}
 		.padding(.vertical, 4)
-		.zenithGlassCard(cornerRadius: 12)
+		// Zenith v2.13: plain row — the glass card is gone.
 	}
 	
 	/// Real measured throughput, formatted for the row: one
@@ -527,7 +527,13 @@ struct DownloadHistoryRowView: View {
 					.buttonStyle(.borderless)
 					.font(.subheadline)
 				}
-			} else if entry.status == .failed {
+			} else {
+				// Zenith v2.13 Fix 5: a failed entry, or a completed
+				// entry whose file is gone from ZenithDownloads, can
+				// both be re-downloaded from the link. The old code
+				// only offered Retry for failed entries, so a
+				// completed row with a deleted file was dead — no
+				// button at all.
 				Button(.localized("Retry")) {
 					DownloadManager.shared.retryHistoryEntry(entry)
 				}
@@ -536,7 +542,7 @@ struct DownloadHistoryRowView: View {
 			}
 		}
 		.padding(.vertical, 2)
-		.zenithGlassCard(cornerRadius: 12)
+		// Zenith v2.13: plain row — the glass card is gone.
 		.sheet(isPresented: $_isShowingPreview) {
 			if let fileURL = _fileToPreview {
 				FilePreviewView(fileURL: fileURL)
@@ -644,7 +650,7 @@ struct BackupRowView: View {
 			.font(.subheadline)
 		}
 		.padding(.vertical, 2)
-		.zenithGlassCard(cornerRadius: 12)
+		// Zenith v2.13: plain row — the glass card is gone.
 	}
 }
 

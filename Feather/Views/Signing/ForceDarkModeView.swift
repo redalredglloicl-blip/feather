@@ -37,9 +37,6 @@
 //    } label: {
 //        ForceDarkModeRowLabel()
 //    }
-//    .zenithGlassCard(cornerRadius: 12)
-//    .padding(.vertical, 6)
-//    .listRowSeparator(.hidden)
 //
 //  The coordinator also adds Options.forceDarkModeChanges (see
 //  the report) and the one AppConfigApplier hook in
@@ -72,15 +69,9 @@ struct ForceDarkModeView: View {
 				Text(verbatim: .localized("Force Dark Mode Description"))
 					.font(.footnote)
 					.foregroundStyle(.secondary)
-					.zenithGlassCard(cornerRadius: 12)
-					.padding(.vertical, 6)
-					.listRowSeparator(.hidden)
 				Text(verbatim: .localized("Hardcoded Colors Cannot Be Themed"))
 					.font(.footnote)
 					.foregroundStyle(.secondary)
-					.zenithGlassCard(cornerRadius: 12)
-					.padding(.vertical, 6)
-					.listRowSeparator(.hidden)
 			}
 			
 			if _appDirectoryMissing {
@@ -88,17 +79,11 @@ struct ForceDarkModeView: View {
 					Text(verbatim: .localized("App Files Not Found"))
 						.font(.footnote)
 						.foregroundColor(.disabled())
-						.zenithGlassCard(cornerRadius: 12)
-						.padding(.vertical, 6)
-						.listRowSeparator(.hidden)
 				}
 			} else if _isScanning {
 				NBSection(.localized("Force Dark Mode")) {
 					ProgressView()
 						.frame(maxWidth: .infinity, alignment: .center)
-						.zenithGlassCard(cornerRadius: 12)
-						.padding(.vertical, 6)
-						.listRowSeparator(.hidden)
 				}
 			} else if let report = _report {
 				NBSection(.localized("Force Dark Mode")) {
@@ -106,38 +91,23 @@ struct ForceDarkModeView: View {
 						Text(verbatim: .localized("App Already Dark"))
 							.font(.footnote)
 							.foregroundStyle(.secondary)
-							.zenithGlassCard(cornerRadius: 12)
-							.padding(.vertical, 6)
-							.listRowSeparator(.hidden)
 					} else {
 						Toggle(.localized("Force Dark Mode"), isOn: _forceDarkBinding)
-							.zenithGlassCard(cornerRadius: 12)
-							.padding(.vertical, 6)
-							.listRowSeparator(.hidden)
 						if report.forcesLight {
 							Text(verbatim: .localized("App Forces Light Mode"))
 								.font(.footnote)
 								.foregroundStyle(.secondary)
-								.zenithGlassCard(cornerRadius: 12)
-								.padding(.vertical, 6)
-								.listRowSeparator(.hidden)
 						}
 					}
 					if report.hasAssetCatalog {
 						Text(verbatim: .localized("Asset Catalog Found"))
 							.font(.footnote)
 							.foregroundStyle(.secondary)
-							.zenithGlassCard(cornerRadius: 12)
-							.padding(.vertical, 6)
-							.listRowSeparator(.hidden)
 					}
 					if report.themeKeys.isEmpty {
 						Text(verbatim: .localized("App Has No Theme Settings"))
 							.font(.footnote)
 							.foregroundStyle(.secondary)
-							.zenithGlassCard(cornerRadius: 12)
-							.padding(.vertical, 6)
-							.listRowSeparator(.hidden)
 					}
 				}
 				
@@ -153,9 +123,6 @@ struct ForceDarkModeView: View {
 					Text(verbatim: .localized("Enabled When You Sign"))
 						.font(.footnote)
 						.foregroundStyle(.secondary)
-						.zenithGlassCard(cornerRadius: 12)
-						.padding(.vertical, 6)
-						.listRowSeparator(.hidden)
 				}
 			}
 		}
@@ -205,9 +172,6 @@ extension ForceDarkModeView {
 			Toggle("", isOn: _binding(for: themeKey))
 				.labelsHidden()
 		}
-		.zenithGlassCard(cornerRadius: 12)
-		.padding(.vertical, 6)
-		.listRowSeparator(.hidden)
 	}
 	
 	private func _binding(for themeKey: ForceDarkModeThemeKey) -> Binding<Bool> {

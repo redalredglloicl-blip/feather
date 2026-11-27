@@ -290,7 +290,7 @@ struct NewVersionBannerView: View {
 			}
 		}
 		.padding()
-		.zenithGlassCard(cornerRadius: 14, fallback: Color(uiColor: .secondarySystemFill))
+		.zenithGlassCard(cornerRadius: 14)
 		.padding(.horizontal)
 		.padding(.top, 8)
 	}

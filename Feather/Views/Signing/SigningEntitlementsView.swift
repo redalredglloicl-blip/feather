@@ -26,16 +26,10 @@ struct SigningEntitlementsView: View {
 							}
 						}
 					}
-					.zenithGlassCard(cornerRadius: 12)
-					.padding(.vertical, 6)
-					.listRowSeparator(.hidden)
 			} else {
 				Button(.localized("Select entitlements file")) {
 					_isAddingPresenting = true
 				}
-				.zenithGlassCard(cornerRadius: 12)
-				.padding(.vertical, 6)
-				.listRowSeparator(.hidden)
 			}
 		}
 		.starfieldBackground()

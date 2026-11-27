@@ -35,9 +35,6 @@
 //    } label: {
 //        GuestModeRowLabel()
 //    }
-//    .zenithGlassCard(cornerRadius: 12)
-//    .padding(.vertical, 6)
-//    .listRowSeparator(.hidden)
 //
 //  The coordinator also adds Options.guestLoginChanges (see the
 //  report) and the one AppConfigApplier hook in
@@ -67,9 +64,6 @@ struct GuestModeView: View {
 				Text(verbatim: .localized("Guest Mode Description"))
 					.font(.footnote)
 					.foregroundStyle(.secondary)
-					.zenithGlassCard(cornerRadius: 12)
-					.padding(.vertical, 6)
-					.listRowSeparator(.hidden)
 			}
 			
 			if _appDirectoryMissing {
@@ -77,17 +71,11 @@ struct GuestModeView: View {
 					Text(verbatim: .localized("App Files Not Found"))
 						.font(.footnote)
 						.foregroundColor(.disabled())
-						.zenithGlassCard(cornerRadius: 12)
-						.padding(.vertical, 6)
-						.listRowSeparator(.hidden)
 				}
 			} else if _isScanning {
 				NBSection(.localized("Use Without Account")) {
 					ProgressView()
 						.frame(maxWidth: .infinity, alignment: .center)
-						.zenithGlassCard(cornerRadius: 12)
-						.padding(.vertical, 6)
-						.listRowSeparator(.hidden)
 				}
 			} else if let report = _report {
 				if report.gates.isEmpty {
@@ -95,21 +83,12 @@ struct GuestModeView: View {
 						Text(verbatim: .localized("No Login Gate Found"))
 							.font(.footnote)
 							.foregroundColor(.disabled())
-							.zenithGlassCard(cornerRadius: 12)
-							.padding(.vertical, 6)
-							.listRowSeparator(.hidden)
 						Text(verbatim: .localized("No Login Gate Found Hint"))
 							.font(.footnote)
 							.foregroundStyle(.secondary)
-							.zenithGlassCard(cornerRadius: 12)
-							.padding(.vertical, 6)
-							.listRowSeparator(.hidden)
 						Text(verbatim: .localized("Server Accounts Cannot Be Bypassed"))
 							.font(.footnote)
 							.foregroundStyle(.secondary)
-							.zenithGlassCard(cornerRadius: 12)
-							.padding(.vertical, 6)
-							.listRowSeparator(.hidden)
 					}
 				} else {
 					NBSection(.localized("Login Gates in This App")) {
@@ -122,15 +101,9 @@ struct GuestModeView: View {
 						Text(verbatim: .localized("Server Accounts Cannot Be Bypassed"))
 							.font(.footnote)
 							.foregroundStyle(.secondary)
-							.zenithGlassCard(cornerRadius: 12)
-							.padding(.vertical, 6)
-							.listRowSeparator(.hidden)
 						Text(verbatim: .localized("Enabled When You Sign"))
 							.font(.footnote)
 							.foregroundStyle(.secondary)
-							.zenithGlassCard(cornerRadius: 12)
-							.padding(.vertical, 6)
-							.listRowSeparator(.hidden)
 					}
 				}
 			}
@@ -162,9 +135,6 @@ extension GuestModeView {
 			Toggle("", isOn: _binding(for: gate))
 				.labelsHidden()
 		}
-		.zenithGlassCard(cornerRadius: 12)
-		.padding(.vertical, 6)
-		.listRowSeparator(.hidden)
 	}
 	
 	private func _binding(for gate: GuestLoginGate) -> Binding<Bool> {

@@ -20,10 +20,6 @@ struct CertificatesCellView: View {
 			let title = {
 				var title = cert.nickname ?? data?.Name ?? .localized("Unknown")
 				
-				if let getTaskAllow = data?.Entitlements?["get-task-allow"]?.value as? Bool, getTaskAllow == true {
-					title = "🐞 \(title)"
-				}
-				
 				return title
 			}()
 			
@@ -37,9 +33,6 @@ struct CertificatesCellView: View {
 		.frame(height: 80)
 		.contentTransition(.opacity)
 		.frame(maxWidth: .infinity, alignment: .leading)
-		.zenithGlassCard(cornerRadius: 12)
-		.padding(.vertical, 6)
-		.listRowSeparator(.hidden)
 		.onAppear {
 			withAnimation {
 				data = Storage.shared.getProvisionFileDecoded(for: cert)

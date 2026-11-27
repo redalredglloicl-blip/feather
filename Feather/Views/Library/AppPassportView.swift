@@ -88,9 +88,6 @@ struct AppPassportView: View {
 							}
 						}
 						.buttonStyle(ZenithPressButtonStyle())
-						.zenithGlassCard(cornerRadius: 12, fallback: Color.accentColor.opacity(0.15))
-						.padding(.vertical, 6)
-						.listRowSeparator(.hidden)
 					}
 					.listRowBackground(Color.accentColor.opacity(0.15))
 				}
@@ -161,9 +158,6 @@ struct AppPassportView: View {
 				Text(.localized("هالتطبيق ما موقع بعد — وقّعه حتى يشتغل على الآيفون."))
 					.font(.footnote)
 					.foregroundStyle(.secondary)
-					.zenithGlassCard(cornerRadius: 12)
-					.padding(.vertical, 6)
-					.listRowSeparator(.hidden)
 			}
 		}
 	}
@@ -174,9 +168,6 @@ struct AppPassportView: View {
 			Text(desc)
 		}
 		.copyableText(desc)
-		.zenithGlassCard(cornerRadius: 12)
-		.padding(.vertical, 6)
-		.listRowSeparator(.hidden)
 	}
 
 	// MARK: File size

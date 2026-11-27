@@ -32,9 +32,6 @@
 //    } label: {
 //        ChangeLocationRowLabel()
 //    }
-//    .zenithGlassCard(cornerRadius: 12)
-//    .padding(.vertical, 6)
-//    .listRowSeparator(.hidden)
 //
 //  The coordinator also adds Options.locationSpoof (see the
 //  report) and the one LocationSpoofWriter hook in
@@ -68,21 +65,12 @@ struct ChangeLocationView: View {
 				Text(verbatim: .localized("Change Location Description"))
 					.font(.footnote)
 					.foregroundStyle(.secondary)
-					.zenithGlassCard(cornerRadius: 12)
-					.padding(.vertical, 6)
-					.listRowSeparator(.hidden)
 				Text(verbatim: .localized("Location Spoof Needs Tweak"))
 					.font(.footnote)
 					.foregroundStyle(.secondary)
-					.zenithGlassCard(cornerRadius: 12)
-					.padding(.vertical, 6)
-					.listRowSeparator(.hidden)
 				Text(verbatim: .localized("Server Location Cannot Be Spoofed"))
 					.font(.footnote)
 					.foregroundStyle(.secondary)
-					.zenithGlassCard(cornerRadius: 12)
-					.padding(.vertical, 6)
-					.listRowSeparator(.hidden)
 			}
 			
 			if _appDirectoryMissing {
@@ -90,17 +78,11 @@ struct ChangeLocationView: View {
 					Text(verbatim: .localized("App Files Not Found"))
 						.font(.footnote)
 						.foregroundColor(.disabled())
-						.zenithGlassCard(cornerRadius: 12)
-						.padding(.vertical, 6)
-						.listRowSeparator(.hidden)
 				}
 			} else if _isScanning {
 				NBSection(.localized("Change Location")) {
 					ProgressView()
 						.frame(maxWidth: .infinity, alignment: .center)
-						.zenithGlassCard(cornerRadius: 12)
-						.padding(.vertical, 6)
-						.listRowSeparator(.hidden)
 				}
 			} else if let report = _report {
 				NBSection(.localized("Change Location")) {
@@ -108,38 +90,23 @@ struct ChangeLocationView: View {
 						Text(verbatim: .localized("App Uses Location"))
 							.font(.footnote)
 							.foregroundStyle(.secondary)
-							.zenithGlassCard(cornerRadius: 12)
-							.padding(.vertical, 6)
-							.listRowSeparator(.hidden)
 					} else if report.linkageKnown {
 						Text(verbatim: .localized("No Location Usage Found"))
 							.font(.footnote)
 							.foregroundColor(.disabled())
-							.zenithGlassCard(cornerRadius: 12)
-							.padding(.vertical, 6)
-							.listRowSeparator(.hidden)
 					} else {
 						Text(verbatim: .localized("App Location Usage Unknown"))
 							.font(.footnote)
 							.foregroundStyle(.secondary)
-							.zenithGlassCard(cornerRadius: 12)
-							.padding(.vertical, 6)
-							.listRowSeparator(.hidden)
 					}
 					
 					Toggle(.localized("Change Location"), isOn: _enabledBinding)
 						.disabled(!_canSpoof(report: report))
-						.zenithGlassCard(cornerRadius: 12)
-						.padding(.vertical, 6)
-						.listRowSeparator(.hidden)
 					
 					if options.locationSpoof != nil {
 						Text(verbatim: _selectionText)
 							.font(.footnote)
 							.foregroundStyle(Color(hex: "#FFC778"))
-							.zenithGlassCard(cornerRadius: 12)
-							.padding(.vertical, 6)
-							.listRowSeparator(.hidden)
 					}
 				}
 				
@@ -153,21 +120,12 @@ struct ChangeLocationView: View {
 					NBSection(.localized("Custom Location")) {
 						TextField(.localized("Latitude"), text: $_customLatitude)
 							.keyboardType(.decimalPad)
-							.zenithGlassCard(cornerRadius: 12)
-							.padding(.vertical, 6)
-							.listRowSeparator(.hidden)
 						TextField(.localized("Longitude"), text: $_customLongitude)
 							.keyboardType(.decimalPad)
-							.zenithGlassCard(cornerRadius: 12)
-							.padding(.vertical, 6)
-							.listRowSeparator(.hidden)
 						if _customInvalid {
 							Text(verbatim: .localized("Invalid Coordinates"))
 								.font(.footnote)
 								.foregroundStyle(.red)
-								.zenithGlassCard(cornerRadius: 12)
-								.padding(.vertical, 6)
-								.listRowSeparator(.hidden)
 						}
 						Button {
 							_useCustomLocation()
@@ -175,24 +133,15 @@ struct ChangeLocationView: View {
 							Text(.localized("Use Custom Location"))
 						}
 						.buttonStyle(ZenithPressButtonStyle())
-						.zenithGlassCard(cornerRadius: 12)
-						.padding(.vertical, 6)
-						.listRowSeparator(.hidden)
 					}
 					
 					NBSection(.localized("Change Location")) {
 						Text(verbatim: .localized("Location Spoof Config Saved"))
 							.font(.footnote)
 							.foregroundStyle(.secondary)
-							.zenithGlassCard(cornerRadius: 12)
-							.padding(.vertical, 6)
-							.listRowSeparator(.hidden)
 						Text(verbatim: .localized("Enabled When You Sign"))
 							.font(.footnote)
 							.foregroundStyle(.secondary)
-							.zenithGlassCard(cornerRadius: 12)
-							.padding(.vertical, 6)
-							.listRowSeparator(.hidden)
 						Button {
 							_isAddingPresenting = true
 						} label: {
@@ -203,11 +152,8 @@ struct ChangeLocationView: View {
 							}
 						}
 						.buttonStyle(ZenithPressButtonStyle())
-						.zenithGlassCard(cornerRadius: 12)
-						.padding(.vertical, 6)
-						.listRowSeparator(.hidden)
-						if !options.injectionFiles.isEmpty {
-							ForEach(options.injectionFiles, id: \.absoluteString) { tweak in
+						if !_locationTweaks.isEmpty {
+							ForEach(_locationTweaks, id: \.absoluteString) { tweak in
 								_file(tweak: tweak)
 							}
 						}
@@ -294,11 +240,21 @@ extension ChangeLocationView {
 				}
 			}
 		}
-		.zenithGlassCard(cornerRadius: 12)
-		.padding(.vertical, 6)
-		.listRowSeparator(.hidden)
 	}
 	
+	/// Tweaks added from this screen (or any general tweak) —
+	/// never the Value Editor, FPS overlay or translation
+	/// overlay dylibs: those belong to their own screens, and
+	/// listing them here let the user delete one by mistake and
+	/// silently switch that feature off.
+	private var _locationTweaks: [URL] {
+		options.injectionFiles.filter {
+			!ValueEditorInjector.isValueEditorDylib($0)
+			&& !FPSOverlayInjector.isFPSDylib($0)
+			&& !TranslationOverlayInjector.isTranslateDylib($0)
+		}
+	}
+
 	private func _useCustomLocation() {
 		guard
 			let latitude = Double(_customLatitude),
@@ -327,9 +283,6 @@ extension ChangeLocationView {
 			.contextMenu {
 				_fileActions(tweak: tweak)
 			}
-			.zenithGlassCard(cornerRadius: 12)
-			.padding(.vertical, 6)
-			.listRowSeparator(.hidden)
 	}
 	
 	@ViewBuilder

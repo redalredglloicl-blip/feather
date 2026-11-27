@@ -6,41 +6,50 @@
 //  backgrounds and the animated signing-success screen.
 //  Everything here is visual only — no logic, signing or networking code.
 //
-//  Zenith v2.11: NO Liquid Glass anywhere on cards. v2.10 removed the
-//  explicit white stroke, but the frames stayed: on iOS 26/27 Apple's
-//  Liquid Glass draws its own bright specular edge highlight ("glass
-//  rim", brightest along the top edge) around every shape, and Reda's
-//  2.10 video proves it — every card still shows a light outline.
-//  Cards are plain flat fills now (see ZenithGlassCardModifier).
-//  NEVER re-add a glass effect, stroke or outline to a card surface:
-//  separation is spacing + subtly different fill tones + soft shadow.
+//  Zenith v2.13: 2.0 REVERT — the whole app is back to the old
+//  Feather 2.0 layout: plain flat rows in one rounded section card,
+//  hairline separators between rows, NO inner capsules anywhere.
+//  The capsule defect (Reda's 2026-11-27 video): every row label
+//  carried `.zenithGlassCard`, which drew a LIGHTER rounded rect
+//  (`secondarySystemFill`) + shadow behind the label, floating
+//  inside the darker section card — a white horizontal capsule
+//  across the middle of every row. The modifier below no longer
+//  draws that: it is a plain flat fill in the SECTION colour
+//  (`secondarySystemGroupedBackground`, the same fill the system
+//  grouped list uses for its section cards), with NO shadow and
+//  NO stroke/outline. It is kept, with the same API, ONLY for
+//  standalone section blocks (certificate hero, DNS card, expiry
+//  banner, update banner, success popup) — one flat fill per
+//  block, never nested inside another card. Rows inside a Form
+//  or List must NOT use it: rows are plain, separators visible,
+//  the system section fill behind them. NEVER re-add a lighter
+//  fill, a shadow, a glass effect or a stroke to this modifier:
+//  separation is the section fill + hairline separators only.
 //  The only strokes left in the app are functional drawings
-//  (countdown/progress rings, the success checkmark, the planet logo,
-//  selection rings, tint-swatch rings, app-icon hairlines).
+//  (countdown/progress rings, the success checkmark, the planet
+//  logo, selection rings, tint-swatch rings, app-icon hairlines).
 //
 
 import SwiftUI
 
-// MARK: - Flat card (v2.11: was Liquid Glass, removed — see above)
-/// A plain flat card fill: a rounded rectangle in the given tone with a
-/// soft shadow for depth. Deliberately NOT Liquid Glass — the glass
-/// effect's specular rim read as a white frame around every card on
-/// iOS 26/27 (v2.10 video). Do not stack it on top of an opaque fill,
-/// and never add a stroke/outline to this modifier.
-/// Zenith v2.11: the iOS 26+ branch is identical to the older-iOS
-/// branch — one flat fill on every iOS version, so cards look the
-/// same everywhere and there is no bright rim to regress.
+// MARK: - Flat section fill (v2.13: 2.0 revert — was Liquid Glass,
+// then a lighter capsule; see the header above)
+/// A plain flat section fill: a rounded rectangle in the section
+/// tone, no shadow, no glass, no rim. Deliberately NOT a lighter
+/// capsule — the lighter fill + shadow read as a white capsule
+/// inside every section on Reda's phone (v2.12 video). Use only
+/// for standalone section blocks, never on rows inside a Form
+/// or List.
 struct ZenithGlassCardModifier: ViewModifier {
 	var isEnabled: Bool = true
 	var cornerRadius: CGFloat = 18
-	var fallback: Color = Color(uiColor: .secondarySystemFill)
+	var fallback: Color = Color(uiColor: .secondarySystemGroupedBackground)
 
 	@ViewBuilder
 	func body(content: Content) -> some View {
 		if isEnabled {
 			content
 				.background(fallback, in: RoundedRectangle(cornerRadius: cornerRadius, style: .continuous))
-				.shadow(color: .black.opacity(0.35), radius: 10, x: 0, y: 4)
 		} else {
 			content
 		}
@@ -48,12 +57,13 @@ struct ZenithGlassCardModifier: ViewModifier {
 }
 
 extension View {
-	/// Flat card background (plain fill, v2.11 — no glass, no rim)
-	/// with a soft shadow for depth. No outline lines.
+	/// Flat section fill (plain, v2.13 — no glass, no rim, no
+	/// shadow). No outline lines. Standalone section blocks only —
+	/// never on rows inside a Form or List.
 	func zenithGlassCard(
 		isEnabled: Bool = true,
 		cornerRadius: CGFloat = 18,
-		fallback: Color = Color(uiColor: .secondarySystemFill)
+		fallback: Color = Color(uiColor: .secondarySystemGroupedBackground)
 	) -> some View {
 		modifier(ZenithGlassCardModifier(isEnabled: isEnabled, cornerRadius: cornerRadius, fallback: fallback))
 	}

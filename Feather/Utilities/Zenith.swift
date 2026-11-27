@@ -48,11 +48,13 @@ enum Zenith {
 		certificate: CertificatePair?,
 		completion: @escaping (Error?) -> Void
 	) {
-		// Zenith forced update: signing refuses unless a fresh
-		// version check has passed. The gate re-runs the check on
-		// demand, so a transient failure only delays signing.
+		// Zenith forced update: signing refuses unless the launch
+		// decision allows it — a fresh check passed, or a cached
+		// decision says this build is fine (v2.13). A known block
+		// still refuses. The gate re-runs the check on demand, so
+		// a transient failure only delays signing.
 		Task {
-			guard await ForcedUpdateManager.shared.ensureCheckPassed() else {
+			guard await ForcedUpdateManager.shared.ensureSignAllowed() else {
 				let updateRequired = await ForcedUpdateManager.shared.isUpdateRequired
 				let error: Error = updateRequired
 					? ForcedUpdateError.updateRequired
@@ -214,10 +216,6 @@ enum Zenith {
 				let decoded = Storage.shared.getProvisionFileDecoded(for: cert)
 				
 				title = cert.nickname ?? decoded?.Name ?? .localized("Unknown")
-				
-				if let getTaskAllow = decoded?.Entitlements?["get-task-allow"]?.value as? Bool, getTaskAllow == true {
-					title = "🐞 \(title)"
-				}
 				
 				let selectAction = UIAlertAction(title: title, style: .default) { _ in
 					performExport(for: cert)

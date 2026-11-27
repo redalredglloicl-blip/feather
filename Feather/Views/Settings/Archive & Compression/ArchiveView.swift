@@ -32,9 +32,6 @@ struct ArchiveView: View {
 							.frame(width: 20, height: 20)
 					}
 				}
-				.zenithGlassCard(cornerRadius: 12)
-				.listRowSeparator(.hidden)
-				.listRowInsets(EdgeInsets(top: 7, leading: 16, bottom: 7, trailing: 16))
 			}
 			
 			Section {
@@ -48,9 +45,6 @@ struct ArchiveView: View {
 							.frame(width: 20, height: 20)
 					}
 				}
-				.zenithGlassCard(cornerRadius: 12)
-				.listRowSeparator(.hidden)
-				.listRowInsets(EdgeInsets(top: 7, leading: 16, bottom: 7, trailing: 16))
 			} footer: {
 				Text(.localized("Toggling show sheet will present a share sheet after exporting to your files."))
 			}

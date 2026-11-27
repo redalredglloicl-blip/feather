@@ -148,9 +148,11 @@ struct InstallPreviewView: View {
 		}
 				
 		Task.detached {
-			// Zenith forced update: installing refuses unless a fresh
-			// version check has passed.
-			guard await ForcedUpdateManager.shared.ensureCheckPassed() else {
+			// Zenith forced update: installing refuses unless the
+			// launch decision allows it — a fresh check passed, or
+			// a cached decision says this build is fine (v2.13).
+			// A known block still refuses.
+			guard await ForcedUpdateManager.shared.ensureSignAllowed() else {
 				await MainActor.run {
 					UIAlertController.showAlertWithOk(
 						title: .localized("Install"),

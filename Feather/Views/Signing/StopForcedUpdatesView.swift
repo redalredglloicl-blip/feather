@@ -45,9 +45,6 @@ struct StopForcedUpdatesView: View {
 				Text(verbatim: .localized("Stop Forced Updates Description"))
 					.font(.footnote)
 					.foregroundStyle(.secondary)
-					.zenithGlassCard(cornerRadius: 12)
-					.padding(.vertical, 6)
-					.listRowSeparator(.hidden)
 			}
 
 			if _appDirectoryMissing {
@@ -55,17 +52,11 @@ struct StopForcedUpdatesView: View {
 					Text(verbatim: .localized("App Files Not Found"))
 						.font(.footnote)
 						.foregroundColor(.disabled())
-						.zenithGlassCard(cornerRadius: 12)
-						.padding(.vertical, 6)
-						.listRowSeparator(.hidden)
 				}
 			} else if _isScanning {
 				NBSection(.localized("Stop Forced Updates")) {
 					ProgressView()
 						.frame(maxWidth: .infinity, alignment: .center)
-						.zenithGlassCard(cornerRadius: 12)
-						.padding(.vertical, 6)
-						.listRowSeparator(.hidden)
 				}
 			} else if let report = _report {
 				if report.findings.isEmpty {
@@ -73,21 +64,12 @@ struct StopForcedUpdatesView: View {
 						Text(verbatim: .localized("No Forced Update Found"))
 							.font(.footnote)
 							.foregroundColor(.disabled())
-							.zenithGlassCard(cornerRadius: 12)
-							.padding(.vertical, 6)
-							.listRowSeparator(.hidden)
 						Text(verbatim: .localized("No Forced Update Found Hint"))
 							.font(.footnote)
 							.foregroundStyle(.secondary)
-							.zenithGlassCard(cornerRadius: 12)
-							.padding(.vertical, 6)
-							.listRowSeparator(.hidden)
 						Text(verbatim: .localized("Server Forced Update Cannot Be Stopped"))
 							.font(.footnote)
 							.foregroundStyle(.secondary)
-							.zenithGlassCard(cornerRadius: 12)
-							.padding(.vertical, 6)
-							.listRowSeparator(.hidden)
 					}
 				} else {
 					NBSection(.localized("Forced Update Settings in This App")) {
@@ -100,15 +82,9 @@ struct StopForcedUpdatesView: View {
 						Text(verbatim: .localized("Server Forced Update Cannot Be Stopped"))
 							.font(.footnote)
 							.foregroundStyle(.secondary)
-							.zenithGlassCard(cornerRadius: 12)
-							.padding(.vertical, 6)
-							.listRowSeparator(.hidden)
 						Text(verbatim: .localized("Applied When You Sign"))
 							.font(.footnote)
 							.foregroundStyle(.secondary)
-							.zenithGlassCard(cornerRadius: 12)
-							.padding(.vertical, 6)
-							.listRowSeparator(.hidden)
 					}
 				}
 			}
@@ -141,9 +117,6 @@ extension StopForcedUpdatesView {
 				.labelsHidden()
 				.disabled(update.proposedChange == nil)
 		}
-		.zenithGlassCard(cornerRadius: 12)
-		.padding(.vertical, 6)
-		.listRowSeparator(.hidden)
 	}
 
 	private func _statusText(for update: AppForcedUpdateFinding) -> String {

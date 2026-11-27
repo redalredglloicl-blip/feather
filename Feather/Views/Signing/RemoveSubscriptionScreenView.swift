@@ -47,15 +47,9 @@ struct RemoveSubscriptionScreenView: View {
 				Text(verbatim: .localized("Remove Subscription Screen Description"))
 					.font(.footnote)
 					.foregroundStyle(.secondary)
-					.zenithGlassCard(cornerRadius: 12)
-					.padding(.vertical, 6)
-					.listRowSeparator(.hidden)
 				Text(verbatim: .localized("Subscription Screen Warning"))
 					.font(.footnote)
 					.foregroundStyle(.secondary)
-					.zenithGlassCard(cornerRadius: 12)
-					.padding(.vertical, 6)
-					.listRowSeparator(.hidden)
 			}
 
 			if _appDirectoryMissing {
@@ -63,17 +57,11 @@ struct RemoveSubscriptionScreenView: View {
 					Text(verbatim: .localized("App Files Not Found"))
 						.font(.footnote)
 						.foregroundColor(.disabled())
-						.zenithGlassCard(cornerRadius: 12)
-						.padding(.vertical, 6)
-						.listRowSeparator(.hidden)
 				}
 			} else if _isScanning {
 				NBSection(.localized("Remove Subscription Screen")) {
 					ProgressView()
 						.frame(maxWidth: .infinity, alignment: .center)
-						.zenithGlassCard(cornerRadius: 12)
-						.padding(.vertical, 6)
-						.listRowSeparator(.hidden)
 				}
 			} else if let report = _report {
 				if report.findings.isEmpty && report.sdks.isEmpty && report.paywallFiles.isEmpty {
@@ -81,21 +69,12 @@ struct RemoveSubscriptionScreenView: View {
 						Text(verbatim: .localized("No Subscription Screen Found"))
 							.font(.footnote)
 							.foregroundColor(.disabled())
-							.zenithGlassCard(cornerRadius: 12)
-							.padding(.vertical, 6)
-							.listRowSeparator(.hidden)
 						Text(verbatim: .localized("No Subscription Screen Found Hint"))
 							.font(.footnote)
 							.foregroundStyle(.secondary)
-							.zenithGlassCard(cornerRadius: 12)
-							.padding(.vertical, 6)
-							.listRowSeparator(.hidden)
 						Text(verbatim: .localized("Server Premium Cannot Be Unlocked"))
 							.font(.footnote)
 							.foregroundStyle(.secondary)
-							.zenithGlassCard(cornerRadius: 12)
-							.padding(.vertical, 6)
-							.listRowSeparator(.hidden)
 					}
 				} else {
 					if !report.findings.isEmpty {
@@ -120,9 +99,6 @@ struct RemoveSubscriptionScreenView: View {
 								Text(verbatim: file)
 									.font(.caption)
 									.foregroundStyle(.secondary)
-									.zenithGlassCard(cornerRadius: 12)
-									.padding(.vertical, 6)
-									.listRowSeparator(.hidden)
 							}
 						}
 					}
@@ -131,15 +107,9 @@ struct RemoveSubscriptionScreenView: View {
 						Text(verbatim: .localized("Server Premium Cannot Be Unlocked"))
 							.font(.footnote)
 							.foregroundStyle(.secondary)
-							.zenithGlassCard(cornerRadius: 12)
-							.padding(.vertical, 6)
-							.listRowSeparator(.hidden)
 						Text(verbatim: .localized("Applied When You Sign"))
 							.font(.footnote)
 							.foregroundStyle(.secondary)
-							.zenithGlassCard(cornerRadius: 12)
-							.padding(.vertical, 6)
-							.listRowSeparator(.hidden)
 					}
 				}
 			}
@@ -172,9 +142,6 @@ extension RemoveSubscriptionScreenView {
 				.labelsHidden()
 				.disabled(paywall.proposedChange == nil)
 		}
-		.zenithGlassCard(cornerRadius: 12)
-		.padding(.vertical, 6)
-		.listRowSeparator(.hidden)
 	}
 
 	@ViewBuilder
@@ -199,9 +166,6 @@ extension RemoveSubscriptionScreenView {
 			}
 			Spacer()
 		}
-		.zenithGlassCard(cornerRadius: 12)
-		.padding(.vertical, 6)
-		.listRowSeparator(.hidden)
 	}
 
 	private func _flagStatusText(for paywall: PaywallFinding) -> String {

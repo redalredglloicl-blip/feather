@@ -82,9 +82,6 @@ struct FPSCounterView: View {
 				.foregroundColor(.secondary)
 		}
 		.frame(maxWidth: .infinity, alignment: .leading)
-		.zenithGlassCard(cornerRadius: 12)
-		.padding(.vertical, 6)
-		.listRowSeparator(.hidden)
 		.onAppear {
 			_fpsOn = FPSOverlayInjector.isStaged(in: options)
 		}

@@ -43,6 +43,10 @@ struct GraphicsSettingsView: View {
 
 	@State private var _scan: GraphicsSettingsReport?
 	@State private var _scanning = false
+	/// True when the scan could not run at all (the app's files
+	/// are not on disk): show an honest error with a retry
+	/// button instead of spinning forever.
+	@State private var _scanFailed = false
 	@State private var _selectedGateIDs: Set<String> = []
 	@State private var _stagedPaths: [String] = []
 	@State private var _skippedPaths: [String] = []
@@ -58,11 +62,24 @@ struct GraphicsSettingsView: View {
 				.fontWeight(.semibold)
 
 			if _scan == nil {
-				HStack(spacing: 8) {
-					ProgressView()
-					Text(.localized("Checking for hidden graphics settings…"))
+				if _scanFailed {
+					Text(.localized("ما قدرت أفحص إعدادات الكرافيك، حاول مرة ثانية."))
 						.font(.footnote)
 						.foregroundColor(.secondary)
+					Button {
+						_scanFailed = false
+						_runScanIfNeeded()
+					} label: {
+						Text(.localized("إعادة الفحص"))
+					}
+					.buttonStyle(ZenithPressButtonStyle())
+				} else {
+					HStack(spacing: 8) {
+						ProgressView()
+						Text(.localized("Checking for hidden graphics settings…"))
+							.font(.footnote)
+							.foregroundColor(.secondary)
+					}
 				}
 			} else if let scan = _scan {
 				_result(scan)
@@ -76,9 +93,6 @@ struct GraphicsSettingsView: View {
 				.foregroundColor(.secondary)
 		}
 		.frame(maxWidth: .infinity, alignment: .leading)
-		.zenithGlassCard(cornerRadius: 12)
-		.padding(.vertical, 6)
-		.listRowSeparator(.hidden)
 		.onAppear(perform: _runScanIfNeeded)
 	}
 
@@ -189,7 +203,12 @@ struct GraphicsSettingsView: View {
 
 	private func _runScanIfNeeded() {
 		guard _scan == nil && !_scanning else { return }
-		guard let appDirectory = Storage.shared.getAppDirectory(for: app) else { return }
+		guard let appDirectory = Storage.shared.getAppDirectory(for: app) else {
+			// The app's files are not on disk: fail visibly
+			// with a retry instead of spinning forever.
+			_scanFailed = true
+			return
+		}
 		_scanning = true
 		Task {
 			let result = await Task.detached(priority: .utility) {

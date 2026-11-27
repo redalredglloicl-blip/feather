@@ -11,11 +11,13 @@
 //
 //  MARK: - ModdingCheckView
 //
-//  The section-placeable verdict card. The coordinator drops this
-//  view into the "التعديل" section on the signing screen and binds
-//  the shared report state into it; the edit-files and mod-menu
-//  views below read that same report to decide whether they offer
-//  anything at all.
+//  The section-placeable verdict card. The signing screen runs
+//  the check on appear and binds the shared report state into
+//  this view; the edit-files and mod-menu views read that same
+//  report to decide whether they offer anything at all. This
+//  view never runs the check itself — it only displays the
+//  verdict (or the checking spinner, or the honest error with
+//  a retry button that calls back into the signing screen).
 //
 
 import SwiftUI
@@ -26,14 +28,35 @@ import NimbleViews
 struct ModdingCheckView: View {
 	var app: AppInfoPresentable
 
-	/// Shared with the edit-files and mod-menu views: this view
-	/// fills it in, they read it to gate themselves.
+	/// Shared with the edit-files and mod-menu views: the
+	/// signing screen fills it in, they read it to gate
+	/// themselves.
 	@Binding var report: ModdabilityReport?
+
+	/// Owned by the signing screen (it runs the check on
+	/// appear, so the verdict is ready before any modding
+	/// sub-screen opens): true when the check could not run
+	/// at all (the app's files are not on disk).
+	@Binding var checkFailed: Bool
+
+	/// Retry tap: the signing screen clears `checkFailed` and
+	/// re-runs its check.
+	var onRetry: () -> Void
 
 	var body: some View {
 		VStack(alignment: .leading, spacing: 8) {
 			if let report {
 				_verdict(report)
+			} else if checkFailed {
+				Text(.localized("ما قدرت أفحص ملفات هالتطبيق، حاول مرة ثانية."))
+					.font(.footnote)
+					.foregroundColor(.secondary)
+				Button {
+					onRetry()
+				} label: {
+					Text(.localized("إعادة الفحص"))
+				}
+				.buttonStyle(ZenithPressButtonStyle())
 			} else {
 				HStack(spacing: 8) {
 					ProgressView()
@@ -44,10 +67,6 @@ struct ModdingCheckView: View {
 			}
 		}
 		.frame(maxWidth: .infinity, alignment: .leading)
-		.zenithGlassCard(cornerRadius: 12)
-		.padding(.vertical, 6)
-		.listRowSeparator(.hidden)
-		.onAppear(perform: _runCheckIfNeeded)
 	}
 
 	@ViewBuilder
@@ -118,17 +137,6 @@ struct ModdingCheckView: View {
 			Text(verbatim: .localized("and %lld more files", arguments: remaining))
 				.font(.caption)
 				.foregroundColor(.secondary)
-		}
-	}
-
-	private func _runCheckIfNeeded() {
-		guard report == nil else { return }
-		guard let appDirectory = Storage.shared.getAppDirectory(for: app) else { return }
-		Task {
-			let result = await Task.detached(priority: .utility) {
-				ModdabilityChecker.check(appDirectory: appDirectory)
-			}.value
-			report = result
 		}
 	}
 }

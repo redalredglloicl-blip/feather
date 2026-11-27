@@ -34,7 +34,22 @@ struct ModFileEditorView: View {
 	}
 
 	var body: some View {
-		if _isOffered, let appDirectory = Storage.shared.getAppDirectory(for: app) {
+		if report == nil {
+			// The check is still running: say so. The old code
+			// fell through to the disabled row here, so while
+			// the check ran — and forever if it never completed
+			// — this row looked permanently dead.
+			HStack(spacing: 8) {
+				ProgressView()
+				VStack(alignment: .leading, spacing: 4) {
+					Text(.localized("Edit Local Game Files"))
+					Text(.localized("Checking if this game can be modded…"))
+						.font(.caption)
+						.foregroundColor(.secondary)
+				}
+			}
+			.frame(maxWidth: .infinity, alignment: .leading)
+		} else if _isOffered, let appDirectory = Storage.shared.getAppDirectory(for: app) {
 			NavigationLink {
 				ModFileEditorListView(
 					appDirectory: appDirectory,
@@ -53,9 +68,6 @@ struct ModFileEditorView: View {
 					}
 				}
 			}
-			.zenithGlassCard(cornerRadius: 12)
-			.padding(.vertical, 6)
-			.listRowSeparator(.hidden)
 		} else {
 			VStack(alignment: .leading, spacing: 4) {
 				Text(.localized("Edit Local Game Files"))
@@ -65,9 +77,6 @@ struct ModFileEditorView: View {
 					.foregroundColor(.secondary)
 			}
 			.frame(maxWidth: .infinity, alignment: .leading)
-			.zenithGlassCard(cornerRadius: 12)
-			.padding(.vertical, 6)
-			.listRowSeparator(.hidden)
 		}
 	}
 }
@@ -87,17 +96,11 @@ private struct ModFileEditorListView: View {
 			Text(.localized("Change values like money and points stored in local files, before signing."))
 				.font(.footnote)
 				.foregroundColor(.secondary)
-				.zenithGlassCard(cornerRadius: 12)
-				.padding(.vertical, 6)
-				.listRowSeparator(.hidden)
 
 			if _loaded && _files.isEmpty {
 				Text(.localized("No editable files found."))
 					.font(.footnote)
 					.foregroundColor(.disabled())
-					.zenithGlassCard(cornerRadius: 12)
-					.padding(.vertical, 6)
-					.listRowSeparator(.hidden)
 			} else {
 				ForEach(_files) { file in
 					NavigationLink {
@@ -118,9 +121,6 @@ private struct ModFileEditorListView: View {
 							}
 						}
 					}
-					.zenithGlassCard(cornerRadius: 12)
-					.padding(.vertical, 6)
-					.listRowSeparator(.hidden)
 				}
 			}
 		}
@@ -171,37 +171,22 @@ private struct ModFileTextEditorView: View {
 		NBList(file.relativePath, type: .list) {
 			if !_loaded {
 				ProgressView()
-					.zenithGlassCard(cornerRadius: 12)
-					.padding(.vertical, 6)
-					.listRowSeparator(.hidden)
 			} else if _isBinary {
 				Text(.localized("Cannot edit this file — it is not plain text."))
 					.font(.footnote)
 					.foregroundColor(.disabled())
-					.zenithGlassCard(cornerRadius: 12)
-					.padding(.vertical, 6)
-					.listRowSeparator(.hidden)
 			} else if _isTooLarge {
 				Text(.localized("File too large to edit here."))
 					.font(.footnote)
 					.foregroundColor(.disabled())
-					.zenithGlassCard(cornerRadius: 12)
-					.padding(.vertical, 6)
-					.listRowSeparator(.hidden)
 			} else {
 				TextEditor(text: $_text)
 					.font(.system(.body, design: .monospaced))
 					.frame(minHeight: 300)
-					.zenithGlassCard(cornerRadius: 12)
-					.padding(.vertical, 6)
-					.listRowSeparator(.hidden)
 				if _saved {
 					Text(.localized("Edited — will be applied when you sign."))
 						.font(.footnote)
 						.foregroundColor(.secondary)
-						.zenithGlassCard(cornerRadius: 12)
-						.padding(.vertical, 6)
-						.listRowSeparator(.hidden)
 				}
 			}
 		}

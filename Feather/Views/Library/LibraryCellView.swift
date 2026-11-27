@@ -51,27 +51,41 @@ struct LibraryCellView: View {
 	}
 	
 	// MARK: Body
-	/// Zenith v2.3: the Library is a 2-column grid of large glass cards
-	/// (see LibraryView), so this is a card, not a list row. Big app
-	/// icon top-left, days pill top-right, name + version + last-opened
-	/// below — the same data the old row showed (name, version,
-	/// last-opened, expiry as the days pill). The bundle identifier
-	/// no longer fits on the card face; it is still in Get Info and
-	/// the passport. Install / Sign / Re-sign / Export / Open live in
-	/// the long-press menu (a grid has no swipe actions); the days
-	/// pill itself is also the Install button for signed apps, and
-	/// the Sign pill for imported ones.
+	/// Zenith v2.13: 2.0 REVERT — the Library is a compact plain
+	/// list again, not a grid of large cards. The v2.3 card (icon
+	/// + spacer + pill on top, name/version/last-opened below)
+	/// left the whole left ~60% of every card empty black space
+	/// (Reda's 2026-11-27 screenshot: "عباره عن فراغ بلا فائدة").
+	/// This row fills the width with real data instead: icon,
+	/// name, version + date added, bundle identifier, last opened
+	/// — plus the certificate days / Sign pill at the far end, as
+	/// before. File size stays on the passport (tap the row):
+	/// measuring every row's directory size on appear would walk
+	/// the whole .app bundle per row. No card, no capsule: a plain
+	/// list row with a hairline separator, like the old 2.0
+	/// Library. Install / Sign / Re-sign / Export / Open live in
+	/// the long-press menu; the days pill itself is also the
+	/// Install button for signed apps, and the Sign pill for
+	/// imported ones.
 	var body: some View {
 		let isEditing = editMode?.wrappedValue == .active
 		
-		VStack(alignment: .leading, spacing: 12) {
-			HStack(alignment: .top, spacing: 8) {
+		HStack(spacing: 12) {
+			ZStack(alignment: .topLeading) {
 				_appIcon(for: app)
 				
-				Spacer()
-				
-				_daysPill
-					.disabled(isEditing)
+				if isEditing {
+					Button {
+						_toggleSelection()
+					} label: {
+						Image(systemName: _isSelected ? "checkmark.circle.fill" : "circle")
+							.font(.title2)
+							.foregroundStyle(_isSelected ? Color.accentColor : .secondary)
+							.background(Color(uiColor: .systemBackground), in: Circle())
+					}
+					.buttonStyle(.borderless)
+					.offset(x: -6, y: -6)
+				}
 			}
 			
 			VStack(alignment: .leading, spacing: 2) {
@@ -83,44 +97,38 @@ struct LibraryCellView: View {
 					}
 					Text(app.name ?? .localized("Unknown"))
 						.font(.headline)
-						.lineLimit(2)
+						.lineLimit(1)
 				}
-				Text(_versionText)
+				Text(_versionAndDateText)
 					.font(.subheadline)
 					.foregroundStyle(.secondary)
 					.lineLimit(1)
+				if let identifier = app.identifier {
+					Text(identifier)
+						.font(.caption)
+						.foregroundStyle(.secondary)
+						.lineLimit(1)
+				}
 				Text(_lastOpenedText)
 					.font(.caption)
 					.foregroundStyle(.secondary)
 					.lineLimit(1)
 			}
+			
+			Spacer()
+			
+			_daysPill
+				.disabled(isEditing)
 		}
-		.padding(14)
-		.frame(maxWidth: .infinity, alignment: .leading)
-		.zenithGlassCard(cornerRadius: 24, fallback: Color.white.opacity(0.08))
 		.overlay {
 			// Selection ring only, shown in edit mode on a selected
-			// card — the always-on accent rim is gone (v2.10).
+			// row — the always-on accent rim is gone (v2.10).
 			if _isSelected && isEditing {
-				RoundedRectangle(cornerRadius: 24, style: .continuous)
+				RoundedRectangle(cornerRadius: 12, style: .continuous)
 					.strokeBorder(Color.accentColor, lineWidth: 2)
 			}
 		}
 		.contentShape(Rectangle())
-		.overlay(alignment: .topLeading) {
-			if isEditing {
-				Button {
-					_toggleSelection()
-				} label: {
-					Image(systemName: _isSelected ? "checkmark.circle.fill" : "circle")
-						.font(.title2)
-						.foregroundStyle(_isSelected ? Color.accentColor : .secondary)
-						.background(Color(uiColor: .systemBackground), in: Circle())
-				}
-				.buttonStyle(.borderless)
-				.offset(x: -6, y: -6)
-			}
-		}
 		.onTapGesture {
 			if isEditing {
 				_toggleSelection()
@@ -137,6 +145,16 @@ struct LibraryCellView: View {
 				_actions(for: app)
 			}
 		}
+	}
+	
+	/// Version + date added on one line ("v1.33.0 • 27 Nov 2026"):
+	/// both real, both already on the record — no disk reads.
+	private var _versionAndDateText: String {
+		var parts: [String] = [_versionText]
+		if let date = app.date {
+			parts.append(Self._expiryDateFormatter.string(from: date))
+		}
+		return parts.joined(separator: " • ")
 	}
 	
 	private static let _expiryDateFormatter: DateFormatter = {
@@ -160,7 +178,7 @@ struct LibraryCellView: View {
 		return .localized("Never opened")
 	}
 	
-	/// Compact days-remaining pill ("311d") top-right of the card.
+	/// Compact days-remaining pill ("311d") at the far end of the row.
 	/// Signed apps only — imported apps have no certificate expiry,
 	/// so they get a Sign pill instead. The colour is the honest
 	/// expiry colour (green while healthy, yellow/orange/red as

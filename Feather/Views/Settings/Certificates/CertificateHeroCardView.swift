@@ -132,7 +132,7 @@ struct CertificateHeroCardView: View {
 			Spacer()
 		}
 		.padding()
-		.zenithGlassCard(cornerRadius: 18, fallback: Color(uiColor: .secondarySystemFill))
+		.zenithGlassCard(cornerRadius: 18)
 		.padding(.horizontal)
 		.padding(.top, 8)
 		.onAppear {

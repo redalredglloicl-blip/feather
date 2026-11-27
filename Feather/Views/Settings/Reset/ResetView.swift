@@ -70,9 +70,6 @@ extension ResetView {
 					Self.clearWorkCache()
 				}
 			}
-			.zenithGlassCard(cornerRadius: 12)
-			.listRowSeparator(.hidden)
-			.listRowInsets(EdgeInsets(top: 7, leading: 16, bottom: 7, trailing: 16))
 			
 			Button(.localized("Reset Network Cache"), systemImage: "xmark.rectangle.portrait") {
 				Self.resetAlert(
@@ -82,9 +79,6 @@ extension ResetView {
 					Self.clearNetworkCache()
 				}
 			}
-			.zenithGlassCard(cornerRadius: 12)
-			.listRowSeparator(.hidden)
-			.listRowInsets(EdgeInsets(top: 7, leading: 16, bottom: 7, trailing: 16))
 		}
 	}
 	
@@ -99,9 +93,6 @@ extension ResetView {
 					Self.deleteSignedApps()
 				}
 			}
-			.zenithGlassCard(cornerRadius: 12)
-			.listRowSeparator(.hidden)
-			.listRowInsets(EdgeInsets(top: 7, leading: 16, bottom: 7, trailing: 16))
 			
 			Button(.localized("Reset Imported Apps"), systemImage: "xmark.circle") {
 				Self.resetAlert(
@@ -111,9 +102,6 @@ extension ResetView {
 					Self.deleteImportedApps()
 				}
 			}
-			.zenithGlassCard(cornerRadius: 12)
-			.listRowSeparator(.hidden)
-			.listRowInsets(EdgeInsets(top: 7, leading: 16, bottom: 7, trailing: 16))
 			
 			Button(.localized("Reset Certificates"), systemImage: "xmark.circle") {
 				Self.resetAlert(
@@ -123,9 +111,6 @@ extension ResetView {
 					Self.resetCertificates()
 				}
 			}
-			.zenithGlassCard(cornerRadius: 12)
-			.listRowSeparator(.hidden)
-			.listRowInsets(EdgeInsets(top: 7, leading: 16, bottom: 7, trailing: 16))
 		}
 	}
 	
@@ -137,18 +122,12 @@ extension ResetView {
 					Self.resetUserDefaults()
 				}
 			}
-			.zenithGlassCard(cornerRadius: 12)
-			.listRowSeparator(.hidden)
-			.listRowInsets(EdgeInsets(top: 7, leading: 16, bottom: 7, trailing: 16))
 			
 			Button(.localized("Reset All"), systemImage: "xmark.octagon") {
 				Self.resetAlert(title: .localized("Reset All")) {
 					Self.resetAll()
 				}
 			}
-			.zenithGlassCard(cornerRadius: 12)
-			.listRowSeparator(.hidden)
-			.listRowInsets(EdgeInsets(top: 7, leading: 16, bottom: 7, trailing: 16))
 		}
 		.foregroundStyle(.red)
 	}

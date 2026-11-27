@@ -148,9 +148,11 @@ final class AutoRefreshManager {
 			return report
 		}
 		
-		// Zenith forced update: one-tap renewal refuses unless a fresh
-		// version check has passed.
-		guard await ForcedUpdateManager.shared.ensureCheckPassed() else {
+		// Zenith forced update: one-tap renewal refuses unless the
+		// launch decision allows it — a fresh check passed, or a
+		// cached decision says this build is fine (v2.13). A known
+		// block still refuses.
+		guard await ForcedUpdateManager.shared.ensureSignAllowed() else {
 			let error: Error = ForcedUpdateManager.shared.isUpdateRequired
 				? ForcedUpdateError.updateRequired
 				: ForcedUpdateError.checkFailed
@@ -198,9 +200,11 @@ final class AutoRefreshManager {
 	/// copy over the old one, or `.ipaReady` with the saved IPA path
 	/// when AFC is unavailable (the user installs it with SideStore/ESign).
 	func refreshSelf() async throws -> AutoRefreshReport.SelfRefreshOutcome {
-		// Zenith forced update: self-refresh refuses unless a fresh
-		// version check has passed.
-		guard await ForcedUpdateManager.shared.ensureCheckPassed() else {
+		// Zenith forced update: self-refresh refuses unless the
+		// launch decision allows it — a fresh check passed, or a
+		// cached decision says this build is fine (v2.13). A known
+		// block still refuses.
+		guard await ForcedUpdateManager.shared.ensureSignAllowed() else {
 			throw AutoRefreshError.selfRefreshFailed(underlying: ForcedUpdateManager.shared.isUpdateRequired ? ForcedUpdateError.updateRequired : ForcedUpdateError.checkFailed)
 		}
 		

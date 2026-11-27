@@ -69,9 +69,6 @@ struct InAppTranslationRowView: View {
 					.fixedSize(horizontal: false, vertical: true)
 			}
 		}
-		.zenithGlassCard(cornerRadius: 12)
-		.padding(.vertical, 6)
-		.listRowSeparator(.hidden)
 	}
 }
 
@@ -110,15 +107,9 @@ struct InAppTranslationView: View {
 				Text(verbatim: .localized("In-App Translation Description"))
 					.font(.footnote)
 					.foregroundStyle(.secondary)
-					.zenithGlassCard(cornerRadius: 12)
-					.padding(.vertical, 6)
-					.listRowSeparator(.hidden)
 				Text(verbatim: .localized("No Machine Translation"))
 					.font(.footnote)
 					.foregroundStyle(.secondary)
-					.zenithGlassCard(cornerRadius: 12)
-					.padding(.vertical, 6)
-					.listRowSeparator(.hidden)
 			}
 
 			if _appDirectoryMissing {
@@ -126,17 +117,11 @@ struct InAppTranslationView: View {
 					Text(verbatim: .localized("App Files Not Found"))
 						.font(.footnote)
 						.foregroundColor(.disabled())
-						.zenithGlassCard(cornerRadius: 12)
-						.padding(.vertical, 6)
-						.listRowSeparator(.hidden)
 				}
 			} else if _isScanning {
 				NBSection(.localized("In-App Translation")) {
 					ProgressView()
 						.frame(maxWidth: .infinity, alignment: .center)
-						.zenithGlassCard(cornerRadius: 12)
-						.padding(.vertical, 6)
-						.listRowSeparator(.hidden)
 				}
 			} else if let report = _report {
 				if report.tables.isEmpty {
@@ -144,21 +129,12 @@ struct InAppTranslationView: View {
 						Text(verbatim: .localized("No Localizable Text Found"))
 							.font(.footnote)
 							.foregroundColor(.disabled())
-							.zenithGlassCard(cornerRadius: 12)
-							.padding(.vertical, 6)
-							.listRowSeparator(.hidden)
 						Text(verbatim: .localized("No Localizable Text Found Hint"))
 							.font(.footnote)
 							.foregroundStyle(.secondary)
-							.zenithGlassCard(cornerRadius: 12)
-							.padding(.vertical, 6)
-							.listRowSeparator(.hidden)
 						Text(verbatim: .localized("Hardcoded Text Cannot Be Translated"))
 							.font(.footnote)
 							.foregroundStyle(.secondary)
-							.zenithGlassCard(cornerRadius: 12)
-							.padding(.vertical, 6)
-							.listRowSeparator(.hidden)
 					}
 				} else {
 					_targetLanguageSection(report: report)
@@ -226,30 +202,18 @@ extension InAppTranslationView {
 				}
 			}
 			.pickerStyle(.menu)
-			.zenithGlassCard(cornerRadius: 12)
-			.padding(.vertical, 6)
-			.listRowSeparator(.hidden)
 
 			Text(verbatim: .localized("Switching Target Language Clears Edits"))
 				.font(.footnote)
 				.foregroundStyle(.secondary)
-				.zenithGlassCard(cornerRadius: 12)
-				.padding(.vertical, 6)
-				.listRowSeparator(.hidden)
 
 			if _targetAlreadyBundled {
 				Text(verbatim: .localized("Translation Already Exists"))
 					.font(.footnote)
 					.foregroundStyle(.secondary)
-					.zenithGlassCard(cornerRadius: 12)
-					.padding(.vertical, 6)
-					.listRowSeparator(.hidden)
 				Text(verbatim: .localized("Translation Already Exists Hint"))
 					.font(.footnote)
 					.foregroundStyle(.secondary)
-					.zenithGlassCard(cornerRadius: 12)
-					.padding(.vertical, 6)
-					.listRowSeparator(.hidden)
 			} else if !options.translationPlan.edits.isEmpty {
 				Text(verbatim: .localized(
 					"Translation Staged Count",
@@ -257,9 +221,6 @@ extension InAppTranslationView {
 				))
 					.font(.footnote)
 					.foregroundStyle(Color(hex: "#FFC778"))
-					.zenithGlassCard(cornerRadius: 12)
-					.padding(.vertical, 6)
-					.listRowSeparator(.hidden)
 			}
 
 			if !report.bundledLanguages.isEmpty {
@@ -269,9 +230,6 @@ extension InAppTranslationView {
 				))
 					.font(.footnote)
 					.foregroundStyle(.secondary)
-					.zenithGlassCard(cornerRadius: 12)
-					.padding(.vertical, 6)
-					.listRowSeparator(.hidden)
 			}
 		}
 	}
@@ -286,9 +244,6 @@ extension InAppTranslationView {
 				}
 			}
 			.pickerStyle(.menu)
-			.zenithGlassCard(cornerRadius: 12)
-			.padding(.vertical, 6)
-			.listRowSeparator(.hidden)
 		}
 	}
 
@@ -299,9 +254,6 @@ extension InAppTranslationView {
 				Text(verbatim: .localized("Translation Already Exists Hint"))
 					.font(.footnote)
 					.foregroundStyle(.secondary)
-					.zenithGlassCard(cornerRadius: 12)
-					.padding(.vertical, 6)
-					.listRowSeparator(.hidden)
 			} else {
 				ForEach(table.entries, id: \.key) { entry in
 					_stringRow(table: table, key: entry.key, original: entry.value)
@@ -310,9 +262,6 @@ extension InAppTranslationView {
 					Text(verbatim: .localized("More Strings Not Shown"))
 						.font(.footnote)
 						.foregroundStyle(.secondary)
-						.zenithGlassCard(cornerRadius: 12)
-						.padding(.vertical, 6)
-						.listRowSeparator(.hidden)
 				}
 			}
 		}
@@ -343,9 +292,6 @@ extension InAppTranslationView {
 				.foregroundStyle(.red)
 			}
 		}
-		.zenithGlassCard(cornerRadius: 12)
-		.padding(.vertical, 6)
-		.listRowSeparator(.hidden)
 	}
 
 	@ViewBuilder
@@ -354,9 +300,6 @@ extension InAppTranslationView {
 			Text(verbatim: .localized("Tap To Translate Overlay Description"))
 				.font(.footnote)
 				.foregroundStyle(.secondary)
-				.zenithGlassCard(cornerRadius: 12)
-				.padding(.vertical, 6)
-				.listRowSeparator(.hidden)
 
 			Toggle(isOn: $_overlayOn) {
 				Text(.localized("Tap To Translate Overlay"))
@@ -368,32 +311,20 @@ extension InAppTranslationView {
 					TranslationOverlayInjector.unstage(from: &options)
 				}
 			}
-			.zenithGlassCard(cornerRadius: 12)
-			.padding(.vertical, 6)
-			.listRowSeparator(.hidden)
 
 			if TranslationOverlayInjector.isStaged(in: options) {
 				Text(verbatim: .localized("Translation Overlay Staged"))
 					.font(.footnote)
 					.foregroundStyle(Color(hex: "#FFC778"))
-					.zenithGlassCard(cornerRadius: 12)
-					.padding(.vertical, 6)
-					.listRowSeparator(.hidden)
 				ForEach(TranslationOverlayInjector.stagedFiles(in: options), id: \.absoluteString) { tweak in
 					Text(verbatim: tweak.lastPathComponent)
 						.font(.footnote)
 						.foregroundStyle(.secondary)
-						.zenithGlassCard(cornerRadius: 12)
-						.padding(.vertical, 6)
-						.listRowSeparator(.hidden)
 				}
 			} else if TranslationOverlayInjector.bundledDylibURL != nil {
 				Text(verbatim: .localized("Translation Overlay Included"))
 					.font(.footnote)
 					.foregroundStyle(.secondary)
-					.zenithGlassCard(cornerRadius: 12)
-					.padding(.vertical, 6)
-					.listRowSeparator(.hidden)
 			} else {
 				// Fallback for a build where the compile step did
 				// not run and no bundled dylib was found: say so
@@ -404,15 +335,9 @@ extension InAppTranslationView {
 				Text(verbatim: .localized("Translation Overlay Not Found"))
 					.font(.footnote)
 					.foregroundStyle(.secondary)
-					.zenithGlassCard(cornerRadius: 12)
-					.padding(.vertical, 6)
-					.listRowSeparator(.hidden)
 				Text(verbatim: .localized("Pick Translation Overlay File"))
 					.font(.footnote)
 					.foregroundStyle(.secondary)
-					.zenithGlassCard(cornerRadius: 12)
-					.padding(.vertical, 6)
-					.listRowSeparator(.hidden)
 				Button {
 					_isAddingPresenting = true
 				} label: {
@@ -423,9 +348,6 @@ extension InAppTranslationView {
 					}
 				}
 				.buttonStyle(ZenithPressButtonStyle())
-				.zenithGlassCard(cornerRadius: 12)
-				.padding(.vertical, 6)
-				.listRowSeparator(.hidden)
 			}
 		}
 	}
@@ -436,15 +358,9 @@ extension InAppTranslationView {
 			Text(verbatim: .localized("Hardcoded Text Cannot Be Translated"))
 				.font(.footnote)
 				.foregroundStyle(.secondary)
-				.zenithGlassCard(cornerRadius: 12)
-				.padding(.vertical, 6)
-				.listRowSeparator(.hidden)
 			Text(verbatim: .localized("Applied When You Sign"))
 				.font(.footnote)
 				.foregroundStyle(.secondary)
-				.zenithGlassCard(cornerRadius: 12)
-				.padding(.vertical, 6)
-				.listRowSeparator(.hidden)
 		}
 	}
 

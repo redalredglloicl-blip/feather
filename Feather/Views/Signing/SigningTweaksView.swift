@@ -34,9 +34,6 @@ struct SigningTweaksView: View {
 				Toggle(isOn: $options.injectIntoExtensions) {
 					Label(.localized("Inject into Extensions"), systemImage: "syringe")
 				}
-				.zenithGlassCard(cornerRadius: 12)
-				.padding(.vertical, 6)
-				.listRowSeparator(.hidden)
 			}
 			
 			NBSection(.localized("Tweaks")) {
@@ -48,9 +45,6 @@ struct SigningTweaksView: View {
 					Text(verbatim: .localized("No files chosen."))
 						.font(.footnote)
 						.foregroundColor(.disabled())
-						.zenithGlassCard(cornerRadius: 12)
-						.padding(.vertical, 6)
-						.listRowSeparator(.hidden)
 				}
 			}
 		}
@@ -97,9 +91,6 @@ extension SigningTweaksView {
 			.contextMenu {
 				_fileActions(tweak: tweak)
 			}
-			.zenithGlassCard(cornerRadius: 12)
-			.padding(.vertical, 6)
-			.listRowSeparator(.hidden)
 	}
 	
 	@ViewBuilder

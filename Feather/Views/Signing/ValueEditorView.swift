@@ -43,13 +43,10 @@
 //  on the signing screen, FIRST, before the other game rows:
 //
 //    NavigationLink {
-//        ValueEditorView(options: $_temporaryOptions, report: _moddabilityReport)
+//        ValueEditorView(options: $_temporaryOptions, report: $_moddabilityReport)
 //    } label: {
 //        ValueEditorRowLabel()
 //    }
-//    .zenithGlassCard(cornerRadius: 12)
-//    .padding(.vertical, 6)
-//    .listRowSeparator(.hidden)
 //
 //  SigningView.swift is NOT edited by this file.
 //
@@ -62,8 +59,11 @@ import NimbleViews
 struct ValueEditorView: View {
 	@Binding var options: Options
 	/// The shared check result (filled in by ModdingCheckView).
-	/// Nil while the check is still running.
-	var report: ModdabilityReport?
+	/// A binding, not a snapshot: the user can tap this row
+	/// while the check is still running, and the pushed screen
+	/// must follow the live verdict instead of staying stuck on
+	/// "checking" with the nil it was opened with.
+	@Binding var report: ModdabilityReport?
 
 	@State private var _valueEditorOn = false
 	@State private var _isAddingPresenting = false

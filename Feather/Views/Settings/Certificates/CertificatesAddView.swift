@@ -51,27 +51,18 @@ struct CertificatesAddView: View {
 					} label: {
 						Label(.localized("Certificate from Apple"), systemImage: "apple.logo")
 					}
-					.zenithGlassCard(cornerRadius: 12)
-					.padding(.vertical, 6)
-					.listRowSeparator(.hidden)
 				} footer: {
 					Text(.localized("Get a free certificate from Apple with your Apple ID"))
 				}
 				
 				NBSection(.localized("Password")) {
 					SecureField(.localized("Enter Password"), text: $_p12Password)
-						.zenithGlassCard(cornerRadius: 12)
-						.padding(.vertical, 6)
-						.listRowSeparator(.hidden)
 				} footer: {
 					Text(.localized("Enter the password associated with the private key. Leave it blank if theres no password required."))
 				}
 				
 				Section {
 					TextField(.localized("Nickname (Optional)"), text: $_certificateName)
-						.zenithGlassCard(cornerRadius: 12)
-						.padding(.vertical, 6)
-						.listRowSeparator(.hidden)
 				}
 			}
 			// Zenith v2.8: stars on this sheet too — same pattern as
@@ -165,9 +156,6 @@ extension CertificatesAddView {
 		}
 		.disabled(file != nil)
 		.animation(.easeInOut(duration: 0.3), value: file != nil)
-		.zenithGlassCard(cornerRadius: 12)
-		.padding(.vertical, 6)
-		.listRowSeparator(.hidden)
 		// No .fileImporter here on purpose (see the picker sheets
 		// above): the native modifier's onCompletion never fires on
 		// iOS 27 from inside this sheet. The row only flips the

@@ -48,13 +48,7 @@ struct AppleIDSignInView: View {
 						.textInputAutocapitalization(.never)
 						.autocorrectionDisabled()
 						.keyboardType(.emailAddress)
-						.zenithGlassCard(cornerRadius: 12)
-						.padding(.vertical, 6)
-						.listRowSeparator(.hidden)
 					SecureField(.localized("Password"), text: $_password)
-						.zenithGlassCard(cornerRadius: 12)
-						.padding(.vertical, 6)
-						.listRowSeparator(.hidden)
 				} footer: {
 					Text(.localized("Your Apple ID password is used only for this sign-in and is never stored."))
 				}
@@ -72,9 +66,6 @@ struct AppleIDSignInView: View {
 						.frame(maxWidth: .infinity, alignment: .center)
 					}
 					.disabled(_appleID.isEmpty || _password.isEmpty || _isBusy)
-					.zenithGlassCard(cornerRadius: 12)
-					.padding(.vertical, 6)
-					.listRowSeparator(.hidden)
 				} footer: {
 					Text(_manager.localizedStatusText)
 						.foregroundStyle(_manager.phase == .failed ? .red : .secondary)
@@ -85,9 +76,6 @@ struct AppleIDSignInView: View {
 						Text(error)
 							.font(.footnote)
 							.foregroundStyle(.red)
-							.zenithGlassCard(cornerRadius: 12)
-							.padding(.vertical, 6)
-							.listRowSeparator(.hidden)
 					}
 				}
 			}
@@ -160,8 +148,6 @@ struct AppleIDSignInView: View {
 				Section {
 					Text(.localized("This Apple ID already has development certificates. Apple allows only a limited number of free certificates."))
 						.font(.subheadline)
-						.zenithGlassCard(cornerRadius: 12)
-						.listRowSeparator(.hidden)
 					if let certs = _manager.revocationRequest {
 						ForEach(certs, id: \.serialNumberHex) { cert in
 							VStack(alignment: .leading, spacing: 2) {
@@ -173,9 +159,6 @@ struct AppleIDSignInView: View {
 										.foregroundStyle(.secondary)
 								}
 							}
-							.zenithGlassCard(cornerRadius: 12)
-							.padding(.vertical, 6)
-							.listRowSeparator(.hidden)
 						}
 					}
 				}
@@ -184,16 +167,10 @@ struct AppleIDSignInView: View {
 						_isRevocationSheetPresenting = false
 						_manager.resolveRevocation(.revokeOldest)
 					}
-					.zenithGlassCard(cornerRadius: 12)
-					.padding(.vertical, 6)
-					.listRowSeparator(.hidden)
 					Button(.localized("Cancel"), role: .cancel) {
 						_isRevocationSheetPresenting = false
 						_manager.cancel()
 					}
-					.zenithGlassCard(cornerRadius: 12)
-					.padding(.vertical, 6)
-					.listRowSeparator(.hidden)
 				} footer: {
 					Text(.localized("Revoking deletes the oldest certificate from your Apple ID. Apps signed with it stop working."))
 				}

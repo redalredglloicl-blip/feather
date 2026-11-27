@@ -35,23 +35,36 @@
 //    v2.12 bounds that wait (~30 s): if no fresh decision arrives,
 //    the launch opens on the cached decision instead of hanging
 //    forever (build 13 hung at 75% across restarts for exactly this
-//    reason). Signing/installing still refuse until a live check
-//    succeeds, so the deadline fallback only ever opens the UI.
+//    reason). v2.13: signing/installing follow the SAME decision the
+//    launch gate uses (see ensureSignAllowed) — a fresh pass, or a
+//    cached decision that says this build is fine — because the
+//    fresh check never completes on this phone at all, so the old
+//    fresh-only signing gate blocked signing forever on a build the
+//    launch gate had already opened on.
 //  * The cache is still applied on a failed check, so a cached block
 //    STAYS blocked and shows instantly, and a single dropped request
-//    can never lift a block. But a cached "fine" no longer opens the
-//    app at launch and no longer sets hasPassedCheck: only a fresh
-//    check passes, and only a field that succeeded fresh may clear
-//    or overwrite its cache.
+//    can never lift a block. A cached "fine" still never sets
+//    hasPassedCheck — only a fresh check passes — and only a field
+//    that succeeded fresh may clear or overwrite its cache. But a
+//    cached "fine" DOES open the app at launch (v2.12 deadline
+//    fallback) and DOES allow signing/installing (v2.13,
+//    ensureSignAllowed): the launch gate and the signing gate use
+//    the same cached decision, so a build the launch opened on is
+//    a build that can sign.
 //  * Every check (launch and foreground) applies the cached decision
 //    FIRST, before any network, so a cached block shows instantly
 //    and a backgrounded old app re-blocks the moment it foregrounds.
-//  * Signing and installing refuse to run unless a fresh check has
-//    passed (in-memory flag, set only by a real check that found no
-//    block). A failed check leaves the flag unset, so signing and
-//    installing refuse until a live check succeeds. The gate re-runs
-//    the check on demand, so a transient failure only delays the
-//    action until the network is back.
+//  * Signing and installing run when the launch decision allows them:
+//    a fresh check passed (in-memory flag, set only by a real check
+//    that found no block), OR a cached decision exists and says this
+//    build is fine (see ensureSignAllowed). A known block — fresh or
+//    cached — still refuses, and with no cached decision at all the
+//    gate still waits for a fresh check instead of guessing. When no
+//    fresh check has run yet this session the gate re-runs the check
+//    on demand, so a transient failure only delays the action until
+//    the network is back; when the launch check already tried fresh
+//    this session, the cached decision answers at once instead of
+//    burning another full retry round first.
 //  * Genuinely offline (no Wi-Fi and no mobile data) is owned by the
 //    no-internet gate (OfflineBlockView), not this manager: the retry
 //    loop stops as soon as the device reports offline, and the launch
@@ -72,9 +85,20 @@
 //  (see LoadingView step 4). The residual hole is honest and
 //  unavoidable client-side: if the server raised minVersion AND the
 //  fetch cannot complete at all, the app opens on stale cache —
-//  it cannot know what it cannot fetch. Signing and installing still
-//  refuse until a live check succeeds, and a later fresh check that
+//  it cannot know what it cannot fetch. A later fresh check that
 //  blocks flips the UI to the update screen the moment it answers.
+//
+//  v2.13: the signing/installing gate follows the launch decision
+//  (ensureSignAllowed). The fresh check NEVER completes on this
+//  phone — proven across v2.2–v2.12 despite strong internet — so
+//  the old fresh-only signing gate refused every sign/install with
+//  "ما قدرت أتأكد من إصدار التطبيق" on a build the launch gate had
+//  already opened on. Signing now allows what the launch allowed:
+//  a fresh pass, or a cached "fine". The residual hole is the same
+//  one the launch already accepts (above): a stale cached "fine"
+//  cannot know the server raised minVersion. A known block still
+//  refuses signing, and a later fresh check that blocks flips the
+//  UI to the update screen the moment it answers.
 //
 //  Already-installed old builds run their own frozen gate code and
 //  cannot be fixed by changing this file: v1 has no gate at all, and
@@ -138,7 +162,9 @@ final class ForcedUpdateManager: ObservableObject {
 	/// Set ONLY by a real check that completed fresh and found no block.
 	/// A check that fell back to the cache never sets it, even when the
 	/// cached values say the app is fine. Lives in memory only — a
-	/// relaunch must check again.
+	/// relaunch must check again. Signing/installing no longer read
+	/// this flag alone — see ensureSignAllowed(), which also honours
+	/// a cached "fine" — so the flag stays the fresh-only pass.
 	private(set) var hasPassedCheck = false
 
 	/// True once a check has applied a FRESH decision — both decisive
@@ -161,8 +187,9 @@ final class ForcedUpdateManager: ObservableObject {
 	@Published private(set) var hasLaunchDecision = false
 
 	/// True when the launch decision came from the cache (deadline
-	/// fallback). hasPassedCheck stays false then, so signing and
-	/// installing still refuse until a live check succeeds.
+	/// fallback). hasPassedCheck stays false then — but signing and
+	/// installing follow the cached decision itself (v2.13,
+	/// ensureSignAllowed), so a cached "fine" still allows them.
 	@Published private(set) var launchUsedCache = false
 	
 	private var _checkTask: Task<Void, Never>?
@@ -248,9 +275,11 @@ final class ForcedUpdateManager: ObservableObject {
 		_checkTask = nil
 	}
 	
-	/// Returns true only when a check has passed. Runs the check on
-	/// demand when it has not passed yet. Used by the signing and
-	/// installing gates — the flag is set only by a real check.
+	/// Returns true only when a FRESH check has passed. Runs the check
+	/// on demand when it has not passed yet. The flag is set only by a
+	/// real check that completed fresh and found no block — a cached
+	/// decision never sets it. Kept as the strict fresh-only primitive;
+	/// the signing/installing gates use ensureSignAllowed() instead.
 	func ensureCheckPassed() async -> Bool {
 		if hasPassedCheck {
 			return true
@@ -259,15 +288,65 @@ final class ForcedUpdateManager: ObservableObject {
 		return hasPassedCheck
 	}
 
+	/// True when a cached decision exists and says this build is fine:
+	/// the cached kill flag is off and the installed build is at or
+	/// above the cached minimum version. Requires at least one cached
+	/// value — with no cache at all there is no decision to fall back
+	/// on, so this is false and signing still waits for a fresh check.
+	/// The exact negation of the cached block in _applyCachedDecision,
+	/// so a cached block can never read as "fine" here.
+	var cachedDecisionAllowsSigning: Bool {
+		guard hasAnyCachedValue else { return false }
+		if Self.cachedKilled { return false }
+		if let minVersion = Self.cachedMinVersion,
+		   Self.installedBuildNumber < minVersion {
+			return false
+		}
+		return true
+	}
+
+	/// Signing/installing gate (v2.13). Allows exactly what the launch
+	/// gate allows: (a) a fresh check passed, or (b) a cached decision
+	/// exists and says this build is fine. A known block — fresh or
+	/// cached — still refuses, and with no cached decision the gate
+	/// still waits for a fresh check instead of guessing. This does
+	/// NOT set hasPassedCheck: that flag stays fresh-only, so a
+	/// cached "fine" allows signing without ever claiming a live
+	/// check passed. When the launch check already tried fresh this
+	/// session (checkAttempts > 0), the cached decision answers at
+	/// once instead of burning another full retry round first — the
+	/// launch already waited for fresh and opened on this same
+	/// decision. A fresh check that lands later and blocks still
+	/// flips the UI to the update screen the moment it answers.
+	func ensureSignAllowed() async -> Bool {
+		if hasPassedCheck {
+			return true
+		}
+		if isUpdateRequired {
+			return false
+		}
+		if checkAttempts > 0, cachedDecisionAllowsSigning {
+			return true
+		}
+		if await ensureCheckPassed() {
+			return true
+		}
+		if isUpdateRequired {
+			return false
+		}
+		return cachedDecisionAllowsSigning
+	}
+
 	/// Launch-screen deadline fallback (v2.12). Call when the fresh
 	/// check could not complete within the launch deadline: open on
 	/// the last known (cached) decision instead of hanging forever.
 	/// Build 13 hung at 75% across restarts because its check never
 	/// completed fresh on this phone — waiting longer only bricks
-	/// the app. hasPassedCheck stays false, so signing and installing
-	/// still refuse until a live check succeeds; a later fresh check
-	/// that blocks flips the UI to the update screen the moment it
-	/// answers. Never call when a fresh decision already exists.
+	/// the app. hasPassedCheck stays false, but signing and installing
+	/// follow the cached decision itself (v2.13, ensureSignAllowed);
+	/// a later fresh check that blocks flips the UI to the update
+	/// screen the moment it answers. Never call when a fresh decision
+	/// already exists.
 	func applyCachedFallbackForLaunch() {
 		_applyCachedDecision()
 		launchUsedCache = true
@@ -420,7 +499,8 @@ final class ForcedUpdateManager: ObservableObject {
 			// an older server state — build 12 passed on cached 11
 			// while the server already said 13 — so a cached "fine"
 			// is not proof this build is still allowed. Signing and
-			// installing refuse until a live check succeeds.
+			// installing read the cached decision itself instead
+			// (v2.13, ensureSignAllowed) — they do not read this flag.
 			hasPassedCheck = !fromCache
 		}
 		// A fresh decision means BOTH decisive fields (minVersion and

@@ -49,9 +49,6 @@ struct BackupOriginalRowView: View {
 				.font(.footnote)
 				.foregroundStyle(_backupManager.latestBackup(appName: app.name, appVersion: app.version) == nil ? .secondary : Color(hex: "#FFC778"))
 		}
-		.zenithGlassCard(cornerRadius: 12)
-		.padding(.vertical, 6)
-		.listRowSeparator(.hidden)
 	}
 	
 	/// Status line: the saved backup's name, date and size — or

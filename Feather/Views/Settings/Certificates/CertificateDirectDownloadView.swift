@@ -34,29 +34,17 @@ struct CertificateDirectDownloadView: View {
 							.textInputAutocapitalization(.never)
 							.keyboardType(.URL)
 							.autocorrectionDisabled()
-							.zenithGlassCard(cornerRadius: 12)
-							.padding(.vertical, 6)
-							.listRowSeparator(.hidden)
 						TextField(.localized("رابط ملف التثبيت (.mobileprovision)"), text: $_provisionLinkText)
 							.textInputAutocapitalization(.never)
 							.keyboardType(.URL)
 							.autocorrectionDisabled()
-							.zenithGlassCard(cornerRadius: 12)
-							.padding(.vertical, 6)
-							.listRowSeparator(.hidden)
 					} footer: {
 						Text(.localized("الصق رابط مباشر لكل ملف. الروابط تُنظَّف تلقائياً."))
 					}
 					
 					Section {
 						SecureField(.localized("كلمة السر (اختياري)"), text: $_password)
-							.zenithGlassCard(cornerRadius: 12)
-							.padding(.vertical, 6)
-							.listRowSeparator(.hidden)
 						TextField(.localized("اسم الشهادة (اختياري)"), text: $_nickname)
-							.zenithGlassCard(cornerRadius: 12)
-							.padding(.vertical, 6)
-							.listRowSeparator(.hidden)
 					}
 					
 					Section {
@@ -90,9 +78,6 @@ struct CertificateDirectDownloadView: View {
 								.foregroundStyle(_isError ? .red : .secondary)
 								.multilineTextAlignment(.center)
 								.frame(maxWidth: .infinity)
-								.zenithGlassCard(cornerRadius: 12)
-								.padding(.vertical, 6)
-								.listRowSeparator(.hidden)
 						}
 					}
 					
@@ -102,9 +87,6 @@ struct CertificateDirectDownloadView: View {
 								dismiss()
 							}
 							.frame(maxWidth: .infinity)
-							.zenithGlassCard(cornerRadius: 12)
-							.padding(.vertical, 6)
-							.listRowSeparator(.hidden)
 						}
 					}
 				}

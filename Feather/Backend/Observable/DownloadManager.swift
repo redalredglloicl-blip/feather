@@ -830,6 +830,19 @@ class DownloadManager: NSObject, ObservableObject {
 	private func _loadHistory() {
 		guard let data = try? Data(contentsOf: _historyURL) else { return }
 		history = (try? JSONDecoder().decode([DownloadHistoryEntry].self, from: data)) ?? []
+		// Zenith v2.13 Fix 4: older builds recorded Library
+		// imports here with a file:// URL — a local file that was
+		// never downloaded and can never be re-downloaded. Drop
+		// those rows (and persist the cleanup) so they stop
+		// showing as downloads.
+		let loadedCount = history.count
+		history.removeAll { entry in
+			guard let scheme = URL(string: entry.urlString)?.scheme?.lowercased() else { return true }
+			return scheme != "http" && scheme != "https"
+		}
+		if history.count != loadedCount {
+			_saveHistory()
+		}
 	}
 	
 	private func _saveHistory() {
@@ -839,7 +852,13 @@ class DownloadManager: NSObject, ObservableObject {
 	/// Records a finished download. Keeps the newest 50 entries.
 	/// Completed entries remember the file's on-disk name, so the
 	/// Downloads tab can open the finished file later.
+	/// Zenith v2.13 Fix 4: a Library file-picker import is a local
+	/// file, never a download (`onlyArchiving`) — it must never
+	/// land in Download History. The guard lives here, at the
+	/// single choke point, so every completion path is covered
+	/// and no future caller can record an import by accident.
 	func _recordHistory(for download: Download, status: DownloadHistoryStatus) {
+		guard !download.onlyArchiving else { return }
 		let entry = DownloadHistoryEntry(
 			id: download.id,
 			fileName: download.fileName,
@@ -850,6 +869,13 @@ class DownloadManager: NSObject, ObservableObject {
 			localFileName: status == .completed ? download.fileName : nil
 		)
 		history.removeAll(where: { $0.id == entry.id })
+		// Zenith v2.13 Fix 5: a retry that finally succeeds
+		// supersedes the earlier failed attempt of the same link.
+		// Without this the history showed both the failed row and
+		// the completed row for one file (double-recording).
+		if status == .completed {
+			history.removeAll(where: { $0.urlString == entry.urlString && $0.status == .failed })
+		}
 		history.insert(entry, at: 0)
 		if history.count > 50 {
 			history = Array(history.prefix(50))
@@ -863,8 +889,15 @@ class DownloadManager: NSObject, ObservableObject {
 	}
 	
 	/// Retry a history entry: starts a fresh download of the same URL.
+	/// Zenith v2.13 Fix 4: only http(s) links can be re-downloaded —
+	/// a legacy file:// row (a Library import recorded by an older
+	/// build) must never spawn a broken download attempt.
 	func retryHistoryEntry(_ entry: DownloadHistoryEntry) {
-		guard let url = URL(string: entry.urlString) else { return }
+		guard
+			let url = URL(string: entry.urlString),
+			let scheme = url.scheme?.lowercased(),
+			scheme == "http" || scheme == "https"
+		else { return }
 		_ = startDownload(from: url, id: "ZenithManualDownload_\(UUID().uuidString)")
 	}
 	
@@ -1109,7 +1142,13 @@ extension DownloadManager: URLSessionDownloadDelegate {
 				if err == nil {
 					dl.status = .completed
 					DownloadManager.shared._recordHistory(for: dl, status: .completed)
-					DownloadManager.shared._noteCompletedDownload(dl)
+					// Zenith v2.13 Fix 4: an import never triggers
+					// the save prompt — its file is not in
+					// ZenithDownloads, so the lookup could offer a
+					// same-named older download instead of it.
+					if !dl.onlyArchiving {
+						DownloadManager.shared._noteCompletedDownload(dl)
+					}
 				} else {
 					dl.status = .failed
 					dl.errorMessage = err?.localizedDescription
@@ -1150,9 +1189,12 @@ extension DownloadManager: URLSessionDownloadDelegate {
 					download.status = .failed
 					download.errorMessage = "HTTP \(http.statusCode)"
 					DownloadManager.shared._recordHistory(for: download, status: .failed)
-					if let index = DownloadManager.shared.getDownloadIndex(by: download.id) {
-						DownloadManager.shared.downloads.remove(at: index)
-					}
+					// Zenith v2.13 Fix 5: keep the failed download
+					// in the active list, like every other failure
+					// path (transport error, multipart error) — the
+					// old code removed it here, so its Retry button
+					// vanished while other failures kept theirs.
+					DownloadManager.shared._saveActiveDownloads()
 				}
 				return
 			}

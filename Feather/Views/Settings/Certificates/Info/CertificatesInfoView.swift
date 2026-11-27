@@ -39,9 +39,6 @@ struct CertificatesInfoView: View {
 					Button(.localized("Open in Files"), systemImage: "folder") {
 						UIApplication.open(Storage.shared.getUuidDirectory(for: cert)!.toSharedDocumentsURL()!)
 					}
-					.zenithGlassCard(cornerRadius: 12)
-					.padding(.vertical, 6)
-					.listRowSeparator(.hidden)
 				}
 			}
 			// Zenith v2.8: stars on every pushed sub-screen — the
@@ -89,9 +86,6 @@ extension CertificatesInfoView {
 				NavigationLink(.localized("View Entitlements")) {
 					CertificatesInfoEntitlementView(entitlements: entitlements)
 				}
-				.zenithGlassCard(cornerRadius: 12)
-				.padding(.vertical, 6)
-				.listRowSeparator(.hidden)
 			}
 		}
 	}
@@ -123,9 +117,6 @@ extension CertificatesInfoView {
 			Text(description)
 		}
 		.copyableText(description)
-		.zenithGlassCard(cornerRadius: 12)
-		.padding(.vertical, 6)
-		.listRowSeparator(.hidden)
 	}
 	
 	@ViewBuilder
@@ -137,8 +128,5 @@ extension CertificatesInfoView {
 					.copyableText(key)
 			}
 		}
-		.zenithGlassCard(cornerRadius: 12)
-		.padding(.vertical, 6)
-		.listRowSeparator(.hidden)
 	}
 }

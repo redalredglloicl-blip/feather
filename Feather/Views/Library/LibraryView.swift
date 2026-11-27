@@ -204,8 +204,6 @@ struct LibraryView: View {
 									.foregroundStyle(Color.accentColor)
 							}
 						}
-						.zenithGlassCard(cornerRadius: 12)
-						.listRowSeparator(.hidden)
 					}
 				}
 			}
@@ -508,8 +506,8 @@ extension LibraryView {
 			}
 			.buttonStyle(.borderless)
 		}
-		.zenithGlassCard(cornerRadius: 12)
-		.listRowSeparator(.hidden)
+		// Zenith v2.13: plain row — the old glass card + hidden
+		// separator made this a capsule inside the section.
 	}
 	
 	private func _lastOpenedText(for app: AppInfoPresentable) -> String {

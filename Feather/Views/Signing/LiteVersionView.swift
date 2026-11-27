@@ -61,9 +61,6 @@ struct LiteVersionRowView: View {
 					.fixedSize(horizontal: false, vertical: true)
 			}
 		}
-		.zenithGlassCard(cornerRadius: 12)
-		.padding(.vertical, 6)
-		.listRowSeparator(.hidden)
 	}
 }
 
@@ -93,9 +90,6 @@ struct LiteVersionView: View {
 				Text(verbatim: .localized("Lite Version Description"))
 					.font(.footnote)
 					.foregroundStyle(.secondary)
-					.zenithGlassCard(cornerRadius: 12)
-					.padding(.vertical, 6)
-					.listRowSeparator(.hidden)
 			}
 
 			if _appDirectoryMissing {
@@ -103,17 +97,11 @@ struct LiteVersionView: View {
 					Text(verbatim: .localized("App Files Not Found"))
 						.font(.footnote)
 						.foregroundColor(.disabled())
-						.zenithGlassCard(cornerRadius: 12)
-						.padding(.vertical, 6)
-						.listRowSeparator(.hidden)
 				}
 			} else if _isScanning {
 				NBSection(.localized("Lite Version")) {
 					ProgressView()
 						.frame(maxWidth: .infinity, alignment: .center)
-						.zenithGlassCard(cornerRadius: 12)
-						.padding(.vertical, 6)
-						.listRowSeparator(.hidden)
 				}
 			} else if let report = _report {
 				if report.items.isEmpty {
@@ -121,15 +109,9 @@ struct LiteVersionView: View {
 						Text(verbatim: .localized("Nothing Safe to Strip"))
 							.font(.footnote)
 							.foregroundColor(.disabled())
-							.zenithGlassCard(cornerRadius: 12)
-							.padding(.vertical, 6)
-							.listRowSeparator(.hidden)
 						Text(verbatim: .localized("Nothing Safe to Strip Hint"))
 							.font(.footnote)
 							.foregroundStyle(.secondary)
-							.zenithGlassCard(cornerRadius: 12)
-							.padding(.vertical, 6)
-							.listRowSeparator(.hidden)
 					}
 				} else {
 					if !report.removableItems.isEmpty {
@@ -143,15 +125,9 @@ struct LiteVersionView: View {
 							Text(verbatim: .localized("Nothing Safe to Strip"))
 								.font(.footnote)
 								.foregroundColor(.disabled())
-								.zenithGlassCard(cornerRadius: 12)
-								.padding(.vertical, 6)
-								.listRowSeparator(.hidden)
 							Text(verbatim: .localized("Nothing Safe to Strip Hint"))
 								.font(.footnote)
 								.foregroundStyle(.secondary)
-								.zenithGlassCard(cornerRadius: 12)
-								.padding(.vertical, 6)
-								.listRowSeparator(.hidden)
 						}
 					}
 
@@ -167,15 +143,9 @@ struct LiteVersionView: View {
 						Text(verbatim: .localized("Lite Strip Protected Note"))
 							.font(.footnote)
 							.foregroundStyle(.secondary)
-							.zenithGlassCard(cornerRadius: 12)
-							.padding(.vertical, 6)
-							.listRowSeparator(.hidden)
 						Text(verbatim: .localized("Lite Strip Removed When You Sign"))
 							.font(.footnote)
 							.foregroundStyle(.secondary)
-							.zenithGlassCard(cornerRadius: 12)
-							.padding(.vertical, 6)
-							.listRowSeparator(.hidden)
 						if _selectedSizeBytes > 0 {
 							Text(verbatim: .localized(
 								"Lite Strip Will Save",
@@ -183,16 +153,10 @@ struct LiteVersionView: View {
 							))
 								.font(.footnote)
 								.foregroundStyle(.secondary)
-								.zenithGlassCard(cornerRadius: 12)
-								.padding(.vertical, 6)
-								.listRowSeparator(.hidden)
 						}
 						Text(verbatim: .localized("Lite Strip If App Breaks"))
 							.font(.footnote)
 							.foregroundStyle(.secondary)
-							.zenithGlassCard(cornerRadius: 12)
-							.padding(.vertical, 6)
-							.listRowSeparator(.hidden)
 					}
 				}
 			}
@@ -222,9 +186,6 @@ extension LiteVersionView {
 				.labelsHidden()
 				.disabled(!item.isRemovable)
 		}
-		.zenithGlassCard(cornerRadius: 12)
-		.padding(.vertical, 6)
-		.listRowSeparator(.hidden)
 	}
 
 	private func _binding(for item: LiteStripCandidate) -> Binding<Bool> {

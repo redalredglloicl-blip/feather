@@ -28,9 +28,6 @@
 //            options: $_temporaryOptions
 //        )
 //    }
-//    .zenithGlassCard(cornerRadius: 12)
-//    .padding(.vertical, 6)
-//    .listRowSeparator(.hidden)
 //
 //  The coordinator must also add `fontReplacements:
 //  [FontReplacement]` to Options (OptionsManager.swift) with a
@@ -60,9 +57,6 @@ struct ChangeAppFontView: View {
 				Text(verbatim: .localized("Change App Font Description"))
 					.font(.footnote)
 					.foregroundStyle(.secondary)
-					.zenithGlassCard(cornerRadius: 12)
-					.padding(.vertical, 6)
-					.listRowSeparator(.hidden)
 			}
 
 			if _appDirectoryMissing {
@@ -70,17 +64,11 @@ struct ChangeAppFontView: View {
 					Text(verbatim: .localized("App Files Not Found"))
 						.font(.footnote)
 						.foregroundColor(.disabled())
-						.zenithGlassCard(cornerRadius: 12)
-						.padding(.vertical, 6)
-						.listRowSeparator(.hidden)
 				}
 			} else if _isScanning {
 				NBSection(.localized("Change App Font")) {
 					ProgressView()
 						.frame(maxWidth: .infinity, alignment: .center)
-						.zenithGlassCard(cornerRadius: 12)
-						.padding(.vertical, 6)
-						.listRowSeparator(.hidden)
 				}
 			} else if let report = _report {
 				if report.fonts.isEmpty {
@@ -88,21 +76,12 @@ struct ChangeAppFontView: View {
 						Text(verbatim: .localized("No Bundled Fonts Found"))
 							.font(.footnote)
 							.foregroundColor(.disabled())
-							.zenithGlassCard(cornerRadius: 12)
-							.padding(.vertical, 6)
-							.listRowSeparator(.hidden)
 						Text(verbatim: .localized("No Bundled Fonts Hint"))
 							.font(.footnote)
 							.foregroundStyle(.secondary)
-							.zenithGlassCard(cornerRadius: 12)
-							.padding(.vertical, 6)
-							.listRowSeparator(.hidden)
 						Text(verbatim: .localized("System Fonts Cannot Be Changed"))
 							.font(.footnote)
 							.foregroundStyle(.secondary)
-							.zenithGlassCard(cornerRadius: 12)
-							.padding(.vertical, 6)
-							.listRowSeparator(.hidden)
 					}
 				} else {
 					NBSection(.localized("Bundled Fonts in This App")) {
@@ -115,21 +94,12 @@ struct ChangeAppFontView: View {
 						Text(verbatim: .localized("Zenith Does Not Ship Fonts"))
 							.font(.footnote)
 							.foregroundStyle(.secondary)
-							.zenithGlassCard(cornerRadius: 12)
-							.padding(.vertical, 6)
-							.listRowSeparator(.hidden)
 						Text(verbatim: .localized("Replaced When You Sign"))
 							.font(.footnote)
 							.foregroundStyle(.secondary)
-							.zenithGlassCard(cornerRadius: 12)
-							.padding(.vertical, 6)
-							.listRowSeparator(.hidden)
 						Text(verbatim: .localized("System Fonts Cannot Be Changed"))
 							.font(.footnote)
 							.foregroundStyle(.secondary)
-							.zenithGlassCard(cornerRadius: 12)
-							.padding(.vertical, 6)
-							.listRowSeparator(.hidden)
 					}
 				}
 			}
@@ -190,9 +160,6 @@ extension ChangeAppFontView {
 				.font(.subheadline)
 			}
 		}
-		.zenithGlassCard(cornerRadius: 12)
-		.padding(.vertical, 6)
-		.listRowSeparator(.hidden)
 	}
 
 	/// Stores the picked font file and stages it as the

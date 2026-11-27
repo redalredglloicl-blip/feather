@@ -27,9 +27,6 @@ struct SigningToggleCellView<T>: View {
 				}
 			}
 		))
-		.zenithGlassCard(cornerRadius: 12)
-		.padding(.vertical, 6)
-		.listRowSeparator(.hidden)
 	}
 	
 	private func _removeItem() {

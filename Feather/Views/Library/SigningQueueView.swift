@@ -31,9 +31,6 @@ struct SigningQueueView: View {
 							Text(.localized("No unsigned apps. Import an IPA first."))
 								.font(.subheadline)
 								.foregroundStyle(.secondary)
-								.zenithGlassCard(cornerRadius: 12)
-								.padding(.vertical, 6)
-								.listRowSeparator(.hidden)
 						} else {
 							ForEach(_importedApps, id: \.uuid) { app in
 								_signingPickRow(for: app)
@@ -53,18 +50,12 @@ struct SigningQueueView: View {
 										_queue.retry(item)
 									}
 								}
-								.zenithGlassCard(cornerRadius: 12)
-								.padding(.vertical, 6)
-								.listRowSeparator(.hidden)
 							}
 						
 							if _queue.doneCount > 0, !_queue.isRunning {
 								Button(.localized("Clear Signed")) {
 									_queue.clearFinished()
 								}
-								.zenithGlassCard(cornerRadius: 12)
-								.padding(.vertical, 6)
-								.listRowSeparator(.hidden)
 							}
 						} header: {
 							HStack {
@@ -153,9 +144,6 @@ struct SigningQueueView: View {
 			}
 		}
 		.buttonStyle(.plain)
-		.zenithGlassCard(cornerRadius: 12)
-		.padding(.vertical, 6)
-		.listRowSeparator(.hidden)
 	}
 }
 
@@ -209,9 +197,6 @@ struct SigningQueueItemRowView: View {
 			}
 		}
 		.padding(.vertical, 2)
-		.zenithGlassCard(cornerRadius: 12)
-		.padding(.vertical, 6)
-		.listRowSeparator(.hidden)
 	}
 	
 	private var _statusText: String {

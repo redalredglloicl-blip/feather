@@ -31,17 +31,11 @@ struct SigningAlternativeIconView: View {
 							_icon(icon)
 						}
 						.disabled(!isModifing)
-						.zenithGlassCard(cornerRadius: 12)
-						.padding(.vertical, 6)
-						.listRowSeparator(.hidden)
 					}
 				} else {
 					Text(.localized("No Icons Found."))
 						.font(.footnote)
 						.foregroundColor(.disabled())
-						.zenithGlassCard(cornerRadius: 12)
-						.padding(.vertical, 6)
-						.listRowSeparator(.hidden)
 				}
 			}
 			// Zenith v2.8: stars on every pushed sub-screen — the

@@ -32,9 +32,6 @@ struct LibraryInfoView: View {
 					Button(.localized("Open in Files"), systemImage: "folder") {
 						UIApplication.open(Storage.shared.getUuidDirectory(for: app)!.toSharedDocumentsURL()!)
 					}
-					.zenithGlassCard(cornerRadius: 12)
-					.padding(.vertical, 6)
-					.listRowSeparator(.hidden)
 				}
 			}
 			// Zenith v2.8: stars on every pushed sub-screen — the
@@ -110,15 +107,9 @@ extension LibraryInfoView {
 			NavigationLink(.localized("Alternative Icons")) {
 				SigningAlternativeIconView(app: app, appIcon: .constant(nil), isModifing: .constant(false))
 			}
-			.zenithGlassCard(cornerRadius: 12)
-			.padding(.vertical, 6)
-			.listRowSeparator(.hidden)
 			NavigationLink(.localized("Frameworks & PlugIns")) {
 				SigningFrameworksView(app: app, options: .constant(nil))
 			}
-			.zenithGlassCard(cornerRadius: 12)
-			.padding(.vertical, 6)
-			.listRowSeparator(.hidden)
 		}
 	}
 	
@@ -128,9 +119,6 @@ extension LibraryInfoView {
 			NavigationLink(.localized("Dylibs")) {
 				SigningDylibView(app: app, options: .constant(nil))
 			}
-			.zenithGlassCard(cornerRadius: 12)
-			.padding(.vertical, 6)
-			.listRowSeparator(.hidden)
 			NavigationLink(.localized("Entitlements")) {
 				if 
 					let path = Bundle(url: Storage.shared.getAppDirectory(for: app)!)?.executableURL?.path,
@@ -149,9 +137,6 @@ extension LibraryInfoView {
 						.foregroundColor(.disabled())
 				}
 			}
-			.zenithGlassCard(cornerRadius: 12)
-			.padding(.vertical, 6)
-			.listRowSeparator(.hidden)
 		}
 	}
 	
@@ -161,9 +146,6 @@ extension LibraryInfoView {
 			Text(desc)
 		}
 		.copyableText(desc)
-		.zenithGlassCard(cornerRadius: 12)
-		.padding(.vertical, 6)
-		.listRowSeparator(.hidden)
 	}
 }
 

@@ -68,9 +68,6 @@ struct CustomDisplayNameField: View {
 				.font(.footnote)
 				.foregroundStyle(.secondary)
 		}
-		.zenithGlassCard(cornerRadius: 12)
-		.padding(.vertical, 6)
-		.listRowSeparator(.hidden)
 		.onAppear {
 			_prefill()
 		}

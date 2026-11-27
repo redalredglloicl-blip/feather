@@ -234,7 +234,7 @@ struct CertificatesView: View {
 				.controlSize(.small)
 			}
 			.padding()
-			.zenithGlassCard(cornerRadius: 14, fallback: Color(uiColor: .secondarySystemFill))
+			.zenithGlassCard(cornerRadius: 14)
 			.padding(.horizontal)
 			.padding(.top, 8)
 		}
@@ -372,7 +372,7 @@ extension CertificatesView {
 			}
 		}
 		.padding()
-		.zenithGlassCard(cornerRadius: 18, fallback: Color(uiColor: .secondarySystemFill))
+		.zenithGlassCard(cornerRadius: 18)
 		.padding(.horizontal)
 		.padding(.top, 8)
 	}
