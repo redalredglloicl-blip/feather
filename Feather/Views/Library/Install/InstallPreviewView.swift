@@ -17,6 +17,11 @@ struct InstallPreviewView: View {
 	@AppStorage("Zenith.useShareSheetForArchiving") private var _useShareSheet: Bool = false
 	@AppStorage("Zenith.installationMethod") private var _installationMethod: Int = 0
 	@State private var _isWebviewPresenting = false
+	// Zenith v2.16: guards for the direct itms-services open —
+	// open once per install attempt, and the 15s honest-stall
+	// watchdog (see _openInstallLinkExternal).
+	@State private var _didOpenInstallLink = false
+	@State private var _stallWatchdog: Task<Void, Never>?
 	@State private var progressTask: Task<Void, Never>?
 	
 	var app: AppInfoPresentable
@@ -66,15 +71,32 @@ struct InstallPreviewView: View {
 					if installer.getServerMethod() == 0 {
 						_openInstallLink()
 					} else {
-						_isWebviewPresenting = true
+						// Zenith v2.16: NO Safari sheet. Mode 1 used to
+						// open the local server page, whose HTML
+						// redirected to the itms-services link — iOS
+						// then asked the confusing "Open this page
+						// in 'iTunes'?" question, Reda pressed back,
+						// and the install sat on "Ready" forever with
+						// no icon and no error. The itms-services
+						// link (palera.in manifest) opens directly
+						// now, with the same refused-link handling
+						// as mode 0. The sheet stays in the code,
+						// dormant.
+						_openInstallLinkExternal()
 					}
 				}
 				
-				if case .sendingPayload = newStatus, installer.getServerMethod() == 1 {
-					_isWebviewPresenting = false
+				if case .sendingPayload = newStatus {
+					// The install really started: iOS is fetching
+					// the IPA from the local server — the stall
+					// watchdog has nothing to do.
+					_stallWatchdog?.cancel()
+					_stallWatchdog = nil
 				}
 				
 				if case .installing = newStatus {
+					_stallWatchdog?.cancel()
+					_stallWatchdog = nil
 					if progressTask == nil {
 						progressTask = startInstallProgressPolling(
 							bundleID: app.identifier!,
@@ -90,6 +112,9 @@ struct InstallPreviewView: View {
 					}
 					progressTask?.cancel()
 					progressTask = nil
+					_stallWatchdog?.cancel()
+					_stallWatchdog = nil
+					_didOpenInstallLink = false
 					#if !targetEnvironment(macCatalyst)
 					BackgroundAudioManager.shared.stop()
 					#endif
@@ -109,6 +134,8 @@ struct InstallPreviewView: View {
 		.onDisappear {
 			progressTask?.cancel()
 			progressTask = nil
+			_stallWatchdog?.cancel()
+			_stallWatchdog = nil
 			
 			#if !targetEnvironment(macCatalyst)
 			BackgroundAudioManager.shared.stop()
@@ -167,6 +194,69 @@ struct InstallPreviewView: View {
 					)
 				}
 				return
+			}
+		}
+	}
+	
+	// Zenith v2.16: mode 1 ("Semi Local") direct open. The
+	// itms-services link carries the palera.in manifest URL
+	// (installer.iTunesLinkExternal — verified good), opened
+	// straight with UIApplication.shared.open instead of going
+	// through the Safari sheet's "Open this page in 'iTunes'?"
+	// detour. Same refused-link handling as mode 0.
+	private func _openInstallLinkExternal() {
+		// onReceive can fire twice for one .ready status —
+		// opening itms-services twice would show two install
+		// prompts. Open once per install attempt.
+		guard !_didOpenInstallLink else { return }
+		_didOpenInstallLink = true
+		
+		guard let itunesURL = URL(string: installer.iTunesLinkExternal) else {
+			viewModel.status = .broken(InstallLinkError.invalidLink)
+			return
+		}
+		
+		UIApplication.shared.open(itunesURL, options: [:]) { opened in
+			DispatchQueue.main.async {
+				guard opened else {
+					viewModel.status = .broken(InstallLinkError.systemRefused)
+					UIAlertController.showAlertWithOk(
+						title: .localized("Install"),
+						message: "ما گدرت أفتح رابط التثبيت. جرّب طريقة التثبيت الثانية من الإعدادات.",
+						action: {
+							dismiss()
+						}
+					)
+					return
+				}
+				_startStallWatchdog()
+			}
+		}
+	}
+	
+	// Zenith v2.16 honest stall: the link opened, but if iOS
+	// never fetches the IPA from the local server
+	// (.sendingPayload) and never starts installing within 15
+	// seconds, the install never started — say so plainly
+	// instead of sitting on "جاهز" forever. Cancelled as soon
+	// as real progress arrives (.sendingPayload / .installing /
+	// terminal status) or the view disappears.
+	private func _startStallWatchdog() {
+		_stallWatchdog?.cancel()
+		_stallWatchdog = Task.detached {
+			try? await Task.sleep(nanoseconds: 15_000_000_000)
+			guard !Task.isCancelled else { return }
+			await MainActor.run {
+				if case .ready = viewModel.status {
+					viewModel.status = .broken(InstallLinkError.installNeverStarted)
+					UIAlertController.showAlertWithOk(
+						title: .localized("Install"),
+						message: "التثبيت ما بدأ — ما وصل شي للشاشة. جرّب تثبيت مرة ثانية.",
+						action: {
+							dismiss()
+						}
+					)
+				}
 			}
 		}
 	}
@@ -305,11 +395,15 @@ struct InstallPreviewView: View {
 private enum InstallLinkError: LocalizedError {
 	case invalidLink
 	case systemRefused
+	// Zenith v2.16: the itms-services link opened, but iOS never
+	// fetched the IPA and never started installing within 15s.
+	case installNeverStarted
 	
 	var errorDescription: String? {
 		switch self {
 		case .invalidLink: "رابط التثبيت مو صحيح."
 		case .systemRefused: "النظام رفض رابط التثبيت."
+		case .installNeverStarted: "التثبيت ما بدأ. جرّب مرة ثانية."
 		}
 	}
 }

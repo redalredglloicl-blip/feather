@@ -699,6 +699,13 @@ static int VECompareBits(uint64_t a, uint64_t b, VEValueType type) {
 @property (nonatomic, strong) UIButton *searchButton;
 @property (nonatomic, strong) UIButton *refineButton;
 
+/// The game's topmost view controller the menu's view hangs
+/// off. The menu is NOT a child view controller (v2.16), so it
+/// cannot present its edit sheets from itself — it presents
+/// them from the host instead. Weak: the host owns the view
+/// hierarchy, the menu must never keep it alive.
+@property (nonatomic, weak) UIViewController *presentingHost;
+
 - (void)refreshTable;
 - (void)setStatus:(NSString *)text;
 - (NSArray<VEResult *> *)currentList;
@@ -1030,7 +1037,11 @@ static int VECompareBits(uint64_t a, uint64_t b, VEValueType type) {
 
 	[sheet addAction:[UIAlertAction actionWithTitle:@"إلغاء" style:UIAlertActionStyleCancel handler:nil]];
 
-	UIViewController *presenter = self;
+	// The menu is a plain subview, not a child view controller
+	// (v2.16), so presenting from self would warn "whose view
+	// is not in the window hierarchy" and drop the sheet.
+	// Present from the host view controller instead.
+	UIViewController *presenter = self.presentingHost ?: self;
 	while (presenter.presentedViewController != nil) {
 		presenter = presenter.presentedViewController;
 	}
@@ -1128,13 +1139,15 @@ static void VEAddTiltedEllipseArc(CGContextRef ctx, CGPoint center, CGFloat a, C
 // MARK: - ZenithValueEditorOverlay (floating button + menu)
 
 /// Owns the floating button window (the Zenith planet) and the
-/// menu panel. The menu is NOT a second window: v2.15 — opening
-/// it as its own UIWindow (initWithWindowScene: + hidden = NO)
-/// crashed the game on tap, so the menu now opens as a child
-/// view controller inside the game's own key window instead.
-/// The pill window is a ZenithValueEditorOverlayWindow, which
-/// refuses key-window status, so tapping it can never steal the
-/// key window from the game.
+/// menu panel. The menu is a plain subview of the game's own
+/// view (v2.16): NOT a second window — opening it as its own
+/// UIWindow (initWithWindowScene: + hidden = NO) crashed the
+/// game on tap — and NOT a child view controller either: the
+/// v2.15 containment version crashed the game on tap too, on a
+/// 2.15-signed copy. The pill window is a
+/// ZenithValueEditorOverlayWindow, which refuses key-window
+/// status, so tapping it can never steal the key window from
+/// the game.
 @interface ZenithValueEditorOverlayWindow : UIWindow
 @end
 
@@ -1268,25 +1281,30 @@ static void VEAddTiltedEllipseArc(CGContextRef ctx, CGPoint center, CGFloat a, C
 		_menu.view.hidden = NO;
 		return;
 	}
-	// First open, or the host view controller went away while
-	// the menu was hidden (its screen dismissed): drop the
-	// stale menu and rebuild it below.
+	// First open, or the host view went away while the menu was
+	// hidden (its screen dismissed): drop the stale menu and
+	// rebuild it below.
 	if (_menu != nil) {
-		[_menu willMoveToParentViewController:nil];
 		[_menu.view removeFromSuperview];
-		[_menu removeFromParentViewController];
 		_menu = nil;
 	}
-	// NO second window (v2.15 fix): creating the menu as its
-	// own UIWindow and unhiding it on tap crashed the game
-	// before the menu drew a single frame. The menu opens
-	// inside the game's own key window instead, as a child
+	// NO containment (v2.16): the menu used to open as a child
 	// view controller of the game's topmost view controller
-	// — proper containment, so the menu still presents its
-	// edit sheets from itself, and the game keeps its key
-	// window, its scene and its runloop untouched. No memory
-	// scan starts here: searching only starts when the user
-	// taps بحث.
+	// (v2.15), but tapping the pill still crashed the game on a
+	// 2.15-signed copy — the same crash as the second-window
+	// version before it. addChildViewController /
+	// didMoveToParentViewController are the only steps that
+	// invoke the foreign game view controller's own machinery,
+	// and they are the last suspect left by elimination:
+	// viewDidLoad is pure UIKit, keyWindow and the host walk
+	// are pure reads, and addSubview is the same plain view op
+	// ads and SDKs do inside games. So the menu is now a plain
+	// subview of the game's view — no containment at all. The
+	// menu still presents its edit sheets, through
+	// presentingHost (see showActionsForResult:), and the game
+	// keeps its key window, its scene and its runloop untouched.
+	// No memory scan starts here: searching only starts when
+	// the user taps بحث.
 	UIWindow *keyWindow = [self keyWindow];
 	if (keyWindow == nil) {
 		return;
@@ -1299,11 +1317,10 @@ static void VEAddTiltedEllipseArc(CGContextRef ctx, CGPoint center, CGFloat a, C
 		return;
 	}
 	_menu = [[ZenithValueEditorMenuViewController alloc] init];
-	[host addChildViewController:_menu];
+	_menu.presentingHost = host;
 	_menu.view.frame = CGRectInset(host.view.bounds, 16, 60);
 	_menu.view.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
 	[host.view addSubview:_menu.view];
-	[_menu didMoveToParentViewController:host];
 }
 
 - (void)hideMenu {
