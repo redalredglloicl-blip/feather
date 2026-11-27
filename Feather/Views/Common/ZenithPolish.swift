@@ -117,6 +117,11 @@ struct ZenithPressButtonStyle: ButtonStyle {
 /// signing sheet.
 struct SigningSuccessView: View {
 	var appName: String
+	/// Zenith v2.19: when set, an Install button appears above
+	/// Dismiss and calls this instead of dismissing silently.
+	/// The signing screen passes it; the button never shows
+	/// anywhere else.
+	var onInstall: (() -> Void)? = nil
 	var onDone: () -> Void
 
 	@State private var _checkmarkProgress: CGFloat = 0
@@ -160,6 +165,20 @@ struct SigningSuccessView: View {
 					Text(.localized("Signed"))
 						.font(.subheadline)
 						.foregroundStyle(.secondary)
+				}
+
+				if let onInstall = onInstall {
+					Button {
+						onInstall()
+					} label: {
+						Text(.localized("Install"))
+							.fontWeight(.semibold)
+							.frame(maxWidth: .infinity)
+							.padding(.vertical, 12)
+							.background(Color.accentColor, in: RoundedRectangle(cornerRadius: 12, style: .continuous))
+							.foregroundStyle(.black)
+					}
+					.buttonStyle(ZenithPressButtonStyle())
 				}
 
 				Button {

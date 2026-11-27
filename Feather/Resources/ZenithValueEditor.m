@@ -317,9 +317,21 @@ static int VECompareBits(uint64_t a, uint64_t b, VEValueType type) {
 - (instancetype)init {
 	self = [super init];
 	if (self != nil) {
-		_results = [NSMutableArray array];
-		_saved = [NSMutableArray array];
-		_frozen = [NSMutableArray array];
+		// v2.19: these MUST be owned (+1), not autoreleased.
+		// This file is compiled by the Run Script with plain
+		// clang (no -fobjc-arc, manual reference counting), so a
+		// direct ivar assignment bypasses the `strong` setter
+		// and retains NOTHING. `[NSMutableArray array]` is
+		// autoreleased: it died when the launch runloop turn
+		// ended, and all three ivars dangled from then on —
+		// the freed memory was later reused by another object
+		// (an OS_xpc_array in crash 1, a game NSArray of
+		// NSNumbers in crash 2), so the table crashed the
+		// instant it touched the list on the first menu open.
+		// `[[NSMutableArray alloc] init]` owns the array.
+		_results = [[NSMutableArray alloc] init];
+		_saved = [[NSMutableArray alloc] init];
+		_frozen = [[NSMutableArray alloc] init];
 		_currentType = VEValueTypeInt32;
 		[self loadSaved];
 	}
@@ -908,7 +920,14 @@ static int VECompareBits(uint64_t a, uint64_t b, VEValueType type) {
 	if (index < 0 || index >= (NSInteger)list.count) {
 		return nil;
 	}
-	return list[index];
+	// v2.19: never hand the table a non-VEResult element. If a
+	// list ever holds a foreign object again, show an empty row
+	// instead of aborting the game on `result.address`.
+	id obj = list[index];
+	if (![obj isKindOfClass:[VEResult class]]) {
+		return nil;
+	}
+	return obj;
 }
 
 - (void)refreshTable {

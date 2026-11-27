@@ -21,6 +21,9 @@ struct SigningView: View {
 	@State private var _isImagePickerPresenting = false
 	@State private var _isSigning = false
 	@State private var _isSuccessPresenting = false
+	/// Zenith v2.19: the success screen's Install button must
+	/// fire once — a second tap does nothing.
+	@State private var _didRequestInstall = false
 	@State private var _selectedPhoto: PhotosPickerItem? = nil
 	/// iOS-compat warning shown before signing starts (set by _start).
 	@State private var _isCompatAlertPresenting = false
@@ -92,20 +95,39 @@ struct SigningView: View {
 	@ViewBuilder
 	private var _successOverlay: some View {
 		if _isSuccessPresenting {
-			SigningSuccessView(appName: app.name ?? .localized("Unknown")) {
-				withAnimation(.easeOut(duration: 0.25)) {
-					_isSuccessPresenting = false
-				}
-				if _temporaryOptions.post_installAppAfterSigned {
-					DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
-						NotificationCenter.default.post(name: Notification.Name("Zenith.installApp"), object: nil)
-					}
-				}
-				DispatchQueue.main.asyncAfter(deadline: .now() + 0.35) {
-					dismiss()
-				}
+			SigningSuccessView(appName: app.name ?? .localized("Unknown"), onInstall: {
+				// Zenith v2.19: install right from the success
+				// screen — the same install sheet the Library
+				// long-press opens. Guarded: a second tap does
+				// nothing, the overlay is already going away.
+				guard !_didRequestInstall else { return }
+				_didRequestInstall = true
+				_finishSigning(andInstall: true)
+			}) {
+				_finishSigning(andInstall: false)
 			}
 			.transition(.opacity.combined(with: .scale(scale: 0.95)))
+		}
+	}
+
+	/// Zenith v2.19: the success screen's one finish path.
+	/// Hides the success view, then — when the user asked to
+	/// install, or the "install after signing" option is on —
+	/// posts the same Zenith.installApp notification the Library
+	/// answers by opening the InstallPreviewView sheet for the
+	/// latest signed app. The signing sheet dismisses first
+	/// (0.35s) so the install sheet never pops up under it.
+	private func _finishSigning(andInstall: Bool) {
+		withAnimation(.easeOut(duration: 0.25)) {
+			_isSuccessPresenting = false
+		}
+		if andInstall || _temporaryOptions.post_installAppAfterSigned {
+			DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
+				NotificationCenter.default.post(name: Notification.Name("Zenith.installApp"), object: nil)
+			}
+		}
+		DispatchQueue.main.asyncAfter(deadline: .now() + 0.35) {
+			dismiss()
 		}
 	}
 
