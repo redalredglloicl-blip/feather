@@ -75,7 +75,7 @@
 		3379C1B92DA869A1004372DA /* Zenith.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Zenith.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		570920BD2F98A4F0008C4A83 /* Zenith.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Zenith.xcconfig; sourceTree = "<group>"; };
 		FC77870114584E11A010C73C /* LCZenithCertificate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LCZenithCertificate.swift; sourceTree = "<group>"; };
-		D8A7658C212842F3BA2719A9 /* main.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c; path = main.c; sourceTree = "<group>"; };
+		D8A7658C212842F3BA2719A9 /* main.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = main.c; sourceTree = "<group>"; };
 		EE50285169534978A957DF37 /* LCBootstrap.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = LCBootstrap.m; sourceTree = "<group>"; };
 		14CAA1A000004C90A74D9C61 /* LCSharedUtils.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = LCSharedUtils.m; sourceTree = "<group>"; };
 		6FD144FA8F2F46DD913E6386 /* LCUtils.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = LCUtils.m; sourceTree = "<group>"; };
@@ -94,8 +94,8 @@
 		EDE1970EF0C0447A9254D6BB /* NSURLSessionConfiguration+GuestHooks.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "NSURLSessionConfiguration+GuestHooks.m"; sourceTree = "<group>"; };
 		5FCBF7681D8B4EA5A662729C /* NSUserDefaults.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = NSUserDefaults.m; sourceTree = "<group>"; };
 		42F71E9521C244C088839B80 /* SecItem.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SecItem.m; sourceTree = "<group>"; };
-		B559438B51DA42E9B34972C6 /* mach_excServer.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c; path = mach_excServer.c; sourceTree = "<group>"; };
-		0B0F960B8D834CC6B837134F /* litehook.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c; path = litehook.c; sourceTree = "<group>"; };
+		B559438B51DA42E9B34972C6 /* mach_excServer.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = mach_excServer.c; sourceTree = "<group>"; };
+		0B0F960B8D834CC6B837134F /* litehook.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = litehook.c; sourceTree = "<group>"; };
 		73829C69C7C3470E8B37EB42 /* LCSharedUtils.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = LCSharedUtils.h; sourceTree = "<group>"; };
 		80AB7F43364C4DE591B88A16 /* LCUtils.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = LCUtils.h; sourceTree = "<group>"; };
 		430D361452E54E5587B6924C /* LCMachOUtils.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = LCMachOUtils.h; sourceTree = "<group>"; };
@@ -865,7 +865,7 @@
 				COPY_PHASE_STRIP = NO;
 				CURRENT_PROJECT_VERSION = 1;
 				DEBUG_INFORMATION_FORMAT = dwarf;
-				DEFINES_MODULE = YES;
+				DEFINES_MODULE = NO;
 				DEVELOPMENT_TEAM = "";
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
@@ -904,7 +904,7 @@
 				SUPPORTS_MACCATALYST = YES;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TVOS_DEPLOYMENT_TARGET = 16.0;
-				VERSIONING_SYSTEM = "apple-generic";
+				VERSIONING_SYSTEM = none;
 				XROS_DEPLOYMENT_TARGET = 2.2;
 			};
 			name = Debug;
@@ -921,7 +921,7 @@
 				COPY_PHASE_STRIP = NO;
 				CURRENT_PROJECT_VERSION = 1;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				DEFINES_MODULE = YES;
+				DEFINES_MODULE = NO;
 				DEVELOPMENT_TEAM = "";
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
@@ -962,7 +962,7 @@
 				SUPPORTS_MACCATALYST = YES;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TVOS_DEPLOYMENT_TARGET = 16.0;
-				VERSIONING_SYSTEM = "apple-generic";
+				VERSIONING_SYSTEM = none;
 				XROS_DEPLOYMENT_TARGET = 2.2;
 			};
 			name = Release;
