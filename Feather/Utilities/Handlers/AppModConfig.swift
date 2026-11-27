@@ -49,14 +49,14 @@ enum AppConfigValue: Codable, Equatable {
 	var display: String {
 		switch self {
 		case .bool(let value):
-			value ? "true" : "false"
+			return value ? "true" : "false"
 		case .number(let value):
 			if value == value.rounded(), abs(value) < 9_000_000_000_000_000 {
 				return String(Int(value))
 			}
 			return String(value)
 		case .string(let value):
-			value
+			return value
 		}
 	}
 

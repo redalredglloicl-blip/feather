@@ -73,10 +73,9 @@ enum ValueEditorInjector {
 	/// are untouched.
 	static func unstage(from options: inout Options) {
 		for url in stagedFiles(in: options) {
-			FileManager.default.deleteStored(url) { storedURL in
-				if let index = options.injectionFiles.firstIndex(where: { $0 == storedURL }) {
-					options.injectionFiles.remove(at: index)
-				}
+			FileManager.default.deleteStored(url) { _ in }
+			if let index = options.injectionFiles.firstIndex(where: { $0 == url }) {
+				options.injectionFiles.remove(at: index)
 			}
 		}
 	}
