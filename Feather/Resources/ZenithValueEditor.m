@@ -78,7 +78,18 @@
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
 #import <mach/mach.h>
-#import <mach/mach_vm.h>
+// NOTE: <mach/mach_vm.h> is stubbed out in the iOS SDK (its first line is
+// `#error mach_vm.h unsupported.`), so declare the one function we need
+// ourselves. mach_vm_region lives in libSystem at runtime, so this links.
+extern kern_return_t mach_vm_region(vm_map_t target_task,
+                                    mach_vm_address_t *address,
+                                    mach_vm_size_t *size,
+                                    vm_region_flavor_t flavor,
+                                    vm_region_info_t info,
+                                    mach_msg_type_number_t *infoCnt,
+                                    mach_port_t *object_name);
+
+@class ZenithValueEditorOverlay;
 
 // First scan keeps at most this many addresses. Past it the scan
 // stops and the menu says so — refine from a smaller set instead
@@ -685,8 +696,8 @@ static int VECompareBits(uint64_t a, uint64_t b, VEValueType type) {
 
 - (void)refreshTable;
 - (void)setStatus:(NSString *)text;
-- (NSArray<VEValueResult *> *)currentList;
-- (VEValueResult *)resultAtIndex:(NSInteger)index;
+- (NSArray<VEResult *> *)currentList;
+- (VEResult *)resultAtIndex:(NSInteger)index;
 
 @end
 
@@ -832,15 +843,15 @@ static int VECompareBits(uint64_t a, uint64_t b, VEValueType type) {
 	return (VEValueType)self.typeSeg.selectedSegmentIndex;
 }
 
-- (NSArray<VEValueResult *> *)currentList {
+- (NSArray<VEResult *> *)currentList {
 	if (self.tabSeg.selectedSegmentIndex == 1) {
 		return [ZenithValueEditor shared].saved;
 	}
 	return [ZenithValueEditor shared].results;
 }
 
-- (VEValueResult *)resultAtIndex:(NSInteger)index {
-	NSArray<VEValueResult *> *list = [self currentList];
+- (VEResult *)resultAtIndex:(NSInteger)index {
+	NSArray<VEResult *> *list = [self currentList];
 	if (index < 0 || index >= (NSInteger)list.count) {
 		return nil;
 	}
@@ -924,7 +935,7 @@ static int VECompareBits(uint64_t a, uint64_t b, VEValueType type) {
 		cell.textLabel.textColor = [UIColor whiteColor];
 		cell.detailTextLabel.textColor = [UIColor lightGrayColor];
 	}
-	VEValueResult *result = [self resultAtIndex:indexPath.row];
+	VEResult *result = [self resultAtIndex:indexPath.row];
 	if (result == nil) {
 		cell.textLabel.text = @"";
 		cell.detailTextLabel.text = @"";
@@ -943,7 +954,7 @@ static int VECompareBits(uint64_t a, uint64_t b, VEValueType type) {
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
 	[tableView deselectRowAtIndexPath:indexPath animated:YES];
-	VEValueResult *result = [self resultAtIndex:indexPath.row];
+	VEResult *result = [self resultAtIndex:indexPath.row];
 	if (result == nil) {
 		return;
 	}
@@ -952,7 +963,7 @@ static int VECompareBits(uint64_t a, uint64_t b, VEValueType type) {
 }
 
 /// Edit / freeze / save sheet for one address.
-- (void)showActionsForResult:(VEValueResult *)result isSavedTab:(BOOL)isSavedTab {
+- (void)showActionsForResult:(VEResult *)result isSavedTab:(BOOL)isSavedTab {
 	ZenithValueEditor *engine = [ZenithValueEditor shared];
 	uint64_t now = 0;
 	[engine readBitsAt:result.address type:result.type bitsOut:&now];
