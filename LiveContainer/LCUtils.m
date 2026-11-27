@@ -14,6 +14,7 @@
 #import "LCUtils.h"
 #import "LCSharedUtils.h"
 #import "LCAppInfo.h"
+#import "FoundationPrivate.h" // Declares NSExtension +extensionWithIdentifier:error: (used below in liveProcessBundleIdentifier). The public Foundation umbrella does not expose NSExtension here; LCBootstrap.m already relies on this header for the same reason.
 
 // Zenith: NO Zenith-Swift.h import here, ever. The signing shims
 // (ZenithGuestSigner / ZenithSingleFileSigner) are @objc Swift classes in
