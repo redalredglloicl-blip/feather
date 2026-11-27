@@ -213,7 +213,7 @@ private struct ModdingFilePreviewView: View {
 				() -> (text: String?, isBinary: Bool, isTooLarge: Bool) in
 				guard
 					let size = (try? fileURL.resourceValues(forKeys: [.fileSizeKey]))?.fileSize,
-					size <= maxPreviewBytes
+					size <= ModdingFilePreviewView.maxPreviewBytes
 				else {
 					return (nil, false, true)
 				}

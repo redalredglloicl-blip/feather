@@ -115,7 +115,7 @@ struct ModdingCheckView: View {
 		}
 
 		if remaining > 0 {
-			Text(.localized("and %lld more files", arguments: remaining))
+			Text(verbatim: .localized("and %lld more files", arguments: remaining))
 				.font(.caption)
 				.foregroundColor(.secondary)
 		}

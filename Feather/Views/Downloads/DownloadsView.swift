@@ -34,123 +34,12 @@ struct DownloadsView: View {
 	var body: some View {
 		NBNavigationView(.localized("Downloads")) {
 			List {
-				Section {
-					VStack(alignment: .leading, spacing: 16) {
-						TextField(.localized("Paste File Link"), text: $_linkText)
-							.textFieldStyle(.plain)
-							.textInputAutocapitalization(.never)
-							.keyboardType(.URL)
-							.autocorrectionDisabled()
-							.padding(.vertical, 10)
-							.padding(.horizontal, 12)
-							.background(Color.white.opacity(0.10), in: RoundedRectangle(cornerRadius: 10))
-						
-						Button {
-							_startDownloadFlow()
-						} label: {
-							if _isProbing {
-								ProgressView()
-									.frame(maxWidth: .infinity)
-							} else {
-								// Sized icon: a bare Label image
-								// renders the 96px PNG at full size
-								// (the v2.3 giant-arrow bug).
-								HStack(spacing: 8) {
-									Image("icon-download")
-										.resizable()
-										.scaledToFit()
-										.frame(width: 20, height: 20)
-									Text(.localized("Download"))
-								}
-								.frame(maxWidth: .infinity)
-							}
-						}
-						.buttonStyle(.borderedProminent)
-						.disabled(_linkText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || _isProbing)
-					}
-					.zenithGlassCard(cornerRadius: 14)
-					.padding(.horizontal, 16)
-					.listRowInsets(EdgeInsets())
-					.listRowBackground(Color.clear)
-					.listRowSeparator(.hidden)
-				} header: {
-					Text(.localized("Download File"))
-				} footer: {
-					Text(.localized("Paste a direct link to any file and it will download here. IPA files appear in your library."))
-				}
-			
-				if !_downloadManager.downloads.isEmpty {
-					Section(.localized("Active Downloads")) {
-						ForEach(_downloadManager.downloads) { download in
-							DownloadRowView(download: download)
-						}
-					}
-				}
-			
-				if !_downloadManager.history.isEmpty {
-					Section(.localized("Download History")) {
-						ForEach(_downloadManager.history) { entry in
-							DownloadHistoryRowView(entry: entry)
-						}
-					
-						Button(.localized("Clear History"), role: .destructive) {
-							_downloadManager.clearHistory()
-						}
-					}
-				}
-			
-				// Zenith v2.12 item 5: copies of the original app,
-				// saved before signing or modding. Restore puts the
-				// original back in the Library; Delete is the only
-				// way a backup is ever removed.
-				if !_backupManager.backups.isEmpty {
-					Section(.localized("Backups")) {
-						ForEach(_backupManager.backups) { backup in
-							BackupRowView(
-								backup: backup,
-								onRestore: {
-									_backupManager.restore(backup)
-									_restoredBackupName = backup.appName
-									_isShowingRestoreNotice = true
-								},
-								onDelete: {
-									_backupPendingDelete = backup
-								}
-							)
-						}
-					} footer: {
-						Text(.localized("Backups Footer"))
-					}
-				}
-			
-				// Zenith v2.12 item 7: OFF by default — when ON, a
-				// finished download offers the system export picker
-				// so the user picks where in Files it goes.
-				Section(.localized("Save to Files")) {
-					Toggle(.localized("Ask to save to Files after download"), isOn: $_downloadManager.askToSaveToFilesAfterDownload)
-				} footer: {
-					Text(.localized("Save to Files Footer"))
-				}
-			
-				if _downloadManager.downloads.isEmpty && _downloadManager.history.isEmpty {
-					VStack(spacing: 16) {
-						Image("icon-download")
-							.resizable()
-							.scaledToFit()
-							.frame(width: 44, height: 44)
-							.opacity(0.6)
-						Text(.localized("No Downloads Yet"))
-							.font(.headline)
-						Text(.localized("Downloaded files will show up here."))
-							.font(.subheadline)
-							.foregroundStyle(.secondary)
-							.multilineTextAlignment(.center)
-					}
-					.frame(maxWidth: .infinity)
-					.padding(.vertical, 32)
-					.zenithGlassCard(cornerRadius: 18)
-					.listRowBackground(Color.clear)
-				}
+				downloadLinkSection
+				activeDownloadsSection
+				downloadHistorySection
+				backupsSection
+				saveToFilesSection
+				emptyStateView
 			}
 			// Starfield sits directly on the List (like the
 			// Certificates ScrollView) so the stars show through the
@@ -249,7 +138,144 @@ struct DownloadsView: View {
 			Text(verbatim: .localized("Restoring Backup Message", arguments: _restoredBackupName))
 		}
 	}
-	
+
+	// MARK: - Downloads list sections
+	//
+	// Zenith v2.12 build fix: the body was a single expression the
+	// compiler could not type-check in reasonable time, so each List
+	// section is now its own computed property. Pure structural
+	// split — every row, binding, action and string is unchanged.
+
+	private var downloadLinkSection: some View {
+		Section {
+			VStack(alignment: .leading, spacing: 16) {
+				TextField(.localized("Paste File Link"), text: $_linkText)
+					.textFieldStyle(.plain)
+					.textInputAutocapitalization(.never)
+					.keyboardType(.URL)
+					.autocorrectionDisabled()
+					.padding(.vertical, 10)
+					.padding(.horizontal, 12)
+					.background(Color.white.opacity(0.10), in: RoundedRectangle(cornerRadius: 10))
+
+				Button {
+					_startDownloadFlow()
+				} label: {
+					if _isProbing {
+						ProgressView()
+							.frame(maxWidth: .infinity)
+					} else {
+						// Sized icon: a bare Label image
+						// renders the 96px PNG at full size
+						// (the v2.3 giant-arrow bug).
+						HStack(spacing: 8) {
+							Image("icon-download")
+								.resizable()
+								.scaledToFit()
+								.frame(width: 20, height: 20)
+							Text(.localized("Download"))
+						}
+						.frame(maxWidth: .infinity)
+					}
+				}
+				.buttonStyle(.borderedProminent)
+				.disabled(_linkText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || _isProbing)
+			}
+			.zenithGlassCard(cornerRadius: 14)
+			.padding(.horizontal, 16)
+			.listRowInsets(EdgeInsets())
+			.listRowBackground(Color.clear)
+			.listRowSeparator(.hidden)
+		} header: {
+			Text(.localized("Download File"))
+		} footer: {
+			Text(.localized("Paste a direct link to any file and it will download here. IPA files appear in your library."))
+		}
+	}
+
+	private var activeDownloadsSection: some View {
+		if !_downloadManager.downloads.isEmpty {
+			Section(.localized("Active Downloads")) {
+				ForEach(_downloadManager.downloads) { download in
+					DownloadRowView(download: download)
+				}
+			}
+		}
+	}
+
+	private var downloadHistorySection: some View {
+		if !_downloadManager.history.isEmpty {
+			Section(.localized("Download History")) {
+				ForEach(_downloadManager.history) { entry in
+					DownloadHistoryRowView(entry: entry)
+				}
+
+				Button(.localized("Clear History"), role: .destructive) {
+					_downloadManager.clearHistory()
+				}
+			}
+		}
+	}
+
+	private var backupsSection: some View {
+		// Zenith v2.12 item 5: copies of the original app,
+		// saved before signing or modding. Restore puts the
+		// original back in the Library; Delete is the only
+		// way a backup is ever removed.
+		if !_backupManager.backups.isEmpty {
+			Section(.localized("Backups")) {
+				ForEach(_backupManager.backups) { backup in
+					BackupRowView(
+						backup: backup,
+						onRestore: {
+							_backupManager.restore(backup)
+							_restoredBackupName = backup.appName
+							_isShowingRestoreNotice = true
+						},
+						onDelete: {
+							_backupPendingDelete = backup
+						}
+					)
+				}
+			} footer: {
+				Text(.localized("Backups Footer"))
+			}
+		}
+	}
+
+	private var saveToFilesSection: some View {
+		// Zenith v2.12 item 7: OFF by default — when ON, a
+		// finished download offers the system export picker
+		// so the user picks where in Files it goes.
+		Section(.localized("Save to Files")) {
+			Toggle(.localized("Ask to save to Files after download"), isOn: $_downloadManager.askToSaveToFilesAfterDownload)
+		} footer: {
+			Text(.localized("Save to Files Footer"))
+		}
+	}
+
+	private var emptyStateView: some View {
+		if _downloadManager.downloads.isEmpty && _downloadManager.history.isEmpty {
+			VStack(spacing: 16) {
+				Image("icon-download")
+					.resizable()
+					.scaledToFit()
+					.frame(width: 44, height: 44)
+					.opacity(0.6)
+				Text(.localized("No Downloads Yet"))
+					.font(.headline)
+				Text(.localized("Downloaded files will show up here."))
+					.font(.subheadline)
+					.foregroundStyle(.secondary)
+					.multilineTextAlignment(.center)
+			}
+			.frame(maxWidth: .infinity)
+			.padding(.vertical, 32)
+			.zenithGlassCard(cornerRadius: 18)
+			.listRowBackground(Color.clear)
+		}
+	}
+
 	/// Minutes the pending download would take at the probed speed.
 	private func _pendingEstimatedMinutes() -> Int {
 		guard _pendingSpeed > 0 else { return 0 }
