@@ -193,6 +193,7 @@ struct DownloadsView: View {
 		}
 	}
 
+	@ViewBuilder
 	private var activeDownloadsSection: some View {
 		if !_downloadManager.downloads.isEmpty {
 			Section(.localized("Active Downloads")) {
@@ -203,6 +204,7 @@ struct DownloadsView: View {
 		}
 	}
 
+	@ViewBuilder
 	private var downloadHistorySection: some View {
 		if !_downloadManager.history.isEmpty {
 			Section(.localized("Download History")) {
@@ -217,6 +219,7 @@ struct DownloadsView: View {
 		}
 	}
 
+	@ViewBuilder
 	private var backupsSection: some View {
 		// Zenith v2.12 item 5: copies of the original app,
 		// saved before signing or modding. Restore puts the
@@ -254,6 +257,7 @@ struct DownloadsView: View {
 		}
 	}
 
+	@ViewBuilder
 	private var emptyStateView: some View {
 		if _downloadManager.downloads.isEmpty && _downloadManager.history.isEmpty {
 			VStack(spacing: 16) {
