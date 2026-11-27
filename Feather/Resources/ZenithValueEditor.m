@@ -277,6 +277,12 @@ static int VECompareBits(uint64_t a, uint64_t b, VEValueType type) {
 - (void)refineExact:(NSString *)text completion:(void (^)(NSUInteger count, NSString *error))completion;
 - (void)refineFuzzy:(VERefineMode)mode completion:(void (^)(NSUInteger count))completion;
 
+// Safe count of the results list (v2.17): the results ivar was once
+// seen holding a non-array object (crash log: -[OS_xpc_array count]),
+// which aborts the game when the table asks for its row count.
+// This reads the list defensively and repairs a corrupt ivar.
+- (NSUInteger)safeResultsCount;
+
 // Freeze: the background thread re-writes every frozen result.
 - (void)setFrozen:(BOOL)frozen forResult:(VEResult *)result;
 - (void)freezeLoop;
@@ -325,6 +331,23 @@ static int VECompareBits(uint64_t a, uint64_t b, VEValueType type) {
 	// by the overlay below, on the main queue, from the
 	// constructor. Kept so the constructor reads like the other
 	// overlays (shared -> setup).
+}
+
+// v2.17: defensive count of the results list. The results ivar
+// was once seen holding a non-array object (crash log 2026-11-28:
+// -[OS_xpc_array count]: unrecognized selector, SIGABRT, on the
+// first menu open) — the table's numberOfRowsInSection: sends
+// count to whatever the ivar holds, and a non-array aborts the
+// game. If the ivar is ever not an NSArray, replace it with an
+// empty array (self-healing: the next search rebuilds it) and
+// report 0 instead of crashing.
+- (NSUInteger)safeResultsCount {
+	NSArray *list = self.results;
+	if (![list isKindOfClass:[NSArray class]]) {
+		self.results = [NSMutableArray array];
+		return 0;
+	}
+	return list.count;
 }
 
 // MARK: Memory access
@@ -856,10 +879,23 @@ static int VECompareBits(uint64_t a, uint64_t b, VEValueType type) {
 }
 
 - (NSArray<VEResult *> *)currentList {
-	if (self.tabSeg.selectedSegmentIndex == 1) {
-		return [ZenithValueEditor shared].saved;
+	// v2.17: the list ivar was once seen holding a non-array
+	// object (crash log 2026-11-28: -[OS_xpc_array count] on the
+	// first menu open) — sending count to it aborts the game.
+	// Never hand the table a non-array: replace a corrupt ivar
+	// with an empty array (self-healing) and return an empty list.
+	ZenithValueEditor *engine = [ZenithValueEditor shared];
+	BOOL useSaved = (self.tabSeg.selectedSegmentIndex == 1);
+	NSArray *list = useSaved ? engine.saved : engine.results;
+	if (![list isKindOfClass:[NSArray class]]) {
+		if (useSaved) {
+			engine.saved = [NSMutableArray array];
+		} else {
+			engine.results = [NSMutableArray array];
+		}
+		return @[];
 	}
-	return [ZenithValueEditor shared].results;
+	return list;
 }
 
 - (VEResult *)resultAtIndex:(NSInteger)index {
@@ -904,7 +940,7 @@ static int VECompareBits(uint64_t a, uint64_t b, VEValueType type) {
 - (void)refineTapped {
 	[self.valueField resignFirstResponder];
 	ZenithValueEditor *engine = [ZenithValueEditor shared];
-	if (engine.results.count == 0) {
+	if ([engine safeResultsCount] == 0) {
 		[self setStatus:@"ما عندك نتائج تضيّقها — ابحث أول شي."];
 		return;
 	}
@@ -921,7 +957,7 @@ static int VECompareBits(uint64_t a, uint64_t b, VEValueType type) {
 
 - (void)fuzzyTapped:(UIButton *)sender {
 	ZenithValueEditor *engine = [ZenithValueEditor shared];
-	if (engine.results.count == 0) {
+	if ([engine safeResultsCount] == 0) {
 		[self setStatus:@"ما عندك نتائج — ابحث عن رقم أول شي."];
 		return;
 	}
