@@ -149,6 +149,10 @@ enum ZenithGuestImporter {
 		case alreadyGuest
 		case appNotFound
 		case generic
+		/// Carries the real underlying failure (stage + message)
+		/// into the import alert, so a failure on the phone can be
+		/// diagnosed from a screenshot instead of guessed at.
+		case detailed(String)
 
 		var errorDescription: String? {
 			switch self {
@@ -160,8 +164,18 @@ enum ZenithGuestImporter {
 				return .localized("ما عندك شهادة — استورد شهادة من الإعدادات أولاً.")
 			case .alreadyGuest, .appNotFound, .generic:
 				return .localized("صار خطأ أثناء الاستيراد — حاول مرة ثانية.")
+			case .detailed(let message):
+				return message
 			}
 		}
+	}
+
+	/// Wraps a raw stage error with its stage name so the import
+	/// alert shows the real cause; an ImportError passes through
+	/// unchanged (its message is already the right user-facing one).
+	private static func _wrap(_ error: Error, stage: String) -> Error {
+		if error is ImportError { return error }
+		return ImportError.detailed("صار خطأ أثناء الاستيراد.\nالتفاصيل: \(stage): \(error.localizedDescription)")
 	}
 
 	// MARK: - Entry points
@@ -314,7 +328,7 @@ enum ZenithGuestImporter {
 			try fileManager.copyItem(at: sourceAppDir, to: workAppDir)
 		} catch {
 			try? fileManager.removeItem(at: workDir)
-			throw error
+			throw _wrap(error, stage: "copy")
 		}
 
 		// Bundle identifier: the folder name and the sidecar
@@ -358,7 +372,7 @@ enum ZenithGuestImporter {
 			)
 		} catch {
 			try? fileManager.removeItem(at: workDir)
-			throw error
+			throw _wrap(error, stage: "patch")
 		}
 
 		// Move to its final home, then sign IN PLACE (the old
@@ -371,7 +385,7 @@ enum ZenithGuestImporter {
 			try? fileManager.removeItem(at: workDir)
 		} catch {
 			try? fileManager.removeItem(at: workDir)
-			throw error
+			throw _wrap(error, stage: "move")
 		}
 
 		await _report(progress, .signing)
@@ -401,11 +415,12 @@ enum ZenithGuestImporter {
 				let execPath = Bundle(url: guestBundleURL)?.executableURL?.path,
 				Zsign.checkSigned(appExecutable: execPath)
 			else {
-				throw ImportError.generic
+				Logger.misc.error("[ZenithGuestImporter] post-sign checkSigned failed for \(guestBundleURL.lastPathComponent, privacy: .public)")
+				throw ImportError.detailed("صار خطأ أثناء الاستيراد.\nالتفاصيل: post-sign check: signature not valid after signing")
 			}
 		} catch {
 			try? fileManager.removeItem(at: guestBundleURL)
-			throw error
+			throw _wrap(error, stage: "sign")
 		}
 
 		// Guest data dir (empty for now — the loader owns it).
@@ -451,7 +466,7 @@ enum ZenithGuestImporter {
 	) async throws {
 		guard let appInfo = LCAppInfo(bundlePath: guestBundleURL.path) else {
 			Logger.misc.error("[ZenithGuestImporter] LCAppInfo(bundlePath:) returned nil for \(guestBundleURL.path, privacy: .public)")
-			throw ImportError.generic
+			throw ImportError.detailed("صار خطأ أثناء الاستيراد.\nالتفاصيل: patch/sign: LCAppInfo init returned nil")
 		}
 		final class ProgressBox {
 			var observation: NSKeyValueObservation?
@@ -466,7 +481,7 @@ enum ZenithGuestImporter {
 				} else {
 					let message = errorInfo ?? "unknown error"
 					Logger.misc.error("[ZenithGuestImporter] patch/sign failed: \(message, privacy: .public)")
-					continuation.resume(throwing: ImportError.generic)
+					continuation.resume(throwing: ImportError.detailed("صار خطأ أثناء الاستيراد.\nالتفاصيل: patch/sign: \(message)"))
 				}
 			}, progressHandler: { signProgress in
 				guard let signProgress else { return }
