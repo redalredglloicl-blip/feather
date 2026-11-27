@@ -163,7 +163,7 @@ struct GuestPatchSectionsView: View {
 			}
 			ModFileEditorView(app: app, options: $options, report: report)
 			GraphicsSettingsView(app: app, options: $options, report: report)
-			FPSCounterView(options: $options, report: $report)
+			FPSCounterView(options: $options, report: report)
 		}
 	}
 

@@ -449,7 +449,10 @@ enum ZenithGuestImporter {
 		guestBundleURL: URL,
 		progress: @escaping (Double, Stage) -> Void
 	) async throws {
-		let appInfo = LCAppInfo(bundlePath: guestBundleURL.path)
+		guard let appInfo = LCAppInfo(bundlePath: guestBundleURL.path) else {
+			Logger.misc.error("[ZenithGuestImporter] LCAppInfo(bundlePath:) returned nil for \(guestBundleURL.path, privacy: .public)")
+			throw ImportError.generic
+		}
 		final class ProgressBox {
 			var observation: NSKeyValueObservation?
 		}

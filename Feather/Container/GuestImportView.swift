@@ -54,8 +54,8 @@ struct GuestImportView: View {
 		if let name = app.name, let remembered = initial.displayNames[name] {
 			initial.appName = remembered
 		}
-		self._options = State(initialValue: initial)
-		self._displayNameText = State(initialValue: initial.appName ?? app.name ?? "")
+		self._options = initial
+		self._displayNameText = initial.appName ?? app.name ?? ""
 	}
 
 	// MARK: Body
