@@ -77,11 +77,52 @@ extension ServerInstaller {
 	}
 	
 	var displayImageSmallData: Data {
-		_createIcon(57)
+		_displayIconData(size: 57)
 	}
 	
 	var displayImageLargeData: Data {
-		_createIcon(512)
+		_displayIconData(size: 512)
+	}
+	
+	// Zenith v2.20: the real app icon for the local (mode 0)
+	// manifest's display images, scaled to the requested size.
+	// The old _createIcon drew a solid tint-color square, so the
+	// home screen showed a blank square while the app downloaded.
+	// The icon comes from the signed .app on disk, using the same
+	// CFBundleIcons lookup the Library uses; the tint square is
+	// only the fallback when the bundle has no loose icon file
+	// (e.g. icons only inside Assets.car). Mode 1 (palera.in)
+	// cannot carry a display image: its genPlist endpoint ignores
+	// icon parameters (verified live 2026-11-28), so in mode 1 the
+	// placeholder only goes away by the download actually
+	// finishing — which the InstallPreviewView keep-alive fixes
+	// in this same version.
+	private func _displayIconData(size r: CGFloat) -> Data {
+		if let icon = _realAppIcon() {
+			let renderer = UIGraphicsImageRenderer(size: .init(width: r, height: r))
+			let scaled = renderer.image { _ in
+				icon.draw(in: .init(x: 0, y: 0, width: r, height: r))
+			}
+			if let data = scaled.pngData() {
+				return data
+			}
+		}
+		return _createIcon(r)
+	}
+	
+	private func _realAppIcon() -> UIImage? {
+		guard
+			let appURL = Storage.shared.getAppDirectory(for: app),
+			let bundle = Bundle(url: appURL),
+			let name = bundle.iconFileName
+		else { return nil }
+		for suffix in ["@3x.png", "@2x.png", ".png"] {
+			let url = appURL.appendingPathComponent(name + suffix)
+			if let image = UIImage(contentsOfFile: url.path) {
+				return image
+			}
+		}
+		return nil
 	}
 	
 	private func _createIcon(_ r: CGFloat) -> Data {

@@ -116,6 +116,14 @@ final class SigningHandler: NSObject {
 			try await _locateMachosAndChangeToSDK26(for: movedAppPath)
 		}
 		
+		// Zenith v2.20: refresh staged copies of the bundled
+		// overlay dylibs first (see
+		// TweakHandler.refreshStagedBundledOverlays) — a staged
+		// copy made by an older Zenith would otherwise be
+		// injected forever. Runs on every signing, before any
+		// injection, single sign and batch queue alike.
+		TweakHandler.refreshStagedBundledOverlays(in: _options)
+		
 		if _options.experiment_replaceSubstrateWithEllekit {
 			try await _inject(for: movedAppPath, with: _options)
 		} else {

@@ -88,6 +88,15 @@ final class ArchiveHandler: NSObject {
 	}
 	
 	static func getCompressionLevel() -> Int {
-		UserDefaults.standard.integer(forKey: "Zenith.compressionLevel")
+		// Zenith v2.20: integer(forKey:) returns 0 when the key was
+		// never set, which mapped to .NoCompression even though
+		// Settings shows "Default" as the default — every install
+		// IPA shipped stored (uncompressed), making the 126 MB
+		// download slower and the stall window wider. An absent
+		// key now means Default, matching the Settings default.
+		if UserDefaults.standard.object(forKey: "Zenith.compressionLevel") == nil {
+			return ZipCompression.DefaultCompression.rawValue
+		}
+		return UserDefaults.standard.integer(forKey: "Zenith.compressionLevel")
 	}
 }

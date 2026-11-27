@@ -142,7 +142,17 @@ class TweakHandler {
 		
 		destinationURL = destinationURL.appendingPathComponent(url.lastPathComponent)
 		
-		
+		// Zenith v2.20: a re-sign of an already-injected IPA must
+		// replace the dylib already in the bundle. moveFileIfNeeded
+		// silently skips when the destination exists, so the OLD
+		// dylib stayed in the game and the new build never reached
+		// it (proven 2026-11-28: the dylib inside the game had the
+		// identical UUID across 2.18 and 2.19 signings). The load
+		// command itself is safe on re-injection: zsign's
+		// InjectDylib no-ops when the same path is already loaded.
+		if url != destinationURL {
+			try _fileManager.removeFileIfNeeded(at: destinationURL)
+		}
 		try _fileManager.moveFileIfNeeded(from: url, to: destinationURL)
 		
 		guard let appexe = Bundle(url: _app)?.executableURL else {
@@ -340,6 +350,41 @@ class TweakHandler {
 		for extensionURL in extensions {
 			for dylibName in dylibNames {
 				_injectIntoExtension(extensionURL: extensionURL, dylibName: dylibName)
+			}
+		}
+	}
+
+	// Zenith v2.20: refresh the staged copies of the bundled
+	// overlay dylibs (Value Editor, FPS counter, in-app
+	// translation) before injecting. A staged copy is made ONCE,
+	// when its toggle is turned on (FileManager.moveAndStore),
+	// and it survives app updates — so without this, signing kept
+	// injecting the dylib bytes of whichever Zenith build staged
+	// the copy, forever (proven 2026-11-28: the dylib inside the
+	// game had the identical UUID across 2.18 and 2.19 signings).
+	// Any staged file whose name is exactly a bundled overlay
+	// dylib's name gets its bytes overwritten in place with the
+	// CURRENT bundled dylib when they differ. User-supplied
+	// dylibs (any other file name) are never touched, and the
+	// staged URL stays valid — nothing in Options needs to
+	// change, so the persisted entry is refreshed too. A missing
+	// staged file is left alone: injection then fails loudly as
+	// before, instead of silently signing without the overlay.
+	static func refreshStagedBundledOverlays(in options: Options) {
+		let bundled: [(name: String, url: URL?)] = [
+			(ValueEditorInjector.bundledDylibName, ValueEditorInjector.bundledDylibURL),
+			(FPSOverlayInjector.bundledDylibName, FPSOverlayInjector.bundledDylibURL),
+			(TranslationOverlayInjector.bundledDylibName, TranslationOverlayInjector.bundledDylibURL),
+		]
+		for (name, bundledURL) in bundled {
+			guard let bundledURL else { continue }
+			guard let bundledData = try? Data(contentsOf: bundledURL) else { continue }
+			let fileName = name + ".dylib"
+			for staged in options.injectionFiles where staged.lastPathComponent == fileName {
+				guard let stagedData = try? Data(contentsOf: staged) else { continue }
+				guard stagedData != bundledData else { continue }
+				try? bundledData.write(to: staged, options: .atomic)
+				Logger.misc.info("Refreshed staged overlay dylib \(fileName) with the current build's copy")
 			}
 		}
 	}

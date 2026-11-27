@@ -70,4 +70,42 @@ extension UIApplication {
 
 		return nil
 	}
+
+	/// Returns whether an app with the bundle identifier is
+	/// installed, or nil when the system cannot answer (unknown
+	/// iOS — callers should then keep the previous behaviour
+	/// rather than failing an install that may have worked).
+	/// Zenith v2.20: the install poll used to treat "no progress
+	/// object" as "installed", which falsely reported success when
+	/// installd gave up — Zenith said "done" while the home-screen
+	/// icon stayed a white placeholder. This check separates a
+	/// real install from an abandoned one.
+	/// - Parameter identifier: Bundle identifier
+	/// - Returns: Installed state, or nil if undeterminable
+	static public func isAppInstalled(
+		_ identifier: String
+	) -> Bool? {
+
+		let classNameBase64 = "TFNBcHBsaWNhdGlvbldvcmtzcGFjZQ==" // LSApplicationWorkspace
+		let defaultSelectorBase64 = "ZGVmYXVsdFdvcmtzcGFjZQ=="   // defaultWorkspace
+		let installedSelectorBase64 = "YXBwbGljYXRpb25Jc0luc3RhbGxlZDo=" // applicationIsInstalled:
+
+		guard
+			let className = String(data: Data(base64Encoded: classNameBase64)!, encoding: .utf8),
+			let defaultSelector = String(data: Data(base64Encoded: defaultSelectorBase64)!, encoding: .utf8),
+			let installedSelector = String(data: Data(base64Encoded: installedSelectorBase64)!, encoding: .utf8),
+			let workspaceClass = NSClassFromString(className) as? NSObject.Type,
+			let workspace = workspaceClass.perform(NSSelectorFromString(defaultSelector))?.takeUnretainedValue() as? NSObject,
+			workspace.responds(to: NSSelectorFromString(installedSelector))
+		else { return nil }
+
+		// applicationIsInstalled: returns a BOOL, so plain
+		// perform(_:with:) is unsafe (it expects an object return).
+		// Call the method implementation directly with a typed
+		// function pointer instead.
+		typealias InstalledIMP = @convention(c) (NSObject, Selector, NSString) -> Bool
+		let imp = workspace.method(for: NSSelectorFromString(installedSelector))
+		let fn = unsafeBitCast(imp, to: InstalledIMP.self)
+		return fn(workspace, NSSelectorFromString(installedSelector), identifier as NSString)
+	}
 }

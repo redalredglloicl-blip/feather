@@ -56,6 +56,14 @@ struct InstallPreviewView: View {
 		.frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
 		.zenithGlassCard(cornerRadius: cornerRadius, fallback: Color(UIColor.secondarySystemBackground))
 		.padding()
+		// Zenith v2.20: the install sheet used to be swipe-dismissable
+		// mid-download — dismissing it deallocated the local server
+		// (its only owner is this view) and installd was left with a
+		// half-fetched IPA and a white placeholder icon forever.
+		// While an install is in flight the sheet cannot be swiped
+		// away; once the install reaches a terminal status
+		// (.completed / .broken) dismissing is allowed again.
+		.interactiveDismissDisabled(_isInstallInFlight)
 		.sheet(isPresented: $_isWebviewPresenting) {
 			SafariRepresentableView(url: installer.pageEndpoint).ignoresSafeArea()
 		}
@@ -115,9 +123,19 @@ struct InstallPreviewView: View {
 					_stallWatchdog?.cancel()
 					_stallWatchdog = nil
 					_didOpenInstallLink = false
-					#if !targetEnvironment(macCatalyst)
-					BackgroundAudioManager.shared.stop()
-					#endif
+					// Zenith v2.20: stop the background-audio keep-alive
+					// ONLY on a completed install. On .broken the local
+					// server must stay alive — installd may still be
+					// fetching the IPA, and stopping the audio lets iOS
+					// suspend Zenith and kill the server mid-download,
+					// leaving a white placeholder icon on the home
+					// screen forever. The audio stops on real dismissal
+					// (onDisappear) instead.
+					if case .completed = newStatus {
+						#if !targetEnvironment(macCatalyst)
+						BackgroundAudioManager.shared.stop()
+						#endif
+					}
 				default:
 					break
 				}
@@ -140,6 +158,19 @@ struct InstallPreviewView: View {
 			#if !targetEnvironment(macCatalyst)
 			BackgroundAudioManager.shared.stop()
 			#endif
+		}
+	}
+	
+	// Zenith v2.20: true while installd may still need the local
+	// server — the sheet must not be swipe-dismissed in that window
+	// (see .interactiveDismissDisabled above). Terminal statuses
+	// allow dismissing again.
+	private var _isInstallInFlight: Bool {
+		switch viewModel.status {
+		case .ready, .sendingManifest, .sendingPayload, .installing:
+			return true
+		default:
+			return false
 		}
 	}
 	
@@ -234,27 +265,31 @@ struct InstallPreviewView: View {
 		}
 	}
 	
-	// Zenith v2.16 honest stall: the link opened, but if iOS
+	// Zenith v2.20 honest stall: the link opened, but if iOS
 	// never fetches the IPA from the local server
-	// (.sendingPayload) and never starts installing within 15
+	// (.sendingPayload) and never starts installing within 60
 	// seconds, the install never started — say so plainly
-	// instead of sitting on "جاهز" forever. Cancelled as soon
-	// as real progress arrives (.sendingPayload / .installing /
-	// terminal status) or the view disappears.
+	// instead of sitting on "جاهز" forever. 60s, not 15s: the
+	// clock includes palera's manifest fetch plus the time Reda
+	// takes to read and confirm the system Install prompt, and
+	// 15s fired while he was merely being slow — then it stopped
+	// the background audio and dismissed the sheet, killing the
+	// server just as installd was about to fetch. The alert no
+	// longer dismisses the sheet: the server stays alive and he
+	// can swipe away and retry when he is ready. Cancelled as
+	// soon as real progress arrives (.sendingPayload / .installing
+	// / terminal status) or the view disappears.
 	private func _startStallWatchdog() {
 		_stallWatchdog?.cancel()
 		_stallWatchdog = Task.detached {
-			try? await Task.sleep(nanoseconds: 15_000_000_000)
+			try? await Task.sleep(nanoseconds: 60_000_000_000)
 			guard !Task.isCancelled else { return }
 			await MainActor.run {
 				if case .ready = viewModel.status {
 					viewModel.status = .broken(InstallLinkError.installNeverStarted)
 					UIAlertController.showAlertWithOk(
 						title: .localized("Install"),
-						message: "التثبيت ما بدأ — ما وصل شي للشاشة. جرّب تثبيت مرة ثانية.",
-						action: {
-							dismiss()
-						}
+						message: "التثبيت ما بدأ — ما وصل شي للشاشة. جرّب تثبيت مرة ثانية."
 					)
 				}
 			}
@@ -353,12 +388,21 @@ struct InstallPreviewView: View {
 
 		Task.detached(priority: .background) {
 			var hasStarted = false
+			// Zenith v2.20: the progress object disappearing used to
+			// mean "installed" — but it also disappears when installd
+			// gives up, which falsely reported success while the
+			// home-screen icon stayed a white placeholder. Now a
+			// disappearance only counts when the bundle is really
+			// installed; otherwise we wait a short grace period and
+			// then fail honestly instead of claiming success.
+			var missingTicks = 0
 
 			while !Task.isCancelled {
 				let rawProgress = await UIApplication.installProgress(for: bundleID) ?? 0.0
 
 				if rawProgress > 0 {
 					hasStarted = true
+					missingTicks = 0
 				}
 
 				let progress = await hasStarted
@@ -372,14 +416,27 @@ struct InstallPreviewView: View {
 				}
 
 				if hasStarted && rawProgress == 0 {
-					await MainActor.run {
-						viewModel.installProgress = 1.0
-						viewModel.status = .completed(.success(()))
+					let installed = UIApplication.isAppInstalled(bundleID)
+					// installed == nil: the system could not answer
+					// (unknown iOS) — keep the old behaviour rather
+					// than failing an install that may have worked.
+					if installed == true || installed == nil {
+						await MainActor.run {
+							viewModel.installProgress = 1.0
+							viewModel.status = .completed(.success(()))
+						}
+						break
 					}
-					break
+					missingTicks += 1
+					if missingTicks >= 10 {
+						await MainActor.run {
+							viewModel.status = .broken(InstallLinkError.installDidNotFinish)
+						}
+						break
+					}
 				}
 
-				try? await Task.sleep(nanoseconds: 1_000_000) // 1 ms
+				try? await Task.sleep(nanoseconds: 1_000_000_000) // 1 s
 			}
 		}
 	}
@@ -398,12 +455,20 @@ private enum InstallLinkError: LocalizedError {
 	// Zenith v2.16: the itms-services link opened, but iOS never
 	// fetched the IPA and never started installing within 15s.
 	case installNeverStarted
+	// Zenith v2.20: the install progress object vanished after the
+	// install had started, but the bundle is not installed —
+	// installd gave up. Reported honestly instead of claiming
+	// success (the old code set .completed here, which is how
+	// Zenith said "done" while the home-screen icon stayed a white
+	// placeholder).
+	case installDidNotFinish
 	
 	var errorDescription: String? {
 		switch self {
 		case .invalidLink: "رابط التثبيت مو صحيح."
 		case .systemRefused: "النظام رفض رابط التثبيت."
 		case .installNeverStarted: "التثبيت ما بدأ. جرّب مرة ثانية."
+		case .installDidNotFinish: "التثبيت ما اكتمل — التطبيق ما انثبّت. جرّب مرة ثانية."
 		}
 	}
 }
