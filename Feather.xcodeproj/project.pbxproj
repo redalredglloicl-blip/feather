@@ -33,6 +33,9 @@
 			membershipExceptions = (
 				Resources/ellekit.deb,
 				Resources/Info.plist,
+				Resources/ZenithFPSOverlay.m,
+				Resources/ZenithTranslateOverlay.m,
+				Resources/ZenithValueEditor.m,
 				Backend/Observable/UpdateManager.swift,
 				"Backend/Storage/Storage+SourceMetadata.swift",
 				"Backend/Storage/Storage+Sources.swift",
@@ -154,6 +157,7 @@
 			buildConfigurationList = 3379C1CD2DA869A3004372DA /* Build configuration list for PBXNativeTarget "Zenith" */;
 			buildPhases = (
 				3379C1B52DA869A1004372DA /* Sources */,
+				D388BF3D322A8502591712DA /* Compile Zenith overlay dylibs */,
 				3379C1B62DA869A1004372DA /* Frameworks */,
 				3379C1B72DA869A1004372DA /* Resources */,
 			);
@@ -253,6 +257,27 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		D388BF3D322A8502591712DA /* Compile Zenith overlay dylibs */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "set -euo pipefail\n\n# Compile the three Zenith overlay dylibs (constructor-only, no main)\n# into the app bundle root, where the injectors look them up with\n# Bundle.main.url(forResource:withExtension: \"dylib\").\n# iOS only: the Mac Catalyst leg of the Makefile build has no use for\n# these dylibs and must skip cleanly.\nif [ \"${PLATFORM_NAME:-}\" != \"iphoneos\" ]; then\n  echo \"Zenith overlay dylibs: skipping (PLATFORM_NAME=${PLATFORM_NAME:-unknown}, not iphoneos)\"\n  exit 0\nfi\n\nSDKROOT=\"${SDKROOT:-$(xcrun --sdk iphoneos --show-sdk-path)}\"\nAPP_DIR=\"${BUILT_PRODUCTS_DIR}/${PRODUCT_NAME}.app\"\nSRC_DIR=\"${SRCROOT}/Feather/Resources\"\n\nmkdir -p \"${APP_DIR}\"\n\nbuild_dylib() {\n  local name=\"$1\" src=\"$2\"; shift 2\n  echo \"Compiling ${name}.dylib ...\"\n  xcrun clang -dynamiclib -arch arm64 \\\n    -miphoneos-version-min=16.0 \\\n    -isysroot \"${SDKROOT}\" \\\n    -framework Foundation -framework UIKit \"$@\" \\\n    -o \"${APP_DIR}/${name}.dylib\" \\\n    \"${SRC_DIR}/${src}\"\n  test -f \"${APP_DIR}/${name}.dylib\"\n}\n\nbuild_dylib ZenithValueEditor ZenithValueEditor.m\nbuild_dylib ZenithFPS ZenithFPSOverlay.m -framework QuartzCore\nbuild_dylib ZenithTranslate ZenithTranslateOverlay.m\n\necho \"Zenith overlay dylibs built:\"\nls -l \"${APP_DIR}/ZenithValueEditor.dylib\" \"${APP_DIR}/ZenithFPS.dylib\" \"${APP_DIR}/ZenithTranslate.dylib\"";
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		3379C1B52DA869A1004372DA /* Sources */ = {
@@ -409,7 +434,7 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Feather/Resources/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = Zenith;
-				INFOPLIST_KEY_ZenithBuildNumber = 13;
+				INFOPLIST_KEY_ZenithBuildNumber = 14;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright (c) 2024 Samara M";
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
@@ -430,7 +455,7 @@
 					"$(PROJECT_DIR)/Feather/Resources/idevice",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 15.2;
-				ZENITH_PROJECT_VERSION = 2.11;
+				ZENITH_PROJECT_VERSION = 2.12;
 				MARKETING_VERSION = "$(ZENITH_PROJECT_VERSION)-debug";
 				PRODUCT_BUNDLE_IDENTIFIER = "$(ZENITH_PRODUCT_BUNDLE_IDENTIFIER)$(ZENITH_DISAMBIGUATOR)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -475,7 +500,7 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Feather/Resources/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = Zenith;
-				INFOPLIST_KEY_ZenithBuildNumber = 13;
+				INFOPLIST_KEY_ZenithBuildNumber = 14;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright (c) 2024 Samara M";
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
@@ -496,7 +521,7 @@
 					"$(PROJECT_DIR)/Feather/Resources/idevice",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 15.2;
-				ZENITH_PROJECT_VERSION = 2.11;
+				ZENITH_PROJECT_VERSION = 2.12;
 				MARKETING_VERSION = "$(ZENITH_PROJECT_VERSION)";
 				PRODUCT_BUNDLE_IDENTIFIER = "$(ZENITH_PRODUCT_BUNDLE_IDENTIFIER)";
 				PRODUCT_NAME = "$(TARGET_NAME)";

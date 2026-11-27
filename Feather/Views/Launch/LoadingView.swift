@@ -68,24 +68,31 @@ final class StartupProgress: ObservableObject {
 		// shares one in-flight check between callers, so this joins
 		// the launch check instead of starting a second one.
 		//
-		// There is NO timeout bypass any more: build 12 opened after
-		// this step's old 8 s deadline even though the check had not
-		// answered, and the check then resolved as a PASS on the stale
-		// cached minVersion (11) while the server already said 13 —
-		// so the app opened and never flipped to the block screen.
-		// This step now waits until the manager reports a FRESH
-		// decision (both minVersion and killed fetched live), and
-		// re-runs the check if a round ends without one. The only
-		// exits without a fresh decision are cancellation and a
-		// genuinely offline device — in the offline case the root
-		// branch shows OfflineBlockView instead, so the app is never
-		// bricked by the wait.
+		// v2.11 waited here with NO deadline for a FRESH decision
+		// (both minVersion and killed fetched live) — and build 13
+		// hung at 75% across restarts, because the check never
+		// completes fresh on this phone. v2.12 bounds the wait: at
+		// most ~30 s for a fresh decision; if none arrives and the
+		// cache can decide, the launch opens on the cached decision
+		// (see ForcedUpdateManager.applyCachedFallbackForLaunch).
+		// With no cached value at all there is nothing to open on,
+		// so the step keeps waiting — but the label below shows the
+		// live attempt count, so a retrying launch never looks frozen
+		// at 75%. A cached block still shows instantly (the root
+		// branch shows ForcedUpdateView above this screen), and a
+		// later fresh check that blocks flips the UI the moment it
+		// answers. The only exits without any decision are
+		// cancellation and a genuinely offline device — in the
+		// offline case the root branch shows OfflineBlockView
+		// instead, so the app is never bricked by the wait.
 		_setStep(0.75, .localized("Checking for updates"))
+		let step4Deadline = Date().addingTimeInterval(30)
 		_checkTask = Task { [weak self] in
 			await ForcedUpdateManager.shared.checkForUpdate()
 			self?._checkDone = true
 		}
-		while !ForcedUpdateManager.shared.hasFreshDecision, !Task.isCancelled {
+		var lastShownAttempt = 0
+		while !ForcedUpdateManager.shared.hasLaunchDecision, !Task.isCancelled {
 			if NetworkMonitor.shared.isOffline {
 				return
 			}
@@ -102,6 +109,20 @@ final class StartupProgress: ObservableObject {
 					await ForcedUpdateManager.shared.checkForUpdate()
 					self?._checkDone = true
 				}
+			}
+			// Deadline: no fresh decision in ~30 s — open on the
+			// cached decision instead of hanging forever.
+			if Date() > step4Deadline, ForcedUpdateManager.shared.hasAnyCachedValue {
+				ForcedUpdateManager.shared.applyCachedFallbackForLaunch()
+				break
+			}
+			// Live retrying state: the % stays at 75 (this step is
+			// genuinely not done) — the label is what moves, showing
+			// the real attempt count, so the screen never looks frozen.
+			let attempts = ForcedUpdateManager.shared.checkAttempts
+			if attempts > 1, attempts != lastShownAttempt {
+				lastShownAttempt = attempts
+				_setRetryingLabel(attempts)
 			}
 			try? await Task.sleep(nanoseconds: 200_000_000)
 		}
@@ -129,6 +150,13 @@ final class StartupProgress: ObservableObject {
 			progress = target
 			stepLabel = label
 		}
+	}
+
+	/// Shows the live retry count while step 4 waits for a fresh
+	/// decision. Label only — the progress value stays at 0.75
+	/// because the step genuinely has not finished.
+	private func _setRetryingLabel(_ attempt: Int) {
+		stepLabel = .localized("Checking for updates — retry %lld", arguments: attempt)
 	}
 
 	/// Brief pause so the counter is readable even when a step

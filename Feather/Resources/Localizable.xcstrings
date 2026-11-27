@@ -860,6 +860,91 @@
         }
       }
     },
+    "Ad SDK In Binary": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "موجود داخل ملف التطبيق نفسه — ما نكدر نشيله"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "موجود داخل ملف التطبيق نفسه — ما نكدر نشيله"
+          }
+        }
+      }
+    },
+    "Ad SDK Linkage Unknown": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ما كدرنا نتأكد إذا مربوط — ما نشيله بأمان"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ما كدرنا نتأكد إذا مربوط — ما نشيله بأمان"
+          }
+        }
+      }
+    },
+    "Ad SDK Linked": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "مربوط بالتطبيق — شيله يخرب التطبيق"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "مربوط بالتطبيق — شيله يخرب التطبيق"
+          }
+        }
+      }
+    },
+    "Ad SDK Not Linked": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "مو مربوط — نكدر نشيله بأمان"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "مو مربوط — نكدر نشيله بأمان"
+          }
+        }
+      }
+    },
+    "Ad SDKs in This App": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "مكتبات الإعلانات بهالتطبيق"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "مكتبات الإعلانات بهالتطبيق"
+          }
+        }
+      }
+    },
     "Ad-hoc": {
       "extractionState": "manual",
       "localizations": {
@@ -1481,6 +1566,23 @@
         }
       }
     },
+    "Already Enabled": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "مفعّل أصلاً"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "مفعّل أصلاً"
+          }
+        }
+      }
+    },
     "Alternative Icons": {
       "extractionState": "manual",
       "localizations": {
@@ -1738,6 +1840,40 @@
           "stringUnit": {
             "state": "translated",
             "value": "应用图标"
+          }
+        }
+      }
+    },
+    "App Display Name": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "الاسم اللي يطلع بالشاشة"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "الاسم اللي يطلع بالشاشة"
+          }
+        }
+      }
+    },
+    "App Display Name Hint": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "هالاسم هو اللي راح يظهر تحت أيقونة التطبيق بالشاشة الرئيسية. إذا تركته مثل ما هو، يبقى الاسم الأصلي."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "هالاسم هو اللي راح يظهر تحت أيقونة التطبيق بالشاشة الرئيسية. إذا تركته مثل ما هو، يبقى الاسم الأصلي."
           }
         }
       }
@@ -3691,6 +3827,23 @@
         }
       }
     },
+    "Currently Off": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "مطفّي حالياً"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "مطفّي حالياً"
+          }
+        }
+      }
+    },
     "Custom Theme Color": {
       "extractionState": "manual",
       "localizations": {
@@ -4967,6 +5120,23 @@
           "stringUnit": {
             "state": "translated",
             "value": "启用液态玻璃"
+          }
+        }
+      }
+    },
+    "Enabled When You Sign": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "الإعدادات اللي تشغّلها تتطبق وقت التوقيع."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "الإعدادات اللي تشغّلها تتطبق وقت التوقيع."
           }
         }
       }
@@ -9912,6 +10082,23 @@
         }
       }
     },
+    "No Ad SDKs Found": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ما لكينا أي مكتبة إعلانات بهالتطبيق"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ما لكينا أي مكتبة إعلانات بهالتطبيق"
+          }
+        }
+      }
+    },
     "No Apps": {
       "extractionState": "manual",
       "localizations": {
@@ -12569,6 +12756,57 @@
         }
       }
     },
+    "Remove Ads": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "شيل الإعلانات"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "شيل الإعلانات"
+          }
+        }
+      }
+    },
+    "Remove Ads Description": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "نفحص التطبيق ونشوف شنو مكتبات الإعلانات اللي بيه، ونشيل اللي نكدر نشيله بأمان قبل التوقيع."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "نفحص التطبيق ونشوف شنو مكتبات الإعلانات اللي بيه، ونشيل اللي نكدر نشيله بأمان قبل التوقيع."
+          }
+        }
+      }
+    },
+    "Remove Ads Warning": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "تحذير: شيل مكتبة إعلانات ممكن يخرب التطبيق أو يخليه ما يفتح. سوّي نسخة احتياطية من الأصل قبل لا توقّع."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "تحذير: شيل مكتبة إعلانات ممكن يخرب التطبيق أو يخليه ما يفتح. سوّي نسخة احتياطية من الأصل قبل لا توقّع."
+          }
+        }
+      }
+    },
     "Remove Provisioning": {
       "extractionState": "manual",
       "localizations": {
@@ -12790,6 +13028,958 @@
           "stringUnit": {
             "state": "translated",
             "value": "移除Watch占位符"
+          }
+        }
+      }
+    },
+    "Removed When You Sign": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "المكتبات اللي تختارها تنشال وقت التوقيع."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "المكتبات اللي تختارها تنشال وقت التوقيع."
+          }
+        }
+      }
+    },
+    "Applied When You Sign": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "التعديلات اللي تختارها تتطبق وقت التوقيع."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "التعديلات اللي تختارها تتطبق وقت التوقيع."
+          }
+        }
+      }
+    },
+    "Remove Watermark": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "شيل العلامة المائية"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "شيل العلامة المائية"
+          }
+        }
+      }
+    },
+    "Remove Watermark Description": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "نفحص التطبيق وندور على العلامة المائية: إعدادات محلية تشغّلها، أو مكتبة خاصة بيها، ونعرض لك شنو لكينا قبل لا تشيل شي."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "نفحص التطبيق وندور على العلامة المائية: إعدادات محلية تشغّلها، أو مكتبة خاصة بيها، ونعرض لك شنو لكينا قبل لا تشيل شي."
+          }
+        }
+      }
+    },
+    "No Watermark Found": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ما لكينا أي علامة مائية بهالتطبيق"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ما لكينا أي علامة مائية بهالتطبيق"
+          }
+        }
+      }
+    },
+    "No Watermark Found Hint": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "إذا التطبيق يضيف العلامة من السيرفر، أو يحرقها بالصور والفيديوهات على السيرفر، ما نكدر نشيلها من الجهاز."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "إذا التطبيق يضيف العلامة من السيرفر، أو يحرقها بالصور والفيديوهات على السيرفر، ما نكدر نشيلها من الجهاز."
+          }
+        }
+      }
+    },
+    "Server Watermark Cannot Be Removed": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "العلامة المائية اللي يضيفها السيرفر، أو المحروقة بالملفات على السيرفر، ما تنشال من الجهاز."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "العلامة المائية اللي يضيفها السيرفر، أو المحروقة بالملفات على السيرفر، ما تنشال من الجهاز."
+          }
+        }
+      }
+    },
+    "Watermark Settings in This App": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "إعدادات العلامة المائية بهالتطبيق"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "إعدادات العلامة المائية بهالتطبيق"
+          }
+        }
+      }
+    },
+    "Watermark Frameworks in This App": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "مكتبات العلامة المائية بهالتطبيق"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "مكتبات العلامة المائية بهالتطبيق"
+          }
+        }
+      }
+    },
+    "Watermark In Binary": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "كود العلامة المائية موجود داخل التطبيق نفسه، وما ينشال من الجهاز."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "كود العلامة المائية موجود داخل التطبيق نفسه، وما ينشال من الجهاز."
+          }
+        }
+      }
+    },
+    "Watermark Warning": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "تحذير: شيل العلامة المائية ممكن يخرب التطبيق أو يخليه ما يفتح. سوّي نسخة احتياطية من الأصل قبل لا توقّع."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "تحذير: شيل العلامة المائية ممكن يخرب التطبيق أو يخليه ما يفتح. سوّي نسخة احتياطية من الأصل قبل لا توقّع."
+          }
+        }
+      }
+    },
+    "Watermark Already Off": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "مطفية أصلاً"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "مطفية أصلاً"
+          }
+        }
+      }
+    },
+    "Watermark Will Turn Off": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "راح تنطفي وقت التوقيع"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "راح تنطفي وقت التوقيع"
+          }
+        }
+      }
+    },
+    "Watermark Cannot Change": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "هالقيمة ما نكدر نغيرها بأمان من الجهاز."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "هالقيمة ما نكدر نغيرها بأمان من الجهاز."
+          }
+        }
+      }
+    },
+    "Watermark Framework Linked": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "هالمكتبة مربوطة بالتطبيق، شيلها يخرب التطبيق."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "هالمكتبة مربوطة بالتطبيق، شيلها يخرب التطبيق."
+          }
+        }
+      }
+    },
+    "Watermark Framework Not Linked": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "هالمكتبة مو مربوطة بالتطبيق، نكدر نشيلها بأمان."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "هالمكتبة مو مربوطة بالتطبيق، نكدر نشيلها بأمان."
+          }
+        }
+      }
+    },
+    "Watermark Framework Linkage Unknown": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ما كدرنا نتأكد إذا هالمكتبة مربوطة لو لا، فما نشيلها."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ما كدرنا نتأكد إذا هالمكتبة مربوطة لو لا، فما نشيلها."
+          }
+        }
+      }
+    },
+    "Remove Export Limits": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "شيل حدود التصدير"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "شيل حدود التصدير"
+          }
+        }
+      }
+    },
+    "Remove Export Limits Description": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "نفحص التطبيق وندور على حدود التصدير والمشاركة اللي محفوظة بالإعدادات المحلية: عدد مرات التصدير، أو حد الجودة والمدة، ونرفعها قبل التوقيع إذا لكيناها."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "نفحص التطبيق وندور على حدود التصدير والمشاركة اللي محفوظة بالإعدادات المحلية: عدد مرات التصدير، أو حد الجودة والمدة، ونرفعها قبل التوقيع إذا لكيناها."
+          }
+        }
+      }
+    },
+    "No Export Limits Found": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ما لكينا أي حدود تصدير محلية بهالتطبيق"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ما لكينا أي حدود تصدير محلية بهالتطبيق"
+          }
+        }
+      }
+    },
+    "No Export Limits Found Hint": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "إذا الحدود يتحكم بيها السيرفر، أو مربوطة بالاشتراك، ما نكدر نشيلها من الجهاز."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "إذا الحدود يتحكم بيها السيرفر، أو مربوطة بالاشتراك، ما نكدر نشيلها من الجهاز."
+          }
+        }
+      }
+    },
+    "Server Export Limits Cannot Be Removed": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "حدود التصدير اللي يفرضها السيرفر ما تنشال من الجهاز."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "حدود التصدير اللي يفرضها السيرفر ما تنشال من الجهاز."
+          }
+        }
+      }
+    },
+    "Export Limits in This App": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "حدود التصدير بهالتطبيق"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "حدود التصدير بهالتطبيق"
+          }
+        }
+      }
+    },
+    "Export Limit Raised": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "راح يرتفع الحد إلى 999999 وقت التوقيع"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "راح يرتفع الحد إلى 999999 وقت التوقيع"
+          }
+        }
+      }
+    },
+    "Export Limit Already Off": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "الحد مطفي أصلاً"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "الحد مطفي أصلاً"
+          }
+        }
+      }
+    },
+    "Export Limit Cannot Change": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "هالقيمة ما نكدر نغيرها بأمان من الجهاز."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "هالقيمة ما نكدر نغيرها بأمان من الجهاز."
+          }
+        }
+      }
+    },
+    "Export Limit Will Turn Off": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "راح ينطفي الحد وقت التوقيع"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "راح ينطفي الحد وقت التوقيع"
+          }
+        }
+      }
+    },
+    "Remove Subscription Screen": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "شيل شاشة الاشتراك"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "شيل شاشة الاشتراك"
+          }
+        }
+      }
+    },
+    "Remove Subscription Screen Description": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "نفحص التطبيق وندور على شاشة الاشتراك اللي تطلع من إعدادات محلية، ونشيلها قبل التوقيع إذا لكيناها."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "نفحص التطبيق وندور على شاشة الاشتراك اللي تطلع من إعدادات محلية، ونشيلها قبل التوقيع إذا لكيناها."
+          }
+        }
+      }
+    },
+    "Subscription Screen Warning": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "هالشي يشيل شاشة الاشتراك المحلية بس. ما يفتح المزايا المدفوعة ولا الاشتراكات اللي يتأكد منها السيرفر."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "هالشي يشيل شاشة الاشتراك المحلية بس. ما يفتح المزايا المدفوعة ولا الاشتراكات اللي يتأكد منها السيرفر."
+          }
+        }
+      }
+    },
+    "No Subscription Screen Found": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ما لكينا أي شاشة اشتراك محلية بهالتطبيق"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ما لكينا أي شاشة اشتراك محلية بهالتطبيق"
+          }
+        }
+      }
+    },
+    "No Subscription Screen Found Hint": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "إذا شاشة الاشتراك تجي من السيرفر، أو الاشتراك يتأكد من حسابك على السيرفر، ما نكدر نشيلها من الجهاز."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "إذا شاشة الاشتراك تجي من السيرفر، أو الاشتراك يتأكد من حسابك على السيرفر، ما نكدر نشيلها من الجهاز."
+          }
+        }
+      }
+    },
+    "Server Premium Cannot Be Unlocked": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "المزايا المدفوعة والاشتراكات اللي يتأكد منها السيرفر ما تنفتح من الجهاز."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "المزايا المدفوعة والاشتراكات اللي يتأكد منها السيرفر ما تنفتح من الجهاز."
+          }
+        }
+      }
+    },
+    "Subscription Settings in This App": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "إعدادات الاشتراك بهالتطبيق"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "إعدادات الاشتراك بهالتطبيق"
+          }
+        }
+      }
+    },
+    "Paywall SDKs in This App": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "مكتبات الاشتراك بهالتطبيق"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "مكتبات الاشتراك بهالتطبيق"
+          }
+        }
+      }
+    },
+    "Paywall Screen Files": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ملفات شاشة الاشتراك"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ملفات شاشة الاشتراك"
+          }
+        }
+      }
+    },
+    "Paywall SDK Cannot Be Removed": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "هالمكتبة ما تنشال، وشيلها ما يفتح الاشتراك."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "هالمكتبة ما تنشال، وشيلها ما يفتح الاشتراك."
+          }
+        }
+      }
+    },
+    "Paywall SDK In Binary": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "كود هالمكتبة موجود داخل التطبيق نفسه."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "كود هالمكتبة موجود داخل التطبيق نفسه."
+          }
+        }
+      }
+    },
+    "Paywall Value Cannot Change": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "هالقيمة ما نكدر نغيرها بأمان من الجهاز."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "هالقيمة ما نكدر نغيرها بأمان من الجهاز."
+          }
+        }
+      }
+    },
+    "Subscription Already Set": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "مضبوطة أصلاً"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "مضبوطة أصلاً"
+          }
+        }
+      }
+    },
+    "Subscription Marked": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "راح يصير الاشتراك مفعّل محلياً وقت التوقيع"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "راح يصير الاشتراك مفعّل محلياً وقت التوقيع"
+          }
+        }
+      }
+    },
+    "Subscription Screen Will Hide": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "راح تنخفي شاشة الاشتراك وقت التوقيع"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "راح تنخفي شاشة الاشتراك وقت التوقيع"
+          }
+        }
+      }
+    },
+    "Stop Forced Updates": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "وقف التحديثات الإجبارية"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "وقف التحديثات الإجبارية"
+          }
+        }
+      }
+    },
+    "Stop Forced Updates Description": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "نفحص التطبيق وندور على إعدادات التحديث الإجباري المحلية: مفاتيح تجبر التحديث، أو أقل نسخة مطلوبة، ونوقفها قبل التوقيع إذا لكيناها."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "نفحص التطبيق وندور على إعدادات التحديث الإجباري المحلية: مفاتيح تجبر التحديث، أو أقل نسخة مطلوبة، ونوقفها قبل التوقيع إذا لكيناها."
+          }
+        }
+      }
+    },
+    "No Forced Update Found": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ما لكينا أي تحديث إجباري محلي بهالتطبيق"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ما لكينا أي تحديث إجباري محلي بهالتطبيق"
+          }
+        }
+      }
+    },
+    "No Forced Update Found Hint": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "إذا التحديث الإجباري يجي من السيرفر، ما نكدر نوقفه من الجهاز."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "إذا التحديث الإجباري يجي من السيرفر، ما نكدر نوقفه من الجهاز."
+          }
+        }
+      }
+    },
+    "Server Forced Update Cannot Be Stopped": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "التحديث الإجباري اللي يفرضه السيرفر ما ينوقف من الجهاز."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "التحديث الإجباري اللي يفرضه السيرفر ما ينوقف من الجهاز."
+          }
+        }
+      }
+    },
+    "Forced Update Settings in This App": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "إعدادات التحديث الإجباري بهالتطبيق"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "إعدادات التحديث الإجباري بهالتطبيق"
+          }
+        }
+      }
+    },
+    "Update Endpoint Cannot Change": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "هالعنوان ما نكدر نغيره بأمان، نعرضه بس."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "هالعنوان ما نكدر نغيره بأمان، نعرضه بس."
+          }
+        }
+      }
+    },
+    "Forced Update Will Stop": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "راح يوقف التحديث الإجباري وقت التوقيع"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "راح يوقف التحديث الإجباري وقت التوقيع"
+          }
+        }
+      }
+    },
+    "Forced Update Already Off": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "مطفي أصلاً"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "مطفي أصلاً"
+          }
+        }
+      }
+    },
+    "Minimum Version Will Lower": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "راح ينزل الحد الأدنى للنسخة إلى 1.0.0 وقت التوقيع"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "راح ينزل الحد الأدنى للنسخة إلى 1.0.0 وقت التوقيع"
+          }
+        }
+      }
+    },
+    "Remove Watermark Row Description": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ندور على العلامة المائية داخل التطبيق ونشيلها قبل التوقيع. إذا العلامة تجي من السيرفر، ما نكدر نشيلها."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ندور على العلامة المائية داخل التطبيق ونشيلها قبل التوقيع. إذا العلامة تجي من السيرفر، ما نكدر نشيلها."
+          }
+        }
+      }
+    },
+    "Remove Export Limits Row Description": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "نرفع حدود التصدير والمشاركة المحفوظة داخل التطبيق، مثل عدد مرات التصدير أو حد الجودة. الحدود اللي يفرضها السيرفر ما تنشال."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "نرفع حدود التصدير والمشاركة المحفوظة داخل التطبيق، مثل عدد مرات التصدير أو حد الجودة. الحدود اللي يفرضها السيرفر ما تنشال."
+          }
+        }
+      }
+    },
+    "Remove Subscription Screen Row Description": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "نشيل شاشة الاشتراك اللي تطلع من إعدادات التطبيق المحلية. هالشي ما يفتح المزايا المدفوعة اللي يتأكد منها السيرفر."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "نشيل شاشة الاشتراك اللي تطلع من إعدادات التطبيق المحلية. هالشي ما يفتح المزايا المدفوعة اللي يتأكد منها السيرفر."
+          }
+        }
+      }
+    },
+    "Stop Forced Updates Row Description": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "نوقف التحديثات الإجبارية اللي يفرضها التطبيق من إعداداته المحلية. التحديث اللي يفرضه السيرفر ما ينوقف من الجهاز."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "نوقف التحديثات الإجبارية اللي يفرضها التطبيق من إعداداته المحلية. التحديث اللي يفرضه السيرفر ما ينوقف من الجهاز."
           }
         }
       }
@@ -14743,6 +15933,40 @@
           "stringUnit": {
             "state": "translated",
             "value": "服务器（推荐）：\n使用本地托管的服务器和itms-services://来安装应用。\n\nIDevice（高级）：\n使用VPN和配对文件。写入AFC并手动调用installd，使用回调检测安装进度。\n优点：非常稳定，不需要SSL证书或设备外托管的服务器，而是在本地进行模拟。"
+          }
+        }
+      }
+    },
+    "Server Ads Cannot Be Removed": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "الإعلانات اللي تجي من السيرفر ما تنشال من الجهاز، لأنها مو موجودة داخل التطبيق."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "الإعلانات اللي تجي من السيرفر ما تنشال من الجهاز، لأنها مو موجودة داخل التطبيق."
+          }
+        }
+      }
+    },
+    "Server Menus Cannot Be Unlocked": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "القوائم اللي يتحكم بيها السيرفر ما تنفتح من الجهاز."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "القوائم اللي يتحكم بيها السيرفر ما تنفتح من الجهاز."
           }
         }
       }
@@ -18817,6 +20041,23 @@
         }
       }
     },
+    "Checking for updates — retry %lld": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "جاي نتحقق من التحديثات — إعادة محاولة %lld"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Checking for updates — retry %lld"
+          }
+        }
+      }
+    },
     "Almost done": {
       "extractionState": "manual",
       "localizations": {
@@ -18830,6 +20071,57 @@
           "stringUnit": {
             "state": "translated",
             "value": "Almost done"
+          }
+        }
+      }
+    },
+    "Developer Flags in This App": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "إعدادات المطوّرين بهالتطبيق"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "إعدادات المطوّرين بهالتطبيق"
+          }
+        }
+      }
+    },
+    "Developer Menus": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "قوائم المطوّرين"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "قوائم المطوّرين"
+          }
+        }
+      }
+    },
+    "Developer Menus Description": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ندور على إعدادات مخفية مال المطوّرين داخل التطبيق، وإذا لكيناها نكدر نشغّلها قبل التوقيع."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ندور على إعدادات مخفية مال المطوّرين داخل التطبيق، وإذا لكيناها نكدر نشغّلها قبل التوقيع."
           }
         }
       }
@@ -18864,6 +20156,244 @@
           "stringUnit": {
             "state": "translated",
             "value": "Downloads"
+          }
+        }
+      }
+    },
+    "Save Original Copy Before Modding": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "احفظ نسخة من الأصل قبل التعديل"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Save Original Copy Before Modding"
+          }
+        }
+      }
+    },
+    "Backup Original Hint": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "قبل ما يتعدّل التطبيق، تنحفظ نسخة من الأصل حتى تقدر ترجّعها إذا خرب التعديل."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Before the app is modified, a copy of the original is kept so you can restore it if the mod breaks the app."
+          }
+        }
+      }
+    },
+    "No Backup Saved Yet": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ما انحفظت نسخة بعد"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No Backup Saved Yet"
+          }
+        }
+      }
+    },
+    "Backup Saved Detail": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "النسخة انحفظت: %@، %@، %@"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Backup saved: %@, %@, %@"
+          }
+        }
+      }
+    },
+    "Backups": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "النسخ الاحتياطية"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Backups"
+          }
+        }
+      }
+    },
+    "Restore": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "استرجاع"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Restore"
+          }
+        }
+      }
+    },
+    "Delete Backup": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "احذف النسخة"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Delete Backup"
+          }
+        }
+      }
+    },
+    "Delete Backup Confirm": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "تحذف نسخة %@؟ بعدها ما تقدر ترجّع التطبيق منها."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Delete the backup of %@? You will not be able to restore this app from it afterwards."
+          }
+        }
+      }
+    },
+    "Restoring Backup": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "جاري استرجاع النسخة"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Restoring Backup"
+          }
+        }
+      }
+    },
+    "Restoring Backup Message": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "جاري استرجاع %@ — التطبيق الأصلي قيد الاستيراد، وراح يظهر بمكتبتك من يخلص."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Restoring %@ — the original app is being imported, and it will appear in your library when it finishes."
+          }
+        }
+      }
+    },
+    "Backups Footer": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "نسخ من التطبيق الأصلي، تنحفظ قبل التوقيع أو التعديل. الاسترجاع يرجّع الأصل لمكتبتك. النسخة ما تنحذف إلا إذا حذفتها أنت."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Copies of the original app, saved before signing or modding. Restore puts the original back in your library. A backup is only deleted when you delete it."
+          }
+        }
+      }
+    },
+    "Save to Files": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "احفظ بالملفات"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Save to Files"
+          }
+        }
+      }
+    },
+    "Ask to save to Files after download": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "اسألني أحفظ بالملفات بعد التحميل"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ask to save to Files after download"
+          }
+        }
+      }
+    },
+    "Save to Files Footer": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "من تشغّلها، بعد ما يخلص التحميل راح نسألك وين تحفظ الملف بالملفات. ما ينحفظ شي بدون ما تختار أنت المكان."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "When on, after a download finishes you will be asked where to save it in Files. Nothing is saved without you choosing a place."
           }
         }
       }
@@ -18932,6 +20462,40 @@
           "stringUnit": {
             "state": "translated",
             "value": "Clear History"
+          }
+        }
+      }
+    },
+    "No Developer Menu Found": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ما لكينا أي قائمة مطوّرين مخفية بهالتطبيق"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ما لكينا أي قائمة مطوّرين مخفية بهالتطبيق"
+          }
+        }
+      }
+    },
+    "No Developer Menu Found Hint": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "هالتطبيق ما بيه أي إعداد مخفي مال المطوّرين نقدر نشغّله من الجهاز."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "هالتطبيق ما بيه أي إعداد مخفي مال المطوّرين نقدر نشغّله من الجهاز."
           }
         }
       }
@@ -20823,6 +22387,23 @@
         }
       }
     },
+    "App Files Not Found": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ما لكينا ملفات التطبيق"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ما لكينا ملفات التطبيق"
+          }
+        }
+      }
+    },
     "App ID": {
       "extractionState": "manual",
       "localizations": {
@@ -20870,6 +22451,3219 @@
           "stringUnit": {
             "state": "translated",
             "value": "Try again"
+          }
+        }
+      }
+    },
+    "Modding": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "التعديل"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Modding"
+          }
+        }
+      }
+    },
+    "Checking if this game can be modded…": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "جاي نفحص إذا هاللعبة تتعدل…"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Checking if this game can be modded…"
+          }
+        }
+      }
+    },
+    "This game is likely moddable — local files found:": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "هاللعبة غالباً تتعدل — لقينا ملفات محلية:"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "This game is likely moddable — local files found:"
+          }
+        }
+      }
+    },
+    "No local files found — this game is probably server-verified, so modding likely will not work.": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ما لقينا ملفات محلية — هاللعبة غالباً تتأكد من السيرفر، فالتعديل غالباً ما يشتغل."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No local files found — this game is probably server-verified, so modding likely will not work."
+          }
+        }
+      }
+    },
+    "Only the app Info.plist was found — that is not game data, so modding probably will not work.": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "لقينا بس ملف Info.plist مال التطبيق — هذا مو بيانات اللعبة، فالتعديل غالباً ما يشتغل."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Only the app Info.plist was found — that is not game data, so modding probably will not work."
+          }
+        }
+      }
+    },
+    "Local files are only a hint — they do not guarantee the money or points are stored in them.": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "وجود ملفات محلية بس تلميح — مو ضمان إن الفلوس أو النقاط مخزنة بيها."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Local files are only a hint — they do not guarantee the money or points are stored in them."
+          }
+        }
+      }
+    },
+    "Mod Apps": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "تعديل التطبيقات"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "تعديل التطبيقات"
+          }
+        }
+      }
+    },
+    "Mod Games": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "تعديل الألعاب"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "تعديل الألعاب"
+          }
+        }
+      }
+    },
+    "Modding Tools": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "أدوات التعديل"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "أدوات التعديل"
+          }
+        }
+      }
+    },
+    "Remove Ads Row Description": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "نشيل إعلانات التطبيق من مكتبات الإعلانات اللي جواه، إذا كانت مو مربوطة بالتطبيق. الإعلانات اللي تجي من السيرفر ما تنشال."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "نشيل إعلانات التطبيق من مكتبات الإعلانات اللي جواه، إذا كانت مو مربوطة بالتطبيق. الإعلانات اللي تجي من السيرفر ما تنشال."
+          }
+        }
+      }
+    },
+    "Developer Menus Row Description": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "نشغّل قوائم المطوّرين المخفية اللي موجودة داخل التطبيق، إذا لگيناها بإعداداته المحلية."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "نشغّل قوائم المطوّرين المخفية اللي موجودة داخل التطبيق، إذا لگيناها بإعداداته المحلية."
+          }
+        }
+      }
+    },
+    "Change App Font Row Description": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "بدّل خط التطبيق بخط عربي حلو من ملف تجيبه بنفسك، إذا كان التطبيق يستخدم خطوط مضمّنة."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "بدّل خط التطبيق بخط عربي حلو من ملف تجيبه بنفسك، إذا كان التطبيق يستخدم خطوط مضمّنة."
+          }
+        }
+      }
+    },
+    "Speed Up Animations Row Description": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "نسرّع حركات التطبيق من إعداداته المحلية، إذا كانت مدة الحركة محفوظة داخل ملفاته."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "نسرّع حركات التطبيق من إعداداته المحلية، إذا كانت مدة الحركة محفوظة داخل ملفاته."
+          }
+        }
+      }
+    },
+    "حدّث Zenith أولاً.": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "حدّث Zenith أولاً."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "حدّث Zenith أولاً."
+          }
+        }
+      }
+    },
+    "ما قدرت أتأكد من إصدار التطبيق. تأكد من النت وحاول مرة ثانية.": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ما قدرت أتأكد من إصدار التطبيق. تأكد من النت وحاول مرة ثانية."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ما قدرت أتأكد من إصدار التطبيق. تأكد من النت وحاول مرة ثانية."
+          }
+        }
+      }
+    },
+          "Unlock Hidden Graphics Settings": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "افتح إعدادات الكرافيك المخفية"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Unlock Hidden Graphics Settings"
+          }
+        }
+      }
+    },
+    "Unlock hidden graphics settings that are hidden for this device.": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "افتح إعدادات كرافيك عالية مخفية عن هالجهاز."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Unlock hidden graphics settings that are hidden for this device."
+          }
+        }
+      }
+    },
+    "Checking for hidden graphics settings…": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "جاي أدوّر على إعدادات كرافيك مخفية…"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Checking for hidden graphics settings…"
+          }
+        }
+      }
+    },
+    "No hidden graphics settings found in this game.": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ماكو إعدادات كرافيك مخفية بهاللعبة."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No hidden graphics settings found in this game."
+          }
+        }
+      }
+    },
+    "Hidden graphics settings found — patch them before signing to unlock higher quality.": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "لكيت إعدادات كرافيك مخفية — عدّلها قبل التوقيع حتى تفتح جودة أعلى."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hidden graphics settings found — patch them before signing to unlock higher quality."
+          }
+        }
+      }
+    },
+    "Apply Graphics Patch": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "طبّق تعديل الكرافيك"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Apply Graphics Patch"
+          }
+        }
+      }
+    },
+    "Graphics patch staged — will be applied when you sign.": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "تعديل الكرافيك جاهز — راح يتطبق من توقّع."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Graphics patch staged — will be applied when you sign."
+          }
+        }
+      }
+    },
+    "Remove Graphics Patch": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "شيل تعديل الكرافيك"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Remove Graphics Patch"
+          }
+        }
+      }
+    },
+    "Only local settings can be changed. Quality locked by the game server cannot be unlocked.": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "بس الإعدادات المحلية تنعدل. الجودة المقفولة من سيرفر اللعبة ما تنفتح."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Only local settings can be changed. Quality locked by the game server cannot be unlocked."
+          }
+        }
+      }
+    },
+    "Graphics settings only work on offline games.": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "تعديل الكرافيك يشتغل بس على الألعاب الأوفلاين."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Graphics settings only work on offline games."
+          }
+        }
+      }
+    },
+    "Quality cap": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "حد الجودة"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Quality cap"
+          }
+        }
+      }
+    },
+    "Device gate": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "قيد الجهاز"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Device gate"
+          }
+        }
+      }
+    },
+    "Frame rate cap": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "حد الفريمات"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Frame rate cap"
+          }
+        }
+      }
+    },
+    "Device restriction removed": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "انشال قيد الجهاز"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Device restriction removed"
+          }
+        }
+      }
+    },
+    "From %@ to %@": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "من %@ إلى %@"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "From %@ to %@"
+          }
+        }
+      }
+    },
+    "Some files were already edited — those were left unchanged.": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "بعض الملفات متعدلة من قبل — تركتها مثل ما هي."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Some files were already edited — those were left unchanged."
+          }
+        }
+      }
+    },
+    "Scanned %lld files": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "فحصت %lld ملف"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Scanned %lld files"
+          }
+        }
+      }
+    },
+    "In-Game FPS Counter": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "عدّاد الفريمات داخل اللعبة"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "In-Game FPS Counter"
+          }
+        }
+      }
+    },
+    "Value Editor": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "محرر القيم"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Value Editor"
+          }
+        }
+      }
+    },
+    "Value Editor Row Description": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "دوّر على أي رقم داخل اللعبة وعدّله — فلوس، نقاط، أو أي قيمة — بس للألعاب الأوفلاين."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Search any number inside the game and change it — coins, points, or any value — offline games only."
+          }
+        }
+      }
+    },
+    "Search for a value inside the game and change it.": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "دوّر على قيمة داخل اللعبة وغيّرها."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Search for a value inside the game and change it."
+          }
+        }
+      }
+    },
+    "How it works": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "شلون تشتغل"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "How it works"
+          }
+        }
+      }
+    },
+    "1. Open the game and note the value you want to change, like your coins.": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "١. افتح اللعبة وشوف الرقم اللي تريد تغيّره، مثل الفلوس."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "1. Open the game and note the value you want to change, like your coins."
+          }
+        }
+      }
+    },
+    "2. Search for that number in the menu.": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "٢. دوّر على هذاك الرقم من القائمة."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "2. Search for that number in the menu."
+          }
+        }
+      }
+    },
+    "3. Play a little so the value changes, then search again to narrow the results.": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "٣. العب شوية حتى يتغيّر الرقم، وبعدين دوّر مرة ثانية حتى تقلّ النتائج."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "3. Play a little so the value changes, then search again to narrow the results."
+          }
+        }
+      }
+    },
+    "4. Edit the value you found, or freeze it so it stays.": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "٤. عدّل القيمة اللي لگيتها، أو ثبّتها حتى تبقى مثل ما هي."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "4. Edit the value you found, or freeze it so it stays."
+          }
+        }
+      }
+    },
+    "Offline games only — values checked by a server cannot be changed from your phone.": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "بس للألعاب الأوفلاين — القيم اللي يتحقق منها السيرفر ما تنعدّل من التلفون."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Offline games only — values checked by a server cannot be changed from your phone."
+          }
+        }
+      }
+    },
+    "If the menu never appears, or the game crashes on launch, the game's protection blocked it.": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "إذا القائمة ما طلعت، أو اللعبة طاحت من أول ما فتحتها، معناها حماية اللعبة منعتها."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "If the menu never appears, or the game crashes on launch, the game's protection blocked it."
+          }
+        }
+      }
+    },
+    "Restore the original from your backup and sign again without this.": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "رجّع النسخة الأصلية من النسخة الاحتياطية ووقّع مرة ثانية بدون هاي الميزة."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Restore the original from your backup and sign again without this."
+          }
+        }
+      }
+    },
+    "Value Editor file was not found in this build.": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ما لگينا ملف محرر القيم بهالنسخة."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Value Editor file was not found in this build."
+          }
+        }
+      }
+    },
+    "Value Editor is included in this build.": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "محرر القيم موجود بهاي النسخة."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Value Editor is included in this build."
+          }
+        }
+      }
+    },
+    "Value Editor staged — will be injected when you sign.": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "محرر القيم جاهز — راح ينحقن وقت التوقيع."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Value Editor staged — will be injected when you sign."
+          }
+        }
+      }
+    },
+    "Enable Value Editor": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "فعّل محرر القيم"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Enable Value Editor"
+          }
+        }
+      }
+    },
+    "Add Value Editor File": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "أضف ملف محرر القيم"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Add Value Editor File"
+          }
+        }
+      }
+    },
+    "Pick a Value Editor .dylib file.": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "اختار ملف dylib مال محرر القيم."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pick a Value Editor .dylib file."
+          }
+        }
+      }
+    },
+    "The file name must contain “valueeditor”.": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "اسم الملف لازم يحتوي على “valueeditor”."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The file name must contain “valueeditor”."
+          }
+        }
+      }
+    },
+    "Value Editor is not offered for this game — no local files were found, so it is probably server-verified.": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "محرر القيم مو معروض لهاي اللعبة — ما لگينا ملفات محلية، فغالباً اللعبة تتحقق من السيرفر."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Value Editor is not offered for this game — no local files were found, so it is probably server-verified."
+          }
+        }
+      }
+    },
+    "Your saved values live inside the game, in the menu's saved list.": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "القيم اللي تحفظها تبقى داخل اللعبة، بقائمة المحفوظات مال القائمة."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Your saved values live inside the game, in the menu's saved list."
+          }
+        }
+      }
+    },
+    "The menu collapses to a small floating planet button — drag it to any edge, tap it to reopen.": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "القائمة تنطوي لزر صغير عائم بشكل الكوكب — اسحبه لأي طرف، ودوس عليه حتى تفتحها مرة ثانية."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The menu collapses to a small floating planet button — drag it to any edge, tap it to reopen."
+          }
+        }
+      }
+    },
+    "Show the game's frame rate while playing.": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "اعرض فريمات اللعبة وانت تلعب."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Show the game's frame rate while playing."
+          }
+        }
+      }
+    },
+    "Shows the game's rendered frames per second, as presented on screen, in a small overlay while you play.": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "يعرض فريمات اللعبة مثل ما تنعرض على الشاشة، بنافذة صغيرة وانت تلعب."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Shows the game's rendered frames per second, as presented on screen, in a small overlay while you play."
+          }
+        }
+      }
+    },
+    "Show FPS Counter": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "اعرض عدّاد الفريمات"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Show FPS Counter"
+          }
+        }
+      }
+    },
+    "FPS overlay file was not found in this build.": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ما لگينا ملف عدّاد الفريمات بهالنسخة."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "FPS overlay file was not found in this build."
+          }
+        }
+      }
+    },
+    "Add FPS Overlay File": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ضيف ملف عدّاد الفريمات"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Add FPS Overlay File"
+          }
+        }
+      }
+    },
+    "Pick an FPS overlay .dylib file.": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "اختار ملف .dylib لعدّاد الفريمات."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pick an FPS overlay .dylib file."
+          }
+        }
+      }
+    },
+    "FPS overlay staged — will be injected when you sign.": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "عدّاد الفريمات جاهز — راح ينحقن من توقّع."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "FPS overlay staged — will be injected when you sign."
+          }
+        }
+      }
+    },
+    "FPS counters only work on offline games.": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "عدّاد الفريمات يشتغل بس على الألعاب الأوفلاين."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "FPS counters only work on offline games."
+          }
+        }
+      }
+    },
+    "Overlay Preview": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "معاينة النافذة"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Overlay Preview"
+          }
+        }
+      }
+    },
+    "FPS overlay is included in this build.": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "عدّاد الفريمات مضمّن بهالنسخة."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "FPS overlay is included in this build."
+          }
+        }
+      }
+    },
+    "FPS overlay is not offered for this game — no local files were found, so it is probably server-verified.": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "عدّاد الفريمات مو متوفر لهاللعبة — ماكو ملفات محلية، فاحتمال اللعبة تتأكد من السيرفر."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "FPS overlay is not offered for this game — no local files were found, so it is probably server-verified."
+          }
+        }
+      }
+    },
+          "Edit Local Game Files": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "عدّل ملفات اللعبة المحلية"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Edit Local Game Files"
+          }
+        }
+      }
+    },
+    "Change values like money and points stored in local files, before signing.": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "غيّر قيم مثل الفلوس والنقاط المخزنة بالملفات المحلية، قبل التوقيع."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Change values like money and points stored in local files, before signing."
+          }
+        }
+      }
+    },
+    "Only works for games that keep values in local files.": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "تشتغل بس على الألعاب اللي تخزن القيم بملفات محلية."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Only works for games that keep values in local files."
+          }
+        }
+      }
+    },
+    "Cannot edit this file — it is not plain text.": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ما نقدر نعدّل هالملف — مو نص عادي."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cannot edit this file — it is not plain text."
+          }
+        }
+      }
+    },
+    "File too large to edit here.": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "هالملف كلش جبير وما نقدر نعدّله هنا."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "File too large to edit here."
+          }
+        }
+      }
+    },
+    "Edited — will be applied when you sign.": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "تعدّل — راح يتطبق من توقّع."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Edited — will be applied when you sign."
+          }
+        }
+      }
+    },
+    "Save Edit": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "احفظ التعديل"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Save Edit"
+          }
+        }
+      }
+    },
+    "and %lld more files": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "و %lld ملفات بعد"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "and %lld more files"
+          }
+        }
+      }
+    },
+    "No editable files found.": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ما لقينا ملفات قابلة للتعديل."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No editable files found."
+          }
+        }
+      }
+    },
+    "Data files (not editable as text):": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ملفات بيانات (ما تتعدل كنص):"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Data files (not editable as text):"
+          }
+        }
+      }
+    },
+    "Browse IPA Files": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "تصفح ملفات الـ IPA"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Browse IPA Files"
+          }
+        }
+      }
+    },
+    "Browse the files inside the app before signing.": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "تصفح الملفات داخل التطبيق قبل التوقيع."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Browse the files inside the app before signing."
+          }
+        }
+      }
+    },
+    "Empty folder.": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "المجلد فارغ."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Empty folder."
+          }
+        }
+      }
+    },
+    "Could not list files.": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ما قدرنا نعرض الملفات."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Could not list files."
+          }
+        }
+      }
+    },
+    "Cannot preview this file — it is not plain text.": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ما نقدر نعاين هالملف — مو نص عادي."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cannot preview this file — it is not plain text."
+          }
+        }
+      }
+    },
+    "File too large to preview here.": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "هالملف كلش جبير وما نقدر نعاينه هنا."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "File too large to preview here."
+          }
+        }
+      }
+    },
+    "Change App Font": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "غيّر خط التطبيق"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "غيّر خط التطبيق"
+          }
+        }
+      }
+    },
+    "Change App Font Description": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "هالأداة تبدّل خطوط التطبيق المضمّنة بخط عربي تختاره انت، قبل التوقيع. الخط لازم تجيبه انت — زينث ما يجي وياه خطوط."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "هالأداة تبدّل خطوط التطبيق المضمّنة بخط عربي تختاره انت، قبل التوقيع. الخط لازم تجيبه انت — زينث ما يجي وياه خطوط."
+          }
+        }
+      }
+    },
+    "No Bundled Fonts Found": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ما لكينا أي خط مضمّن بهالتطبيق"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ما لكينا أي خط مضمّن بهالتطبيق"
+          }
+        }
+      }
+    },
+    "No Bundled Fonts Hint": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "هالتطبيق يستخدم خطوط النظام، فماكو خط مضمّن نبدّله."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "هالتطبيق يستخدم خطوط النظام، فماكو خط مضمّن نبدّله."
+          }
+        }
+      }
+    },
+    "System Fonts Cannot Be Changed": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "خطوط النظام ما تتبدل من الجهاز."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "خطوط النظام ما تتبدل من الجهاز."
+          }
+        }
+      }
+    },
+    "Bundled Fonts in This App": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "الخطوط المضمّنة بهالتطبيق"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "الخطوط المضمّنة بهالتطبيق"
+          }
+        }
+      }
+    },
+    "Font Registered": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "مسجّل بـ UIAppFonts"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "مسجّل بـ UIAppFonts"
+          }
+        }
+      }
+    },
+    "Font Not Registered": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "مو مسجّل بـ UIAppFonts"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "مو مسجّل بـ UIAppFonts"
+          }
+        }
+      }
+    },
+    "Choose Font": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "اختار خط"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "اختار خط"
+          }
+        }
+      }
+    },
+    "Cancel Font Replacement": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ألغي التبديل"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ألغي التبديل"
+          }
+        }
+      }
+    },
+    "Zenith Does Not Ship Fonts": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "زينث ما يجي وياه خطوط — جيب ملف الخط (.ttf أو .otf) بنفسك."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "زينث ما يجي وياه خطوط — جيب ملف الخط (.ttf أو .otf) بنفسك."
+          }
+        }
+      }
+    },
+    "Replaced When You Sign": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "يتبدل الخط وقت التوقيع، ويضل اسم الملف نفسه حتى يشتغل مثل قبل."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "يتبدل الخط وقت التوقيع، ويضل اسم الملف نفسه حتى يشتغل مثل قبل."
+          }
+        }
+      }
+    },
+    "Speed Up Animations": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "سرّع حركات التطبيق"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "سرّع حركات التطبيق"
+          }
+        }
+      }
+    },
+    "Speed Up Animations Description": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "هالأداة تقصّر مدة الحركات اللي يحددها التطبيق بملفات الإعدادات، فتصير أسرع بمرتين، قبل التوقيع."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "هالأداة تقصّر مدة الحركات اللي يحددها التطبيق بملفات الإعدادات، فتصير أسرع بمرتين، قبل التوقيع."
+          }
+        }
+      }
+    },
+    "No Animation Durations Found": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ما لكينا أي مدة حركة بهالتطبيق"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ما لكينا أي مدة حركة بهالتطبيق"
+          }
+        }
+      }
+    },
+    "No Animation Durations Hint": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ما لكينا مفاتيح مدة بملفات الإعدادات، فماكو شي نقصّره."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ما لكينا مفاتيح مدة بملفات الإعدادات، فماكو شي نقصّره."
+          }
+        }
+      }
+    },
+    "Hardcoded Animations Cannot Be Sped Up": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "الحركات المكتوبة داخل كود التطبيق ما تتبدل من الجهاز."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "الحركات المكتوبة داخل كود التطبيق ما تتبدل من الجهاز."
+          }
+        }
+      }
+    },
+    "Animation Durations in This App": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "مدد الحركات بهالتطبيق"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "مدد الحركات بهالتطبيق"
+          }
+        }
+      }
+    },
+    "Current Duration Value": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "المدة الحالية: %@ ثانية"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "المدة الحالية: %@ ثانية"
+          }
+        }
+      }
+    },
+    "New Duration Value": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "بعد التقصير: %@ ثانية"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "بعد التقصير: %@ ثانية"
+          }
+        }
+      }
+    },
+    "Animation Speed Warning": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "الحركة تصير أسرع بمرتين؛ بعض التطبيقات تعتمد على التوقيت، فممكن يتغير شكلها."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "الحركة تصير أسرع بمرتين؛ بعض التطبيقات تعتمد على التوقيت، فممكن يتغير شكلها."
+          }
+        }
+      }
+    },
+    "Halved When You Sign": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "تتقصّر المدة للنص وقت التوقيع."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "تتقصّر المدة للنص وقت التوقيع."
+          }
+        }
+      }
+    },
+    "In-App Translation": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ترجمة داخل التطبيق"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "In-App Translation"
+          }
+        }
+      }
+    },
+    "In-App Translation Row Explanation": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ترجم كلام التطبيق للغة اللي تريدها وانت توقّع — تكتب الترجمة بنفسك للجمل الموجودة داخل التطبيق، وتنزل وياه بعد التوقيع."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "In-App Translation Row Explanation"
+          }
+        }
+      }
+    },
+    "In-App Translation Description": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "هاي الأداة تترجم النصوص المدمجة داخل التطبيق وقت التوقيع. تختار اللغة اللي تريدها، وتكتب ترجمتك لكل جملة بنفسك."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "In-App Translation Description"
+          }
+        }
+      }
+    },
+    "No Machine Translation": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ماكو ترجمة آلية: زينيث ما بيه خدمة ترجمة سحابية ولا مترجم مدمج، فالترجمة تجي من كتابتك انت."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No Machine Translation"
+          }
+        }
+      }
+    },
+    "No Localizable Text Found": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "هذا التطبيق ما بيه نصوص قابلة للترجمة"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No Localizable Text Found"
+          }
+        }
+      }
+    },
+    "No Localizable Text Found Hint": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ما لكينا ملفات ترجمة (.strings) داخل التطبيق. النصوص المكتوبة داخل الكود أو الجاية من السيرفر ما تترجم من هنا."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No Localizable Text Found Hint"
+          }
+        }
+      }
+    },
+    "Target Language": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "اللغة اللي تريد تترجم الها"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Target Language"
+          }
+        }
+      }
+    },
+    "Switching Target Language Clears Edits": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "إذا بدّلت اللغة، الترجمات اللي كتبتها للغة السابقة تنمسح."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Switching Target Language Clears Edits"
+          }
+        }
+      }
+    },
+    "Strings Table": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "جدول النصوص"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Strings Table"
+          }
+        }
+      }
+    },
+    "Your Translation": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ترجمتك"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Your Translation"
+          }
+        }
+      }
+    },
+    "Clear Translation": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "امسح الترجمة"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Clear Translation"
+          }
+        }
+      }
+    },
+    "Translation Staged Count": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "كتبت %d ترجمة — راح تنزل ويا التطبيق وقت التوقيع."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Translation Staged Count"
+          }
+        }
+      }
+    },
+    "Bundled Languages": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "اللغات الموجودة داخل التطبيق أصلاً: %@"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bundled Languages"
+          }
+        }
+      }
+    },
+    "Translation Already Exists": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "هاي اللغة موجودة أصلاً داخل التطبيق"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Translation Already Exists"
+          }
+        }
+      }
+    },
+    "Translation Already Exists Hint": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "المطوّر مجهّز ترجمة جاهزة لهاي اللغة، فما تحتاج تكتب شي. التطبيق يعرضها من وحده حسب لغة جهازك."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Translation Already Exists Hint"
+          }
+        }
+      }
+    },
+    "More Strings Not Shown": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "أكو جمل أكثر بهذا الجدول ما انعرضت هنا."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "More Strings Not Shown"
+          }
+        }
+      }
+    },
+    "Hardcoded Text Cannot Be Translated": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "النصوص المكتوبة داخل كود التطبيق أو الجاية من السيرفر ما تترجم بهاي الطريقة — بس النصوص الموجودة بملفات الترجمة تترجم."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hardcoded Text Cannot Be Translated"
+          }
+        }
+      }
+    },
+    "Tap To Translate Overlay": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "زر تبديل اللغة داخل التطبيق"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tap To Translate Overlay"
+          }
+        }
+      }
+    },
+    "Tap To Translate Overlay Description": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "زر صغير يطلع داخل التطبيق، تكدر تبدّل لغة التطبيق منه بدون ما تطلع من التطبيق. الزر يبدّل بين اللغات الموجودة داخل التطبيق بس — ما يترجم شي بنفسه."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tap To Translate Overlay Description"
+          }
+        }
+      }
+    },
+    "Translation Overlay Not Found": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ما لگينا ملف زر الترجمة بهالنسخة."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Translation Overlay Not Found"
+          }
+        }
+      }
+    },
+    "Translation Overlay Included": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "زر الترجمة مدمج بهاي النسخة."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Translation Overlay Included"
+          }
+        }
+      }
+    },
+    "Translation Overlay Staged": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "زر الترجمة جاهز — راح ينحقن وقت التوقيع."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Translation Overlay Staged"
+          }
+        }
+      }
+    },
+    "Pick Translation Overlay File": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "اختار ملف .dylib لزر الترجمة."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pick Translation Overlay File"
+          }
+        }
+      }
+    },
+    "Add Translation Overlay File": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "أضف ملف زر الترجمة"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Add Translation Overlay File"
+          }
+        }
+      }
+    },
+    "Change Location": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "تغيير الموقع"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "تغيير الموقع"
+          }
+        }
+      }
+    },
+    "Change Location Explanation": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "خلي التطبيق يشوفك بمدينة ثانية بدل موقعك الحقيقي."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "خلي التطبيق يشوفك بمدينة ثانية بدل موقعك الحقيقي."
+          }
+        }
+      }
+    },
+    "Change Location Description": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "اختار مدينة أو إحداثيات، وينحفظ اختيارك ويا التطبيق وقت التوقيع. هالشي يشتغل ويا التطبيقات اللي تقرا الموقع من الجهاز بس."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "اختار مدينة أو إحداثيات، وينحفظ اختيارك ويا التطبيق وقت التوقيع. هالشي يشتغل ويا التطبيقات اللي تقرا الموقع من الجهاز بس."
+          }
+        }
+      }
+    },
+    "Location Spoof Needs Tweak": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "تغيير الموقع يحتاج أداة (تويك) تقرا هالإعدادات داخل التطبيق، وزينث ما تجي وياها أداة جاهزة — إذا عندك أداة تغيير موقع بصيغة dylib ضيفها من التويكات."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "تغيير الموقع يحتاج أداة (تويك) تقرا هالإعدادات داخل التطبيق، وزينث ما تجي وياها أداة جاهزة — إذا عندك أداة تغيير موقع بصيغة dylib ضيفها من التويكات."
+          }
+        }
+      }
+    },
+    "Server Location Cannot Be Spoofed": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "التطبيقات اللي تتأكد من موقعك عن طريق السيرفر ما تتغير من الجهاز."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "التطبيقات اللي تتأكد من موقعك عن طريق السيرفر ما تتغير من الجهاز."
+          }
+        }
+      }
+    },
+    "App Uses Location": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "هالتطبيق يستخدم الموقع."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "هالتطبيق يستخدم الموقع."
+          }
+        }
+      }
+    },
+    "No Location Usage Found": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "هالتطبيق ما يطلب الموقع، فتغيير الموقع ما راح يأثر بيه."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "هالتطبيق ما يطلب الموقع، فتغيير الموقع ما راح يأثر بيه."
+          }
+        }
+      }
+    },
+    "App Location Usage Unknown": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ما قدرنا نتأكد إذا هالتطبيق يستخدم الموقع، فتگدر تجرب."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ما قدرنا نتأكد إذا هالتطبيق يستخدم الموقع، فتگدر تجرب."
+          }
+        }
+      }
+    },
+    "Location Spoof Config Saved": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ينحفظ اختيارك بملف داخل التطبيق وقت التوقيع، والأداة تقراه وتطبقه."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ينحفظ اختيارك بملف داخل التطبيق وقت التوقيع، والأداة تقراه وتطبقه."
+          }
+        }
+      }
+    },
+    "Choose a City": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "اختار مدينة"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "اختار مدينة"
+          }
+        }
+      }
+    },
+    "Custom Location": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "موقع مخصص"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "موقع مخصص"
+          }
+        }
+      }
+    },
+    "Latitude": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "خط العرض"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "خط العرض"
+          }
+        }
+      }
+    },
+    "Longitude": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "خط الطول"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "خط الطول"
+          }
+        }
+      }
+    },
+    "Invalid Coordinates": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "الإحداثيات مو صحيحة، تأكد من الأرقام."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "الإحداثيات مو صحيحة، تأكد من الأرقام."
+          }
+        }
+      }
+    },
+    "Use Custom Location": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "استخدم هالإحداثيات"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "استخدم هالإحداثيات"
+          }
+        }
+      }
+    },
+    "Add Location Tweak": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ضيف أداة تغيير الموقع"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ضيف أداة تغيير الموقع"
+          }
+        }
+      }
+    },
+    "City Baghdad": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "بغداد"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Baghdad"
+          }
+        }
+      }
+    },
+    "City Dubai": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "دبي"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dubai"
+          }
+        }
+      }
+    },
+    "City Riyadh": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "الرياض"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Riyadh"
+          }
+        }
+      }
+    },
+    "City Cairo": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "القاهرة"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cairo"
+          }
+        }
+      }
+    },
+    "City Istanbul": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "إسطنبول"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Istanbul"
+          }
+        }
+      }
+    },
+    "City London": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "لندن"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "London"
+          }
+        }
+      }
+    },
+    "City New York": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "نيويورك"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "New York"
+          }
+        }
+      }
+    },
+    "City Paris": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "باريس"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Paris"
+          }
+        }
+      }
+    },
+    "City Tokyo": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "طوكيو"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tokyo"
+          }
+        }
+      }
+    },
+    "Use Without Account": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "الدخول بدون حساب"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "الدخول بدون حساب"
+          }
+        }
+      }
+    },
+    "Use Without Account Explanation": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ادخل للتطبيق كضيف بدون ما تسجل دخول، إذا كان قفل الدخول موجود داخل التطبيق نفسه."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ادخل للتطبيق كضيف بدون ما تسجل دخول، إذا كان قفل الدخول موجود داخل التطبيق نفسه."
+          }
+        }
+      }
+    },
+    "Guest Mode Description": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "نفحص ملفات التطبيق وندور على قفل دخول محلي. إذا لگينا واحد، نگدر نطفيه قبل التوقيع."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "نفحص ملفات التطبيق وندور على قفل دخول محلي. إذا لگينا واحد، نگدر نطفيه قبل التوقيع."
+          }
+        }
+      }
+    },
+    "No Login Gate Found": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ما لگينا قفل دخول محلي بهالتطبيق، فما نگدر نفتحه بدون حساب."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ما لگينا قفل دخول محلي بهالتطبيق، فما نگدر نفتحه بدون حساب."
+          }
+        }
+      }
+    },
+    "No Login Gate Found Hint": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "أغلب التطبيقات تتأكد من الحساب عن طريق السيرفر، وهذاك ما يتغير من الجهاز."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "أغلب التطبيقات تتأكد من الحساب عن طريق السيرفر، وهذاك ما يتغير من الجهاز."
+          }
+        }
+      }
+    },
+    "Server Accounts Cannot Be Bypassed": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "الحسابات اللي تتأكد من السيرفر ما تتبطل من الجهاز أبد."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "الحسابات اللي تتأكد من السيرفر ما تتبطل من الجهاز أبد."
+          }
+        }
+      }
+    },
+    "Login Gates in This App": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "أقفال الدخول بهالتطبيق"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "أقفال الدخول بهالتطبيق"
+          }
+        }
+      }
+    },
+    "Current Value Is %@": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "القيمة الحالية: %@"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "القيمة الحالية: %@"
+          }
+        }
+      }
+    },
+    "Will Become %@": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "راح تصير: %@"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "راح تصير: %@"
+          }
+        }
+      }
+    },
+    "Force Dark Mode": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "فرض الوضع الليلي"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "فرض الوضع الليلي"
+          }
+        }
+      }
+    },
+    "Force Dark Mode Explanation": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "خلي أي تطبيق يصير داكن حتى لو ما بيه وضع ليلي، بالألوان الداكنة مال النظام."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "خلي أي تطبيق يصير داكن حتى لو ما بيه وضع ليلي، بالألوان الداكنة مال النظام."
+          }
+        }
+      }
+    },
+    "Force Dark Mode Description": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "نفرض الوضع الليلي على التطبيق وقت التوقيع. يشتغل ويا التطبيقات اللي تستخدم ألوان النظام."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "نفرض الوضع الليلي على التطبيق وقت التوقيع. يشتغل ويا التطبيقات اللي تستخدم ألوان النظام."
+          }
+        }
+      }
+    },
+    "Hardcoded Colors Cannot Be Themed": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "التطبيقات اللي ألوانها ثابتة بالكود، أو تجي من السيرفر، ما تتبدل من الجهاز."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "التطبيقات اللي ألوانها ثابتة بالكود، أو تجي من السيرفر، ما تتبدل من الجهاز."
+          }
+        }
+      }
+    },
+    "App Already Dark": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "هالتطبيق داكن أصلاً، فما يحتاج فرض."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "هالتطبيق داكن أصلاً، فما يحتاج فرض."
+          }
+        }
+      }
+    },
+    "App Forces Light Mode": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "هالتطبيق مفروض عليه الوضع الفاتح، ونغيره للداكن وقت التوقيع."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "هالتطبيق مفروض عليه الوضع الفاتح، ونغيره للداكن وقت التوقيع."
+          }
+        }
+      }
+    },
+    "Asset Catalog Found": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "لگينا ملف ألوان وأيقونات، فممكن تكون بيه نسخة داكنة جاهزة."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "لگينا ملف ألوان وأيقونات، فممكن تكون بيه نسخة داكنة جاهزة."
+          }
+        }
+      }
+    },
+    "App Has No Theme Settings": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ما لگينا إعدادات ألوان محلية بهالتطبيق."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ما لگينا إعدادات ألوان محلية بهالتطبيق."
+          }
+        }
+      }
+    },
+    "Theme Settings in This App": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "إعدادات الألوان بهالتطبيق"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "إعدادات الألوان بهالتطبيق"
+          }
+        }
+      }
+    },
+    "Lite Version": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "نسخة خفيفة"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "نسخة خفيفة"
+          }
+        }
+      }
+    },
+    "Lite Version Row Explanation": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "نصغّر حجم التطبيق قبل التوقيع — نشيل الملفات والمكتبات الزايدة اللي ما يحتاجها، حتى يصير أخف وأسرع بالنزول."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "نصغّر حجم التطبيق قبل التوقيع — نشيل الملفات والمكتبات الزايدة اللي ما يحتاجها، حتى يصير أخف وأسرع بالنزول."
+          }
+        }
+      }
+    },
+    "Lite Version Description": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "نفحص التطبيق ونشوف شنو نكدر نشيل منه بأمان قبل التوقيع: مكتبات مو مربوطة، ولغات ما تحتاجها، وملفات زايدة. كل شي نشيله ينشال من النسخة الموقّعة بس، والأصلي يبقى مثل ما هو."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "نفحص التطبيق ونشوف شنو نكدر نشيل منه بأمان قبل التوقيع: مكتبات مو مربوطة، ولغات ما تحتاجها، وملفات زايدة. كل شي نشيله ينشال من النسخة الموقّعة بس، والأصلي يبقى مثل ما هو."
+          }
+        }
+      }
+    },
+    "Nothing Safe to Strip": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ما لكينا شي آمن نشيله من هالتطبيق"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ما لكينا شي آمن نشيله من هالتطبيق"
+          }
+        }
+      }
+    },
+    "Nothing Safe to Strip Hint": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "كل الملفات اللي بيه يحتاجها التطبيق حتى يشتغل، فما نشيل شي."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "كل الملفات اللي بيه يحتاجها التطبيق حتى يشتغل، فما نشيل شي."
+          }
+        }
+      }
+    },
+    "Lite Strip Candidates": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ملفات نكدر نشيلها بأمان"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ملفات نكدر نشيلها بأمان"
+          }
+        }
+      }
+    },
+    "Lite Strip Cannot Strip": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ما نكدر نشيلها"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ما نكدر نشيلها"
+          }
+        }
+      }
+    },
+    "Lite Strip Not Linked": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "مو مربوطة بالتطبيق — نكدر نشيلها بأمان"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "مو مربوطة بالتطبيق — نكدر نشيلها بأمان"
+          }
+        }
+      }
+    },
+    "Lite Strip Unused Language": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ملفات لغة بس — التطبيق يرجع للغة الأساسية إذا انشالت"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ملفات لغة بس — التطبيق يرجع للغة الأساسية إذا انشالت"
+          }
+        }
+      }
+    },
+    "Lite Strip Junk File": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ملف زايد — التطبيق ما يقراه أبد"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ملف زايد — التطبيق ما يقراه أبد"
+          }
+        }
+      }
+    },
+    "Lite Strip Linked": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "مربوطة بالتطبيق — إذا انشالت التطبيق ما يفتح"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "مربوطة بالتطبيق — إذا انشالت التطبيق ما يفتح"
+          }
+        }
+      }
+    },
+    "Lite Strip Linkage Unknown": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ما كدرنا نتأكد إذا مربوطة أو لا — ما نشيلها"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ما كدرنا نتأكد إذا مربوطة أو لا — ما نشيلها"
+          }
+        }
+      }
+    },
+    "Lite Strip Maybe Loaded At Runtime": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "اسمها موجود داخل التطبيق — يمكن يحمّلها وقت التشغيل، فما نشيلها"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "اسمها موجود داخل التطبيق — يمكن يحمّلها وقت التشغيل، فما نشيلها"
+          }
+        }
+      }
+    },
+    "Lite Strip Base Language": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "اللغة الأساسية مال التطبيق — ما تنشال"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "اللغة الأساسية مال التطبيق — ما تنشال"
+          }
+        }
+      }
+    },
+    "Lite Strip Main Language": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "لغة التطبيق الأساسية — ما تنشال"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "لغة التطبيق الأساسية — ما تنشال"
+          }
+        }
+      }
+    },
+    "Lite Strip Protected Note": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "الملف التنفيذي وملف Info.plist والتوقيع والإضافات (PlugIns) ما نعرضها أبد — التطبيق ما يشتغل بدونها."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "الملف التنفيذي وملف Info.plist والتوقيع والإضافات (PlugIns) ما نعرضها أبد — التطبيق ما يشتغل بدونها."
+          }
+        }
+      }
+    },
+    "Lite Strip Removed When You Sign": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "الملفات اللي تختارها تنشال وقت التوقيع."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "الملفات اللي تختارها تنشال وقت التوقيع."
+          }
+        }
+      }
+    },
+    "Lite Strip Will Save": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "راح توفّر تقريباً %@ من حجم التطبيق."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "راح توفّر تقريباً %@ من حجم التطبيق."
+          }
+        }
+      }
+    },
+    "Lite Strip If App Breaks": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "إذا التطبيق ما اشتغل بعد التخفيف، وقّعه مرة ثانية بدون ما تختار شي من هاي الصفحة."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "إذا التطبيق ما اشتغل بعد التخفيف، وقّعه مرة ثانية بدون ما تختار شي من هاي الصفحة."
           }
         }
       }

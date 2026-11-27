@@ -25,13 +25,18 @@
 //  * Blocked only when the server POSITIVELY says so: killed == true,
 //    or minVersion is set and the installed build number is smaller.
 //  * Values absent (not set yet) -> no enforcement, app opens normally.
-//  * A check that fails does NOT pass the app. The decisive fetches
-//    (minVersion, killed) are retried (3 attempts, 2 s apart) while
-//    the device reports connectivity, and the launch screen waits
+//  * A check that fails does NOT pass the app on its own. The decisive
+//    fetches (minVersion, killed) are retried (3 attempts, 2 s apart)
+//    while the device reports connectivity, and the launch screen waits
 //    for a FRESH decision — both decisive fields fetched live —
 //    before the app opens (see LoadingView step 4). Build 12 proved
 //    why: its check failed on a weak connection, fell back to the
 //    cached minVersion 11, and opened while the server said 13.
+//    v2.12 bounds that wait (~30 s): if no fresh decision arrives,
+//    the launch opens on the cached decision instead of hanging
+//    forever (build 13 hung at 75% across restarts for exactly this
+//    reason). Signing/installing still refuse until a live check
+//    succeeds, so the deadline fallback only ever opens the UI.
 //  * The cache is still applied on a failed check, so a cached block
 //    STAYS blocked and shows instantly, and a single dropped request
 //    can never lift a block. But a cached "fine" no longer opens the
@@ -60,15 +65,16 @@
 //  app's stored data (the pass flag lives only in memory; the minimum
 //  version comes from the server, not the device).
 //
-//  One more honest limit (v2.11): while the device reports online
-//  but Firebase itself cannot be reached, the app waits on the
-//  loading screen instead of opening — it cannot tell "Firebase is
-//  down" apart from "the server raised minVersion and the fetch is
-//  being dropped", and opening on that guess is exactly the hole
-//  build 12 fell through. Rio's Firebase features work on Reda's
-//  phone, so the RTDB endpoint is reachable for him; a Firebase
-//  outage would still strand the app on "Checking for updates"
-//  until the endpoint answers again.
+//  v2.12: the launch waits at most ~30 s for a fresh decision and
+//  then opens on the last known (cached) decision instead of hanging
+//  forever — build 13 proved a failed check can persist across
+//  restarts on this phone, so waiting longer only bricks the app
+//  (see LoadingView step 4). The residual hole is honest and
+//  unavoidable client-side: if the server raised minVersion AND the
+//  fetch cannot complete at all, the app opens on stale cache —
+//  it cannot know what it cannot fetch. Signing and installing still
+//  refuse until a live check succeeds, and a later fresh check that
+//  blocks flips the UI to the update screen the moment it answers.
 //
 //  Already-installed old builds run their own frozen gate code and
 //  cannot be fixed by changing this file: v1 has no gate at all, and
@@ -140,6 +146,24 @@ final class ForcedUpdateManager: ObservableObject {
 	/// waits for this before the app opens. In-memory only: every
 	/// launch starts false and must earn it again.
 	@Published private(set) var hasFreshDecision = false
+
+	/// Counts every fetch attempt (each round of the retry loop). The
+	/// launch screen shows it while retrying, so a retrying launch
+	/// never looks frozen.
+	@Published private(set) var checkAttempts = 0
+
+	/// True once the launch may proceed: a fresh decision was applied,
+	/// a cached block was applied, or the deadline fallback opened the
+	/// app on the cached decision. The launch screen waits on this,
+	/// not on hasFreshDecision alone (v2.12: build 13 proved a failed
+	/// check can persist across restarts, so waiting only for a fresh
+	/// decision bricks the app).
+	@Published private(set) var hasLaunchDecision = false
+
+	/// True when the launch decision came from the cache (deadline
+	/// fallback). hasPassedCheck stays false then, so signing and
+	/// installing still refuse until a live check succeeds.
+	@Published private(set) var launchUsedCache = false
 	
 	private var _checkTask: Task<Void, Never>?
 	
@@ -234,6 +258,29 @@ final class ForcedUpdateManager: ObservableObject {
 		await checkForUpdate()
 		return hasPassedCheck
 	}
+
+	/// Launch-screen deadline fallback (v2.12). Call when the fresh
+	/// check could not complete within the launch deadline: open on
+	/// the last known (cached) decision instead of hanging forever.
+	/// Build 13 hung at 75% across restarts because its check never
+	/// completed fresh on this phone — waiting longer only bricks
+	/// the app. hasPassedCheck stays false, so signing and installing
+	/// still refuse until a live check succeeds; a later fresh check
+	/// that blocks flips the UI to the update screen the moment it
+	/// answers. Never call when a fresh decision already exists.
+	func applyCachedFallbackForLaunch() {
+		_applyCachedDecision()
+		launchUsedCache = true
+		hasLaunchDecision = true
+	}
+
+	/// True when the cache holds any value a launch decision can be
+	/// made from (a minimum version or a kill flag ever fetched live).
+	/// Presence-based: a stored `false` kill flag still counts,
+	/// because it proves a check completed once.
+	var hasAnyCachedValue: Bool {
+		Self.cachedMinVersion != nil || UserDefaults.standard.object(forKey: Self.cachedKilledKey) != nil
+	}
 	
 	// MARK: - Private
 	
@@ -260,6 +307,7 @@ final class ForcedUpdateManager: ObservableObject {
 		// because opening on a guess is exactly how build 12 shipped
 		// past minVersion 13.
 		for attempt in 1...3 {
+			checkAttempts += 1
 			async let minVersionFetch = _tryFetchInt(from: Self.minVersionURL)
 			async let killedFetch = _tryFetchBool(from: Self.killedURL)
 			async let updateURLFetch = _tryFetchString(from: Self.updateURLValue)
@@ -362,6 +410,9 @@ final class ForcedUpdateManager: ObservableObject {
 		if blocked {
 			isUpdateRequired = true
 			hasPassedCheck = false
+			// A block IS a decision — the block screen shows
+			// immediately; never wait out a deadline for it.
+			hasLaunchDecision = true
 		} else {
 			isUpdateRequired = false
 			// Only a FRESH check passes. A failed check that fell back
@@ -377,6 +428,7 @@ final class ForcedUpdateManager: ObservableObject {
 		// for this flag. In-memory only: every launch must earn it again.
 		if !fromCache {
 			hasFreshDecision = true
+			hasLaunchDecision = true
 		}
 	}
 	

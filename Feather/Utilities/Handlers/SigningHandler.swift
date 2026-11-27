@@ -49,6 +49,17 @@ final class SigningHandler: NSObject {
 		try _fileManager.copyItem(at: appUrl, to: movedAppURL)
 		_movedAppPath = movedAppURL
 		Logger.misc.info("[\(self._uuid)] Moved Payload to: \(movedAppURL.path)")
+		
+		// Zenith v2.12 item 5: keep the untouched original before
+		// modify() changes anything (dylib injection, custom name,
+		// file removal, ...). Gated on the signing-screen toggle
+		// (BackupOriginalRowView, "التعديل" item 7); a failure here
+		// never blocks signing.
+		_ = await BackupManager.shared.backupAppDirectory(
+			movedAppURL,
+			appName: _app.name,
+			appVersion: _app.version
+		)
 	}
 	
 	func modify() async throws {
@@ -62,6 +73,19 @@ final class SigningHandler: NSObject {
 			)?.mutableCopy() as? NSMutableDictionary
 		else {
 			throw SigningFileHandlerError.infoPlistNotFound
+		}
+		
+		// Zenith v2.12: a custom display name remembered per app in
+		// displayNames (key = the app's real name) applies on every
+		// signing path, even when the caller left appName unset —
+		// the batch queue signs with the shared options and never
+		// runs the signing sheet's prefill. An explicitly set
+		// appName always wins.
+		if _options.appName == nil,
+		   let realName = _app.name,
+		   let rememberedName = _options.displayNames[realName]
+		{
+			_options.appName = rememberedName
 		}
 		
 		if
@@ -98,6 +122,97 @@ final class SigningHandler: NSObject {
 			if !_options.injectionFiles.isEmpty {
 				try await _inject(for: movedAppPath, with: _options)
 			}
+		}
+
+		// Zenith v2.12, item 4: apply the user's staged local-file
+		// edits (money, points, ...) to the copied .app before
+		// re-signing, so the edited files are covered by the fresh
+		// signature. Throws on the first bad edit — a half-applied
+		// set is never silently signed.
+		if !_options.modFileEdits.isEmpty {
+			try await ModFileEditor.apply(edits: _options.modFileEdits, to: movedAppPath)
+		}
+
+		// Zenith v2.12, item 8 (#23): strip the ad SDK frameworks
+		// the user chose — only ones the detector verified as
+		// unlinked, so the app still launches. Throws on the first
+		// framework that cannot be removed safely, so a
+		// half-stripped app is never signed.
+		if !_options.removeAdsSDKs.isEmpty {
+			try AdSDKRemover.apply(frameworks: _options.removeAdsSDKs, to: movedAppPath)
+		}
+		// Zenith v2.12, item 23 (#100): strip the files the user
+		// chose for the Lite version — only ones the detector
+		// proved safe to remove; re-verified at signing time.
+		if !_options.liteStripPaths.isEmpty {
+			try LiteStripRemover.apply(paths: _options.liteStripPaths, to: movedAppPath)
+		}
+		// Zenith v2.12, item 9 (#24): enable the hidden
+		// developer-menu flags the user chose.
+		if !_options.devMenuChanges.isEmpty {
+			try DevMenuApplier.apply(changes: _options.devMenuChanges, to: movedAppPath)
+		}
+		// Zenith v2.12, item 17 (#45): replace bundled fonts with
+		// the user-supplied font files (same file names, so
+		// UIAppFonts keeps working).
+		if !_options.fontReplacements.isEmpty {
+			try AppFontApplier.apply(replacements: _options.fontReplacements, to: movedAppPath)
+		}
+		// Zenith v2.12, item 18 (#46): shorten local animation
+		// durations (original × 0.5).
+		if !_options.animationDurationChanges.isEmpty {
+			try AnimationSpeedApplier.apply(changes: _options.animationDurationChanges, to: movedAppPath)
+		}
+
+		// Zenith v2.12, items 13-16 (#40-#43): apply the staged
+		// app-modding patches to the copied .app before re-signing,
+		// so they are covered by the fresh signature. Each applier
+		// re-verifies its staged entries against the copied bundle
+		// and throws on the first entry that cannot be applied —
+		// a half-patched set is never silently signed.
+		// #40 remove watermark: local config changes first, then
+		// the proven-unlinked watermark frameworks.
+		if !_options.removeWatermarkChanges.isEmpty {
+			try await AppConfigApplier.apply(changes: _options.removeWatermarkChanges, to: movedAppPath)
+		}
+		if !_options.removeWatermarkFrameworks.isEmpty {
+			try await WatermarkRemover.apply(frameworks: _options.removeWatermarkFrameworks, to: movedAppPath)
+		}
+		// #41 remove export limits: raise local caps / switch
+		// local limit gates off.
+		if !_options.removeExportLimitChanges.isEmpty {
+			try await AppConfigApplier.apply(changes: _options.removeExportLimitChanges, to: movedAppPath)
+		}
+		// #42 remove subscription screen: hide the locally-shown
+		// screen only — server-verified premium stays locked.
+		if !_options.removeSubscriptionScreenChanges.isEmpty {
+			try await AppConfigApplier.apply(changes: _options.removeSubscriptionScreenChanges, to: movedAppPath)
+		}
+		// #43 stop forced in-app updates: switch local force flags
+		// off / lower local minimum versions.
+		if !_options.stopForcedUpdateChanges.isEmpty {
+			try await AppConfigApplier.apply(changes: _options.stopForcedUpdateChanges, to: movedAppPath)
+		}
+
+		// Zenith v2.12, item 19 (#60): write the chosen location
+		// override into the copied .app. The file alone does
+		// nothing — a location-spoof tweak dylib reads it at runtime.
+		try LocationSpoofWriter.apply(selection: _options.locationSpoof, to: movedAppPath)
+		// Zenith v2.12, item 20 (#61): flip local login/onboarding
+		// gates.
+		if !_options.guestLoginChanges.isEmpty {
+			try AppConfigApplier.apply(changes: _options.guestLoginChanges, to: movedAppPath)
+		}
+		// Zenith v2.12, item 21 (#64): force local theme keys to
+		// dark. (UIUserInterfaceStyle=Dark itself is already set
+		// from options.appAppearance by _modifyDict.)
+		if !_options.forceDarkModeChanges.isEmpty {
+			try AppConfigApplier.apply(changes: _options.forceDarkModeChanges, to: movedAppPath)
+		}
+		// Zenith v2.12, item 22 (#79): write the user's typed
+		// translations into the copied .app's .strings tables.
+		if !_options.translationPlan.edits.isEmpty {
+			try AppTranslationApplier.apply(edits: _options.translationPlan.edits, to: movedAppPath)
 		}
 		
 		// iOS "26" (19) needs special treatment

@@ -95,6 +95,63 @@ struct Options: Codable, Equatable {
 	var displayNames: [String: String]
 	/// Array of files (`.dylib`, `.deb` ) to extract and inject
 	var injectionFiles: [URL]
+	/// Local game-file text edits (v2.12, item 4) staged for this
+	/// signing run: relative path inside the .app → new file text.
+	/// Applied by SigningHandler before re-signing. Lives in the
+	/// per-signing temporary options, never as a standing default.
+	var modFileEdits: [ModFileEdit]
+	/// Zenith v2.12, items 13-16 (#40-#43): app-modding patches
+	/// staged for this signing run, applied by SigningHandler
+	/// before re-signing. Each entry is only kept while the scan
+	/// still finds the value it patches (the views prune stale
+	/// selections on every scan).
+	/// #40 remove watermark: local config changes (switch the
+	/// watermark off, clear its text).
+	var removeWatermarkChanges: [AppConfigChange]
+	/// #40 remove watermark: bundled watermark frameworks to
+	/// delete (only ones proven unlinked; re-verified at signing
+	/// time by WatermarkRemover).
+	var removeWatermarkFrameworks: [String]
+	/// #41 remove export limits: local caps raised / gates
+	/// switched off.
+	var removeExportLimitChanges: [AppConfigChange]
+	/// #42 remove subscription screen: local paywall switches
+	/// turned off / local subscribed flags turned on. This hides
+	/// the locally-shown screen only — it never unlocks
+	/// server-verified premium.
+	var removeSubscriptionScreenChanges: [AppConfigChange]
+	/// #43 stop forced in-app updates: local force flags switched
+	/// off / minimum versions lowered.
+	var stopForcedUpdateChanges: [AppConfigChange]
+	/// Zenith v2.12, item 8 (#23): ad SDK frameworks the user
+	/// chose to strip at signing time (only ones the detector
+	/// verified as NOT linked; re-verified at signing time).
+	var removeAdsSDKs: [String]
+	/// Zenith v2.12, item 9 (#24): hidden developer-menu flags
+	/// the user chose to enable.
+	var devMenuChanges: [DevMenuFlagChange]
+	/// Zenith v2.12, item 17 (#45): bundled font replacements
+	/// (user-supplied font file staged over a bundled font).
+	var fontReplacements: [FontReplacement]
+	/// Zenith v2.12, item 18 (#46): animation durations to
+	/// shorten (original × 0.5) before signing.
+	var animationDurationChanges: [AnimationDurationChange]
+	/// Zenith v2.12, item 19 (#60): chosen location override,
+	/// nil = off. The JSON alone does nothing — a location-spoof
+	/// tweak dylib reads it at runtime.
+	var locationSpoof: LocationSpoofSelection?
+	/// Zenith v2.12, item 20 (#61): local login/onboarding
+	/// gates to flip.
+	var guestLoginChanges: [AppConfigChange]
+	/// Zenith v2.12, item 21 (#64): local theme keys to force
+	/// dark.
+	var forceDarkModeChanges: [AppConfigChange]
+	/// Zenith v2.12, item 22 (#79): typed translations for the
+	/// app's bundled .strings tables.
+	var translationPlan: TranslationPlan
+	/// Zenith v2.12, item 23 (#100): Lite-strip paths the user
+	/// chose (only ones the detector proved safe to remove).
+	var liteStripPaths: [String]
 	/// Mach-o load paths to remove (i.e. `@executable_path/demo1.dylib`)
 	var disInjectionFiles: [String]
 	/// App files to remove from (i.e. `Frameworks/CydiaSubstrate.framework`)
@@ -154,6 +211,21 @@ struct Options: Codable, Equatable {
 		identifiers: [:],
 		displayNames: [:],
 		injectionFiles: [],
+		modFileEdits: [],
+		removeWatermarkChanges: [],
+		removeWatermarkFrameworks: [],
+		removeExportLimitChanges: [],
+		removeSubscriptionScreenChanges: [],
+		stopForcedUpdateChanges: [],
+		removeAdsSDKs: [],
+		devMenuChanges: [],
+		fontReplacements: [],
+		animationDurationChanges: [],
+		locationSpoof: nil,
+		guestLoginChanges: [],
+		forceDarkModeChanges: [],
+		translationPlan: TranslationPlan(targetLanguageCode: "ar", edits: []),
+		liteStripPaths: [],
 		disInjectionFiles: [],
 		removeFiles: [],
 		fileSharing: false,

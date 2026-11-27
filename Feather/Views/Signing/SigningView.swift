@@ -27,6 +27,13 @@ struct SigningView: View {
 	@State private var _compatMinimumOS = ""
 	@State private var _compatDeviceOS = ""
 	@State var appIcon: UIImage?
+	/// Zenith v2.12: text of the custom display-name field (owned
+	/// here so Reset can restore the real name).
+	@State private var _displayNameText: String = ""
+	/// Zenith v2.12: shared moddability verdict for the signing
+	/// screen's modding sections (filled by the check, read by the
+	/// edit / mod-menu / graphics / FPS tools to gate themselves).
+	@State private var _moddabilityReport: ModdabilityReport?
 	
 	// MARK: Fetch
 	@FetchRequest(
@@ -96,6 +103,9 @@ struct SigningView: View {
 			Form {
 				_customizationOptions(for: app)
 				_cert()
+				_sharedModdingTools(for: app)
+				_moddingSectionGames(for: app)
+				_moddingSectionApps(for: app)
 				_customizationProperties(for: app)
 				
 				// horrible
@@ -127,6 +137,14 @@ struct SigningView: View {
 				) {
 					_temporaryOptions = OptionsManager.shared.options
 					appIcon = nil
+					// Zenith v2.12: Reset also forgets the remembered
+					// custom name for this app and clears the shared
+					// moddability verdict.
+					if let realName = app.name {
+						_optionsManager.options.displayNames.removeValue(forKey: realName)
+					}
+					_displayNameText = app.name ?? ""
+					_moddabilityReport = nil
 				}
 			}
 			.sheet(isPresented: $_isAltPickerPresenting) { SigningAlternativeIconView(app: app, appIcon: $appIcon, isModifing: .constant(true)).zenithSheetBackground() }
@@ -189,6 +207,9 @@ struct SigningView: View {
 			{
 				_temporaryOptions.appName = newName
 			}
+
+			// Zenith v2.12, item 2: the custom-name field's text.
+			_displayNameText = _temporaryOptions.appName ?? app.name ?? ""
 		}
 	}
 }
@@ -214,13 +235,15 @@ extension SigningView {
 			.padding(.vertical, 6)
 			.listRowSeparator(.hidden)
 			
-			_infoCell(.localized("Name"), desc: _temporaryOptions.appName ?? app.name) {
-				SigningPropertiesView(
-					title: .localized("Name"),
-					initialValue: _temporaryOptions.appName ?? (app.name ?? ""),
-					bindingValue: $_temporaryOptions.appName
-				)
-			}
+			// Zenith v2.12, item 2 (#3): custom display name — the
+			// field itself syncs the typed name into the temporary
+			// options and remembers it per app (replaces the plain
+			// Name editor above it: same job, plus remembering).
+			CustomDisplayNameField(
+				app: app,
+				displayNameText: $_displayNameText,
+				temporaryOptions: $_temporaryOptions
+			)
 			_infoCell(.localized("Identifier"), desc: _temporaryOptions.appIdentifier ?? app.identifier) {
 				SigningPropertiesView(
 					title: .localized("Identifier"),
@@ -323,7 +346,145 @@ extension SigningView {
 			.listRowSeparator(.hidden)
 		}
 	}
-	
+
+	// MARK: - Zenith v2.12: modding sections
+	// Arrangement (Reda's order): shared tools on top, then two
+	// sections — games, then apps. Every row shows its title with
+	// a 1–2 line Iraqi explanation underneath it. Unpicked slots
+	// are simply absent — nothing is shown for a feature Reda did
+	// not pick.
+
+	/// Shared modding tools (used by both sections): browse the
+	/// IPA's files, check whether the app can be modded, and keep
+	/// a copy of the original before modding.
+	@ViewBuilder
+	private func _sharedModdingTools(for app: AppInfoPresentable) -> some View {
+		NBSection(.localized("Modding Tools")) {
+			ModdingIPABrowserView(app: app)
+			ModdingCheckView(app: app, report: $_moddabilityReport)
+			BackupOriginalRowView(app: app)
+		}
+	}
+
+	/// Section 1 — "تعديل الألعاب": game modding.
+	@ViewBuilder
+	private func _moddingSectionGames(for app: AppInfoPresentable) -> some View {
+		NBSection(.localized("Mod Games")) {
+			NavigationLink {
+				ValueEditorView(options: $_temporaryOptions, report: _moddabilityReport)
+			} label: {
+				ValueEditorRowLabel()
+			}
+			.zenithGlassCard(cornerRadius: 12)
+			.padding(.vertical, 6)
+			.listRowSeparator(.hidden)
+			ModFileEditorView(app: app, options: $_temporaryOptions, report: _moddabilityReport)
+			GraphicsSettingsView(app: app, options: $_temporaryOptions, report: _moddabilityReport)
+			FPSCounterView(options: $_temporaryOptions, report: _moddabilityReport)
+		}
+	}
+
+	/// Section 2 — "تعديل التطبيقات": app modding.
+	@ViewBuilder
+	private func _moddingSectionApps(for app: AppInfoPresentable) -> some View {
+		NBSection(.localized("Mod Apps")) {
+			_moddingRow(
+				title: .localized("Remove Ads"),
+				description: .localized("Remove Ads Row Description")
+			) {
+				RemoveAdsView(app: app, options: $_temporaryOptions)
+			}
+			_moddingRow(
+				title: .localized("Developer Menus"),
+				description: .localized("Developer Menus Row Description")
+			) {
+				DevMenuView(app: app, options: $_temporaryOptions)
+			}
+			_moddingRow(
+				title: .localized("Remove Watermark"),
+				description: .localized("Remove Watermark Row Description")
+			) {
+				RemoveWatermarkView(app: app, options: $_temporaryOptions)
+			}
+			_moddingRow(
+				title: .localized("Remove Export Limits"),
+				description: .localized("Remove Export Limits Row Description")
+			) {
+				RemoveExportLimitsView(app: app, options: $_temporaryOptions)
+			}
+			_moddingRow(
+				title: .localized("Remove Subscription Screen"),
+				description: .localized("Remove Subscription Screen Row Description")
+			) {
+				RemoveSubscriptionScreenView(app: app, options: $_temporaryOptions)
+			}
+			_moddingRow(
+				title: .localized("Stop Forced Updates"),
+				description: .localized("Stop Forced Updates Row Description")
+			) {
+				StopForcedUpdatesView(app: app, options: $_temporaryOptions)
+			}
+			_moddingRow(
+				title: .localized("Change App Font"),
+				description: .localized("Change App Font Row Description")
+			) {
+				ChangeAppFontView(app: app, options: $_temporaryOptions)
+			}
+			_moddingRow(
+				title: .localized("Speed Up Animations"),
+				description: .localized("Speed Up Animations Row Description")
+			) {
+				AnimationSpeedView(app: app, options: $_temporaryOptions)
+			}
+			NavigationLink {
+				ChangeLocationView(app: app, options: $_temporaryOptions)
+			} label: {
+				ChangeLocationRowLabel()
+			}
+			.zenithGlassCard(cornerRadius: 12)
+			.padding(.vertical, 6)
+			.listRowSeparator(.hidden)
+			NavigationLink {
+				GuestModeView(app: app, options: $_temporaryOptions)
+			} label: {
+				GuestModeRowLabel()
+			}
+			.zenithGlassCard(cornerRadius: 12)
+			.padding(.vertical, 6)
+			.listRowSeparator(.hidden)
+			NavigationLink {
+				ForceDarkModeView(app: app, options: $_temporaryOptions)
+			} label: {
+				ForceDarkModeRowLabel()
+			}
+			.zenithGlassCard(cornerRadius: 12)
+			.padding(.vertical, 6)
+			.listRowSeparator(.hidden)
+			InAppTranslationRowView(app: app, options: $_temporaryOptions)
+			LiteVersionRowView(app: app, options: $_temporaryOptions)
+		}
+	}
+
+	/// A modding row: title on top, 1–2 line Iraqi explanation
+	/// underneath it, in the row itself (Reda's standing rule).
+	@ViewBuilder
+	private func _moddingRow<V: View>(title: String, description: String, @ViewBuilder destination: () -> V) -> some View {
+		NavigationLink {
+			destination()
+		} label: {
+			VStack(alignment: .leading, spacing: 2) {
+				Text(title)
+				Text(verbatim: description)
+					.font(.footnote)
+					.foregroundStyle(.secondary)
+					.lineLimit(2)
+			}
+		}
+		.zenithGlassCard(cornerRadius: 12)
+		.padding(.vertical, 6)
+		.listRowSeparator(.hidden)
+	}
+
 	@ViewBuilder
 	private func _infoCell<V: View>(_ title: String, desc: String?, @ViewBuilder destination: () -> V) -> some View {
 		NavigationLink {

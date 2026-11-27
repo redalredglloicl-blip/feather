@@ -208,6 +208,26 @@ class DownloadManager: NSObject, ObservableObject {
 	/// Finished downloads (completed or failed), newest first, kept on disk.
 	@Published var history: [DownloadHistoryEntry] = []
 	
+	/// Zenith v2.12 item 7: "Ask to save to Files after download".
+	/// OFF by default — when OFF, nothing changes: finished files
+	/// just stay in the app's ZenithDownloads dir. When ON, a
+	/// finished download offers the system export picker
+	/// (see `fileAwaitingSave`), so the user picks where in Files
+	/// the file goes — or dismisses. Never an automatic save:
+	/// files can only leave the sandbox through the picker.
+	@Published var askToSaveToFilesAfterDownload: Bool = UserDefaults.standard.object(forKey: "Zenith.askToSaveToFilesAfterDownload") as? Bool ?? false {
+		didSet { UserDefaults.standard.set(askToSaveToFilesAfterDownload, forKey: "Zenith.askToSaveToFilesAfterDownload") }
+	}
+	
+	/// Zenith v2.12 item 7: the finished file the Downloads tab
+	/// should offer in the system export picker, or nil when no
+	/// picker is pending. Set by a manual "Save to Files" tap, or
+	/// automatically at completion when the toggle above is ON.
+	/// The Downloads tab presents the picker for this URL and
+	/// clears it (via `dismissSavePrompt`) on pick or dismiss —
+	/// the file itself always stays in ZenithDownloads either way.
+	@Published var fileAwaitingSave: URL?
+	
 	var manualDownloads: [Download] {
 		downloads.filter { isManualDownload($0.id) && $0.status != .failed }
 	}
@@ -248,6 +268,7 @@ class DownloadManager: NSObject, ObservableObject {
 		DispatchQueue.main.async {
 			download.status = .completed
 			DownloadManager.shared._recordHistory(for: download, status: .completed)
+			DownloadManager.shared._noteCompletedDownload(download)
 			DownloadManager.shared._deleteResumeData(for: download.id)
 			DownloadManager.shared._deleteMultipartManifest(for: download.id)
 			
@@ -263,6 +284,43 @@ class DownloadManager: NSObject, ObservableObject {
 				#endif
 			}
 		}
+	}
+	
+	/// Zenith v2.12 item 7: the single completion hook — called
+	/// from the two places a download can finish (`handlePachageFile`
+	/// success for IPAs, `_completeNonIPADownload` for everything
+	/// else), so every transport (single, multipart, browser-captured)
+	/// funnels through it. When the toggle is ON, the finished file
+	/// is offered in the system export picker; when OFF (default),
+	/// this is a no-op and nothing changes. Runs on main: both
+	/// call sites dispatch to the main queue.
+	func _noteCompletedDownload(_ download: Download) {
+		guard askToSaveToFilesAfterDownload else { return }
+		let url = Self._finishedDownloadsDirectory().appendingPathComponent(download.fileName)
+		guard FileManager.default.fileExists(atPath: url.path) else { return }
+		fileAwaitingSave = url
+	}
+	
+	/// Zenith v2.12 item 7: manual "Save to Files" for one finished
+	/// file (history row button). Offers the file in the system
+	/// export picker; the original stays in ZenithDownloads.
+	func requestSaveToFiles(fileURL: URL) {
+		guard FileManager.default.fileExists(atPath: fileURL.path) else { return }
+		fileAwaitingSave = fileURL
+	}
+	
+	/// Zenith v2.12 item 7: manual "Save to Files" for a history
+	/// entry — resolves the finished file on disk first.
+	func requestSaveToFiles(for entry: DownloadHistoryEntry) {
+		guard let url = downloadedFileURL(for: entry) else { return }
+		requestSaveToFiles(fileURL: url)
+	}
+	
+	/// Zenith v2.12 item 7: clears the pending export picker —
+	/// called by the Downloads tab when the picker is picked or
+	/// dismissed.
+	func dismissSavePrompt() {
+		fileAwaitingSave = nil
 	}
 	
 	/// Normalizes a pasted link ONCE, shared by every entry point
@@ -1051,6 +1109,7 @@ extension DownloadManager: URLSessionDownloadDelegate {
 				if err == nil {
 					dl.status = .completed
 					DownloadManager.shared._recordHistory(for: dl, status: .completed)
+					DownloadManager.shared._noteCompletedDownload(dl)
 				} else {
 					dl.status = .failed
 					dl.errorMessage = err?.localizedDescription

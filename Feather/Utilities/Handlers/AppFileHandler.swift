@@ -40,6 +40,15 @@ final class AppFileHandler: NSObject, @unchecked Sendable {
 
 		try _fileManager.removeFileIfNeeded(at: destinationURL)
 		
+		// Zenith v2.12 item 5: byte-identical copy of the original
+		// IPA, before extract() touches anything. Gated on the
+		// signing-screen toggle (BackupOriginalRowView, "التعديل"
+		// item 7); a failure here never blocks the import.
+		_ = BackupManager.shared.backupIPAFile(
+			at: _ipa,
+			displayName: _ipa.deletingPathExtension().lastPathComponent
+		)
+		
 		try _fileManager.copyItem(at: _ipa, to: destinationURL)
 		_ipa = destinationURL
 	}

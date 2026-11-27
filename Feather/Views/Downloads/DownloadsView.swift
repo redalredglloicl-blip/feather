@@ -13,6 +13,8 @@ import NimbleViews
 
 struct DownloadsView: View {
 	@StateObject private var _downloadManager = DownloadManager.shared
+	// Zenith v2.12 item 5: the Backups list lives on this tab.
+	@StateObject private var _backupManager = BackupManager.shared
 	
 	@State private var _linkText = ""
 	@State private var _isProbing = false
@@ -23,6 +25,11 @@ struct DownloadsView: View {
 	@State private var _pendingSpeed: Double = 0
 	@State private var _isShowingBrowser = false
 	@State private var _browserURL: URL?
+	/// Backup waiting for the user to confirm its deletion.
+	@State private var _backupPendingDelete: ZenithBackup?
+	/// Backup whose restore was just started (notice alert).
+	@State private var _restoredBackupName = ""
+	@State private var _isShowingRestoreNotice = false
 	
 	var body: some View {
 		NBNavigationView(.localized("Downloads")) {
@@ -90,6 +97,39 @@ struct DownloadsView: View {
 							_downloadManager.clearHistory()
 						}
 					}
+				}
+			
+				// Zenith v2.12 item 5: copies of the original app,
+				// saved before signing or modding. Restore puts the
+				// original back in the Library; Delete is the only
+				// way a backup is ever removed.
+				if !_backupManager.backups.isEmpty {
+					Section(.localized("Backups")) {
+						ForEach(_backupManager.backups) { backup in
+							BackupRowView(
+								backup: backup,
+								onRestore: {
+									_backupManager.restore(backup)
+									_restoredBackupName = backup.appName
+									_isShowingRestoreNotice = true
+								},
+								onDelete: {
+									_backupPendingDelete = backup
+								}
+							)
+						}
+					} footer: {
+						Text(.localized("Backups Footer"))
+					}
+				}
+			
+				// Zenith v2.12 item 7: OFF by default — when ON, a
+				// finished download offers the system export picker
+				// so the user picks where in Files it goes.
+				Section(.localized("Save to Files")) {
+					Toggle(.localized("Ask to save to Files after download"), isOn: $_downloadManager.askToSaveToFilesAfterDownload)
+				} footer: {
+					Text(.localized("Save to Files Footer"))
 				}
 			
 				if _downloadManager.downloads.isEmpty && _downloadManager.history.isEmpty {
@@ -173,6 +213,40 @@ struct DownloadsView: View {
 					_pendingEstimatedMinutes()
 				)
 			)
+		}
+		// Zenith v2.12 item 7: the system export picker for the
+		// pending finished file — manual "Save to Files" tap, or
+		// automatic when the toggle is ON. Dismiss (pick or
+		// cancel) clears the pending file; the original always
+		// stays in the app's downloads dir.
+		.sheet(isPresented: Binding(
+			get: { _downloadManager.fileAwaitingSave != nil },
+			set: { isPresented in
+				if !isPresented { _downloadManager.dismissSavePrompt() }
+			}
+		)) {
+			if let fileURL = _downloadManager.fileAwaitingSave {
+				DocumentExportPicker(fileURL: fileURL) {
+					_downloadManager.dismissSavePrompt()
+				}
+			}
+		}
+		// Zenith v2.12 item 5: confirm before a backup is deleted —
+		// deletion is the only way a backup is ever removed.
+		.alert(item: $_backupPendingDelete) { backup in
+			Alert(
+				title: Text(.localized("Delete Backup")),
+				message: Text(verbatim: .localized("Delete Backup Confirm", arguments: backup.appName)),
+				primaryButton: .destructive(Text(.localized("Delete"))) {
+					_backupManager.delete(backup)
+				},
+				secondaryButton: .cancel()
+			)
+		}
+		.alert(.localized("Restoring Backup"), isPresented: $_isShowingRestoreNotice) {
+			Button(.localized("OK"), role: .cancel) {}
+		} message: {
+			Text(verbatim: .localized("Restoring Backup Message", arguments: _restoredBackupName))
 		}
 	}
 	
@@ -397,19 +471,28 @@ struct DownloadHistoryRowView: View {
 			Spacer()
 			
 			if entry.status == .completed,
-			   let fileURL = DownloadManager.shared.downloadedFileURL(for: entry),
-			   !_isIPAFile(entry.fileName) {
-				Button(.localized("Share")) {
-					UIActivityViewController.show(activityItems: [fileURL])
+			   let fileURL = DownloadManager.shared.downloadedFileURL(for: entry) {
+				// Zenith v2.12 item 7: per-download "Save to Files"
+				// — the system export picker, for any finished file
+				// including IPAs. The original stays in place.
+				Button(.localized("Save to Files")) {
+					DownloadManager.shared.requestSaveToFiles(fileURL: fileURL)
 				}
 				.buttonStyle(.borderless)
 				.font(.subheadline)
-				Button(.localized("Preview")) {
-					_fileToPreview = fileURL
-					_isShowingPreview = true
+				if !_isIPAFile(entry.fileName) {
+					Button(.localized("Share")) {
+						UIActivityViewController.show(activityItems: [fileURL])
+					}
+					.buttonStyle(.borderless)
+					.font(.subheadline)
+					Button(.localized("Preview")) {
+						_fileToPreview = fileURL
+						_isShowingPreview = true
+					}
+					.buttonStyle(.borderless)
+					.font(.subheadline)
 				}
-				.buttonStyle(.borderless)
-				.font(.subheadline)
 			} else if entry.status == .failed {
 				Button(.localized("Retry")) {
 					DownloadManager.shared.retryHistoryEntry(entry)
@@ -481,5 +564,92 @@ final class FilePreviewCoordinator: NSObject, QLPreviewControllerDataSource {
 	
 	@objc func dismissPreview() {
 		navigationController?.dismiss(animated: true)
+	}
+}
+
+// MARK: - Backup row (Zenith v2.12 item 5)
+
+/// One saved original: app name, backup date and size, with
+/// Restore (re-imports the backup IPA into the Library) and
+/// Delete (the only way a backup is ever removed).
+struct BackupRowView: View {
+	let backup: ZenithBackup
+	let onRestore: () -> Void
+	let onDelete: () -> Void
+	
+	var body: some View {
+		HStack(spacing: 12) {
+			Image(systemName: "archivebox.fill")
+				.foregroundStyle(Color(hex: "#FFC778"))
+				.font(.title3)
+			
+			VStack(alignment: .leading, spacing: 2) {
+				Text(backup.appName)
+					.font(.subheadline)
+					.lineLimit(1)
+				HStack(spacing: 4) {
+					Text(backup.date, style: .date)
+					Text(verbatim: "· \(backup.sizeBytes.formattedByteCount)")
+				}
+				.font(.caption)
+				.foregroundStyle(.secondary)
+			}
+			
+			Spacer()
+			
+			Button(.localized("Restore")) {
+				onRestore()
+			}
+			.buttonStyle(.borderless)
+			.font(.subheadline)
+			
+			Button(.localized("Delete"), role: .destructive) {
+				onDelete()
+			}
+			.buttonStyle(.borderless)
+			.font(.subheadline)
+		}
+		.padding(.vertical, 2)
+		.zenithGlassCard(cornerRadius: 12)
+	}
+}
+
+// MARK: - System export picker (Zenith v2.12 item 7)
+
+/// The system export picker — the ONLY way a finished file leaves
+/// the sandbox: the user picks where in Files it goes (On My iPhone
+/// / iCloud Drive) or dismisses. `asCopy: true` keeps the original
+/// in the app's downloads dir. Pick or cancel always calls
+/// onDismiss, so the pending file is cleared either way.
+struct DocumentExportPicker: UIViewControllerRepresentable {
+	let fileURL: URL
+	let onDismiss: () -> Void
+	
+	func makeCoordinator() -> Coordinator {
+		Coordinator(onDismiss: onDismiss)
+	}
+	
+	func makeUIViewController(context: Context) -> UIDocumentPickerViewController {
+		let picker = UIDocumentPickerViewController(forExporting: [fileURL], asCopy: true)
+		picker.delegate = context.coordinator
+		return picker
+	}
+	
+	func updateUIViewController(_ uiViewController: UIDocumentPickerViewController, context: Context) {}
+	
+	final class Coordinator: NSObject, UIDocumentPickerDelegate {
+		let onDismiss: () -> Void
+		
+		init(onDismiss: @escaping () -> Void) {
+			self.onDismiss = onDismiss
+		}
+		
+		func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentsAt urls: [URL]) {
+			onDismiss()
+		}
+		
+		func documentPickerWasCancelled(_ controller: UIDocumentPickerViewController) {
+			onDismiss()
+		}
 	}
 }
