@@ -843,23 +843,6 @@
         }
       }
     },
-    "A freshly signed Zenith IPA was saved to Archives. Install it with SideStore or ESign.": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "A freshly signed Zenith IPA was saved to Archives. Install it with SideStore or ESign."
-          }
-        },
-        "ar": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "انحفظت نسخة زينيث الموقعة بالأرشيف. ثبّتها بسايد ستور أو إي ساين."
-          }
-        }
-      }
-    },
     "Ad SDK In Binary": {
       "extractionState": "manual",
       "localizations": {
@@ -1301,53 +1284,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "高级"
-          }
-        }
-      }
-    },
-    "Advanced Installation Method": {
-      "extractionState": "manual",
-      "localizations": {
-        "ar": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "طريقة تثبيت متقدمة"
-          }
-        },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Advanced Installation Method"
-          }
-        },
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "고급 설치 방법"
-          }
-        },
-        "pl": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Zaawansowana metoda instalacji"
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Gelişmiş Kurulum Yöntemi"
-          }
-        },
-        "vi": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Phương pháp cài đặt nâng cao"
-          }
-        },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "高级安装方式"
           }
         }
       }
@@ -2893,53 +2829,6 @@
         }
       }
     },
-    "Certificates updated successfully.": {
-      "extractionState": "manual",
-      "localizations": {
-        "ar": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "تحدّثت الشهادات بنجاح."
-          }
-        },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Certificates updated successfully."
-          }
-        },
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "인증서가 성공적으로 업데이트되었습니다."
-          }
-        },
-        "pl": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Certyfikaty zaktualizowano pomyślnie."
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Sertifikalar başarıyla güncellendi."
-          }
-        },
-        "vi": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Chứng chỉ được cập nhật thành công."
-          }
-        },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "证书更新成功。"
-          }
-        }
-      }
-    },
     "Change": {
       "extractionState": "manual",
       "localizations": {
@@ -3497,78 +3386,19 @@
         }
       }
     },
-    "Configure the apps way of installing, its zip compression levels, and custom modifications to apps.": {
+    "Signing options, archive compression, and custom modifications to apps.": {
       "extractionState": "manual",
       "localizations": {
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "حدّد طريقة تثبيت التطبيق ومستويات ضغط zip والتعديلات المخصصة عليه."
-          }
-        },
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Konfiguriere wie die Apps installiert werden, deren ZIP-Komprimierungslevel, und benutzerdefinierte Modifikationen der Apps."
+            "value": "خيارات التوقيع وضغط الأرشيف والتعديلات المخصصة على التطبيقات."
           }
         },
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Configure the apps way of installing, its zip compression levels, and custom modifications to apps."
-          }
-        },
-        "it": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Configura il modo dell'installazione delle app, il livello della compressione delle zip, e modifiche personalizzate delle app."
-          }
-        },
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "앱 설치 방식, zip 압축 수준 및 앱에 대한 맞춤 수정 사항을 구성합니다."
-          }
-        },
-        "pl": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Skonfiguruj sposób instalacji aplikacji, poziom kompresji ZIP i niestandardowe modyfikacje aplikacji."
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Uygulamaların kurulum şeklini, paket sıkıştırma seviyelerini ve uygulamalara özel değişiklikleri yapılandırın."
-          }
-        },
-        "vi": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Cấu hình cách cài đặt ứng dụng, mức độ nén zip và các sửa đổi tùy chỉnh cho ứng dụng."
-          }
-        },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "调整应用的安装方式、压缩等级并对应用自定义。"
-          }
-        }
-      }
-    },
-    "Connect to LocalDevVPN": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Connect to LocalDevVPN"
-          }
-        },
-        "ar": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "اتصل بـ LocalDevVPN"
+            "value": "Signing options, archive compression, and custom modifications to apps."
           }
         }
       }
@@ -4406,65 +4236,6 @@
         }
       }
     },
-    "Delete After Signing": {
-      "extractionState": "manual",
-      "localizations": {
-        "ar": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "امسح بعد التوقيع"
-          }
-        },
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Nach dem Signieren löschen"
-          }
-        },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Delete After Signing"
-          }
-        },
-        "it": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Elimina dopo la firma"
-          }
-        },
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "서명 후 삭제"
-          }
-        },
-        "pl": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Usuń po podpisaniu"
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "İmzaladıktan Sonra Sil"
-          }
-        },
-        "vi": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Xóa sau khi ký"
-          }
-        },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "签名后删除"
-          }
-        }
-      }
-    },
     "Description": {
       "extractionState": "manual",
       "localizations": {
@@ -4748,19 +4519,19 @@
         }
       }
     },
-    "Do you want to download and install this file?": {
+    "Do you want to download this file?": {
       "extractionState": "manual",
       "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Do you want to download and install this file?"
-          }
-        },
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "تريد تنزّل هالملف وتثبّته؟"
+            "value": "تريد تنزّل هالملف؟"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Do you want to download this file?"
           }
         }
       }
@@ -4814,23 +4585,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "是否向外部应用导出证书？导出的应用可以使用证书进行签名。"
-          }
-        }
-      }
-    },
-    "Download LocalDevVPN": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Download LocalDevVPN"
-          }
-        },
-        "ar": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "نزّل LocalDevVPN"
           }
         }
       }
@@ -6215,77 +5969,6 @@
         }
       }
     },
-    "Failed to download, check your internet connection and try again.": {
-      "extractionState": "manual",
-      "localizations": {
-        "ar": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "التنزيل فشل. تأكد من النت وحاول مرة ثانية."
-          }
-        },
-        "cs": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Nelze stáhnout, zkontrolujte svoje připojení k internetu a zkuste znovu."
-          }
-        },
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Herunterladen fehlgeschlagen. Überprüfe deine Internetverbindung und versuche es erneut."
-          }
-        },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Failed to download, check your internet connection and try again."
-          }
-        },
-        "id": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Gagal mengunduh, periksa koneksi internet Anda dan coba lagi."
-          }
-        },
-        "it": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Download fallito, controlla la tua connessione e riprova."
-          }
-        },
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "다운로드에 실패했습니다, 인터넷 연결 상태를 확인하고 다시 시도하세요."
-          }
-        },
-        "pl": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Nie udało się pobrać. Sprawdź połączenie z internetem i spróbuj ponownie."
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "İndirme başarısız oldu. İnternet bağlantınızı kontrol edip tekrar deneyin."
-          }
-        },
-        "vi": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Tải xuống thất bại, hãy kiểm tra kết nối internet của bạn và thử lại."
-          }
-        },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "下载失败，请检查网络连接并重试。"
-          }
-        }
-      }
-    },
     "Featured": {
       "extractionState": "manual",
       "localizations": {
@@ -6883,77 +6566,6 @@
         }
       }
     },
-    "Fully Local": {
-      "extractionState": "manual",
-      "localizations": {
-        "ar": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "محلي بالكامل"
-          }
-        },
-        "cs": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Zcela lokální"
-          }
-        },
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Komplett lokal"
-          }
-        },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Fully Local"
-          }
-        },
-        "id": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Sepenuhnya Lokal"
-          }
-        },
-        "it": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Tutto in locale"
-          }
-        },
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "완전한 로컬"
-          }
-        },
-        "pl": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "W pełni lokalnie"
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Tamamen Yerel"
-          }
-        },
-        "vi": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Cục bộ hoàn toàn"
-          }
-        },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "完全本地化"
-          }
-        }
-      }
-    },
     "Game Mode": {
       "extractionState": "manual",
       "localizations": {
@@ -7398,77 +7010,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "来我们的GitHub仓库添加星标！"
-          }
-        }
-      }
-    },
-    "Heartbeat": {
-      "extractionState": "manual",
-      "localizations": {
-        "ar": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "نبض"
-          }
-        },
-        "cs": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Heartbeat"
-          }
-        },
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Herzschlag"
-          }
-        },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Heartbeat"
-          }
-        },
-        "id": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Detak Jantung"
-          }
-        },
-        "it": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Battito"
-          }
-        },
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Heartbeat"
-          }
-        },
-        "pl": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Heartbeat"
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Heartbeat"
-          }
-        },
-        "vi": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Heartbeat"
-          }
-        },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "心跳检测"
           }
         }
       }
@@ -8083,77 +7624,6 @@
         }
       }
     },
-    "Import Pairing File": {
-      "extractionState": "manual",
-      "localizations": {
-        "ar": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "استيراد ملف الاقتران"
-          }
-        },
-        "cs": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Importovat párovací soubor"
-          }
-        },
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Pairing-Datei importieren"
-          }
-        },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Import Pairing File"
-          }
-        },
-        "id": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Impor Berkas Pairing"
-          }
-        },
-        "it": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Importa file di abbinamento"
-          }
-        },
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "페어링 파일 가져오기"
-          }
-        },
-        "pl": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Importuj plik parowania"
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Eşleştirme Dosyasını İçe Aktar"
-          }
-        },
-        "vi": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Nhập tệp ghép nối"
-          }
-        },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "导入配对文件"
-          }
-        }
-      }
-    },
     "Import Provisioning File": {
       "extractionState": "manual",
       "localizations": {
@@ -8742,301 +8212,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "注入路径"
-          }
-        }
-      }
-    },
-    "Install": {
-      "extractionState": "manual",
-      "localizations": {
-        "ar": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "ثبّت"
-          }
-        },
-        "cs": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Nainstalovat"
-          }
-        },
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Installieren"
-          }
-        },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Install"
-          }
-        },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Install"
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Install"
-          }
-        },
-        "id": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Pasang"
-          }
-        },
-        "it": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Installa"
-          }
-        },
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "설치"
-          }
-        },
-        "pl": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Instaluj"
-          }
-        },
-        "ru": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Установить"
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Yükle"
-          }
-        },
-        "vi": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Cài đặt"
-          }
-        },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "安装"
-          }
-        }
-      }
-    },
-    "Install After Signing": {
-      "extractionState": "manual",
-      "localizations": {
-        "ar": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "ثبّت بعد التوقيع"
-          }
-        },
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Nach dem Signieren installieren"
-          }
-        },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Install After Signing"
-          }
-        },
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "서명 후 설치"
-          }
-        },
-        "pl": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Zainstaluj po podpisaniu"
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "İmzaladıktan Sonra Yükle"
-          }
-        },
-        "vi": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Cài đặt sau khi ký"
-          }
-        },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "签名后安装"
-          }
-        }
-      }
-    },
-    "Install Current Version": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Install Current Version"
-          }
-        },
-        "pl": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Zainstaluj bieżącą wersję"
-          }
-        },
-        "ar": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "ثبّت الإصدار الحالي"
-          }
-        }
-      }
-    },
-    "Installation": {
-      "extractionState": "manual",
-      "localizations": {
-        "ar": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "التثبيت"
-          }
-        },
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Installation"
-          }
-        },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Installation"
-          }
-        },
-        "it": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Installazione"
-          }
-        },
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "설치"
-          }
-        },
-        "pl": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Instalacja"
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Kurulum"
-          }
-        },
-        "vi": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Trình cài đặt"
-          }
-        },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "安装"
-          }
-        }
-      }
-    },
-    "Installation Type": {
-      "extractionState": "manual",
-      "localizations": {
-        "ar": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "نوع التثبيت"
-          }
-        },
-        "cs": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Typ instalace"
-          }
-        },
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Installationstyp"
-          }
-        },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Installation Type"
-          }
-        },
-        "id": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Jenis Instalasi"
-          }
-        },
-        "it": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Tipo di installazione"
-          }
-        },
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "설치 유형"
-          }
-        },
-        "pl": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Typ instalacji"
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Kurulum Türü"
-          }
-        },
-        "vi": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Kiểu cài đặt"
-          }
-        },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "安装类型"
           }
         }
       }
@@ -10624,77 +9799,6 @@
         }
       }
     },
-    "No pairing file found, please import it.": {
-      "extractionState": "manual",
-      "localizations": {
-        "ar": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "ما لكينا ملف اقتران، استورده."
-          }
-        },
-        "cs": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Párovací soubor nebyl nalezen, importujte ho prosím."
-          }
-        },
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Pairing-Datei fehlt, Datei-Import erforderlich."
-          }
-        },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "No pairing file found, please import it."
-          }
-        },
-        "id": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Tidak ditemukan berkas pairing, silakan impor terlebih dahulu."
-          }
-        },
-        "it": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "File di abbinamento non trovato, per favore importalo."
-          }
-        },
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "페어링 파일을 찾을 수 없습니다, 불러와 주세요."
-          }
-        },
-        "pl": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Nie znaleziono pliku parowania, zaimportuj go."
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Eşleştirme dosyası bulunamadı. Lütfen içe aktarın."
-          }
-        },
-        "vi": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Không tìm thấy tệp ghép nối, vui lòng nhập tệp."
-          }
-        },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "未找到配对文件，请导入。"
-          }
-        }
-      }
-    },
     "No sources to copy": {
       "extractionState": "manual",
       "localizations": {
@@ -10903,77 +10007,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "OK"
-          }
-        }
-      }
-    },
-    "Only use localhost address": {
-      "extractionState": "manual",
-      "localizations": {
-        "ar": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "استخدم عنوان localhost بس"
-          }
-        },
-        "cs": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Pouze použít adresu localhost"
-          }
-        },
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Nur die Localhost-Adresse verwenden"
-          }
-        },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Only use localhost address"
-          }
-        },
-        "id": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Hanya gunakan alamat localhost"
-          }
-        },
-        "it": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Usa solo l'indirizzo localhost"
-          }
-        },
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "localhost 주소만 사용하세요"
-          }
-        },
-        "pl": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Używaj tylko adresu localhost"
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Yalnızca “localhost” adresini kullan"
-          }
-        },
-        "vi": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Chỉ sử dụng địa chỉ localhost"
-          }
-        },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "只使用本地地址"
           }
         }
       }
@@ -11351,19 +10384,19 @@
         }
       }
     },
-    "Open the Library and install the refreshed apps.": {
+    "The refreshed apps are ready in the Library.": {
       "extractionState": "manual",
       "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Open the Library and install the refreshed apps."
-          }
-        },
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "افتح المكتبة وثبّت التطبيقات اللي تجدّدت."
+            "value": "التطبيقات المجدّدة جاهزة بالمكتبة."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The refreshed apps are ready in the Library."
           }
         }
       }
@@ -11949,65 +10982,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "الإضافات"
-          }
-        }
-      }
-    },
-    "Post Signing": {
-      "extractionState": "manual",
-      "localizations": {
-        "ar": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "بعد التوقيع"
-          }
-        },
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Nach der Signierung"
-          }
-        },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Post Signing"
-          }
-        },
-        "it": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Post-Firma"
-          }
-        },
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "서명 후"
-          }
-        },
-        "pl": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Po podpisaniu"
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "İmzalama Sonrası"
-          }
-        },
-        "vi": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Sau khi ký"
-          }
-        },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "签名后配置"
           }
         }
       }
@@ -12647,23 +11621,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "جدّد"
-          }
-        }
-      }
-    },
-    "Refresh Zenith Itself": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Refresh Zenith Itself"
-          }
-        },
-        "ar": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "جدّد زينيث نفسه"
           }
         }
       }
@@ -14814,77 +13771,6 @@
         }
       }
     },
-    "Restart Heartbeat": {
-      "extractionState": "manual",
-      "localizations": {
-        "ar": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "شغّل نبض من جديد"
-          }
-        },
-        "cs": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Restartovat heartbeat"
-          }
-        },
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Herzschlag neustarten"
-          }
-        },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Restart Heartbeat"
-          }
-        },
-        "id": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Mulai Ulang Detak Jantung"
-          }
-        },
-        "it": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Riavvia battito"
-          }
-        },
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Heartbeat 재시작"
-          }
-        },
-        "pl": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Restartuj Heartbeat"
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Heartbeat’i Yeniden Başlat"
-          }
-        },
-        "vi": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Khởi động lại Heartbeat"
-          }
-        },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "重置心跳检测   "
-          }
-        }
-      }
-    },
     "Restart Required": {
       "extractionState": "manual",
       "localizations": {
@@ -15033,77 +13919,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "الإلغاء يمسح أقدم شهادة من حساب أبل مالك. التطبيقات الموقعة بيها تتوقف عن الشغل."
-          }
-        }
-      }
-    },
-    "SSL Certificates": {
-      "extractionState": "manual",
-      "localizations": {
-        "ar": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "شهادات SSL"
-          }
-        },
-        "cs": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "SSL certifikáty"
-          }
-        },
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "SSL Zertifikate"
-          }
-        },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "SSL Certificates"
-          }
-        },
-        "id": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Sertifikat SSL"
-          }
-        },
-        "it": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Certificati SSL"
-          }
-        },
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "SSL 인증서"
-          }
-        },
-        "pl": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Certyfikaty SSL"
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "SSL Sertifikaları"
-          }
-        },
-        "vi": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Chứng chỉ SSL"
-          }
-        },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "SSL证书"
           }
         }
       }
@@ -15327,77 +14142,6 @@
         }
       }
     },
-    "Seems like you've gotten your hands on your pairing file!": {
-      "extractionState": "manual",
-      "localizations": {
-        "ar": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "يبدو إنك حصلت على ملف الاقتران مالك!"
-          }
-        },
-        "cs": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Vypad\u0001á to, že máte párovací soubor!"
-          }
-        },
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Prima, du hast eine gültige Pairing-Datei!"
-          }
-        },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Seems like you've gotten your hands on your pairing file!"
-          }
-        },
-        "id": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Sepertinya Anda sudah mendapatkan berkas pairing Anda"
-          }
-        },
-        "it": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Sembra che tu abbia messo le mani sul tuo file di abbinamento!"
-          }
-        },
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "페어링 파일을 손에 넣으신 것 같네요!"
-          }
-        },
-        "pl": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Wygląda na to, że masz swój plik parowania!"
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Görünüşe göre eşleştirme dosyanızı temin etmişsiniz. "
-          }
-        },
-        "vi": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Có vẻ như bạn đã có tệp ghép nối của mình!"
-          }
-        },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "你应该已经设置好配对文件了！"
-          }
-        }
-      }
-    },
     "Select Alternative Icon": {
       "comment": "Select custom alternative app icon",
       "extractionState": "manual",
@@ -15542,94 +14286,6 @@
         }
       }
     },
-    "Self-refresh was not attempted.": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Self-refresh was not attempted."
-          }
-        },
-        "ar": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "ما صارت محاولة تجديد الذات."
-          }
-        }
-      }
-    },
-    "Semi Local": {
-      "extractionState": "manual",
-      "localizations": {
-        "ar": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "محلي جزئيًا"
-          }
-        },
-        "cs": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Polo-lokální"
-          }
-        },
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Semi-Lokal"
-          }
-        },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Semi Local"
-          }
-        },
-        "id": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Semi Lokal"
-          }
-        },
-        "it": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Semi Locale"
-          }
-        },
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "부분 로컬"
-          }
-        },
-        "pl": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Częściowo lokalnie"
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Yarı Yerel"
-          }
-        },
-        "vi": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Bán cục bộ"
-          }
-        },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "半本地化"
-          }
-        }
-      }
-    },
     "Sending Manifest": {
       "extractionState": "manual",
       "localizations": {
@@ -15748,195 +14404,6 @@
         }
       }
     },
-    "Server": {
-      "extractionState": "manual",
-      "localizations": {
-        "ar": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Server"
-          }
-        },
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Server"
-          }
-        },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Server"
-          }
-        },
-        "it": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Server"
-          }
-        },
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "서버"
-          }
-        },
-        "pl": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Serwer"
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Sunucu"
-          }
-        },
-        "vi": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Máy chủ"
-          }
-        },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "服务器"
-          }
-        }
-      }
-    },
-    "Server & SSL": {
-      "extractionState": "manual",
-      "localizations": {
-        "ar": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "الخادم و SSL"
-          }
-        },
-        "cs": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Server a SSL"
-          }
-        },
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Server & SSL"
-          }
-        },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Server & SSL"
-          }
-        },
-        "id": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Server & SSL"
-          }
-        },
-        "it": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Server & SSL"
-          }
-        },
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "서버 및 SSL"
-          }
-        },
-        "pl": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Serwer i SSL"
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Sunucu ve SSL"
-          }
-        },
-        "vi": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Máy chủ & SSL"
-          }
-        },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "服务器与SSL"
-          }
-        }
-      }
-    },
-    "Server (Recommended):\nUses a locally hosted server and itms-services:// to install applications.\n\nIDevice (advanced):\nUses a VPN and a pairing file. Writes to AFC and manually calls installd, while monitoring install progress by using a callback\nAdvantage: It is very reliable, does not need SSL certificates or a externally hosted server. Rather, works similarly to a computer.": {
-      "extractionState": "manual",
-      "localizations": {
-        "ar": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Server (موصى بيه):\nيستخدم خادم محلي و itms-services:// حتى يثبّت التطبيقات.\n\nIDevice (متقدم):\nيستخدم VPN وملف اقتران. يكتب بـ AFC ويستدعي installd يدويًا، ويراقب تقدّم التثبيت عن طريق callback.\nالميزة: موثوق كلش، وما يحتاج شهادات SSL أو خادم مستضاف برّه، بل يشتغل بطريقة تشبه الكمبيوتر."
-          }
-        },
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Server (Empfohlen):\nVerwendet einen lokal gehosteten Server und itms-services://, um Apps zu installieren.\n\nIDevice (fortgeschritten):\nVerwendet ein VPN und eine Pairing-Datei. Verwendet AFC und ruft installd manuell auf, während der Installationsfortschritt über einen Callback überwacht wird.\nVorteil: Es ist sehr zuverlässig, benötigt keine SSL-Zertifikate oder extern gehostete Server."
-          }
-        },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Server (Recommended):\nUses a locally hosted server and itms-services:// to install applications.\n\nIDevice (advanced):\nUses a VPN and a pairing file. Writes to AFC and manually calls installd, while monitoring install progress by using a callback\nAdvantage: It is very reliable, does not need SSL certificates or a externally hosted server. Rather, works similarly to a computer."
-          }
-        },
-        "it": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Server (Consigliato):Utilizza un server ospitato localmente e itms-services:// per installare le applicazioni.iDevice (Avanzato):Utilizza una VPN e un file di abbinamento. Scrive tramite AFC e richiama manualmente installd, monitorando l’avanzamento dell’installazione tramite una callback.Vantaggi:È molto affidabile, non richiede certificati SSL né un server ospitato esternamente. Funziona in modo simile a un computer."
-          }
-        },
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "서버 (추천):\n로컬에 호스팅된 서버와 itms-services://를 사용하여 애플리케이션을 설치합니다.\n\nIDevice (고급):\nVPN과 페어링 파일을 사용합니다. AFC에 데이터를 기록하고 수동으로 installd를 호출하며, 콜백을 통해 설치 진행 상황을 모니터링합니다.\n장점: 매우 안정적이며, SSL 인증서나 외부 호스팅 서버가 필요하지 않습니다. 오히려 컴퓨터와 비슷한 방식으로 작동합니다."
-          }
-        },
-        "pl": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Serwer (zalecane):\nUżywa lokalnie hostowanego serwera i itms-services:// do instalowania aplikacji.\n\nIDevice (zaawansowane):\nUżywa VPN i pliku parowania. Zapisuje do AFC i ręcznie wywołuje installd, monitorując postęp instalacji przez callback.\nZaleta: Jest bardzo niezawodny, nie wymaga certyfikatów SSL ani zewnętrznego serwera. Działa podobnie do komputera."
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Sunucu (Önerilen):\nUygulamaları yüklemek için yerel olarak barındırılan bir sunucu ve itms-services:// kullanır.\n\nIDevice (Gelişmiş):\nBir VPN ve eşleştirme dosyası kullanır. Kurulum AFC aracılığıyla gerçekleştirilir ve ilerleme izlenebilir.\nAvantajı: Çok güvenilirdir, SSL sertifikalarına veya harici olarak barındırılan bir sunucuya ihtiyaç duymaz. Aksine, bir bilgisayara benzer şekilde çalışır."
-          }
-        },
-        "vi": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Máy chủ (Khuyến nghị):\nSử dụng máy chủ lưu trữ cục bộ và itms-services:// để cài đặt ứng dụng.\n\nIDevice (nâng cao):\nSử dụng VPN và tệp ghép nối. Ghi vào AFC và gọi installd theo cách thủ công, đồng thời theo dõi tiến trình cài đặt bằng cách sử dụng lệnh gọi lại\nƯu điểm: Rất đáng tin cậy, không cần chứng chỉ SSL hoặc máy chủ lưu trữ bên ngoài. Thay vào đó, hoạt động tương tự như máy tính."
-          }
-        },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "服务器（推荐）：\n使用本地托管的服务器和itms-services://来安装应用。\n\nIDevice（高级）：\n使用VPN和配对文件。写入AFC并手动调用installd，使用回调检测安装进度。\n优点：非常稳定，不需要SSL证书或设备外托管的服务器，而是在本地进行模拟。"
-          }
-        }
-      }
-    },
     "Server Ads Cannot Be Removed": {
       "extractionState": "manual",
       "localizations": {
@@ -15967,65 +14434,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "القوائم اللي يتحكم بيها السيرفر ما تنفتح من الجهاز."
-          }
-        }
-      }
-    },
-    "Server Type": {
-      "extractionState": "manual",
-      "localizations": {
-        "ar": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "نوع Server"
-          }
-        },
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Servertyp"
-          }
-        },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Server Type"
-          }
-        },
-        "it": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Tipo server"
-          }
-        },
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "서버 유형"
-          }
-        },
-        "pl": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Typ serwera"
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Sunucu Türü"
-          }
-        },
-        "vi": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Loại máy chủ"
-          }
-        },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "服务器类型"
           }
         }
       }
@@ -17218,23 +15626,6 @@
         }
       }
     },
-    "Status": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Status"
-          }
-        },
-        "ar": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "الحالة"
-          }
-        }
-      }
-    },
     "Store Cell Appearance": {
       "extractionState": "manual",
       "localizations": {
@@ -17448,53 +15839,6 @@
         }
       }
     },
-    "Switch Back": {
-      "extractionState": "manual",
-      "localizations": {
-        "ar": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "ارجع"
-          }
-        },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Switch Back"
-          }
-        },
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "뒤로 가기"
-          }
-        },
-        "pl": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Wróć"
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Geri Dön"
-          }
-        },
-        "vi": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Chuyển lại"
-          }
-        },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "切换回去"
-          }
-        }
-      }
-    },
     "Team Identifiers": {
       "extractionState": "manual",
       "localizations": {
@@ -17633,77 +15977,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "团队名"
-          }
-        }
-      }
-    },
-    "The heartbeat is activated in the background, it will restart when the app is re-opened or prompted. If the status below is pulsing, that means its healthy.": {
-      "extractionState": "manual",
-      "localizations": {
-        "ar": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "ميزة نبض شغالة بالخلفية، وراح تنعاد من تفتح التطبيق مرة ثانية أو من تطلبها. إذا الحالة جوّه تنبض، معناها تشتغل تمام."
-          }
-        },
-        "cs": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Heartbeat je aktivován v pozadí, sám se zrestartuje když se aplikace znovu otevře nebo po dotázání. Když status dole pulzuje, znamená to, že je funkční."
-          }
-        },
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Der Herzschlag wird im Hintergrund aktiviert und startet neu, wenn die App erneut geöffnet oder dazu aufgefordert wird. Wenn der unten stehende Status pulsiert, bedeutet das, dass alles ordnungsgemäß funktioniert."
-          }
-        },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "The heartbeat is activated in the background, it will restart when the app is re-opened or prompted. If the status below is pulsing, that means its healthy."
-          }
-        },
-        "id": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Detak jantung diaktifkan di latar belakang, akan\ndimulai ulang saat aplikasi dibuka kembali atau diminta. Jika status di bawah ini berdenyut, berarti dalam kondisi sehat."
-          }
-        },
-        "it": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Il battito è attivo in background; verrà riavviato quando l'app viene riaperta o forzata. Se lo stato qui sotto pulsa, significa che è funzionante."
-          }
-        },
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Heartbeat는 백그라운드에서 실행되며, 앱을 다시 열거나 요청이 있을 때 다시 시작됩니다. 아래 상태가 깜빡이고 있다면 정상적으로 작동하고 있다는 뜻입니다."
-          }
-        },
-        "pl": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Monitor pracy aplikacji działa w tle. Zostanie uruchomiony ponownie po ponownym otwarciu lub wymuszeniu. Jeśli poniższy status pulsuje, wszystko działa poprawnie."
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Heartbeat arka planda etkinleştirilir ve uygulama yeniden açıldığında ya da istenildiğinde yeniden başlatılır. Eğer aşağıdaki durum kalp atışı şeklide ise bu Heartbeat’in işlevsel olduğu anlamına gelir."
-          }
-        },
-        "vi": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Heartbeat được kích hoạt trong nền, nó sẽ khởi động lại khi ứng dụng được mở lại hoặc được nhắc nhở. Nếu trạng thái bên dưới đang nhịp đập, điều đó có nghĩa là nó hoạt động bình thường."
-          }
-        },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "心跳检测已在后台启用，并将在此App重启或被唤醒时重启。如果下面的状态灯正在闪动则为正常。"
           }
         }
       }
@@ -18154,65 +16427,6 @@
         }
       }
     },
-    "This will delete your imported application after signing, to save on using unneeded space.": {
-      "extractionState": "manual",
-      "localizations": {
-        "ar": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "هالشي راح يمسح التطبيق المستورد بعد التوقيع حتى يوفّر مساحة."
-          }
-        },
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Dies wird deine importierte Datei nach der Signierung löschen, um Speicherplatz zu sparen."
-          }
-        },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "This will delete your imported application after signing, to save on using unneeded space."
-          }
-        },
-        "it": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Questo elimina l'applicazione importata dopo la firma, per salvare spazio usato inutilmente."
-          }
-        },
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "서명 절차가 완료되면 불필요한 저장 공간을 절약하기 위해 가져온 애플리케이션을 삭제합니다."
-          }
-        },
-        "pl": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Spowoduje to usunięcie zaimportowanej aplikacji po jej podpisaniu, co pozwoli zwolnić miejsce."
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Bu, imzaladıktan sonra içe aktarılan uygulamayı silerek gereksiz alanı geri kazanmanıza yardımcı olur."
-          }
-        },
-        "vi": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Thao tác này sẽ xóa ứng dụng đã nhập của bạn sau khi ký, để tiết kiệm dung lượng không cần thiết."
-          }
-        },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "在签名后删除导入的应用来节省空间。"
-          }
-        }
-      }
-    },
     "Tinted Icons": {
       "extractionState": "manual",
       "localizations": {
@@ -18344,77 +16558,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "أدوات"
-          }
-        }
-      }
-    },
-    "Tunnel & Pairing": {
-      "extractionState": "manual",
-      "localizations": {
-        "ar": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Tunnel و pairing"
-          }
-        },
-        "cs": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Tunel a párování"
-          }
-        },
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Tunnel & Pairing"
-          }
-        },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Tunnel & Pairing"
-          }
-        },
-        "id": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Tunnel & Pairing"
-          }
-        },
-        "it": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Tunnel & Abbinamento"
-          }
-        },
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "터널 및 페어링"
-          }
-        },
-        "pl": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Tunel i parowanie"
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Tünel ve Eşleştirme"
-          }
-        },
-        "vi": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Tunnel & Ghép nối"
-          }
-        },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "隧道&配对"
           }
         }
       }
@@ -18669,77 +16812,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "أكو تحديث"
-          }
-        }
-      }
-    },
-    "Update SSL Certificates": {
-      "extractionState": "manual",
-      "localizations": {
-        "ar": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "حدّث شهادات SSL"
-          }
-        },
-        "cs": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Aktualizovat SSL certifikáty"
-          }
-        },
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Lokale SSL-Zertifikate aktualisieren"
-          }
-        },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Update SSL Certificates"
-          }
-        },
-        "id": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Perbarui Sertifikat SSL"
-          }
-        },
-        "it": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Aggiorna i certificati SSL"
-          }
-        },
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "SSL 인증서 업데이트"
-          }
-        },
-        "pl": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Aktualizuj certyfikaty SSL"
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "SSL Sertifikalarını Güncelle"
-          }
-        },
-        "vi": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Cập nhật chứng chỉ SSL"
-          }
-        },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "更新SSL证书"
           }
         }
       }
@@ -19325,71 +17397,6 @@
         }
       }
     },
-    "You cannot update ‘%@‘ with itself, please use an alternative tool to update it.": {
-      "extractionState": "manual",
-      "localizations": {
-        "ar": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "ما تكدر تحدّث ‘%@‘ بنفسه، استخدم أداة ثانية حتى تحدّثه."
-          }
-        },
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Du kannst ‘%@‘ nicht mit sich selbst aktualisieren. Bitte verwende dafür ein alternatives Tool."
-          }
-        },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "You cannot update ‘%@‘ with itself, please use an alternative tool to update it."
-          }
-        },
-        "id": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Kamu tidak bisa melakukan update pada ‘%@’ menggunakan dirinya sendiri. Silakan gunakan tool alternatif untuk memperbaruinya."
-          }
-        },
-        "it": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Non puoi aggiornare ‘%@‘ con se stesso, usa un altro tool per fare l’aggiornamento."
-          }
-        },
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "`%@`을(를) 자체적으로 업데이트할 수 없습니다. 다른 도구를 사용해 업데이트해 주세요.\n"
-          }
-        },
-        "pl": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Nie można zaktualizować „%@” przy jego użyciu. Użyj innego narzędzia do aktualizacji."
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%@’ı kendisi üzerinden güncelleyemezsiniz. Lütfen güncelleme için alternatif bir araç kullanın."
-          }
-        },
-        "vi": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Bạn không thể cập nhật ‘%@‘ bằng chính nó, vui lòng sử dụng công cụ thay thế để cập nhật."
-          }
-        },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "不能用‘%@’更新自己，请使用其他工具更新。"
-          }
-        }
-      }
-    },
     "Your Apple ID password is used only for this sign-in and is never stored.": {
       "extractionState": "manual",
       "localizations": {
@@ -19403,82 +17410,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "كلمة مرور حساب أبل تُستخدم لهالتسجيل بس وما تنحفظ أبد."
-          }
-        }
-      }
-    },
-    "Your pairing file is invalid and is incompatible with your device, please import a valid pairing file.": {
-      "extractionState": "manual",
-      "localizations": {
-        "ar": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "ملف pairing مو صالح ومو متوافق ويا جهازك، استورد ملف pairing صالح."
-          }
-        },
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Deine Pairing-Datei ist ungültig und nicht mit deinem Gerät kompatibel. Bitte importiere eine gültige Pairing-Datei."
-          }
-        },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Your pairing file is invalid and is incompatible with your device, please import a valid pairing file."
-          }
-        },
-        "it": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Il tuo file di abbinamento non è valido e non è compatibile con il tuo dispositivo, per favore importa un file di abbinamento valido."
-          }
-        },
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "페어링 파일이 올바르지 않거나 기기와 호환되지 않습니다. 유효한 페어링 파일을 가져와 주세요.\n"
-          }
-        },
-        "pl": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Twój plik parowania jest nieprawidłowy i niekompatybilny z urządzeniem. Zaimportuj poprawny plik."
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Eşleştirme dosyanız geçersiz ve cihazınızla uyumlu değil. Lütfen geçerli bir eşleştirme dosyası içe aktarın."
-          }
-        },
-        "vi": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Tệp ghép nối của bạn không hợp lệ và không tương thích với thiết bị của bạn, vui lòng nhập tệp ghép nối hợp lệ."
-          }
-        },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "配对文件不可用并且与设备不匹配，请导入可用的的配置文件。"
-          }
-        }
-      }
-    },
-    "Zenith was re-signed and installed over itself.": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Zenith was re-signed and installed over itself."
-          }
-        },
-        "ar": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "انوقّع زينيث وانثبّت فوق نفسه."
           }
         }
       }
@@ -19628,106 +17559,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "iTunes文件共享"
-          }
-        }
-      }
-    },
-    "idevice": {
-      "extractionState": "manual",
-      "localizations": {
-        "ar": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "idevice"
-          }
-        },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "idevice"
-          }
-        },
-        "it": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "idevice"
-          }
-        },
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "idevice"
-          }
-        },
-        "pl": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "idevice"
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "idevice"
-          }
-        },
-        "vi": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "idevice"
-          }
-        },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "idevice"
-          }
-        }
-      }
-    },
-    "idevice warning": {
-      "extractionState": "manual",
-      "localizations": {
-        "ar": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "تحذير idevice"
-          }
-        },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "This installation method is intended for advanced users only!\n\nIt requires a VPN and a pairing file from a PC.\n\nIts recommended you go back to the server installation method."
-          }
-        },
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "이 설치 방법은 숙련된 사용자만을 대상으로 합니다!\n\n이 방법을 사용하려면 VPN과 PC에서 가져온 페어링 파일이 필요합니다.\n\n서버 설치 방법으로 되돌아가는 것이 좋습니다."
-          }
-        },
-        "pl": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Ta metoda instalacji jest przeznaczona tylko dla zaawansowanych użytkowników!\n\nWymaga ona VPN i pliku parowania z komputera.\n\nZaleca się powrót do metody instalacji przez serwer."
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Bu kurulum yöntemi yalnızca ileri düzey kullanıcılar içindir!\n\nBilgisayarınız üzerinden alınmış bir eşleştirme dosyası ve VPN gerektirir.\n\nSunucu kurulum yöntemine geri dönmeniz önerilir."
-          }
-        },
-        "vi": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Phương pháp cài đặt này chỉ dành cho người dùng nâng cao!\n\nNó yêu cầu VPN và tệp ghép nối từ máy tính.\n\nChúng tôi khuyên bạn nên quay lại phương pháp cài đặt trên máy chủ."
-          }
-        },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "此安装方式仅适用于高级用户！\n\n需要VPN和来自电脑的配对文件。\n\n建议您返回服务器安装方式。"
           }
         }
       }
@@ -19939,36 +17770,19 @@
         }
       }
     },
-    "The protection profile is missing from the app. Please reinstall Zenith.": {
+    "The protection profile is missing from the app.": {
       "extractionState": "manual",
       "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "The protection profile is missing from the app. Please reinstall Zenith."
-          }
-        },
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "ملف الحماية مو موجود بالتطبيق. ثبّت Zenith من جديد."
+            "value": "ملف الحماية مو موجود بالتطبيق."
           }
-        }
-      }
-    },
-    "This re-signs Zenith itself and installs the new copy over this one. If the certificate came from Apple, a fresh one is fetched first; otherwise the current certificate is used. If anything fails, the old copy keeps running.": {
-      "extractionState": "manual",
-      "localizations": {
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "This re-signs Zenith itself and installs the new copy over this one. If the certificate came from Apple, a fresh one is fetched first; otherwise the current certificate is used. If anything fails, the old copy keeps running."
-          }
-        },
-        "ar": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "هالشي يوقّع زينيث نفسه ويثبّت النسخة الجديدة فوق هاي النسخة. إذا الشهادة من أبل، تنجاب شهادة جديدة أولاً؛ وإلا تنستخدم الشهادة الحالية. إذا فشل أي شي، تبقى النسخة القديمة تشتغل."
+            "value": "The protection profile is missing from the app."
           }
         }
       }
@@ -21061,23 +18875,6 @@
         }
       }
     },
-    "فشل التثبيت": {
-      "extractionState": "manual",
-      "localizations": {
-        "ar": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "فشل التثبيت"
-          }
-        },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "فشل التثبيت"
-          }
-        }
-      }
-    },
     "تأكد عندك مساحة فاضية بالآيفون.": {
       "extractionState": "manual",
       "localizations": {
@@ -21095,23 +18892,6 @@
         }
       }
     },
-    "إذا التطبيق مثبّت قبل، احذف النسخة القديمة وثبّت من جديد.": {
-      "extractionState": "manual",
-      "localizations": {
-        "ar": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "إذا التطبيق مثبّت قبل، احذف النسخة القديمة وثبّت من جديد."
-          }
-        },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "إذا التطبيق مثبّت قبل، احذف النسخة القديمة وثبّت من جديد."
-          }
-        }
-      }
-    },
     "تأكد الشهادة ما منتهية — شوف تبويب الشهادات.": {
       "extractionState": "manual",
       "localizations": {
@@ -21125,23 +18905,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "تأكد الشهادة ما منتهية — شوف تبويب الشهادات."
-          }
-        }
-      }
-    },
-    "إذا تكرر، وقّع التطبيق من جديد وبعدين ثبّته.": {
-      "extractionState": "manual",
-      "localizations": {
-        "ar": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "إذا تكرر، وقّع التطبيق من جديد وبعدين ثبّته."
-          }
-        },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "إذا تكرر، وقّع التطبيق من جديد وبعدين ثبّته."
           }
         }
       }
@@ -21197,36 +18960,36 @@
         }
       }
     },
-    "وقّع كل تطبيقاتك بالشهادة الجديدة وثبّتها من جديد.": {
+    "وقّع كل تطبيقاتك بالشهادة الجديدة من جديد.": {
       "extractionState": "manual",
       "localizations": {
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "وقّع كل تطبيقاتك بالشهادة الجديدة وثبّتها من جديد."
+            "value": "وقّع كل تطبيقاتك بالشهادة الجديدة من جديد."
           }
         },
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "وقّع كل تطبيقاتك بالشهادة الجديدة وثبّتها من جديد."
+            "value": "وقّع كل تطبيقاتك بالشهادة الجديدة من جديد."
           }
         }
       }
     },
-    "ثبّت الحماية ضد السحب من تبويب الشهادات حتى ما تتكرر المشكلة.": {
+    "فعّل الحماية ضد السحب من تبويب الشهادات حتى ما تتكرر المشكلة.": {
       "extractionState": "manual",
       "localizations": {
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "ثبّت الحماية ضد السحب من تبويب الشهادات حتى ما تتكرر المشكلة."
+            "value": "فعّل الحماية ضد السحب من تبويب الشهادات حتى ما تتكرر المشكلة."
           }
         },
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "ثبّت الحماية ضد السحب من تبويب الشهادات حتى ما تتكرر المشكلة."
+            "value": "فعّل الحماية ضد السحب من تبويب الشهادات حتى ما تتكرر المشكلة."
           }
         }
       }
@@ -21248,19 +19011,19 @@
         }
       }
     },
-    "تأكد مختار شهادة من شاشة التوقيع وإنها ما منتهية.": {
+    "تأكد مختار شهادة من تبويب الشهادات وإنها ما منتهية.": {
       "extractionState": "manual",
       "localizations": {
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "تأكد مختار شهادة من شاشة التوقيع وإنها ما منتهية."
+            "value": "تأكد مختار شهادة من تبويب الشهادات وإنها ما منتهية."
           }
         },
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "تأكد مختار شهادة من شاشة التوقيع وإنها ما منتهية."
+            "value": "تأكد مختار شهادة من تبويب الشهادات وإنها ما منتهية."
           }
         }
       }
@@ -21350,19 +19113,19 @@
         }
       }
     },
-    "ما صار أي خطأ مسجّل — إذا صار خطأ بالتوقيع أو التثبيت، راح يطلع هنا.": {
+    "ما صار أي خطأ مسجّل — إذا صار خطأ بالتوقيع أو الاستيراد، راح يطلع هنا.": {
       "extractionState": "manual",
       "localizations": {
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "ما صار أي خطأ مسجّل — إذا صار خطأ بالتوقيع أو التثبيت، راح يطلع هنا."
+            "value": "ما صار أي خطأ مسجّل — إذا صار خطأ بالتوقيع أو الاستيراد، راح يطلع هنا."
           }
         },
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "ما صار أي خطأ مسجّل — إذا صار خطأ بالتوقيع أو التثبيت، راح يطلع هنا."
+            "value": "ما صار أي خطأ مسجّل — إذا صار خطأ بالتوقيع أو الاستيراد، راح يطلع هنا."
           }
         }
       }
@@ -21503,19 +19266,19 @@
         }
       }
     },
-    "تاريخ التثبيت": {
+    "تاريخ الإضافة": {
       "extractionState": "manual",
       "localizations": {
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "تاريخ التثبيت"
+            "value": "تاريخ الإضافة"
           }
         },
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "تاريخ التثبيت"
+            "value": "تاريخ الإضافة"
           }
         }
       }
@@ -22710,7 +20473,7 @@
         }
       }
     },
-          "Unlock Hidden Graphics Settings": {
+    "Unlock Hidden Graphics Settings": {
       "extractionState": "manual",
       "localizations": {
         "ar": {
@@ -23560,7 +21323,7 @@
         }
       }
     },
-          "Edit Local Game Files": {
+    "Edit Local Game Files": {
       "extractionState": "manual",
       "localizations": {
         "ar": {
@@ -25664,6 +23427,2974 @@
           "stringUnit": {
             "state": "translated",
             "value": "إذا التطبيق ما اشتغل بعد التخفيف، وقّعه مرة ثانية بدون ما تختار شي من هاي الصفحة."
+          }
+        }
+      }
+    },
+    "افتح داخل التطبيق": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "افتح داخل التطبيق"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "افتح داخل التطبيق"
+          }
+        }
+      }
+    },
+    "استورد داخل التطبيق": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "استورد داخل التطبيق"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "استورد داخل التطبيق"
+          }
+        }
+      }
+    },
+    "استورد التطبيق": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "استورد التطبيق"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "استورد التطبيق"
+          }
+        }
+      }
+    },
+    "هالتطبيق ما مستورد بعد — استورده حتى يشتغل داخل التطبيق.": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "هالتطبيق ما مستورد بعد — استورده حتى يشتغل داخل التطبيق."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "هالتطبيق ما مستورد بعد — استورده حتى يشتغل داخل التطبيق."
+          }
+        }
+      }
+    },
+    "تم الاستيراد — افتح التطبيق من المكتبة.": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "تم الاستيراد — افتح التطبيق من المكتبة."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "تم الاستيراد — افتح التطبيق من المكتبة."
+          }
+        }
+      }
+    },
+    "ما قدرت أستورد هالتطبيق": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ما قدرت أستورد هالتطبيق"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ما قدرت أستورد هالتطبيق"
+          }
+        }
+      }
+    },
+    "ما عندك شهادة — استورد شهادة من الإعدادات أولاً.": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ما عندك شهادة — استورد شهادة من الإعدادات أولاً."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ما عندك شهادة — استورد شهادة من الإعدادات أولاً."
+          }
+        }
+      }
+    },
+    "استورد على أي حال": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "استورد على أي حال"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "استورد على أي حال"
+          }
+        }
+      }
+    },
+    "هالتطبيق يحتاج iOS %@ على الأقل، وجهازك عليه iOS %@. ممكن ما يشتغل بعد الاستيراد.": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "هالتطبيق يحتاج iOS %@ على الأقل، وجهازك عليه iOS %@. ممكن ما يشتغل بعد الاستيراد."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "هالتطبيق يحتاج iOS %@ على الأقل، وجهازك عليه iOS %@. ممكن ما يشتغل بعد الاستيراد."
+          }
+        }
+      }
+    },
+    "ما قدرت أفتح هالتطبيق — ملفاته مو موجودة.": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ما قدرت أفتح هالتطبيق — ملفاته مو موجودة."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ما قدرت أفتح هالتطبيق — ملفاته مو موجودة."
+          }
+        }
+      }
+    },
+    "تم تخطي %lld ملفات deb — ما تنضاف بهالطريقة.": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "تم تخطي %lld ملفات deb — ما تنضاف بهالطريقة."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "تم تخطي %lld ملفات deb — ما تنضاف بهالطريقة."
+          }
+        }
+      }
+    },
+    "جارٍ نسخ الملفات...": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "جارٍ نسخ الملفات..."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "جارٍ نسخ الملفات..."
+          }
+        }
+      }
+    },
+    "جارٍ تطبيق التعديلات...": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "جارٍ تطبيق التعديلات..."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "جارٍ تطبيق التعديلات..."
+          }
+        }
+      }
+    },
+    "جارٍ التوقيع...": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "جارٍ التوقيع..."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "جارٍ التوقيع..."
+          }
+        }
+      }
+    },
+    "جارٍ الاستيراد...": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "جارٍ الاستيراد..."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "جارٍ الاستيراد..."
+          }
+        }
+      }
+    },
+    "صار خطأ أثناء الاستيراد — حاول مرة ثانية.": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "صار خطأ أثناء الاستيراد — حاول مرة ثانية."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "صار خطأ أثناء الاستيراد — حاول مرة ثانية."
+          }
+        }
+      }
+    },
+    "Add to Favorites": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "أضف إلى المفضلة"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Add to Favorites"
+          }
+        }
+      }
+    },
+    "Favorites": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "المفضلة"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Favorites"
+          }
+        }
+      }
+    },
+    "Last opened": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "آخر مرة انفتح"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Last opened"
+          }
+        }
+      }
+    },
+    "Never opened": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ما انفتح أبد"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Never opened"
+          }
+        }
+      }
+    },
+    "No Category": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "بدون تصنيف"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No Category"
+          }
+        }
+      }
+    },
+    "Not opened in a while": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ما انفتح من زمان"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Not opened in a while"
+          }
+        }
+      }
+    },
+    "Remove from Favorites": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "احذف من المفضلة"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Remove from Favorites"
+          }
+        }
+      }
+    },
+    "Show": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "إظهار"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Show"
+          }
+        }
+      }
+    },
+    "Show Expired Apps": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "إظهار التطبيقات المنتهية"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Show Expired Apps"
+          }
+        }
+      }
+    },
+    "إعادة الفحص": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "إعادة الفحص"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "إعادة الفحص"
+          }
+        }
+      }
+    },
+    "التطبيق يفتح وحده من يرجع النت": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "التطبيق يفتح وحده من يرجع النت"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "التطبيق يفتح وحده من يرجع النت"
+          }
+        }
+      }
+    },
+    "تحديث جديد نزل": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "تحديث جديد نزل"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "تحديث جديد نزل"
+          }
+        }
+      }
+    },
+    "حدّث هسه": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "حدّث هسه"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "حدّث هسه"
+          }
+        }
+      }
+    },
+    "شغّل الواي فاي أو بيانات الموبايل حتى يفتح التطبيق": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "شغّل الواي فاي أو بيانات الموبايل حتى يفتح التطبيق"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "شغّل الواي فاي أو بيانات الموبايل حتى يفتح التطبيق"
+          }
+        }
+      }
+    },
+    "ما قدرت أفحص إعدادات الكرافيك، حاول مرة ثانية.": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ما قدرت أفحص إعدادات الكرافيك، حاول مرة ثانية."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ما قدرت أفحص إعدادات الكرافيك، حاول مرة ثانية."
+          }
+        }
+      }
+    },
+    "ما قدرت أفحص ملفات هالتطبيق، حاول مرة ثانية.": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ما قدرت أفحص ملفات هالتطبيق، حاول مرة ثانية."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ما قدرت أفحص ملفات هالتطبيق، حاول مرة ثانية."
+          }
+        }
+      }
+    },
+    "ماكو نت": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ماكو نت"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ماكو نت"
+          }
+        }
+      }
+    },
+    "متأكد تمسح التطبيق؟": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "متأكد تمسح التطبيق؟"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "متأكد تمسح التطبيق؟"
+          }
+        }
+      }
+    },
+    "A freshly signed Zenith IPA was saved to Archives. Install it with SideStore or ESign.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "A freshly signed Zenith IPA was saved to Archives. Install it with SideStore or ESign."
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "انحفظت نسخة زينيث الموقعة بالأرشيف. ثبّتها بسايد ستور أو إي ساين."
+          }
+        }
+      }
+    },
+    "Advanced Installation Method": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "طريقة تثبيت متقدمة"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Advanced Installation Method"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "고급 설치 방법"
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Zaawansowana metoda instalacji"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gelişmiş Kurulum Yöntemi"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Phương pháp cài đặt nâng cao"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "高级安装方式"
+          }
+        }
+      }
+    },
+    "Certificates updated successfully.": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "تحدّثت الشهادات بنجاح."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Certificates updated successfully."
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "인증서가 성공적으로 업데이트되었습니다."
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Certyfikaty zaktualizowano pomyślnie."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sertifikalar başarıyla güncellendi."
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Chứng chỉ được cập nhật thành công."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "证书更新成功。"
+          }
+        }
+      }
+    },
+    "Configure the apps way of installing, its zip compression levels, and custom modifications to apps.": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "حدّد طريقة تثبيت التطبيق ومستويات ضغط zip والتعديلات المخصصة عليه."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Konfiguriere wie die Apps installiert werden, deren ZIP-Komprimierungslevel, und benutzerdefinierte Modifikationen der Apps."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Configure the apps way of installing, its zip compression levels, and custom modifications to apps."
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Configura il modo dell'installazione delle app, il livello della compressione delle zip, e modifiche personalizzate delle app."
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "앱 설치 방식, zip 압축 수준 및 앱에 대한 맞춤 수정 사항을 구성합니다."
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Skonfiguruj sposób instalacji aplikacji, poziom kompresji ZIP i niestandardowe modyfikacje aplikacji."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Uygulamaların kurulum şeklini, paket sıkıştırma seviyelerini ve uygulamalara özel değişiklikleri yapılandırın."
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cấu hình cách cài đặt ứng dụng, mức độ nén zip và các sửa đổi tùy chỉnh cho ứng dụng."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "调整应用的安装方式、压缩等级并对应用自定义。"
+          }
+        }
+      }
+    },
+    "Connect to LocalDevVPN": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Connect to LocalDevVPN"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "اتصل بـ LocalDevVPN"
+          }
+        }
+      }
+    },
+    "Delete After Signing": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "امسح بعد التوقيع"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nach dem Signieren löschen"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Delete After Signing"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Elimina dopo la firma"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "서명 후 삭제"
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Usuń po podpisaniu"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "İmzaladıktan Sonra Sil"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Xóa sau khi ký"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "签名后删除"
+          }
+        }
+      }
+    },
+    "Do you want to download and install this file?": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Do you want to download and install this file?"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "تريد تنزّل هالملف وتثبّته؟"
+          }
+        }
+      }
+    },
+    "Download LocalDevVPN": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Download LocalDevVPN"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "نزّل LocalDevVPN"
+          }
+        }
+      }
+    },
+    "Failed to download, check your internet connection and try again.": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "التنزيل فشل. تأكد من النت وحاول مرة ثانية."
+          }
+        },
+        "cs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nelze stáhnout, zkontrolujte svoje připojení k internetu a zkuste znovu."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Herunterladen fehlgeschlagen. Überprüfe deine Internetverbindung und versuche es erneut."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Failed to download, check your internet connection and try again."
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gagal mengunduh, periksa koneksi internet Anda dan coba lagi."
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Download fallito, controlla la tua connessione e riprova."
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "다운로드에 실패했습니다, 인터넷 연결 상태를 확인하고 다시 시도하세요."
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nie udało się pobrać. Sprawdź połączenie z internetem i spróbuj ponownie."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "İndirme başarısız oldu. İnternet bağlantınızı kontrol edip tekrar deneyin."
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tải xuống thất bại, hãy kiểm tra kết nối internet của bạn và thử lại."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "下载失败，请检查网络连接并重试。"
+          }
+        }
+      }
+    },
+    "Fully Local": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "محلي بالكامل"
+          }
+        },
+        "cs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Zcela lokální"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Komplett lokal"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fully Local"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sepenuhnya Lokal"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tutto in locale"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "완전한 로컬"
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "W pełni lokalnie"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tamamen Yerel"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cục bộ hoàn toàn"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "完全本地化"
+          }
+        }
+      }
+    },
+    "Heartbeat": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "نبض"
+          }
+        },
+        "cs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Heartbeat"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Herzschlag"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Heartbeat"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Detak Jantung"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Battito"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Heartbeat"
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Heartbeat"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Heartbeat"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Heartbeat"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "心跳检测"
+          }
+        }
+      }
+    },
+    "Import Pairing File": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "استيراد ملف الاقتران"
+          }
+        },
+        "cs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Importovat párovací soubor"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pairing-Datei importieren"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Import Pairing File"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Impor Berkas Pairing"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Importa file di abbinamento"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "페어링 파일 가져오기"
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Importuj plik parowania"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Eşleştirme Dosyasını İçe Aktar"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nhập tệp ghép nối"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "导入配对文件"
+          }
+        }
+      }
+    },
+    "Install": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ثبّت"
+          }
+        },
+        "cs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nainstalovat"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Installieren"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Install"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Install"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Install"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pasang"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Installa"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "설치"
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Instaluj"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Установить"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Yükle"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cài đặt"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "安装"
+          }
+        }
+      }
+    },
+    "Install After Signing": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ثبّت بعد التوقيع"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nach dem Signieren installieren"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Install After Signing"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "서명 후 설치"
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Zainstaluj po podpisaniu"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "İmzaladıktan Sonra Yükle"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cài đặt sau khi ký"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "签名后安装"
+          }
+        }
+      }
+    },
+    "Install Current Version": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Install Current Version"
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Zainstaluj bieżącą wersję"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ثبّت الإصدار الحالي"
+          }
+        }
+      }
+    },
+    "Installation": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "التثبيت"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Installation"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Installation"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Installazione"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "설치"
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Instalacja"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kurulum"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Trình cài đặt"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "安装"
+          }
+        }
+      }
+    },
+    "Installation Type": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "نوع التثبيت"
+          }
+        },
+        "cs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Typ instalace"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Installationstyp"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Installation Type"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Jenis Instalasi"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tipo di installazione"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "설치 유형"
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Typ instalacji"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kurulum Türü"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kiểu cài đặt"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "安装类型"
+          }
+        }
+      }
+    },
+    "No pairing file found, please import it.": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ما لكينا ملف اقتران، استورده."
+          }
+        },
+        "cs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Párovací soubor nebyl nalezen, importujte ho prosím."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pairing-Datei fehlt, Datei-Import erforderlich."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No pairing file found, please import it."
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tidak ditemukan berkas pairing, silakan impor terlebih dahulu."
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "File di abbinamento non trovato, per favore importalo."
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "페어링 파일을 찾을 수 없습니다, 불러와 주세요."
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nie znaleziono pliku parowania, zaimportuj go."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Eşleştirme dosyası bulunamadı. Lütfen içe aktarın."
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Không tìm thấy tệp ghép nối, vui lòng nhập tệp."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "未找到配对文件，请导入。"
+          }
+        }
+      }
+    },
+    "Only use localhost address": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "استخدم عنوان localhost بس"
+          }
+        },
+        "cs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pouze použít adresu localhost"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nur die Localhost-Adresse verwenden"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Only use localhost address"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hanya gunakan alamat localhost"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Usa solo l'indirizzo localhost"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "localhost 주소만 사용하세요"
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Używaj tylko adresu localhost"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Yalnızca “localhost” adresini kullan"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Chỉ sử dụng địa chỉ localhost"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "只使用本地地址"
+          }
+        }
+      }
+    },
+    "Open the Library and install the refreshed apps.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Open the Library and install the refreshed apps."
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "افتح المكتبة وثبّت التطبيقات اللي تجدّدت."
+          }
+        }
+      }
+    },
+    "Post Signing": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "بعد التوقيع"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nach der Signierung"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Post Signing"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Post-Firma"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "서명 후"
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Po podpisaniu"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "İmzalama Sonrası"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sau khi ký"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "签名后配置"
+          }
+        }
+      }
+    },
+    "Refresh Zenith Itself": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Refresh Zenith Itself"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "جدّد زينيث نفسه"
+          }
+        }
+      }
+    },
+    "Restart Heartbeat": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "شغّل نبض من جديد"
+          }
+        },
+        "cs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Restartovat heartbeat"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Herzschlag neustarten"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Restart Heartbeat"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mulai Ulang Detak Jantung"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Riavvia battito"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Heartbeat 재시작"
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Restartuj Heartbeat"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Heartbeat’i Yeniden Başlat"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Khởi động lại Heartbeat"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "重置心跳检测   "
+          }
+        }
+      }
+    },
+    "SSL Certificates": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "شهادات SSL"
+          }
+        },
+        "cs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "SSL certifikáty"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "SSL Zertifikate"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "SSL Certificates"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sertifikat SSL"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Certificati SSL"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "SSL 인증서"
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Certyfikaty SSL"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "SSL Sertifikaları"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Chứng chỉ SSL"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "SSL证书"
+          }
+        }
+      }
+    },
+    "Seems like you've gotten your hands on your pairing file!": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "يبدو إنك حصلت على ملف الاقتران مالك!"
+          }
+        },
+        "cs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vypad\u0001á to, že máte párovací soubor!"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Prima, du hast eine gültige Pairing-Datei!"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Seems like you've gotten your hands on your pairing file!"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sepertinya Anda sudah mendapatkan berkas pairing Anda"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sembra che tu abbia messo le mani sul tuo file di abbinamento!"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "페어링 파일을 손에 넣으신 것 같네요!"
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Wygląda na to, że masz swój plik parowania!"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Görünüşe göre eşleştirme dosyanızı temin etmişsiniz. "
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Có vẻ như bạn đã có tệp ghép nối của mình!"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "你应该已经设置好配对文件了！"
+          }
+        }
+      }
+    },
+    "Self-refresh was not attempted.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Self-refresh was not attempted."
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ما صارت محاولة تجديد الذات."
+          }
+        }
+      }
+    },
+    "Semi Local": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "محلي جزئيًا"
+          }
+        },
+        "cs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Polo-lokální"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Semi-Lokal"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Semi Local"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Semi Lokal"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Semi Locale"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "부분 로컬"
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Częściowo lokalnie"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Yarı Yerel"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bán cục bộ"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "半本地化"
+          }
+        }
+      }
+    },
+    "Server": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Server"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Server"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Server"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Server"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "서버"
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Serwer"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sunucu"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Máy chủ"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "服务器"
+          }
+        }
+      }
+    },
+    "Server & SSL": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "الخادم و SSL"
+          }
+        },
+        "cs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Server a SSL"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Server & SSL"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Server & SSL"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Server & SSL"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Server & SSL"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "서버 및 SSL"
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Serwer i SSL"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sunucu ve SSL"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Máy chủ & SSL"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "服务器与SSL"
+          }
+        }
+      }
+    },
+    "Server (Recommended):\nUses a locally hosted server and itms-services:// to install applications.\n\nIDevice (advanced):\nUses a VPN and a pairing file. Writes to AFC and manually calls installd, while monitoring install progress by using a callback\nAdvantage: It is very reliable, does not need SSL certificates or a externally hosted server. Rather, works similarly to a computer.": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Server (موصى بيه):\nيستخدم خادم محلي و itms-services:// حتى يثبّت التطبيقات.\n\nIDevice (متقدم):\nيستخدم VPN وملف اقتران. يكتب بـ AFC ويستدعي installd يدويًا، ويراقب تقدّم التثبيت عن طريق callback.\nالميزة: موثوق كلش، وما يحتاج شهادات SSL أو خادم مستضاف برّه، بل يشتغل بطريقة تشبه الكمبيوتر."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Server (Empfohlen):\nVerwendet einen lokal gehosteten Server und itms-services://, um Apps zu installieren.\n\nIDevice (fortgeschritten):\nVerwendet ein VPN und eine Pairing-Datei. Verwendet AFC und ruft installd manuell auf, während der Installationsfortschritt über einen Callback überwacht wird.\nVorteil: Es ist sehr zuverlässig, benötigt keine SSL-Zertifikate oder extern gehostete Server."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Server (Recommended):\nUses a locally hosted server and itms-services:// to install applications.\n\nIDevice (advanced):\nUses a VPN and a pairing file. Writes to AFC and manually calls installd, while monitoring install progress by using a callback\nAdvantage: It is very reliable, does not need SSL certificates or a externally hosted server. Rather, works similarly to a computer."
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Server (Consigliato):Utilizza un server ospitato localmente e itms-services:// per installare le applicazioni.iDevice (Avanzato):Utilizza una VPN e un file di abbinamento. Scrive tramite AFC e richiama manualmente installd, monitorando l’avanzamento dell’installazione tramite una callback.Vantaggi:È molto affidabile, non richiede certificati SSL né un server ospitato esternamente. Funziona in modo simile a un computer."
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "서버 (추천):\n로컬에 호스팅된 서버와 itms-services://를 사용하여 애플리케이션을 설치합니다.\n\nIDevice (고급):\nVPN과 페어링 파일을 사용합니다. AFC에 데이터를 기록하고 수동으로 installd를 호출하며, 콜백을 통해 설치 진행 상황을 모니터링합니다.\n장점: 매우 안정적이며, SSL 인증서나 외부 호스팅 서버가 필요하지 않습니다. 오히려 컴퓨터와 비슷한 방식으로 작동합니다."
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Serwer (zalecane):\nUżywa lokalnie hostowanego serwera i itms-services:// do instalowania aplikacji.\n\nIDevice (zaawansowane):\nUżywa VPN i pliku parowania. Zapisuje do AFC i ręcznie wywołuje installd, monitorując postęp instalacji przez callback.\nZaleta: Jest bardzo niezawodny, nie wymaga certyfikatów SSL ani zewnętrznego serwera. Działa podobnie do komputera."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sunucu (Önerilen):\nUygulamaları yüklemek için yerel olarak barındırılan bir sunucu ve itms-services:// kullanır.\n\nIDevice (Gelişmiş):\nBir VPN ve eşleştirme dosyası kullanır. Kurulum AFC aracılığıyla gerçekleştirilir ve ilerleme izlenebilir.\nAvantajı: Çok güvenilirdir, SSL sertifikalarına veya harici olarak barındırılan bir sunucuya ihtiyaç duymaz. Aksine, bir bilgisayara benzer şekilde çalışır."
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Máy chủ (Khuyến nghị):\nSử dụng máy chủ lưu trữ cục bộ và itms-services:// để cài đặt ứng dụng.\n\nIDevice (nâng cao):\nSử dụng VPN và tệp ghép nối. Ghi vào AFC và gọi installd theo cách thủ công, đồng thời theo dõi tiến trình cài đặt bằng cách sử dụng lệnh gọi lại\nƯu điểm: Rất đáng tin cậy, không cần chứng chỉ SSL hoặc máy chủ lưu trữ bên ngoài. Thay vào đó, hoạt động tương tự như máy tính."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "服务器（推荐）：\n使用本地托管的服务器和itms-services://来安装应用。\n\nIDevice（高级）：\n使用VPN和配对文件。写入AFC并手动调用installd，使用回调检测安装进度。\n优点：非常稳定，不需要SSL证书或设备外托管的服务器，而是在本地进行模拟。"
+          }
+        }
+      }
+    },
+    "Server Type": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "نوع Server"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Servertyp"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Server Type"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tipo server"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "서버 유형"
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Typ serwera"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sunucu Türü"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Loại máy chủ"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "服务器类型"
+          }
+        }
+      }
+    },
+    "Status": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Status"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "الحالة"
+          }
+        }
+      }
+    },
+    "Switch Back": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ارجع"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Switch Back"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "뒤로 가기"
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Wróć"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Geri Dön"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Chuyển lại"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "切换回去"
+          }
+        }
+      }
+    },
+    "The heartbeat is activated in the background, it will restart when the app is re-opened or prompted. If the status below is pulsing, that means its healthy.": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ميزة نبض شغالة بالخلفية، وراح تنعاد من تفتح التطبيق مرة ثانية أو من تطلبها. إذا الحالة جوّه تنبض، معناها تشتغل تمام."
+          }
+        },
+        "cs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Heartbeat je aktivován v pozadí, sám se zrestartuje když se aplikace znovu otevře nebo po dotázání. Když status dole pulzuje, znamená to, že je funkční."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Der Herzschlag wird im Hintergrund aktiviert und startet neu, wenn die App erneut geöffnet oder dazu aufgefordert wird. Wenn der unten stehende Status pulsiert, bedeutet das, dass alles ordnungsgemäß funktioniert."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The heartbeat is activated in the background, it will restart when the app is re-opened or prompted. If the status below is pulsing, that means its healthy."
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Detak jantung diaktifkan di latar belakang, akan\ndimulai ulang saat aplikasi dibuka kembali atau diminta. Jika status di bawah ini berdenyut, berarti dalam kondisi sehat."
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Il battito è attivo in background; verrà riavviato quando l'app viene riaperta o forzata. Se lo stato qui sotto pulsa, significa che è funzionante."
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Heartbeat는 백그라운드에서 실행되며, 앱을 다시 열거나 요청이 있을 때 다시 시작됩니다. 아래 상태가 깜빡이고 있다면 정상적으로 작동하고 있다는 뜻입니다."
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Monitor pracy aplikacji działa w tle. Zostanie uruchomiony ponownie po ponownym otwarciu lub wymuszeniu. Jeśli poniższy status pulsuje, wszystko działa poprawnie."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Heartbeat arka planda etkinleştirilir ve uygulama yeniden açıldığında ya da istenildiğinde yeniden başlatılır. Eğer aşağıdaki durum kalp atışı şeklide ise bu Heartbeat’in işlevsel olduğu anlamına gelir."
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Heartbeat được kích hoạt trong nền, nó sẽ khởi động lại khi ứng dụng được mở lại hoặc được nhắc nhở. Nếu trạng thái bên dưới đang nhịp đập, điều đó có nghĩa là nó hoạt động bình thường."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "心跳检测已在后台启用，并将在此App重启或被唤醒时重启。如果下面的状态灯正在闪动则为正常。"
+          }
+        }
+      }
+    },
+    "This will delete your imported application after signing, to save on using unneeded space.": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "هالشي راح يمسح التطبيق المستورد بعد التوقيع حتى يوفّر مساحة."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dies wird deine importierte Datei nach der Signierung löschen, um Speicherplatz zu sparen."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "This will delete your imported application after signing, to save on using unneeded space."
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Questo elimina l'applicazione importata dopo la firma, per salvare spazio usato inutilmente."
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "서명 절차가 완료되면 불필요한 저장 공간을 절약하기 위해 가져온 애플리케이션을 삭제합니다."
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Spowoduje to usunięcie zaimportowanej aplikacji po jej podpisaniu, co pozwoli zwolnić miejsce."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bu, imzaladıktan sonra içe aktarılan uygulamayı silerek gereksiz alanı geri kazanmanıza yardımcı olur."
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Thao tác này sẽ xóa ứng dụng đã nhập của bạn sau khi ký, để tiết kiệm dung lượng không cần thiết."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "在签名后删除导入的应用来节省空间。"
+          }
+        }
+      }
+    },
+    "Tunnel & Pairing": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tunnel و pairing"
+          }
+        },
+        "cs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tunel a párování"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tunnel & Pairing"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tunnel & Pairing"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tunnel & Pairing"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tunnel & Abbinamento"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "터널 및 페어링"
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tunel i parowanie"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tünel ve Eşleştirme"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tunnel & Ghép nối"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "隧道&配对"
+          }
+        }
+      }
+    },
+    "Update SSL Certificates": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "حدّث شهادات SSL"
+          }
+        },
+        "cs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aktualizovat SSL certifikáty"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lokale SSL-Zertifikate aktualisieren"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Update SSL Certificates"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Perbarui Sertifikat SSL"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aggiorna i certificati SSL"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "SSL 인증서 업데이트"
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aktualizuj certyfikaty SSL"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "SSL Sertifikalarını Güncelle"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cập nhật chứng chỉ SSL"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "更新SSL证书"
+          }
+        }
+      }
+    },
+    "You cannot update ‘%@‘ with itself, please use an alternative tool to update it.": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ما تكدر تحدّث ‘%@‘ بنفسه، استخدم أداة ثانية حتى تحدّثه."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Du kannst ‘%@‘ nicht mit sich selbst aktualisieren. Bitte verwende dafür ein alternatives Tool."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "You cannot update ‘%@‘ with itself, please use an alternative tool to update it."
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kamu tidak bisa melakukan update pada ‘%@’ menggunakan dirinya sendiri. Silakan gunakan tool alternatif untuk memperbaruinya."
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Non puoi aggiornare ‘%@‘ con se stesso, usa un altro tool per fare l’aggiornamento."
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "`%@`을(를) 자체적으로 업데이트할 수 없습니다. 다른 도구를 사용해 업데이트해 주세요.\n"
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nie można zaktualizować „%@” przy jego użyciu. Użyj innego narzędzia do aktualizacji."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@’ı kendisi üzerinden güncelleyemezsiniz. Lütfen güncelleme için alternatif bir araç kullanın."
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bạn không thể cập nhật ‘%@‘ bằng chính nó, vui lòng sử dụng công cụ thay thế để cập nhật."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "不能用‘%@’更新自己，请使用其他工具更新。"
+          }
+        }
+      }
+    },
+    "Your pairing file is invalid and is incompatible with your device, please import a valid pairing file.": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ملف pairing مو صالح ومو متوافق ويا جهازك، استورد ملف pairing صالح."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Deine Pairing-Datei ist ungültig und nicht mit deinem Gerät kompatibel. Bitte importiere eine gültige Pairing-Datei."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Your pairing file is invalid and is incompatible with your device, please import a valid pairing file."
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Il tuo file di abbinamento non è valido e non è compatibile con il tuo dispositivo, per favore importa un file di abbinamento valido."
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "페어링 파일이 올바르지 않거나 기기와 호환되지 않습니다. 유효한 페어링 파일을 가져와 주세요.\n"
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Twój plik parowania jest nieprawidłowy i niekompatybilny z urządzeniem. Zaimportuj poprawny plik."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Eşleştirme dosyanız geçersiz ve cihazınızla uyumlu değil. Lütfen geçerli bir eşleştirme dosyası içe aktarın."
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tệp ghép nối của bạn không hợp lệ và không tương thích với thiết bị của bạn, vui lòng nhập tệp ghép nối hợp lệ."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "配对文件不可用并且与设备不匹配，请导入可用的的配置文件。"
+          }
+        }
+      }
+    },
+    "Zenith was re-signed and installed over itself.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Zenith was re-signed and installed over itself."
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "انوقّع زينيث وانثبّت فوق نفسه."
+          }
+        }
+      }
+    },
+    "idevice": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "idevice"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "idevice"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "idevice"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "idevice"
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "idevice"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "idevice"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "idevice"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "idevice"
+          }
+        }
+      }
+    },
+    "idevice warning": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "تحذير idevice"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "This installation method is intended for advanced users only!\n\nIt requires a VPN and a pairing file from a PC.\n\nIts recommended you go back to the server installation method."
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "이 설치 방법은 숙련된 사용자만을 대상으로 합니다!\n\n이 방법을 사용하려면 VPN과 PC에서 가져온 페어링 파일이 필요합니다.\n\n서버 설치 방법으로 되돌아가는 것이 좋습니다."
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ta metoda instalacji jest przeznaczona tylko dla zaawansowanych użytkowników!\n\nWymaga ona VPN i pliku parowania z komputera.\n\nZaleca się powrót do metody instalacji przez serwer."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bu kurulum yöntemi yalnızca ileri düzey kullanıcılar içindir!\n\nBilgisayarınız üzerinden alınmış bir eşleştirme dosyası ve VPN gerektirir.\n\nSunucu kurulum yöntemine geri dönmeniz önerilir."
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Phương pháp cài đặt này chỉ dành cho người dùng nâng cao!\n\nNó yêu cầu VPN và tệp ghép nối từ máy tính.\n\nChúng tôi khuyên bạn nên quay lại phương pháp cài đặt trên máy chủ."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "此安装方式仅适用于高级用户！\n\n需要VPN和来自电脑的配对文件。\n\n建议您返回服务器安装方式。"
+          }
+        }
+      }
+    },
+    "The protection profile is missing from the app. Please reinstall Zenith.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The protection profile is missing from the app. Please reinstall Zenith."
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ملف الحماية مو موجود بالتطبيق. ثبّت Zenith من جديد."
+          }
+        }
+      }
+    },
+    "This re-signs Zenith itself and installs the new copy over this one. If the certificate came from Apple, a fresh one is fetched first; otherwise the current certificate is used. If anything fails, the old copy keeps running.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "This re-signs Zenith itself and installs the new copy over this one. If the certificate came from Apple, a fresh one is fetched first; otherwise the current certificate is used. If anything fails, the old copy keeps running."
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "هالشي يوقّع زينيث نفسه ويثبّت النسخة الجديدة فوق هاي النسخة. إذا الشهادة من أبل، تنجاب شهادة جديدة أولاً؛ وإلا تنستخدم الشهادة الحالية. إذا فشل أي شي، تبقى النسخة القديمة تشتغل."
+          }
+        }
+      }
+    },
+    "فشل التثبيت": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "فشل التثبيت"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "فشل التثبيت"
+          }
+        }
+      }
+    },
+    "إذا التطبيق مثبّت قبل، احذف النسخة القديمة وثبّت من جديد.": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "إذا التطبيق مثبّت قبل، احذف النسخة القديمة وثبّت من جديد."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "إذا التطبيق مثبّت قبل، احذف النسخة القديمة وثبّت من جديد."
+          }
+        }
+      }
+    },
+    "إذا تكرر، وقّع التطبيق من جديد وبعدين ثبّته.": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "إذا تكرر، وقّع التطبيق من جديد وبعدين ثبّته."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "إذا تكرر، وقّع التطبيق من جديد وبعدين ثبّته."
+          }
+        }
+      }
+    },
+    "وقّع كل تطبيقاتك بالشهادة الجديدة وثبّتها من جديد.": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "وقّع كل تطبيقاتك بالشهادة الجديدة وثبّتها من جديد."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "وقّع كل تطبيقاتك بالشهادة الجديدة وثبّتها من جديد."
+          }
+        }
+      }
+    },
+    "ثبّت الحماية ضد السحب من تبويب الشهادات حتى ما تتكرر المشكلة.": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ثبّت الحماية ضد السحب من تبويب الشهادات حتى ما تتكرر المشكلة."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ثبّت الحماية ضد السحب من تبويب الشهادات حتى ما تتكرر المشكلة."
+          }
+        }
+      }
+    },
+    "تأكد مختار شهادة من شاشة التوقيع وإنها ما منتهية.": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "تأكد مختار شهادة من شاشة التوقيع وإنها ما منتهية."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "تأكد مختار شهادة من شاشة التوقيع وإنها ما منتهية."
+          }
+        }
+      }
+    },
+    "ما صار أي خطأ مسجّل — إذا صار خطأ بالتوقيع أو التثبيت، راح يطلع هنا.": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ما صار أي خطأ مسجّل — إذا صار خطأ بالتوقيع أو التثبيت، راح يطلع هنا."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ما صار أي خطأ مسجّل — إذا صار خطأ بالتوقيع أو التثبيت، راح يطلع هنا."
+          }
+        }
+      }
+    },
+    "تاريخ التثبيت": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "تاريخ التثبيت"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "تاريخ التثبيت"
           }
         }
       }
