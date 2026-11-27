@@ -64,10 +64,15 @@ import Zsign
 		atPath appPath: String,
 		completion: @escaping (Bool) -> Void
 	) -> Bool {
+		// No isEmpty guard on the password on purpose: a
+		// password-less p12 (empty string) is valid — Zsign
+		// opens it with "", exactly like the old signing flow
+		// (ZsignHandler passes cert.password ?? ""). Refusing
+		// an empty password here made every guest import fail
+		// with the generic error for a cert that signs fine.
 		guard
 			let p12Path = LCZenithCertificate.p12Path,
-			let password = LCZenithCertificate.certificatePassword,
-			!password.isEmpty
+			let password = LCZenithCertificate.certificatePassword
 		else {
 			return false
 		}

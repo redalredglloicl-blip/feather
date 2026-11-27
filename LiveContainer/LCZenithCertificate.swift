@@ -95,13 +95,21 @@ enum LCZenithCertificate {
 	/// and right before a launch relaunches
 	/// (ZenithGuestLauncher) — the launch call is the
 	/// guarantee, because it runs immediately before the
-	/// bootstrap reads the password. Skips empty passwords
-	/// (never overwrite a good stored password with "") and
-	/// does nothing when there is no selected certificate.
+	/// bootstrap reads the password. Mirrors even an EMPTY
+	/// password: LC's patch step treats a nil
+	/// LCCertificatePassword as "no certificate configured"
+	/// and silently SKIPS signing while reporting success — then
+	/// the importer's post-sign check fails the import with the
+	/// generic error. An empty string is a real value (a
+	/// password-less p12, like the shared enterprise cert); it
+	/// passes LC's nil check, and Zsign opens the p12 with it
+	/// exactly like the old signing flow (ZsignHandler passes
+	/// cert.password ?? "" with no isEmpty guard). Does nothing
+	/// when there is no selected certificate.
 	static func mirrorPasswordForLaunch() {
-		guard let password = certificatePassword, !password.isEmpty else {
+		guard selectedCertificate != nil else {
 			return
 		}
-		LCUtils.setCertificatePassword(password)
+		LCUtils.setCertificatePassword(certificatePassword ?? "")
 	}
 }
