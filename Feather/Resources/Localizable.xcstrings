@@ -21051,6 +21051,108 @@
         }
       }
     },
+    "Add Value Editor to Game": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "إضافة محرر القيم للعبة"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Add Value Editor to Game"
+          }
+        }
+      }
+    },
+    "Games with Value Editor": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "الألعاب المضاف لها محرر القيم"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Games with Value Editor"
+          }
+        }
+      }
+    },
+    "No Games with Value Editor Yet": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "بعد ما ضفت أي لعبة — اضغط مطولاً على لعبة واختار «إضافة محرر القيم للعبة»"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No games yet — long-press a game and choose “Add Value Editor to Game”"
+          }
+        }
+      }
+    },
+    "Value Editor Added": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "تمت إضافة محرر القيم — اللعبة صارت بقسم «الألعاب المضاف لها محرر القيم»، اضغط عليها حتى تشارك نسخة الـ IPA"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Value Editor added — the game is now in “Games with Value Editor”. Tap it to share the IPA."
+          }
+        }
+      }
+    },
+    "Adding Value Editor Failed": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ما قدرت أضيف محرر القيم"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Could not add the Value Editor"
+          }
+        }
+      }
+    },
+    "Value Editor File Missing": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ملف الـ IPA مو موجود — ضيف محرر القيم للعبة من جديد"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The IPA file is gone — add the Value Editor to the game again"
+          }
+        }
+      }
+    },
     "Pick a Value Editor .dylib file.": {
       "extractionState": "manual",
       "localizations": {

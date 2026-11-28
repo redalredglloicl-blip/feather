@@ -38,6 +38,14 @@ struct LibraryCellView: View {
 	/// dismisses itself when the row goes away.
 	var onDeleteRequest: ((AppInfoPresentable) -> Void)?
 
+	/// Zenith v2.38 Part B: Value Editor injection runs from the
+	/// long-press menu. While it runs the row shows a spinner;
+	/// when it finishes (success or failure) the alert below
+	/// says what happened in Iraqi.
+	@State private var _isAddingValueEditor = false
+	@State private var _valueEditorResultMessage: String?
+	@State private var _isValueEditorResultPresenting = false
+
 	// MARK: Selections
 	private var _isSelected: Bool {
 		guard let uuid = app.uuid else { return false }
@@ -165,6 +173,20 @@ struct LibraryCellView: View {
 				_contextActionsExtra(for: app)
 				Divider()
 				_actions(for: app)
+			}
+		}
+		.overlay(alignment: .center) {
+			if _isAddingValueEditor {
+				ProgressView()
+					.padding(12)
+					.background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 12))
+			}
+		}
+		.alert(.localized("Value Editor"), isPresented: $_isValueEditorResultPresenting) {
+			Button(.localized("OK"), role: .cancel) { }
+		} message: {
+			if let message = _valueEditorResultMessage {
+				Text(verbatim: message)
 			}
 		}
 	}
@@ -367,6 +389,22 @@ extension LibraryCellView {
 						.frame(width: 20, height: 20)
 				}
 			}
+			// Zenith v2.38 Part B: directly under "وقّع" — injects
+			// the Value Editor into this game WITHOUT signing, so
+			// it is offered for signed games too. The menu item is
+			// shown for every app on purpose: games are often
+			// uncategorised, so gating on the category would hide
+			// it from exactly the games Reda long-presses.
+			Button {
+				_addValueEditor(for: app)
+			} label: {
+				Label {
+					Text(.localized("Add Value Editor to Game"))
+				} icon: {
+					Image(systemName: "slider.horizontal.3")
+				}
+			}
+			.disabled(_isAddingValueEditor)
 			Button {
 				selectedInstallAppPresenting = AnyApp(base: app, archive: true)
 			} label: {
@@ -402,6 +440,58 @@ extension LibraryCellView {
 						.resizable()
 						.scaledToFit()
 						.frame(width: 20, height: 20)
+				}
+			}
+			// Zenith v2.38 Part B: directly under "وقّع" — this is
+			// the point of the feature: an UNSIGNED game gets the
+			// Value Editor injected with no signing step at all.
+			// Shown for every app (see the signed branch note):
+			// uncategorised games must not lose the item.
+			Button {
+				_addValueEditor(for: app)
+			} label: {
+				Label {
+					Text(.localized("Add Value Editor to Game"))
+				} icon: {
+					Image(systemName: "slider.horizontal.3")
+				}
+			}
+			.disabled(_isAddingValueEditor)
+		}
+	}
+}
+
+// MARK: - Extension: Value Editor (Zenith v2.38 Part B)
+extension LibraryCellView {
+	/// Injects the Value Editor into this game WITHOUT signing
+	/// and records it in LibraryPrefs, which is what puts the
+	/// game in the Home section "الألعاب المضاف لها محرر القيم".
+	/// The original Library entry is never modified. Runs off
+	/// the main thread (copy + inject + zip); all state changes
+	/// come back on the main actor.
+	private func _addValueEditor(for app: AppInfoPresentable) {
+		guard !_isAddingValueEditor else { return }
+		guard let uuid = app.uuid else { return }
+		_isAddingValueEditor = true
+		Task {
+			do {
+				let ipaURL = try await UnsignedValueEditorInjector.inject(into: app)
+				await MainActor.run {
+					_prefs.recordValueEditorGame(
+						uuid: uuid,
+						name: app.name ?? .localized("Unknown"),
+						version: app.version,
+						ipaURL: ipaURL
+					)
+					_valueEditorResultMessage = .localized("Value Editor Added")
+					_isAddingValueEditor = false
+					_isValueEditorResultPresenting = true
+				}
+			} catch {
+				await MainActor.run {
+					_valueEditorResultMessage = "\(String.localized("Adding Value Editor Failed")): \(error.localizedDescription)"
+					_isAddingValueEditor = false
+					_isValueEditorResultPresenting = true
 				}
 			}
 		}

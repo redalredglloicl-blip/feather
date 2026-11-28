@@ -28,6 +28,11 @@ final class StartupProgress: ObservableObject {
 	@Published private(set) var progress: Double = 0
 	@Published private(set) var stepLabel: String = .localized("Loading apps")
 	@Published private(set) var isFinished = false
+	/// v2.38: true when the launch check could not reach any
+	/// decision within the bounded wait and there is no cached
+	/// decision to open on. The entry screen then shows a plain
+	/// error with a retry button instead of trying forever.
+	@Published private(set) var checkFailed = false
 
 	private var _isRunning = false
 	private var _checkDone = false
@@ -68,67 +73,118 @@ final class StartupProgress: ObservableObject {
 		// shares one in-flight check between callers, so this joins
 		// the launch check instead of starting a second one.
 		//
-		// v2.11 waited here with NO deadline for a FRESH decision
-		// (both minVersion and killed fetched live) — and build 13
-		// hung at 75% across restarts, because the check never
-		// completes fresh on this phone. v2.12 bounds the wait: at
-		// most ~30 s for a fresh decision; if none arrives and the
-		// cache can decide, the launch opens on the cached decision
-		// (see ForcedUpdateManager.applyCachedFallbackForLaunch).
-		// With no cached value at all there is nothing to open on,
-		// so the step keeps waiting — but the label below shows the
-		// live attempt count, so a retrying launch never looks frozen
-		// at 75%. A cached block still shows instantly (the root
-		// branch shows ForcedUpdateView above this screen), and a
-		// later fresh check that blocks flips the UI the moment it
-		// answers. The only exits without any decision are
-		// cancellation and a genuinely offline device — in the
-		// offline case the root branch shows OfflineBlockView
-		// instead, so the app is never bricked by the wait.
+		// v2.38: ONE bounded wait, no retry counter. The old code
+		// re-spawned the check forever and showed the live attempt
+		// count in the label ("Checking for updates — retry N",
+		// climbing without end when the fresh check never completes
+		// and no cache exists) — the "محاولة" loop Reda reported.
+		// Now the label stays plain "Checking for updates" while
+		// waiting, the wait stops at ~30 s no matter what, and a
+		// launch with no decision at all shows a plain error with
+		// a retry button instead of trying forever (see
+		// _waitForLaunchDecision and retryCheck). A cached block
+		// still shows instantly (the root branch shows
+		// ForcedUpdateView above this screen), a cached "fine"
+		// still opens the app at the deadline, and a later fresh
+		// check that blocks flips the UI the moment it answers.
+		// The only exits without any decision are cancellation
+		// and a genuinely offline device — in the offline case
+		// the root branch shows OfflineBlockView instead, so the
+		// app is never bricked by the wait.
 		_setStep(0.75, .localized("Checking for updates"))
-		let step4Deadline = Date().addingTimeInterval(30)
+		guard await _waitForLaunchDecision() else {
+			checkFailed = true
+			return
+		}
+		await _settle()
+		guard !Task.isCancelled else { return }
+
+		await _finishStartup()
+	}
+
+	/// Retries the launch check after a failed wait (checkFailed):
+	/// one more bounded wait for a launch decision, then the same
+	/// finish as a normal launch. User-initiated only — one tap is
+	/// one bounded attempt, never an automatic loop, and no attempt
+	/// count is ever shown.
+	func retryCheck() async {
+		guard !isFinished, !_isRunning else { return }
+		_isRunning = true
+		defer { _isRunning = false }
+		checkFailed = false
+		guard await _waitForLaunchDecision() else {
+			checkFailed = true
+			return
+		}
+		await _settle()
+		guard !Task.isCancelled else { return }
+		await _finishStartup()
+	}
+
+	/// Waits for the forced-update launch decision, bounded to ~30 s.
+	/// Returns true when the launch may proceed: a fresh decision, a
+	/// cached block, or the deadline fallback on a cached decision.
+	/// Returns false when the deadline passed with no decision at
+	/// all — the caller shows the plain error + retry button instead
+	/// of waiting forever. While waiting the label stays plain
+	/// "Checking for updates": no attempt count is ever shown.
+	/// Rounds already retry 3 times each inside the manager
+	/// (ForcedUpdateManager), so re-spawning a round here only
+	/// happens while time remains in the same 30 s window.
+	private func _waitForLaunchDecision() async -> Bool {
+		let deadline = Date().addingTimeInterval(30)
+		_checkDone = false
 		_checkTask = Task { [weak self] in
 			await ForcedUpdateManager.shared.checkForUpdate()
 			self?._checkDone = true
 		}
-		var lastShownAttempt = 0
 		while !ForcedUpdateManager.shared.hasLaunchDecision, !Task.isCancelled {
 			if NetworkMonitor.shared.isOffline {
-				return
+				return false
+			}
+			// Deadline: no fresh decision in ~30 s — stop waiting
+			// either way (v2.38: no endless retry loop). The code
+			// after the loop opens on the cached decision when
+			// there is one, or reports failure.
+			if Date() > deadline {
+				break
 			}
 			if _checkDone {
-				// The round ended without a fresh decision (the fetches
-				// kept failing while the device still reports online):
-				// run it again after a short pause.
+				// The round ended without a fresh decision (the
+				// fetches kept failing while the device still
+				// reports online): run it again after a short
+				// pause, but only while time remains — the
+				// deadline above ends the wait either way.
 				_checkDone = false
 				try? await Task.sleep(nanoseconds: 2_000_000_000)
 				if Task.isCancelled || NetworkMonitor.shared.isOffline {
-					return
+					return false
+				}
+				if Date() > deadline {
+					break
 				}
 				_checkTask = Task { [weak self] in
 					await ForcedUpdateManager.shared.checkForUpdate()
 					self?._checkDone = true
 				}
 			}
-			// Deadline: no fresh decision in ~30 s — open on the
-			// cached decision instead of hanging forever.
-			if Date() > step4Deadline, ForcedUpdateManager.shared.hasAnyCachedValue {
-				ForcedUpdateManager.shared.applyCachedFallbackForLaunch()
-				break
-			}
-			// Live retrying state: the % stays at 75 (this step is
-			// genuinely not done) — the label is what moves, showing
-			// the real attempt count, so the screen never looks frozen.
-			let attempts = ForcedUpdateManager.shared.checkAttempts
-			if attempts > 1, attempts != lastShownAttempt {
-				lastShownAttempt = attempts
-				_setRetryingLabel(attempts)
-			}
 			try? await Task.sleep(nanoseconds: 200_000_000)
 		}
-		await _settle()
-		guard !Task.isCancelled else { return }
+		if ForcedUpdateManager.shared.hasLaunchDecision {
+			return true
+		}
+		// Deadline: no fresh decision in ~30 s — open on the
+		// cached decision instead of hanging forever.
+		if ForcedUpdateManager.shared.hasAnyCachedValue {
+			ForcedUpdateManager.shared.applyCachedFallbackForLaunch()
+			return true
+		}
+		return false
+	}
 
+	/// Step 5 + finish, shared by run() and retryCheck(): the fixed
+	/// theme, then the "Ready" mark that lets the app open.
+	private func _finishStartup() async {
 		// Step 5 — fixed theme: dark mode + peach accent, no choice.
 		_setStep(0.9, .localized("Almost done"))
 		UIApplication.topViewController()?.view.window?.overrideUserInterfaceStyle = .dark
@@ -150,13 +206,6 @@ final class StartupProgress: ObservableObject {
 			progress = target
 			stepLabel = label
 		}
-	}
-
-	/// Shows the live retry count while step 4 waits for a fresh
-	/// decision. Label only — the progress value stays at 0.75
-	/// because the step genuinely has not finished.
-	private func _setRetryingLabel(_ attempt: Int) {
-		stepLabel = .localized("Checking for updates — retry %lld", arguments: attempt)
 	}
 
 	/// Brief pause so the counter is readable even when a step
@@ -211,11 +260,41 @@ struct LoadingView: View {
 				.padding(.horizontal, 64)
 				.padding(.top, 16)
 
-				Text(verbatim: _progress.stepLabel)
-					.font(.subheadline)
-					.foregroundStyle(.secondary)
-					.padding(.top, 14)
+				if _progress.checkFailed {
+					// v2.38: the launch check could not reach any
+					// decision in ~30 s and there is no cached
+					// decision to open on — a plain error and a
+					// retry button, never an endless retry count.
+					// Same peach button as the forced-update
+					// screen; nothing else on this screen changes.
+					Text(verbatim: ForcedUpdateError.checkFailed.localizedDescription)
+						.font(.subheadline)
+						.foregroundStyle(.secondary)
+						.multilineTextAlignment(.center)
+						.padding(.top, 14)
+						.padding(.horizontal, 32)
+
+					Button {
+						Task { await _progress.retryCheck() }
+					} label: {
+						Text(.localized("حاول مرة ثانية"))
+							.font(.headline)
+							.frame(maxWidth: .infinity)
+							.padding()
+							.background(Color(hex: "#FFC778"))
+							.foregroundStyle(.black)
+							.clipShape(RoundedRectangle(cornerRadius: 14))
+					}
+					.padding(.horizontal, 32)
+					.padding(.top, 16)
 					.padding(.bottom, 56)
+				} else {
+					Text(verbatim: _progress.stepLabel)
+						.font(.subheadline)
+						.foregroundStyle(.secondary)
+						.padding(.top, 14)
+						.padding(.bottom, 56)
+				}
 			}
 		}
 		.starfieldBackground()

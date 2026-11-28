@@ -36,6 +36,10 @@ struct LibraryView: View {
 	@State private var _appPendingDelete: AnyApp?
 	@State private var _isDeleteConfirmPresenting = false
 	@State private var _isBulkDeleteConfirmPresenting = false
+
+	/// Zenith v2.38 Part B: shown when a tap on a Value Editor
+	/// game finds its modified IPA file gone.
+	@State private var _isValueEditorMissingAlertPresenting = false
 	
 	
 	@Namespace private var _namespace
@@ -143,7 +147,14 @@ struct LibraryView: View {
 						.listRowSeparator(.hidden)
 						.listRowBackground(Color.clear)
 				}
-				
+
+				// Zenith v2.38 Part B: permanent section, directly
+				// under the category chips and above everything
+				// else — exactly where Reda drew the orange line.
+				// Always shown, even with no games yet, so the
+				// spot never moves.
+				_valueEditorGamesSection
+
 				if !_unusedApps.isEmpty {
 					NBSection(.localized("Not opened in a while")) {
 						ForEach(_unusedApps, id: \.uuid) { app in
@@ -358,6 +369,9 @@ struct LibraryView: View {
 					_selectedAppUUIDs.removeAll()
 				}
 			}
+			.alert(.localized("Value Editor File Missing"), isPresented: $_isValueEditorMissingAlertPresenting) {
+				Button(.localized("OK"), role: .cancel) { }
+			}
 		}
 	}
 }
@@ -558,5 +572,115 @@ extension LibraryView {
 			default: return displayName
 			}
 		}
+	}
+}
+
+// MARK: - Extension: View (Value Editor Games, Zenith v2.38 Part B)
+extension LibraryView {
+	/// Permanent section "الألعاب المضاف لها محرر القيم",
+	/// directly under the category chips: one orange-outlined
+	/// horizontal row per game injected with the Value Editor
+	/// (unsigned IPA), newest first. Always shown — with a hint
+	/// row while no game has been injected yet — so the spot
+	/// never moves. Peach #FFC778, dark locked theme, no emoji,
+	/// no new icon files.
+	private var _valueEditorGamesSection: some View {
+		NBSection(
+			.localized("Games with Value Editor"),
+			secondary: _prefs.valueEditorGames.isEmpty ? nil : _prefs.valueEditorGames.count.description
+		) {
+			if _prefs.valueEditorGames.isEmpty {
+				Text(.localized("No Games with Value Editor Yet"))
+					.font(.footnote)
+					.foregroundStyle(.secondary)
+			} else {
+				ForEach(_prefs.valueEditorGameList(), id: \.uuid) { game in
+					_valueEditorGameRow(for: game)
+				}
+			}
+		}
+	}
+
+	/// One injected game: icon, name, version + date, share
+	/// glyph — the whole row outlined in orange. NORMAL TAP
+	/// opens the Share sheet for the modified IPA file ONLY
+	/// (Files or any person, via UIActivityViewController).
+	/// LONG-PRESS does NOTHING on purpose: no .contextMenu,
+	/// no swipe actions, no long-press gesture is attached to
+	/// this row at all — Reda's order, v2.38 Part B. No
+	/// install, no sign, no delete from this section.
+	private func _valueEditorGameRow(for game: LibraryPrefs.ValueEditorGame) -> some View {
+		HStack(spacing: 12) {
+			_valueEditorGameIcon(for: game)
+			VStack(alignment: .leading, spacing: 2) {
+				Text(game.name)
+					.font(.headline)
+					.lineLimit(1)
+				Text(_valueEditorGameSubtitle(for: game))
+					.font(.caption)
+					.foregroundStyle(.secondary)
+					.lineLimit(1)
+			}
+			Spacer()
+			Image(systemName: "square.and.arrow.up")
+				.foregroundStyle(Color(hex: "#FFC778"))
+		}
+		.padding(.vertical, 6)
+		.padding(.horizontal, 12)
+		.overlay(
+			RoundedRectangle(cornerRadius: 12, style: .continuous)
+				.stroke(Color(hex: "#FFC778"), lineWidth: 1.5)
+		)
+		.contentShape(Rectangle())
+		.onTapGesture {
+			_shareValueEditorGame(game)
+		}
+		.listRowBackground(Color.clear)
+		.listRowSeparator(.hidden)
+	}
+
+	/// The game's own Library icon when it is still in the
+	/// Library; a plain system game glyph when the game was
+	/// deleted from the Library after injection (the modified
+	/// IPA file itself still exists and still shares).
+	@ViewBuilder
+	private func _valueEditorGameIcon(for game: LibraryPrefs.ValueEditorGame) -> some View {
+		let apps: [AppInfoPresentable] = _signedApps.compactMap { $0 as? AppInfoPresentable }
+			+ _importedApps.compactMap { $0 as? AppInfoPresentable }
+		if let app = apps.first(where: { $0.uuid == game.uuid }) {
+			ZenithAppIconView(app: app, size: 40)
+		} else {
+			Image(systemName: "gamecontroller.fill")
+				.font(.title3)
+				.foregroundStyle(Color(hex: "#FFC778"))
+				.frame(width: 40, height: 40)
+		}
+	}
+
+	private func _valueEditorGameSubtitle(for game: LibraryPrefs.ValueEditorGame) -> String {
+		var parts: [String] = []
+		if let version = game.version {
+			parts.append("v\(version)")
+		}
+		parts.append(Self._valueEditorDateFormatter.string(from: Date(timeIntervalSince1970: game.date)))
+		return parts.joined(separator: " • ")
+	}
+
+	private static let _valueEditorDateFormatter: DateFormatter = {
+		let formatter = DateFormatter()
+		formatter.dateStyle = .medium
+		formatter.timeStyle = .none
+		return formatter
+	}()
+
+	/// Share sheet ONLY: the modified IPA file, to Files or to
+	/// any person. When the file itself is gone, an alert says
+	/// so instead of sharing nothing.
+	private func _shareValueEditorGame(_ game: LibraryPrefs.ValueEditorGame) {
+		guard let ipaURL = _prefs.valueEditorGameIPAURL(for: game.uuid) else {
+			_isValueEditorMissingAlertPresenting = true
+			return
+		}
+		UIActivityViewController.show(activityItems: [ipaURL])
 	}
 }
