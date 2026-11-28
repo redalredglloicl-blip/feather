@@ -240,20 +240,22 @@ struct ZenithStoreApp: Codable, Identifiable, Equatable {
 		// flat fields do. versions[0] wins when both exist.
 		let versions = try container.decodeIfPresent([ZenithStoreAppVersion].self, forKey: .versions) ?? []
 		versionHistory = versions
-		// Flat v1 version, decoded once — the ternary below cannot
-		// carry its own `try` (the operator itself would need it).
+		// Flat v1 fields, decoded once — `??` and `?:` cannot carry
+		// their own `try` (the operator itself would need it).
 		let flatVersion = try container.decodeIfPresent(String.self, forKey: .version) ?? ""
+		let flatVersionDate = try container.decodeIfPresent(String.self, forKey: .versionDate)
+		let flatSize = try container.decodeIfPresent(Int64.self, forKey: .size)
 		if let latest = versions.first {
 			version = latest.version.isEmpty ? flatVersion : latest.version
-			versionDate = latest.date ?? (try container.decodeIfPresent(String.self, forKey: .versionDate))
+			versionDate = latest.date ?? flatVersionDate
 			downloadURL = latest.downloadURL
 				?? Self._url(from: container, key: .downloadURL)
-			size = latest.size ?? (try container.decodeIfPresent(Int64.self, forKey: .size))
+			size = latest.size ?? flatSize
 		} else {
 			version = flatVersion
-			versionDate = try container.decodeIfPresent(String.self, forKey: .versionDate)
+			versionDate = flatVersionDate
 			downloadURL = Self._url(from: container, key: .downloadURL)
-			size = try container.decodeIfPresent(Int64.self, forKey: .size)
+			size = flatSize
 			// Keep a one-entry history so the detail screen can
 			// always show the current version the same way.
 			if !version.isEmpty {
