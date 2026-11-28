@@ -58,6 +58,16 @@
 //    dark circle — the approved Zenith icon look): the dylib runs
 //    inside the game and cannot load Zenith's asset catalog, so
 //    the art is self-contained and no image bytes are embedded.
+//  GAME SPEED (v2.30): long-press the floating pill to run the
+//    game faster — 2x, up to 5x with the little arrows, second
+//    long-press back to 1x. It scales the time the game reads
+//    (mach_absolute_time + gettimeofday, one continuous virtual
+//    clock, rebased on every change so time never jumps), so a
+//    CADisplayLink-driven game simulates more per frame. It is
+//    a clock trick, not a patch of the game: anything the game
+//    times another way keeps real speed (see the honest limits
+//    below), and the game's own timers and animations run
+//    faster too while speed is on.
 //
 //  HONEST LIMITS (stated here and in the Zenith UI — never faked):
 //  * Offline games ONLY. Values the game checks against a server
@@ -93,6 +103,14 @@
 //    displayed value cannot be edited (its K is not derivable),
 //    only frozen — the panel says so instead of writing a
 //    wrong value.
+//  * Game speed (v2.30) scales the clocks the game reads, it
+//    does not patch the game: a game that steps from the
+//    display-link timestamp or CACurrentMediaTime runs faster;
+//    a game that times itself another way (time(), server
+//    time, a fixed-step loop that ignores dt) will not. Speed
+//    also hurries the game's own timers and animations, and
+//    dates the game reads (NSDate) run fast while speed is on.
+//    At 1x the virtual clock is exactly the real clock.
 //
 //  BUILD (not part of the Xcode app target — a dylib needs its own
 //  build step; this file ships as source only until that step
@@ -112,9 +130,9 @@
 //  The dylib runs inside the game and cannot read Zenith's string
 //  catalog, so there is no Localizable lookup here. Keep it Iraqi.
 //
-//  NO CydiaSubstrate / ElleKit dependency: there is no hooking here,
-//  only mach VM calls + UIKit, so the dylib loads with plain
-//  LC_LOAD_DYLIB injection.
+//  NO CydiaSubstrate / ElleKit dependency: the only hooking is
+//  the in-file __DATA,__interpose table for game speed (v2.30),
+//  so the dylib still loads with plain LC_LOAD_DYLIB injection.
 //
 
 #import <Foundation/Foundation.h>
@@ -122,6 +140,10 @@
 #import <mach/mach.h>
 #import <stdio.h>
 #import <unistd.h>
+#import <dlfcn.h>
+#import <pthread.h>
+#import <sys/time.h>
+#import <time.h>
 // NOTE: <mach/mach_vm.h> is stubbed out in the iOS SDK (its first line is
 // `#error mach_vm.h unsupported.`), so declare the one function we need
 // ourselves. mach_vm_region lives in libSystem at runtime, so this links.
@@ -2364,6 +2386,240 @@ static void VEAddTiltedEllipseArc(CGContextRef ctx, CGPoint center, CGFloat a, C
 
 @end
 
+// MARK: - ZenithValueEditorArrowButton (game-speed arrows, v2.30)
+
+/// A small code-drawn triangle button (peach #FFC778, same as the
+/// planet): no image asset, no emoji. pointUp YES draws the
+/// triangle pointing up, NO pointing down.
+@interface ZenithValueEditorArrowButton : UIButton
+@property (nonatomic, assign) BOOL pointUp;
+@end
+
+@implementation ZenithValueEditorArrowButton
+
+- (void)drawRect:(CGRect)rect {
+	CGContextRef ctx = UIGraphicsGetCurrentContext();
+	if (ctx == NULL) {
+		return;
+	}
+	UIColor *peach = [UIColor colorWithRed:1.0 green:192.0 / 255.0 blue:107.0 / 255.0 alpha:1.0];
+	CGContextSetFillColorWithColor(ctx, [peach CGColor]);
+	CGFloat w = CGRectGetWidth(self.bounds);
+	CGFloat h = CGRectGetHeight(self.bounds);
+	CGFloat m = 4.0;
+	CGContextMoveToPoint(ctx, w / 2, self.pointUp ? m : h - m);
+	CGContextAddLineToPoint(ctx, m, self.pointUp ? h - m : m);
+	CGContextAddLineToPoint(ctx, w - m, self.pointUp ? h - m : m);
+	CGContextClosePath(ctx);
+	CGContextFillPath(ctx);
+}
+
+@end
+
+// MARK: - ZenithValueEditorGameSpeed (v2.30)
+
+// Game speed: the game runs faster by scaling the TIME it reads.
+// One continuous virtual clock, shared by both interposed
+// functions: t_virtual = t_base + (t_real - t_real_base) * factor.
+// Every factor change rebases (t_base = the virtual time right
+// now, t_real_base = the real time right now), so time never
+// jumps forward or backward, and it stays monotonic while the
+// factor stays > 0. At startup the factor is 1.0 and both bases
+// are 0, so the formula returns the real time exactly — at 1x
+// behaviour equals before.
+//
+// Scaled — this is what a CADisplayLink-driven game like Hill
+// Climb Racing reads: mach_absolute_time, which CACurrentMediaTime,
+// CFAbsoluteTimeGetCurrent (NSDate), the CADisplayLink timestamp
+// and clock_gettime(CLOCK_MONOTONIC) are all built on; and
+// gettimeofday, which cocos2d-x's delta-time path reads. The
+// display link still fires at the real 60Hz; each frame the game
+// sees a bigger dt, so it simulates more per frame.
+// NOT scaled: time(), clock_gettime(CLOCK_REALTIME), and anything
+// the game times against a server — those keep real speed. The
+// editor's own timing is safe: the freeze loop sleeps with
+// [NSThread sleepForTimeInterval:] (nanosleep, real time), and no
+// editor code reads NSDate / CACurrentMediaTime / gettimeofday.
+// While speed is on, the game's own timers and UIView animations
+// also run faster, and any date the game reads runs fast — the
+// price of the clock trick, stated here, not hidden.
+//
+// The real functions are reached with dlsym(RTLD_NEXT, ...):
+// calling mach_absolute_time() directly from the replacement
+// would recurse through the interpose table. Resolved once in
+// ZenithVEInitClock() (constructor, single-threaded) and lazily
+// retried if that ever missed.
+typedef uint64_t (*ZenithVEMachAbsoluteTimeFn)(void);
+typedef int (*ZenithVEGettimeofdayFn)(struct timeval *, void *);
+
+static ZenithVEMachAbsoluteTimeFn kZenithVERealMachAbsoluteTime = NULL;
+static ZenithVEGettimeofdayFn kZenithVERealGettimeofday = NULL;
+
+// The virtual clock's state. Guarded by the lock: factor changes
+// happen on the main thread (arrow taps), reads happen on the
+// game's threads, and a torn read would jump time.
+static pthread_mutex_t kZenithVEClockLock = PTHREAD_MUTEX_INITIALIZER;
+static double kZenithVESpeedFactor = 1.0;
+static uint64_t kZenithVETimeBase = 0;     // virtual ticks at the last rebase
+static uint64_t kZenithVETimeRealBase = 0; // real ticks at the last rebase
+static int64_t kZenithVEWallBaseUs = 0;     // virtual wall microseconds at the last rebase
+static int64_t kZenithVEWallRealBaseUs = 0; // real wall microseconds at the last rebase
+
+static void ZenithVEInitClock(void) {
+	if (kZenithVERealMachAbsoluteTime == NULL) {
+		kZenithVERealMachAbsoluteTime = (ZenithVEMachAbsoluteTimeFn)dlsym(RTLD_NEXT, "mach_absolute_time");
+	}
+	if (kZenithVERealGettimeofday == NULL) {
+		kZenithVERealGettimeofday = (ZenithVEGettimeofdayFn)dlsym(RTLD_NEXT, "gettimeofday");
+	}
+}
+
+// The real mach_absolute_time, with a fallback if dlsym ever
+// missed: CLOCK_UPTIME_RAW nanoseconds converted with the
+// timebase — the same uptime clock, and no interposed symbol in
+// the path, so it cannot recurse.
+static uint64_t ZenithVERealTicks(void) {
+	if (kZenithVERealMachAbsoluteTime != NULL) {
+		return kZenithVERealMachAbsoluteTime();
+	}
+	ZenithVEInitClock();
+	if (kZenithVERealMachAbsoluteTime != NULL) {
+		return kZenithVERealMachAbsoluteTime();
+	}
+	mach_timebase_info_data_t info;
+	mach_timebase_info(&info);
+	uint64_t ns = clock_gettime_nsec_np(CLOCK_UPTIME_RAW);
+	return ns * info.denom / info.numer;
+}
+
+// Current virtual time in mach ticks. Snapshot the state under
+// the lock, then do the math outside it.
+static uint64_t ZenithVEVirtualTicks(void) {
+	pthread_mutex_lock(&kZenithVEClockLock);
+	double factor = kZenithVESpeedFactor;
+	uint64_t base = kZenithVETimeBase;
+	uint64_t realBase = kZenithVETimeRealBase;
+	pthread_mutex_unlock(&kZenithVEClockLock);
+	uint64_t real = ZenithVERealTicks();
+	return (uint64_t)((double)base + ((double)real - (double)realBase) * factor);
+}
+
+// Current virtual wall time in microseconds since the epoch,
+// from a real wall reading in the same units.
+static int64_t ZenithVEVirtualWallUs(int64_t realUs) {
+	pthread_mutex_lock(&kZenithVEClockLock);
+	double factor = kZenithVESpeedFactor;
+	int64_t base = kZenithVEWallBaseUs;
+	int64_t realBase = kZenithVEWallRealBaseUs;
+	pthread_mutex_unlock(&kZenithVEClockLock);
+	return (int64_t)((double)base + ((double)realUs - (double)realBase) * factor);
+}
+
+static double ZenithVESpeedFactor(void) {
+	pthread_mutex_lock(&kZenithVEClockLock);
+	double factor = kZenithVESpeedFactor;
+	pthread_mutex_unlock(&kZenithVEClockLock);
+	return factor;
+}
+
+// Change the factor, rebasing so virtual time is continuous:
+// the new base is the virtual time right now, the new real base
+// is the real time right now. Same factor: nothing to do. Only
+// ever called from main-thread UI actions, so factor changes
+// cannot race each other.
+static void ZenithVESetSpeedFactor(double factor) {
+	if (factor < 1.0) {
+		factor = 1.0;
+	}
+	if (factor > 5.0) {
+		factor = 5.0;
+	}
+	if (kZenithVERealGettimeofday == NULL) {
+		ZenithVEInitClock();
+	}
+	// Capture the current virtual times BEFORE changing the
+	// factor, so the rebase below is continuous.
+	uint64_t virtualTicks = ZenithVEVirtualTicks();
+	uint64_t realTicks = ZenithVERealTicks();
+	int64_t virtualUs;
+	int64_t realUs;
+	if (kZenithVERealGettimeofday != NULL) {
+		struct timeval realTv;
+		kZenithVERealGettimeofday(&realTv, NULL);
+		realUs = (int64_t)realTv.tv_sec * 1000000LL + (int64_t)realTv.tv_usec;
+		virtualUs = ZenithVEVirtualWallUs(realUs);
+	} else {
+		// Unreachable in practice: keep the wall clock where it
+		// is instead of rebasing it on a made-up reading.
+		pthread_mutex_lock(&kZenithVEClockLock);
+		virtualUs = kZenithVEWallBaseUs;
+		realUs = kZenithVEWallRealBaseUs;
+		pthread_mutex_unlock(&kZenithVEClockLock);
+	}
+	pthread_mutex_lock(&kZenithVEClockLock);
+	if (factor == kZenithVESpeedFactor) {
+		pthread_mutex_unlock(&kZenithVEClockLock);
+		return;
+	}
+	kZenithVETimeBase = virtualTicks;
+	kZenithVETimeRealBase = realTicks;
+	kZenithVEWallBaseUs = virtualUs;
+	kZenithVEWallRealBaseUs = realUs;
+	kZenithVESpeedFactor = factor;
+	pthread_mutex_unlock(&kZenithVEClockLock);
+}
+
+static uint64_t ZenithVE_mach_absolute_time(void) {
+	return ZenithVEVirtualTicks();
+}
+
+static int ZenithVE_gettimeofday(struct timeval *tv, void *tz) {
+	if (kZenithVERealGettimeofday == NULL) {
+		ZenithVEInitClock();
+	}
+	struct timeval realTv;
+	if (kZenithVERealGettimeofday != NULL) {
+		int result = kZenithVERealGettimeofday(&realTv, tz);
+		if (result != 0) {
+			return result;
+		}
+		if (tv == NULL) {
+			return result;
+		}
+	} else {
+		// gettimeofday itself unavailable (unreachable in
+		// practice): read the realtime clock directly — a
+		// different symbol, not interposed.
+		struct timespec ts;
+		if (clock_gettime(CLOCK_REALTIME, &ts) != 0) {
+			return -1;
+		}
+		realTv.tv_sec = (time_t)ts.tv_sec;
+		realTv.tv_usec = (suseconds_t)(ts.tv_nsec / 1000);
+		if (tv == NULL) {
+			return 0;
+		}
+	}
+	int64_t realUs = (int64_t)realTv.tv_sec * 1000000LL + (int64_t)realTv.tv_usec;
+	int64_t virtualUs = ZenithVEVirtualWallUs(realUs);
+	tv->tv_sec = (time_t)(virtualUs / 1000000LL);
+	tv->tv_usec = (suseconds_t)(virtualUs % 1000000LL);
+	return 0;
+}
+
+// The interpose table: dyld redirects every external call to
+// these two symbols to the replacements above — the game, the
+// frameworks, everything linked against libSystem.
+typedef struct ZenithVEInterpose {
+	const void *replacement;
+	const void *original;
+} ZenithVEInterpose;
+
+__attribute__((used)) static const ZenithVEInterpose kZenithVEInterposers[] __attribute__((section("__DATA,__interpose"))) = {
+	{ (const void *)ZenithVE_mach_absolute_time, (const void *)mach_absolute_time },
+	{ (const void *)ZenithVE_gettimeofday, (const void *)gettimeofday },
+};
+
 // MARK: - ZenithValueEditorOverlay (floating button + menu)
 
 /// Owns the floating button window (the Zenith planet) and the
@@ -2391,9 +2647,22 @@ static void VEAddTiltedEllipseArc(CGContextRef ctx, CGPoint center, CGFloat a, C
 	return NO;
 }
 
+// The pill window grows taller than the pill itself while the
+// speed arrows are visible. Only the planet button, the arrows
+// and the label are interactive: a touch anywhere else in the
+// window must fall through to the game, or the taller window
+// would swallow a strip of gameplay touches.
+- (UIView *)hitTest:(CGPoint)point withEvent:(UIEvent *)event {
+	UIView *hit = [super hitTest:point withEvent:event];
+	if (hit == self || hit == self.rootViewController.view) {
+		return nil;
+	}
+	return hit;
+}
+
 @end
 
-@interface ZenithValueEditorOverlay : NSObject
+@interface ZenithValueEditorOverlay : NSObject <UIGestureRecognizerDelegate>
 
 + (instancetype)shared;
 - (void)setup;
@@ -2401,6 +2670,9 @@ static void VEAddTiltedEllipseArc(CGContextRef ctx, CGPoint center, CGFloat a, C
 - (void)hideMenu;
 - (void)pillTapped;
 - (void)dragged:(UIPanGestureRecognizer *)gesture;
+- (void)speedLongPressed:(UILongPressGestureRecognizer *)gesture;
+- (void)speedUpTapped;
+- (void)speedDownTapped;
 - (UIWindow *)keyWindow;
 
 @end
@@ -2408,6 +2680,13 @@ static void VEAddTiltedEllipseArc(CGContextRef ctx, CGPoint center, CGFloat a, C
 @implementation ZenithValueEditorOverlay {
 	UIWindow *_pillWindow;
 	ZenithValueEditorMenuViewController *_menu;
+	ZenithValueEditorPlanetView *_planetView;
+	UIButton *_pillTapButton;
+	ZenithValueEditorArrowButton *_speedUpButton;
+	ZenithValueEditorArrowButton *_speedDownButton;
+	UILabel *_speedLabel;
+	BOOL _speedArrowsVisible;
+	BOOL _longPressFired;
 }
 
 + (instancetype)shared {
@@ -2443,15 +2722,45 @@ static void VEAddTiltedEllipseArc(CGContextRef ctx, CGPoint center, CGFloat a, C
 	UIViewController *host = [[UIViewController alloc] init];
 	host.view.backgroundColor = [UIColor clearColor];
 
-	ZenithValueEditorPlanetView *planet = [[ZenithValueEditorPlanetView alloc] initWithFrame:CGRectMake(0, 0, 52, 52)];
-	planet.backgroundColor = [UIColor clearColor];
-	[host.view addSubview:planet];
+	_planetView = [[ZenithValueEditorPlanetView alloc] initWithFrame:CGRectMake(0, 0, 52, 52)];
+	_planetView.backgroundColor = [UIColor clearColor];
+	[host.view addSubview:_planetView];
 
-	UIButton *tap = [UIButton buttonWithType:UIButtonTypeCustom];
-	tap.frame = CGRectMake(0, 0, 52, 52);
-	tap.backgroundColor = [UIColor clearColor];
-	[tap addTarget:self action:@selector(pillTapped) forControlEvents:UIControlEventTouchUpInside];
-	[host.view addSubview:tap];
+	_pillTapButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	_pillTapButton.frame = CGRectMake(0, 0, 52, 52);
+	_pillTapButton.backgroundColor = [UIColor clearColor];
+	[_pillTapButton addTarget:self action:@selector(pillTapped) forControlEvents:UIControlEventTouchUpInside];
+	[host.view addSubview:_pillTapButton];
+
+	// Game speed (v2.30): the two arrows and the factor label sit
+	// above / below the pill inside the same window, so they follow
+	// it when it is dragged or snapped. Hidden until a long-press
+	// turns speed on.
+	_speedUpButton = [[ZenithValueEditorArrowButton alloc] initWithFrame:CGRectZero];
+	_speedUpButton.pointUp = YES;
+	_speedUpButton.backgroundColor = [UIColor clearColor];
+	[_speedUpButton addTarget:self action:@selector(speedUpTapped) forControlEvents:UIControlEventTouchUpInside];
+	_speedUpButton.hidden = YES;
+	[host.view addSubview:_speedUpButton];
+
+	_speedDownButton = [[ZenithValueEditorArrowButton alloc] initWithFrame:CGRectZero];
+	_speedDownButton.pointUp = NO;
+	_speedDownButton.backgroundColor = [UIColor clearColor];
+	[_speedDownButton addTarget:self action:@selector(speedDownTapped) forControlEvents:UIControlEventTouchUpInside];
+	_speedDownButton.hidden = YES;
+	[host.view addSubview:_speedDownButton];
+
+	_speedLabel = [[UILabel alloc] initWithFrame:CGRectZero];
+	_speedLabel.backgroundColor = [UIColor clearColor];
+	_speedLabel.textColor = [UIColor whiteColor];
+	_speedLabel.font = [UIFont boldSystemFontOfSize:11];
+	_speedLabel.textAlignment = NSTextAlignmentCenter;
+	_speedLabel.shadowColor = [UIColor blackColor];
+	_speedLabel.shadowOffset = CGSizeMake(0, 1);
+	_speedLabel.text = @"1x";
+	_speedLabel.hidden = YES;
+	[host.view addSubview:_speedLabel];
+	[self layoutPillSubviews];
 
 	UIWindowScene *scene = [self foregroundScene];
 	if (scene != nil) {
@@ -2467,7 +2776,21 @@ static void VEAddTiltedEllipseArc(CGContextRef ctx, CGPoint center, CGFloat a, C
 
 	UIPanGestureRecognizer *drag = [[UIPanGestureRecognizer alloc]
 		initWithTarget:self action:@selector(dragged:)];
+	drag.delegate = self;
 	[_pillWindow addGestureRecognizer:drag];
+
+	// Game speed (v2.30): hold the pill ~0.6s to turn speed on
+	// (2x, arrows appear) or off again (1x, arrows hide). The
+	// long-press fires while holding (state Began at 0.6s); if
+	// the finger moves more than 10pt first, the long-press
+	// fails and the drag takes over, so dragging the pill can
+	// never turn speed on by accident.
+	UILongPressGestureRecognizer *longPress = [[UILongPressGestureRecognizer alloc]
+		initWithTarget:self action:@selector(speedLongPressed:)];
+	longPress.minimumPressDuration = 0.6;
+	longPress.allowableMovement = 10.0;
+	longPress.delegate = self;
+	[_pillWindow addGestureRecognizer:longPress];
 }
 
 /// The game's key window, found the same way
@@ -2575,6 +2898,12 @@ static void VEAddTiltedEllipseArc(CGContextRef ctx, CGPoint center, CGFloat a, C
 		});
 		return;
 	}
+	// A long-press just fired on this same touch-up: it already
+	// toggled speed, so this tap must not open the menu too.
+	if (_longPressFired) {
+		_longPressFired = NO;
+		return;
+	}
 	if (_menu != nil && _menu.view.window != nil && !_menu.view.hidden) {
 		[self hideMenu];
 	} else {
@@ -2614,9 +2943,97 @@ static void VEAddTiltedEllipseArc(CGContextRef ctx, CGPoint center, CGFloat a, C
 	}];
 }
 
+// Game speed (v2.30): positions the planet, the tap button, the
+// arrows and the factor label inside the pill window. When the
+// arrows are visible the pill sits 32pt down so the up arrow fits
+// above it; hidden, the pill is back at the top of its 52pt window.
+- (void)layoutPillSubviews {
+	CGFloat top = _speedArrowsVisible ? 32.0 : 0.0;
+	_planetView.frame = CGRectMake(0, top, 52, 52);
+	_pillTapButton.frame = CGRectMake(0, top, 52, 52);
+	_speedUpButton.frame = CGRectMake(14, 4, 24, 24);
+	_speedLabel.frame = CGRectMake(0, top + 54, 52, 14);
+	_speedDownButton.frame = CGRectMake(14, top + 70, 24, 24);
+}
+
+// Shows or hides the speed arrows + label, resizing the pill
+// window around the pill's current centre so the pill itself does
+// not move on screen, and clamping the taller window on screen.
+- (void)setSpeedArrowsVisible:(BOOL)visible {
+	_speedArrowsVisible = visible;
+	_speedUpButton.hidden = !visible;
+	_speedDownButton.hidden = !visible;
+	_speedLabel.hidden = !visible;
+	CGRect bounds = [UIScreen mainScreen].bounds;
+	CGPoint center = _pillWindow.center;
+	CGFloat height = visible ? 130.0 : 52.0;
+	CGFloat halfH = height / 2.0;
+	CGFloat y = MIN(MAX(center.y, halfH + 8.0), CGRectGetHeight(bounds) - halfH - 8.0);
+	_pillWindow.frame = CGRectMake(CGRectGetMinX(_pillWindow.frame), y - halfH, 52.0, height);
+	[self layoutPillSubviews];
+}
+
+- (void)updateSpeedLabel {
+	_speedLabel.text = [NSString stringWithFormat:@"%.0fx", ZenithVESpeedFactor()];
+}
+
+// Long-press on the pill: first press turns speed on at 2x and
+// shows the arrows; a second press turns it off (1x) and hides
+// them. Fires on release after holding >= 0.6s: the recognizer
+// waits for the drag to fail first, and a still hold only fails
+// the drag when the finger lifts — a drag itself never fires it.
+// Sets the flag pillTapped checks, so the same touch-up does not
+// also open the menu.
+- (void)speedLongPressed:(UILongPressGestureRecognizer *)gesture {
+	if (gesture.state != UIGestureRecognizerStateBegan) {
+		return;
+	}
+	_longPressFired = YES;
+	if (_speedArrowsVisible) {
+		ZenithVESetSpeedFactor(1.0);
+		[self setSpeedArrowsVisible:NO];
+	} else {
+		ZenithVESetSpeedFactor(2.0);
+		[self setSpeedArrowsVisible:YES];
+		[self updateSpeedLabel];
+	}
+}
+
+- (void)speedUpTapped {
+	double factor = ZenithVESpeedFactor();
+	if (factor >= 5.0) {
+		return;
+	}
+	ZenithVESetSpeedFactor(factor + 1.0);
+	[self updateSpeedLabel];
+}
+
+// Down to 1x keeps the arrows visible: only a second long-press
+// hides them.
+- (void)speedDownTapped {
+	double factor = ZenithVESpeedFactor();
+	if (factor <= 1.0) {
+		return;
+	}
+	ZenithVESetSpeedFactor(factor - 1.0);
+	[self updateSpeedLabel];
+}
+
+// Arrow and label touches must not drag the pill or fire the
+// long-press: they are buttons, not drag handles.
+- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldReceiveTouch:(UITouch *)touch {
+	if (touch.view == _speedUpButton || touch.view == _speedDownButton || touch.view == _speedLabel) {
+		return NO;
+	}
+	return YES;
+}
+
 @end
 
 __attribute__((constructor)) static void ZenithValueEditorInit(void) {
+	// Game speed (v2.30): resolve the real clock functions before
+	// any interposed call can happen.
+	ZenithVEInitClock();
 	dispatch_async(dispatch_get_main_queue(), ^{
 		[[ZenithValueEditor shared] setup];
 		[[ZenithValueEditorOverlay shared] setup];
