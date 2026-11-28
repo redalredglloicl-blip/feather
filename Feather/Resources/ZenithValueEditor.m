@@ -19,7 +19,9 @@
 //  * Refine: re-read the found addresses and keep only the ones that
 //    still match the new value (exact), or that changed / did not
 //    change / increased / decreased (fuzzy, after an exact search).
-//  * Edit: write a new value to a found address with vm_write.
+//  * Edit: write a new value to a found address with vm_write
+//    (v2.26: on failure, vm_protect the page writable, retry,
+//    then restore the original protection).
 //  * Freeze: a background thread re-writes frozen addresses every
 //    0.25s, so the value stays put (the freeze).
 //  * Saved list: found/edited values saved per game, in the game's
@@ -56,6 +58,12 @@
 //    path — there is no fake working menu.
 //  * Float exact search matches the exact bit pattern, so 0.0 and
 //    -0.0 are different values. Refine usually clears that up.
+//  * A protected page is retried, not faked: if vm_write fails,
+//    writeBits flips the page writable with vm_protect, retries,
+//    and restores the protection. If the address is dead (the
+//    game freed it or moved the value) or the kernel refuses
+//    to make the mapping writable, the edit honestly says it
+//    failed — re-search to find the live address.
 //
 //  BUILD (not part of the Xcode app target — a dylib needs its own
 //  build step; this file ships as source only until that step
@@ -93,6 +101,9 @@ extern kern_return_t mach_vm_region(vm_map_t target_task,
                                     vm_region_info_t info,
                                     mach_msg_type_number_t *infoCnt,
                                     mach_port_t *object_name);
+// vm_page_size is the host page size (16K on arm64 iOS); needed
+// to round addresses down for vm_protect in writeBits:.
+extern vm_size_t vm_page_size;
 
 @class ZenithValueEditorOverlay;
 
@@ -384,9 +395,62 @@ static int VECompareBits(uint64_t a, uint64_t b, VEValueType type) {
 	return YES;
 }
 
+// v2.26: the write now fights back when the page is protected.
+// vm_write alone fails on a read-only page, and some games flip
+// their value pages to read-only between frames (or map them
+// that way) — that is the "اللعبة حامية هاي الذاكرة" failure the
+// user saw on 0x106f05b60 (frozen at 155, live read 0). This
+// process OWNS this memory, so: try the plain write first, and
+// only if it fails, make the page writable with vm_protect,
+// retry, and restore the original protection either way. This
+// is the standard value-editor approach. It cannot help a
+// genuinely dead address (freed/reallocated — the game moved
+// the value, the read already shows 0) or a shared/file
+// mapping the kernel refuses to make writable: those still
+// report NO, honestly.
 - (BOOL)writeBits:(uint64_t)bits at:(uint64_t)address type:(VEValueType)type {
 	size_t size = VESizeForType(type);
 	kern_return_t kr = vm_write(mach_task_self(), (vm_address_t)address, (vm_offset_t)&bits, (mach_msg_type_number_t)size);
+	if (kr == KERN_SUCCESS) {
+		return YES;
+	}
+	// Find the region so we know the current protection to
+	// restore afterwards (mach_vm_region is already declared
+	// at the top of this file).
+	mach_vm_address_t regionAddress = (mach_vm_address_t)address;
+	mach_vm_size_t regionSize = 0;
+	vm_region_basic_info_data_64_t info;
+	mach_msg_type_number_t infoCount = VM_REGION_BASIC_INFO_COUNT_64;
+	mach_port_t objectName = MACH_PORT_NULL;
+	if (mach_vm_region(mach_task_self(), &regionAddress, &regionSize,
+						VM_REGION_BASIC_INFO_64, (vm_region_info_t)&info,
+						&infoCount, &objectName) != KERN_SUCCESS) {
+		// No region there at all — dead/stale address.
+		return NO;
+	}
+	if (objectName != MACH_PORT_NULL) {
+		mach_port_deallocate(mach_task_self(), objectName);
+	}
+	vm_prot_t oldProtection = info.protection;
+	if ((oldProtection & VM_PROT_WRITE) != 0) {
+		// Already writable and vm_write still failed — the
+		// address is dead or unmapped; protection is not the
+		// problem, and flipping it would change nothing.
+		return NO;
+	}
+	// vm_protect works on whole pages: round the value down to
+	// its page and protect the page(s) it spans.
+	vm_address_t page = (vm_address_t)address & ~(vm_address_t)(vm_page_size - 1);
+	vm_size_t span = (vm_size_t)((address + size - page + vm_page_size - 1) & ~(vm_size_t)(vm_page_size - 1));
+	if (vm_protect(mach_task_self(), page, span, FALSE, VM_PROT_READ | VM_PROT_WRITE) != KERN_SUCCESS) {
+		// The kernel refuses to make this mapping writable
+		// (shared/file mapping) — report it, do not fake it.
+		return NO;
+	}
+	kr = vm_write(mach_task_self(), (vm_address_t)address, (vm_offset_t)&bits, (mach_msg_type_number_t)size);
+	// Always restore the original protection, success or not,
+	// so the game never notices the page was opened.
+	vm_protect(mach_task_self(), page, span, FALSE, oldProtection);
 	return kr == KERN_SUCCESS;
 }
 
@@ -763,33 +827,29 @@ static int VECompareBits(uint64_t a, uint64_t b, VEValueType type) {
 @property (nonatomic, strong) UIButton *searchButton;
 @property (nonatomic, strong) UIButton *refineButton;
 
-/// The game's topmost view controller the menu's view hangs
-/// off, captured when the menu was first built (showMenu).
-/// Assign, not weak: this file is compiled by the Run Script
-/// with plain clang (no -fobjc-arc, manual reference counting),
-/// and weak cannot be synthesized under MRC. Same non-owning
-/// semantics — the host owns the view hierarchy, the menu must
-/// never keep it alive.
-/// v2.25: this is NO LONGER used to present the edit sheets.
-/// The old claim — "only read while the menu is visible, when
-/// the host is necessarily alive" — was FALSE, and it is the
-/// root cause of ITEM A (edit field accepts no input, prefill
-/// missing): a visible menu only proves _menu.view.window != nil,
-/// i.e. the menu sits in SOME window. It does not prove the host
-/// is still alive (assign dangles on dealloc), nor that the
-/// host's view is still in the KEY window — a game can swap its
-/// key window / root VC / scene while the old window, menu still
-/// attached, stays on screen as a non-key window. Presenting the
-/// alert from that stale host put the alert in a non-key window:
-/// its field became first responder there (blinking caret,
-/// keyboard up) but key events, delivered through the key
-/// window, never reached it, and the prefill never appeared on
-/// the displayed field. showActionsForResult: now computes the
-/// presenter fresh from the live key window at tap time instead.
-@property (nonatomic, assign) UIViewController *presentingHost;
+/// v2.26: the edit panel lives INSIDE the menu (see
+/// showEditPanelForResult:). Two alert generations (2.24
+/// key-window presenter, 2.25 fresh key-window presenter)
+/// both failed on device the same way — the alert's field
+/// showed a blinking caret and the keyboard, but typed keys
+/// never landed and the prefill never appeared (video
+/// 2026-11-28 07:10, on 2.25). The alert approach is dead:
+/// no UIAlertController is used for editing any more, so
+/// there is no presenter to track and no presentingHost.
+@property (nonatomic, strong) UIView *editPanel;
+@property (nonatomic, strong) UILabel *editAddressLabel;
+@property (nonatomic, strong) UITextField *editField;
+@property (nonatomic, strong) UILabel *editStatusLabel;
+@property (nonatomic, strong) UIButton *editApplyButton;
+@property (nonatomic, strong) UIButton *editFreezeButton;
+@property (nonatomic, strong) UIButton *editSaveButton;
+@property (nonatomic, strong) UIButton *editRemoveButton;
+@property (nonatomic, strong) VEResult *editingResult;
+@property (nonatomic, assign) BOOL editingIsSavedTab;
 
 - (void)refreshTable;
 - (void)setStatus:(NSString *)text;
+- (void)hideEditPanel;
 - (NSArray<VEResult *> *)currentList;
 - (VEResult *)resultAtIndex:(NSInteger)index;
 
@@ -927,9 +987,151 @@ static int VECompareBits(uint64_t a, uint64_t b, VEValueType type) {
 		[self.tabSeg.leadingAnchor constraintEqualToAnchor:self.view.leadingAnchor constant:12],
 		[self.tabSeg.trailingAnchor constraintEqualToAnchor:self.view.trailingAnchor constant:-12],
 		[self.tableView.topAnchor constraintEqualToAnchor:self.tabSeg.bottomAnchor constant:8],
-		[self.tableView.leadingAnchor constraintEqualToAnchor:self.view.leadingAnchor constant:0],
-		[self.tableView.trailingAnchor constraintEqualToAnchor:self.view.trailingAnchor constant:0],
-		[self.tableView.bottomAnchor constraintEqualToAnchor:self.view.bottomAnchor constant:0],
+	[self.tableView.leadingAnchor constraintEqualToAnchor:self.view.leadingAnchor constant:0],
+	[self.tableView.trailingAnchor constraintEqualToAnchor:self.view.trailingAnchor constant:0],
+	[self.tableView.bottomAnchor constraintEqualToAnchor:self.view.bottomAnchor constant:0],
+	]];
+
+	// v2.26: the inline edit panel. It replaces the
+	// UIAlertController edit sheet entirely (see the interface
+	// note): it is a plain subview of the menu's own view, and
+	// its field is built exactly like valueField above — the
+	// one field that accepts typing on every phone test — so
+	// it types. It covers the whole menu (opaque, so the search
+	// controls behind it do not bleed through) and is
+	// top-anchored, so the field and both button rows stay
+	// above the landscape keyboard. Hidden until a result row
+	// is tapped.
+	self.editPanel = [[UIView alloc] init];
+	self.editPanel.backgroundColor = [UIColor blackColor];
+	self.editPanel.layer.cornerRadius = 16;
+	self.editPanel.clipsToBounds = YES;
+	self.editPanel.hidden = YES;
+	self.editPanel.translatesAutoresizingMaskIntoConstraints = NO;
+	[self.view addSubview:self.editPanel];
+
+	UILabel *editTitle = [[UILabel alloc] init];
+	editTitle.text = @"تعديل القيمة";
+	editTitle.textColor = [UIColor colorWithRed:1.0 green:0.78 blue:0.47 alpha:1.0];
+	editTitle.font = [UIFont boldSystemFontOfSize:18];
+	editTitle.textAlignment = NSTextAlignmentCenter;
+	editTitle.translatesAutoresizingMaskIntoConstraints = NO;
+	[self.editPanel addSubview:editTitle];
+
+	self.editAddressLabel = [[UILabel alloc] init];
+	self.editAddressLabel.textColor = [UIColor whiteColor];
+	self.editAddressLabel.font = [UIFont systemFontOfSize:15];
+	self.editAddressLabel.textAlignment = NSTextAlignmentCenter;
+	self.editAddressLabel.translatesAutoresizingMaskIntoConstraints = NO;
+	[self.editPanel addSubview:self.editAddressLabel];
+
+	self.editStatusLabel = [[UILabel alloc] init];
+	self.editStatusLabel.textColor = [UIColor lightGrayColor];
+	self.editStatusLabel.font = [UIFont systemFontOfSize:13];
+	self.editStatusLabel.numberOfLines = 0;
+	self.editStatusLabel.textAlignment = NSTextAlignmentCenter;
+	self.editStatusLabel.translatesAutoresizingMaskIntoConstraints = NO;
+	[self.editPanel addSubview:self.editStatusLabel];
+
+	// Same construction as valueField: plain UITextField,
+	// white background, black text, numbers keyboard, delegate
+	// self. That field types on his phone every day; this one
+	// is built the same way, in the same view, in the same
+	// window, so it types too.
+	self.editField = [[UITextField alloc] init];
+	self.editField.placeholder = @"اكتب الرقم هنا";
+	self.editField.keyboardType = UIKeyboardTypeNumbersAndPunctuation;
+	self.editField.borderStyle = UITextBorderStyleRoundedRect;
+	self.editField.backgroundColor = [UIColor whiteColor];
+	self.editField.textColor = [UIColor blackColor];
+	self.editField.delegate = self;
+	self.editField.translatesAutoresizingMaskIntoConstraints = NO;
+	[self.editPanel addSubview:self.editField];
+
+	self.editApplyButton = [UIButton buttonWithType:UIButtonTypeSystem];
+	[self.editApplyButton setTitle:@"تعديل" forState:UIControlStateNormal];
+	self.editApplyButton.titleLabel.font = [UIFont boldSystemFontOfSize:16];
+	[self.editApplyButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
+	self.editApplyButton.backgroundColor = [UIColor colorWithRed:1.0 green:0.78 blue:0.47 alpha:1.0];
+	self.editApplyButton.layer.cornerRadius = 8;
+	[self.editApplyButton addTarget:self action:@selector(editApplyTapped) forControlEvents:UIControlEventTouchUpInside];
+	self.editApplyButton.translatesAutoresizingMaskIntoConstraints = NO;
+
+	self.editFreezeButton = [UIButton buttonWithType:UIButtonTypeSystem];
+	[self.editFreezeButton setTitle:@"تثبيت القيمة" forState:UIControlStateNormal];
+	self.editFreezeButton.titleLabel.font = [UIFont systemFontOfSize:16];
+	[self.editFreezeButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+	self.editFreezeButton.backgroundColor = [[UIColor whiteColor] colorWithAlphaComponent:0.2];
+	self.editFreezeButton.layer.cornerRadius = 8;
+	[self.editFreezeButton addTarget:self action:@selector(editFreezeTapped) forControlEvents:UIControlEventTouchUpInside];
+	self.editFreezeButton.translatesAutoresizingMaskIntoConstraints = NO;
+
+	UIStackView *editRow1 = [[UIStackView alloc] initWithArrangedSubviews:@[self.editApplyButton, self.editFreezeButton]];
+	editRow1.axis = UILayoutConstraintAxisHorizontal;
+	editRow1.distribution = UIStackViewDistributionFillEqually;
+	editRow1.spacing = 8;
+	editRow1.translatesAutoresizingMaskIntoConstraints = NO;
+	[self.editPanel addSubview:editRow1];
+
+	self.editSaveButton = [UIButton buttonWithType:UIButtonTypeSystem];
+	[self.editSaveButton setTitle:@"حفظ" forState:UIControlStateNormal];
+	self.editSaveButton.titleLabel.font = [UIFont systemFontOfSize:16];
+	[self.editSaveButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+	self.editSaveButton.backgroundColor = [[UIColor whiteColor] colorWithAlphaComponent:0.12];
+	self.editSaveButton.layer.cornerRadius = 8;
+	[self.editSaveButton addTarget:self action:@selector(editSaveTapped) forControlEvents:UIControlEventTouchUpInside];
+	self.editSaveButton.translatesAutoresizingMaskIntoConstraints = NO;
+
+	self.editRemoveButton = [UIButton buttonWithType:UIButtonTypeSystem];
+	[self.editRemoveButton setTitle:@"حذف من المحفوظات" forState:UIControlStateNormal];
+	self.editRemoveButton.titleLabel.font = [UIFont systemFontOfSize:14];
+	[self.editRemoveButton setTitleColor:[UIColor colorWithRed:1.0 green:0.35 blue:0.3 alpha:1.0] forState:UIControlStateNormal];
+	self.editRemoveButton.backgroundColor = [[UIColor whiteColor] colorWithAlphaComponent:0.12];
+	self.editRemoveButton.layer.cornerRadius = 8;
+	[self.editRemoveButton addTarget:self action:@selector(editRemoveTapped) forControlEvents:UIControlEventTouchUpInside];
+	self.editRemoveButton.translatesAutoresizingMaskIntoConstraints = NO;
+
+	UIButton *editBackButton = [UIButton buttonWithType:UIButtonTypeSystem];
+	[editBackButton setTitle:@"رجوع" forState:UIControlStateNormal];
+	editBackButton.titleLabel.font = [UIFont systemFontOfSize:16];
+	[editBackButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+	editBackButton.backgroundColor = [[UIColor whiteColor] colorWithAlphaComponent:0.12];
+	editBackButton.layer.cornerRadius = 8;
+	[editBackButton addTarget:self action:@selector(editBackTapped) forControlEvents:UIControlEventTouchUpInside];
+	editBackButton.translatesAutoresizingMaskIntoConstraints = NO;
+
+	UIStackView *editRow2 = [[UIStackView alloc] initWithArrangedSubviews:@[self.editSaveButton, self.editRemoveButton, editBackButton]];
+	editRow2.axis = UILayoutConstraintAxisHorizontal;
+	editRow2.distribution = UIStackViewDistributionFillEqually;
+	editRow2.spacing = 8;
+	editRow2.translatesAutoresizingMaskIntoConstraints = NO;
+	[self.editPanel addSubview:editRow2];
+
+	[NSLayoutConstraint activateConstraints:@[
+		[self.editPanel.topAnchor constraintEqualToAnchor:self.view.topAnchor constant:0],
+		[self.editPanel.leadingAnchor constraintEqualToAnchor:self.view.leadingAnchor constant:0],
+		[self.editPanel.trailingAnchor constraintEqualToAnchor:self.view.trailingAnchor constant:0],
+		[self.editPanel.bottomAnchor constraintEqualToAnchor:self.view.bottomAnchor constant:0],
+		[editTitle.topAnchor constraintEqualToAnchor:self.editPanel.topAnchor constant:12],
+		[editTitle.centerXAnchor constraintEqualToAnchor:self.editPanel.centerXAnchor],
+		[self.editAddressLabel.topAnchor constraintEqualToAnchor:editTitle.bottomAnchor constant:6],
+		[self.editAddressLabel.leadingAnchor constraintEqualToAnchor:self.editPanel.leadingAnchor constant:12],
+		[self.editAddressLabel.trailingAnchor constraintEqualToAnchor:self.editPanel.trailingAnchor constant:-12],
+		[self.editStatusLabel.topAnchor constraintEqualToAnchor:self.editAddressLabel.bottomAnchor constant:6],
+		[self.editStatusLabel.leadingAnchor constraintEqualToAnchor:self.editPanel.leadingAnchor constant:12],
+		[self.editStatusLabel.trailingAnchor constraintEqualToAnchor:self.editPanel.trailingAnchor constant:-12],
+		[self.editField.topAnchor constraintEqualToAnchor:self.editStatusLabel.bottomAnchor constant:8],
+		[self.editField.leadingAnchor constraintEqualToAnchor:self.editPanel.leadingAnchor constant:12],
+		[self.editField.trailingAnchor constraintEqualToAnchor:self.editPanel.trailingAnchor constant:-12],
+		[self.editField.heightAnchor constraintEqualToConstant:36],
+		[editRow1.topAnchor constraintEqualToAnchor:self.editField.bottomAnchor constant:8],
+		[editRow1.leadingAnchor constraintEqualToAnchor:self.editPanel.leadingAnchor constant:12],
+		[editRow1.trailingAnchor constraintEqualToAnchor:self.editPanel.trailingAnchor constant:-12],
+		[editRow1.heightAnchor constraintEqualToConstant:40],
+		[editRow2.topAnchor constraintEqualToAnchor:editRow1.bottomAnchor constant:8],
+		[editRow2.leadingAnchor constraintEqualToAnchor:self.editPanel.leadingAnchor constant:12],
+		[editRow2.trailingAnchor constraintEqualToAnchor:self.editPanel.trailingAnchor constant:-12],
+		[editRow2.heightAnchor constraintEqualToConstant:40],
 	]];
 }
 
@@ -1073,175 +1275,139 @@ static int VECompareBits(uint64_t a, uint64_t b, VEValueType type) {
 		return;
 	}
 	BOOL isSavedTab = (self.tabSeg.selectedSegmentIndex == 1);
-	[self showActionsForResult:result isSavedTab:isSavedTab];
+	[self showEditPanelForResult:result isSavedTab:isSavedTab];
 }
 
-/// The game's key window, found fresh at tap time — the same
-/// walk ZenithValueEditorOverlay's keyWindow does. The menu VC
-/// has its own copy because the overlay's @interface is declared
-/// below this implementation, and the presenter for the edit
-/// sheet must be recomputed on every tap, never cached: the
-/// cached presentingHost (v2.24) is what broke typing in ITEM A.
-/// Nil if the game has no key window right now.
-- (UIWindow *)ve_keyWindow {
-	for (UIScene *scene in [UIApplication sharedApplication].connectedScenes) {
-		if (scene.activationState != UISceneActivationStateForegroundActive) {
-			continue;
-		}
-		if (![scene isKindOfClass:[UIWindowScene class]]) {
-			continue;
-		}
-		for (UIWindow *window in ((UIWindowScene *)scene).windows) {
-			if (window.isKeyWindow) {
-				return window;
-			}
-		}
-	}
-	return nil;
-}
-
-/// Edit / freeze / save sheet for one address.
-- (void)showActionsForResult:(VEResult *)result isSavedTab:(BOOL)isSavedTab {
+/// v2.26: the inline edit panel. A result row tap opens this
+/// panel INSIDE the menu — no UIAlertController, no presenter,
+/// no key-window walk. Two alert generations proved on device
+/// (2.24, 2.25; video 2026-11-28 07:10 on 2.25) that an
+/// alert's field never accepts typing in this game: caret
+/// blinking, keyboard up, digits inserting nothing, prefill
+/// never landing — even presented from the live key window
+/// with a completion backstop. The menu's own valueField
+/// types fine every day, so the panel's field is built
+/// exactly like it, in the same view, in the same window.
+- (void)showEditPanelForResult:(VEResult *)result isSavedTab:(BOOL)isSavedTab {
 	ZenithValueEditor *engine = [ZenithValueEditor shared];
+	self.editingResult = result;
+	self.editingIsSavedTab = isSavedTab;
+
+	self.editAddressLabel.text = [NSString stringWithFormat:@"0x%llx", (unsigned long long)result.address];
+
+	// Fresh read at tap time. Never fake a value: an
+	// unreadable address gets the honest placeholder and a
+	// disabled تعديل button, not a silent "0".
 	uint64_t now = 0;
-	// v2.25, ITEM A: readBitsAt's result used to be ignored, so
-	// an unreadable address silently prefilled "0". Keep the
-	// honest bit: `readable` decides whether the field gets the
-	// real current value or an honest placeholder — never a
-	// faked value, never a silently empty field.
 	BOOL readable = [engine readBitsAt:result.address type:result.type bitsOut:&now];
-	NSString *currentText = readable ? VEStringForBits(now, result.type) : nil;
-
-	// v2.24, Bug 2: this MUST be Alert, never ActionSheet.
-	// UIKit FORBIDS text fields in an action sheet:
-	// addTextFieldWithConfigurationHandler: raises
-	// NSInternalInconsistencyException ("text fields can only
-	// be added to an alert controller of style Alert") and the
-	// game aborts — crash log 4, incident BB7C7968, tap any
-	// result row -> showActionsForResult -> addTextField ->
-	// NSAssertionHandler -> SIGABRT. The 2.22 layout fix made
-	// the rows tappable for the first time, so this is the
-	// first tap that ever reached this code. An alert needs
-	// no popover anchor on any device, and keeps the same
-	// text field + تعديل / freeze / save actions.
-	UIAlertController *sheet = [UIAlertController
-		alertControllerWithTitle:[NSString stringWithFormat:@"0x%llx", (unsigned long long)result.address]
-		message:nil
-		preferredStyle:UIAlertControllerStyleAlert];
-	[sheet addTextFieldWithConfigurationHandler:^(UITextField *textField) {
-		// VEStringForBits never returns an empty string (its
-		// switch covers all four types, else @"?"), so a nil
-		// currentText here means the address is unreadable, not
-		// that the value is empty — say so in the placeholder.
-		textField.text = currentText;
-		if (!readable) {
-			textField.placeholder = @"تعذّرت قراءة القيمة";
-		}
-		textField.keyboardType = UIKeyboardTypeNumbersAndPunctuation;
-	}];
-
-	UIAlertAction *edit = [UIAlertAction actionWithTitle:@"تعديل" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
-		NSString *text = sheet.textFields.firstObject.text;
-		uint64_t bits = 0;
-		if (!VEParseBits(text, result.type, &bits)) {
-			[self setStatus:@"الرقم مو صحيح."];
-			return;
-		}
-		if ([engine writeBits:bits at:result.address type:result.type]) {
-			result.bits = bits;
-			[self setStatus:@"تم التعديل."];
-		} else {
-			[self setStatus:@"ما قدرت أعدّل هاي القيمة — اللعبة حامية هاي الذاكرة."];
-		}
-		[self refreshTable];
-	}];
-	[sheet addAction:edit];
-
-	NSString *freezeTitle = result.frozen ? @"إلغاء التثبيت" : @"تثبيت القيمة";
-	UIAlertAction *freeze = [UIAlertAction actionWithTitle:freezeTitle style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
-		[engine setFrozen:!result.frozen forResult:result];
-		[self setStatus:result.frozen ? @"القيمة مثبّتة — راح تبقى مثل ما هي." : @"تم إلغاء التثبيت."];
-		[self refreshTable];
-	}];
-	[sheet addAction:freeze];
-
-	if (!isSavedTab) {
-		UIAlertAction *save = [UIAlertAction actionWithTitle:@"حفظ" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
-			[engine saveResult:result];
-			[self setStatus:@"انحفظت بقائمة المحفوظات."];
-			[self refreshTable];
-		}];
-		[sheet addAction:save];
+	if (readable) {
+		self.editField.text = VEStringForBits(now, result.type);
+		self.editField.placeholder = nil;
+		self.editApplyButton.enabled = YES;
+		self.editApplyButton.alpha = 1.0;
 	} else {
-		UIAlertAction *apply = [UIAlertAction actionWithTitle:@"كتابة القيمة المحفوظة" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
-			[engine applySaved:result];
-			[self setStatus:@"انكتبت القيمة المحفوظة."];
-			[self refreshTable];
-		}];
-		[sheet addAction:apply];
-		UIAlertAction *remove = [UIAlertAction actionWithTitle:@"حذف من المحفوظات" style:UIAlertActionStyleDestructive handler:^(UIAlertAction *action) {
-			[engine removeSaved:result];
-			[self refreshTable];
-		}];
-		[sheet addAction:remove];
+		self.editField.text = nil;
+		self.editField.placeholder = @"تعذّرت قراءة القيمة";
+		self.editApplyButton.enabled = NO;
+		self.editApplyButton.alpha = 0.4;
 	}
 
-	[sheet addAction:[UIAlertAction actionWithTitle:@"إلغاء" style:UIAlertActionStyleCancel handler:nil]];
+	[self.editFreezeButton setTitle:(result.frozen ? @"إلغاء التثبيت" : @"تثبيت القيمة") forState:UIControlStateNormal];
+	if (isSavedTab) {
+		[self.editSaveButton setTitle:@"كتابة القيمة المحفوظة" forState:UIControlStateNormal];
+		self.editRemoveButton.hidden = NO;
+	} else {
+		[self.editSaveButton setTitle:@"حفظ" forState:UIControlStateNormal];
+		self.editRemoveButton.hidden = YES;
+	}
+	self.editStatusLabel.text = @"";
+	self.editPanel.hidden = NO;
+	// The panel's field is a plain subview of the menu's own
+	// view — the same responder chain as valueField — so the
+	// keyboard comes up for it and typed keys land in it.
+	[self.editField becomeFirstResponder];
+}
 
-	// v2.25, ITEM A — the presenter is computed FRESH from the
-	// live key window at tap time. NEVER the cached
-	// presentingHost, NEVER the detached menu VC (self):
-	// the menu is a plain subview, not a child view controller
-	// (v2.16), so presenting from self would warn "whose view
-	// is not in the window hierarchy" and drop the sheet — and
-	// the cached host, set once at first menu open and never
-	// refreshed on reopen, can point at a VC whose view is no
-	// longer in the KEY window (game scene / root VC swap). The
-	// alert then appeared in a non-key window: its field became
-	// first responder there (blinking caret, keyboard up, but
-	// typed keys, delivered through the key window, reached
-	// NOTHING — neither the alert field nor the menu's 5455
-	// field behind it) and the prefill never reached the
-	// displayed field, even though VEStringForBits can never
-	// return an empty string. Presenting from the key window's
-	// own topmost VC puts the alert, its field and the keyboard
-	// in the same window key events go to. If there is no key
-	// window right now, do NOT present a broken sheet — say so
-	// in the menu's status line instead.
-	UIWindow *keyWindow = [self ve_keyWindow];
-	if (keyWindow == nil) {
-		[self setStatus:@"ما قدرت أفتح نافذة التعديل — اللعبة ما عندها نافذة نشطة هسه."];
+- (void)hideEditPanel {
+	[self.editField resignFirstResponder];
+	self.editPanel.hidden = YES;
+	self.editingResult = nil;
+}
+
+// The panel's status line is the one the user sees while
+// editing; mirror it onto the menu's own status line too,
+// so the last message is still there when the panel closes.
+- (void)setEditStatus:(NSString *)text {
+	self.editStatusLabel.text = text;
+	[self setStatus:text];
+}
+
+// Edit / freeze / save logic, unchanged from the old alert
+// handlers — only the trigger moved from the alert's buttons
+// to the panel's buttons.
+- (void)editApplyTapped {
+	VEResult *result = self.editingResult;
+	if (result == nil) {
 		return;
 	}
-	UIViewController *presenter = keyWindow.rootViewController;
-	while (presenter.presentedViewController != nil) {
-		presenter = presenter.presentedViewController;
-	}
-	if (presenter == nil) {
-		[self setStatus:@"ما قدرت أفتح نافذة التعديل — اللعبة ما عندها نافذة نشطة هسه."];
+	ZenithValueEditor *engine = [ZenithValueEditor shared];
+	NSString *text = self.editField.text;
+	uint64_t bits = 0;
+	if (!VEParseBits(text, result.type, &bits)) {
+		[self setEditStatus:@"الرقم مو صحيح."];
 		return;
 	}
-	[presenter presentViewController:sheet animated:YES completion:^{
-		// Backstop for the prefill (ITEM A, symptom 2): the
-		// configuration handler above sets the text, but the
-		// 2.24 phone test proved the displayed field can still
-		// come up empty when the presentation path is wrong — so
-		// verify on the field that is actually on screen, after
-		// presentation, and fill it if it is empty. This is a
-		// no-op when the handler already did its job. Also make
-		// Return dismiss the keyboard (the menu VC is the
-		// delegate for its own value field too) and explicitly
-		// make this field first responder in the key window, so
-		// typed keys have somewhere to go.
-		UITextField *field = sheet.textFields.firstObject;
-		if (field != nil) {
-			if (field.text.length == 0 && currentText != nil) {
-				field.text = currentText;
-			}
-			field.delegate = self;
-			[field becomeFirstResponder];
-		}
-	}];
+	if ([engine writeBits:bits at:result.address type:result.type]) {
+		result.bits = bits;
+		[self setEditStatus:@"تم التعديل."];
+	} else {
+		[self setEditStatus:@"ما قدرت أعدّل هاي القيمة — اللعبة حامية هاي الذاكرة."];
+	}
+	[self refreshTable];
+}
+
+- (void)editFreezeTapped {
+	VEResult *result = self.editingResult;
+	if (result == nil) {
+		return;
+	}
+	ZenithValueEditor *engine = [ZenithValueEditor shared];
+	[engine setFrozen:!result.frozen forResult:result];
+	[self setEditStatus:result.frozen ? @"القيمة مثبّتة — راح تبقى مثل ما هي." : @"تم إلغاء التثبيت."];
+	[self.editFreezeButton setTitle:(result.frozen ? @"إلغاء التثبيت" : @"تثبيت القيمة") forState:UIControlStateNormal];
+	[self refreshTable];
+}
+
+- (void)editSaveTapped {
+	VEResult *result = self.editingResult;
+	if (result == nil) {
+		return;
+	}
+	ZenithValueEditor *engine = [ZenithValueEditor shared];
+	if (self.editingIsSavedTab) {
+		[engine applySaved:result];
+		[self setEditStatus:@"انكتبت القيمة المحفوظة."];
+	} else {
+		[engine saveResult:result];
+		[self setEditStatus:@"انحفظت بقائمة المحفوظات."];
+	}
+	[self refreshTable];
+}
+
+- (void)editRemoveTapped {
+	VEResult *result = self.editingResult;
+	if (result == nil) {
+		return;
+	}
+	[[ZenithValueEditor shared] removeSaved:result];
+	// The result is gone — close the panel instead of
+	// leaving it pointing at a deleted row.
+	[self hideEditPanel];
+	[self refreshTable];
+}
+
+- (void)editBackTapped {
+	[self hideEditPanel];
 }
 
 - (BOOL)textFieldShouldReturn:(UITextField *)textField {
@@ -1472,8 +1638,11 @@ static void VEAddTiltedEllipseArc(CGContextRef ctx, CGPoint center, CGFloat a, C
 		return;
 	}
 	// Reopen after a close: the menu is still attached to the
-	// game's window, just hidden.
+	// game's window, just hidden. Drop any edit panel left
+	// open from last time, so the menu reopens on the results
+	// list, not on a stale row.
 	if (_menu != nil && _menu.view.window != nil) {
+		[_menu hideEditPanel];
 		_menu.view.hidden = NO;
 		return;
 	}
@@ -1496,12 +1665,12 @@ static void VEAddTiltedEllipseArc(CGContextRef ctx, CGPoint center, CGFloat a, C
 	// are pure reads, and addSubview is the same plain view op
 	// ads and SDKs do inside games. So the menu is now a plain
 	// subview of the game's view — no containment at all. The
-	// menu still presents its edit sheets, from the live key
-	// window's topmost view controller computed fresh at tap
-	// time (v2.25, see showActionsForResult: — NOT through the
-	// cached presentingHost, which broke typing in ITEM A),
-	// and the game keeps its key window, its scene and its
-	// runloop untouched.
+	// The menu edits inline inside itself now (v2.26):
+	// tapping a result row opens an edit panel that is a plain
+	// subview of the menu — no UIAlertController anywhere,
+	// because two alert generations (2.24, 2.25) both failed
+	// on device with a dead, untypeable field. The game keeps
+	// its key window, its scene and its runloop untouched.
 	// No memory scan starts here: searching only starts when
 	// the user taps بحث.
 	UIWindow *keyWindow = [self keyWindow];
@@ -1516,7 +1685,6 @@ static void VEAddTiltedEllipseArc(CGContextRef ctx, CGPoint center, CGFloat a, C
 		return;
 	}
 	_menu = [[ZenithValueEditorMenuViewController alloc] init];
-	_menu.presentingHost = host;
 	// v2.22: the menu used to be inset 60pt top/bottom, which left
 	// the results table only ~14pt tall in landscape — the result
 	// rows were invisible and untappable, so the editor could
