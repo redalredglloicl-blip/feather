@@ -72,6 +72,9 @@ $(PLATFORMS): deps
 	base64 -D < Feather/Resources/icon-b64/settings@3x.png.b64 > Feather/Resources/Assets.xcassets/icon-settings.imageset/settings@3x.png
 	base64 -D < Feather/Resources/icon-b64/sign.png.b64 > Feather/Resources/Assets.xcassets/icon-sign.imageset/sign.png
 	base64 -D < Feather/Resources/icon-b64/sort.png.b64 > Feather/Resources/Assets.xcassets/icon-sort.imageset/sort.png
+	base64 -D < Feather/Resources/icon-b64/store.png.b64 > Feather/Resources/Assets.xcassets/icon-store.imageset/store.png
+	base64 -D < Feather/Resources/icon-b64/store@2x.png.b64 > Feather/Resources/Assets.xcassets/icon-store.imageset/store@2x.png
+	base64 -D < Feather/Resources/icon-b64/store@3x.png.b64 > Feather/Resources/Assets.xcassets/icon-store.imageset/store@3x.png
 	base64 -D < Feather/Resources/zenith-icon-b64/zenith_extension.png.b64 > Feather/Resources/zenith_extension.png
 	base64 -D < Feather/Resources/icon-b64/glyph.png.b64 > Feather/Resources/Assets.xcassets/Glyph.imageset/zenith.png
 	base64 -D < Feather/Resources/icon-b64/appicon-zenith.png.b64 > Feather/Resources/AppIcon.icon/Assets/zenith.png

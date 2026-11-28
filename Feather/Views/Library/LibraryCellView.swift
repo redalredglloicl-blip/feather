@@ -13,6 +13,9 @@ import NimbleViews
 struct LibraryCellView: View {
 	@Environment(\.editMode) private var editMode
 	@ObservedObject private var _prefs = LibraryPrefs.shared
+	/// Zenith 2.34 (Store): observes the store manager so the
+	/// "تحديث" pill below appears once the feeds load.
+	@ObservedObject private var _store = ZenithStoreManager.shared
 
 	var certInfo: Date.ExpirationInfo? {
 		Storage.shared.getCertificate(from: app)?.expiration?.expirationInfo()
@@ -99,10 +102,29 @@ struct LibraryCellView: View {
 						.font(.headline)
 						.lineLimit(1)
 				}
-				Text(_versionAndDateText)
-					.font(.subheadline)
-					.foregroundStyle(.secondary)
-					.lineLimit(1)
+				HStack(spacing: 6) {
+					Text(_versionAndDateText)
+						.font(.subheadline)
+						.foregroundStyle(.secondary)
+						.lineLimit(1)
+					// Zenith 2.34 (Store): peach "تحديث" pill next to
+					// the version, only when the store feed has a
+					// newer version of this app. Tapping it downloads
+					// the update; nothing else about the row changes.
+					if let id = app.identifier, let updateApp = _store.update(for: id, installedVersion: app.version) {
+						Button {
+							_store.download(updateApp)
+						} label: {
+							Text("تحديث")
+								.font(.caption.bold())
+								.foregroundStyle(.black)
+								.padding(.horizontal, 8)
+								.padding(.vertical, 3)
+								.background(Color(hex: "#FFC778"), in: Capsule())
+						}
+						.buttonStyle(.borderless)
+					}
+				}
 				if let identifier = app.identifier {
 					Text(identifier)
 						.font(.caption)
