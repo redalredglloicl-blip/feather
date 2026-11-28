@@ -138,6 +138,7 @@
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
 #import <mach/mach.h>
+#import <mach/mach_time.h> // v2.31: mach_absolute_time + mach_timebase_info live here, NOT in <mach/mach.h> — their absence failed the 2.30 build.
 #import <stdio.h>
 #import <unistd.h>
 #import <dlfcn.h>

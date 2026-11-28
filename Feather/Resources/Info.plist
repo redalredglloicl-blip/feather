@@ -3,7 +3,7 @@
 <plist version="1.0">
 <dict>
 	<key>ZenithBuildNumber</key>
-	<integer>32</integer>
+	<integer>33</integer>
 	<key>BGTaskSchedulerPermittedIdentifiers</key>
 	<array>
 		<string>$(PRODUCT_BUNDLE_IDENTIFIER).userTask.*</string>
