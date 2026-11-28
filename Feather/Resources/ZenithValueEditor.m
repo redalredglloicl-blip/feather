@@ -158,7 +158,7 @@ static BOOL VEParseBits(NSString *text, VEValueType type, uint64_t *bitsOut) {
 	char *end = NULL;
 	switch (type) {
 		case VEValueTypeInt32: {
-			long long v = strtoll(cText, &end, 0);
+			long long v = strtoll(cText, &end, 10);
 			if (end == cText || v < INT32_MIN || v > INT32_MAX) {
 				return NO;
 			}
@@ -168,7 +168,7 @@ static BOOL VEParseBits(NSString *text, VEValueType type, uint64_t *bitsOut) {
 			return YES;
 		}
 		case VEValueTypeInt64: {
-			long long v = strtoll(cText, &end, 0);
+			long long v = strtoll(cText, &end, 10);
 			if (end == cText) {
 				return NO;
 			}
@@ -413,7 +413,7 @@ static int VECompareBits(uint64_t a, uint64_t b, VEValueType type) {
 	size_t valueSize = VESizeForType(type);
 
 	dispatch_async(dispatch_get_global_queue(QOS_CLASS_USER_INITIATED, 0), ^{
-		NSMutableArray<VEResult *> *found = [NSMutableArray array];
+		NSMutableArray<VEResult *> *found = [[NSMutableArray alloc] init];
 		BOOL capped = NO;
 
 		mach_vm_address_t address = 0;
@@ -427,13 +427,26 @@ static int VECompareBits(uint64_t a, uint64_t b, VEValueType type) {
 							  &infoCount, &objectName) == KERN_SUCCESS) {
 			mach_vm_address_t regionStart = address;
 			mach_vm_size_t regionSize = size;
+			if (objectName != MACH_PORT_NULL) {
+				mach_port_deallocate(mach_task_self(), objectName);
+				objectName = MACH_PORT_NULL;
+			}
+			if (regionSize == 0) {
+				break;
+			}
 			// Next region: mach_vm_region keeps scanning from the
 			// address we pass in, so advance past this one now.
 			address += size;
 			infoCount = VM_REGION_BASIC_INFO_COUNT_64;
 
-			// Only readable regions can hold a value we can read.
-			if ((info.protection & VM_PROT_READ) == 0) {
+			// Only readable+WRITABLE regions can hold a value the
+			// player can change. Read-only mappings (__TEXT,
+			// __LINKEDIT, the dyld shared cache) can only hold
+			// constants — and they are the biggest, most exotic
+			// mappings in the task, the ones vm_read is most
+			// likely to fault on. Skipping them also makes the
+			// scan orders of magnitude faster.
+			if ((info.protection & (VM_PROT_READ | VM_PROT_WRITE)) != (VM_PROT_READ | VM_PROT_WRITE)) {
 				continue;
 			}
 
@@ -444,7 +457,8 @@ static int VECompareBits(uint64_t a, uint64_t b, VEValueType type) {
 				mach_msg_type_number_t dataCount = 0;
 				kern_return_t kr = vm_read(mach_task_self(), regionStart + offset, chunk, &data, &dataCount);
 				if (kr != KERN_SUCCESS) {
-					break;
+					offset += chunk;
+					continue;
 				}
 				const uint8_t *bytes = (const uint8_t *)data;
 				// Step one byte at a time: a value can sit at ANY
@@ -468,6 +482,7 @@ static int VECompareBits(uint64_t a, uint64_t b, VEValueType type) {
 					result.bits = targetBits;
 					result.type = type;
 					[found addObject:result];
+					[result release];
 					if (found.count >= kZenithVEMaxResults) {
 						capped = YES;
 						break;
@@ -494,6 +509,7 @@ static int VECompareBits(uint64_t a, uint64_t b, VEValueType type) {
 				completion(found.count, capped, error);
 			}
 		});
+		[found release];
 	});
 }
 
@@ -503,13 +519,13 @@ static int VECompareBits(uint64_t a, uint64_t b, VEValueType type) {
 	uint64_t targetBits = 0;
 	if (!VEParseBits(text, self.currentType, &targetBits)) {
 		if (completion != NULL) {
-			completion(self.results.count, @"الرقم مو صحيح.");
+			completion([self safeResultsCount], @"الرقم مو صحيح.");
 		}
 		return;
 	}
 	if (self.scanning) {
 		if (completion != NULL) {
-			completion(self.results.count, @"البحث شغال بعد — انتظر يخلص.");
+			completion([self safeResultsCount], @"البحث شغال بعد — انتظر يخلص.");
 		}
 		return;
 	}
@@ -520,7 +536,7 @@ static int VECompareBits(uint64_t a, uint64_t b, VEValueType type) {
 	uint64_t mask = (valueSize == 8) ? UINT64_MAX : ((1ULL << (valueSize * 8)) - 1);
 
 	dispatch_async(dispatch_get_global_queue(QOS_CLASS_USER_INITIATED, 0), ^{
-		NSMutableArray<VEResult *> *kept = [NSMutableArray array];
+		NSMutableArray<VEResult *> *kept = [[NSMutableArray alloc] init];
 		for (VEResult *result in previous) {
 			uint64_t now = 0;
 			if (![self readBitsAt:result.address type:type bitsOut:&now]) {
@@ -543,6 +559,8 @@ static int VECompareBits(uint64_t a, uint64_t b, VEValueType type) {
 				completion(kept.count, error);
 			}
 		});
+		[kept release];
+		[previous release];
 	});
 }
 
@@ -551,7 +569,7 @@ static int VECompareBits(uint64_t a, uint64_t b, VEValueType type) {
 - (void)refineFuzzy:(VERefineMode)mode completion:(void (^)(NSUInteger count))completion {
 	if (self.scanning) {
 		if (completion != NULL) {
-			completion(self.results.count);
+			completion([self safeResultsCount]);
 		}
 		return;
 	}
@@ -560,7 +578,7 @@ static int VECompareBits(uint64_t a, uint64_t b, VEValueType type) {
 	NSArray<VEResult *> *previous = [self.results copy];
 
 	dispatch_async(dispatch_get_global_queue(QOS_CLASS_USER_INITIATED, 0), ^{
-		NSMutableArray<VEResult *> *kept = [NSMutableArray array];
+		NSMutableArray<VEResult *> *kept = [[NSMutableArray alloc] init];
 		for (VEResult *result in previous) {
 			uint64_t now = 0;
 			if (![self readBitsAt:result.address type:type bitsOut:&now]) {
@@ -587,6 +605,8 @@ static int VECompareBits(uint64_t a, uint64_t b, VEValueType type) {
 				completion(kept.count);
 			}
 		});
+		[kept release];
+		[previous release];
 	});
 }
 
@@ -624,11 +644,18 @@ static int VECompareBits(uint64_t a, uint64_t b, VEValueType type) {
 				snapshot = [self.frozen copy];
 			}
 			if (snapshot.count == 0) {
+				[snapshot release];
 				break;
 			}
 			for (VEResult *result in snapshot) {
+				uint64_t now = 0;
+				if (![self readBitsAt:result.address type:result.type bitsOut:&now]) {
+					continue;
+				}
 				[self writeBits:result.bits at:result.address type:result.type];
 			}
+			[snapshot release];
+			snapshot = nil;
 			[NSThread sleepForTimeInterval:kZenithVEFreezeInterval];
 		}
 		self.freezeRunning = NO;
@@ -657,6 +684,7 @@ static int VECompareBits(uint64_t a, uint64_t b, VEValueType type) {
 		if (result.frozen) {
 			[self.frozen addObject:result];
 		}
+		[result release];
 	}
 	if (self.frozen.count > 0 && !self.freezeRunning) {
 		self.freezeRunning = YES;
@@ -701,6 +729,7 @@ static int VECompareBits(uint64_t a, uint64_t b, VEValueType type) {
 	copy.type = result.type;
 	copy.label = result.label ?: VEStringForBits(result.bits, result.type);
 	[self.saved addObject:copy];
+	[copy release];
 	[self persistSaved];
 }
 

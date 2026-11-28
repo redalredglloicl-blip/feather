@@ -146,6 +146,17 @@ struct InstallPreviewView: View {
 		#if !targetEnvironment(macCatalyst)
 		.onAppear {
 			BackgroundAudioManager.shared.start()
+			// Zenith v2.21: keep the install server (and the
+			// process) alive outside this sheet — see
+			// InstallSessionManager. The sheet's own audio hold
+			// below is not enough: its onDisappear fires on any
+			// teardown of the sheet, which deallocates the server
+			// mid-download. The session's hold survives that.
+			// Share flows (isSharing) need no server: archiving
+			// only produces a file, so no session is begun there.
+			if !isSharing {
+				InstallSessionManager.shared.begin(server: installer, viewModel: viewModel)
+			}
 		}
 		#endif
 		
@@ -366,8 +377,13 @@ struct InstallPreviewView: View {
 				}
 			} catch {
 				await progressTask?.cancel()
-				
+
 				await MainActor.run {
+					// Zenith v2.21: archiving failed — nothing to
+					// serve, so release the install session (server
+					// + keep-alive) now instead of holding it for
+					// the grace period.
+					InstallSessionManager.shared.end()
 					UIAlertController.showAlertWithOk(
 						title: .localized("Install"),
 						message: String(describing: error),

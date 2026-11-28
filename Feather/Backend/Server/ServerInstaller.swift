@@ -8,6 +8,7 @@
 //
 
 import Foundation
+import Combine
 import Vapor
 import NIOSSL
 import NIOTLS
@@ -122,4 +123,105 @@ class ServerInstaller: Identifiable, ObservableObject {
 	func getIPFix() -> Bool {
 		UserDefaults.standard.bool(forKey: "Zenith.ipFix")
 	}
+}
+
+// MARK: - Install session keeper (Zenith v2.21)
+/// Owns the live install server OUTSIDE the view hierarchy, so
+/// the download survives anything that tears the install sheet
+/// down mid-install.
+///
+/// Proven failure (2.20): the sheet's @StateObject was the
+/// server's ONLY owner, so any teardown of the sheet — the root
+/// view swapping to OfflineBlockView on a brief isOffline flip,
+/// the forced-update screen, a dismiss — deallocated the server
+/// while installd was still fetching the IPA. The download then
+/// stalled at ~50% (overallProgress is (install + package) / 2
+/// and install stays 0 until the whole IPA is served), the home
+/// screen kept a white placeholder icon, and tapping it showed
+/// the integrity alert. The 2.20 fixes (no swipe-dismiss while
+/// in flight, audio kept on .broken) never covered this: they
+/// only guarded the sheet itself.
+///
+/// The session also holds the two background-survival mechanisms
+/// the install needs while Zenith is backgrounded: the
+/// silent-audio keep-alive (a second, sheet-independent hold,
+/// so the sheet's onDisappear cannot stop it) and a
+/// beginBackgroundTask (the sanctioned short-task grant — the
+/// local transfer takes seconds). Either one alone is fragile;
+/// together they cover an audio interruption and a task expiry.
+///
+/// Lifetime: begin() when the install sheet appears, end() as
+/// soon as the install reaches a terminal status (.completed /
+/// .broken). A 10-minute grace end bounds the session if the
+/// sheet (and its poll) is gone and no terminal status ever
+/// arrives — a local install finishes in well under that.
+final class InstallSessionManager {
+	static let shared = InstallSessionManager()
+
+	private var _server: ServerInstaller?
+	#if !targetEnvironment(macCatalyst)
+	private var _backgroundTask: UIBackgroundTaskIdentifier = .invalid
+	#endif
+	private var _statusCancellable: AnyCancellable?
+	private var _graceTask: Task<Void, Never>?
+
+	private init() {}
+
+	/// Keep `server` (and the process) alive for this install.
+	/// Ends any previous session first. Call on the main thread.
+	func begin(server: ServerInstaller, viewModel: InstallerStatusViewModel) {
+		end()
+		_server = server
+		#if !targetEnvironment(macCatalyst)
+		BackgroundAudioManager.shared.start()
+		_beginBackgroundTask()
+		#endif
+		_statusCancellable = viewModel.$status
+			.receive(on: DispatchQueue.main)
+			.sink { [weak self] status in
+				switch status {
+				case .completed, .broken:
+					self?.end()
+				default:
+					break
+				}
+			}
+		_graceTask = Task.detached { [weak self] in
+			try? await Task.sleep(nanoseconds: 600_000_000_000)
+			guard !Task.isCancelled else { return }
+			await MainActor.run { self?.end() }
+		}
+	}
+
+	/// Release the server, the background task and the audio
+	/// hold. Idempotent; safe to call when no session is active.
+	/// Call on the main thread.
+	func end() {
+		_statusCancellable?.cancel()
+		_statusCancellable = nil
+		_graceTask?.cancel()
+		_graceTask = nil
+		#if !targetEnvironment(macCatalyst)
+		_endBackgroundTask()
+		BackgroundAudioManager.shared.stop()
+		#endif
+		_server = nil
+	}
+
+	#if !targetEnvironment(macCatalyst)
+	private func _beginBackgroundTask() {
+		guard _backgroundTask == .invalid else { return }
+		_backgroundTask = UIApplication.shared.beginBackgroundTask(withName: "ZenithInstall") { [weak self] in
+			// Time is up: give the task back, but keep the server
+			// and the audio keep-alive — they carry the install now.
+			self?._endBackgroundTask()
+		}
+	}
+
+	private func _endBackgroundTask() {
+		guard _backgroundTask != .invalid else { return }
+		UIApplication.shared.endBackgroundTask(_backgroundTask)
+		_backgroundTask = .invalid
+	}
+	#endif
 }
