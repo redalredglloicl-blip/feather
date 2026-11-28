@@ -26500,6 +26500,23 @@
           }
         }
       }
+    },
+    "امسح هاي اللعبة؟": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "امسح هاي اللعبة؟"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Delete this game?"
+          }
+        }
+      }
     }
   },
   "version": "1.0"

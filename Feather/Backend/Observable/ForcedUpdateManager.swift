@@ -26,16 +26,23 @@
 //    or minVersion is set and the installed build number is smaller.
 //  * Values absent (not set yet) -> no enforcement, app opens normally.
 //  * A check that fails does NOT pass the app on its own. The decisive
-//    fetches (minVersion, killed) are retried (3 attempts, 2 s apart)
-//    while the device reports connectivity, and the launch screen waits
-//    for a FRESH decision — both decisive fields fetched live —
-//    before the app opens (see LoadingView step 4). Build 12 proved
+//    fetches (minVersion, killed) are retried (2 attempts, 1 s apart,
+//    5 s timeouts — v2.40, was 3 attempts, 2 s apart, 15 s timeouts)
+//    while the device reports connectivity. The launch screen used to
+//    wait for a FRESH decision — both decisive fields fetched live —
+//    before the app opened (see LoadingView step 4). Build 12 proved
 //    why: its check failed on a weak connection, fell back to the
 //    cached minVersion 11, and opened while the server said 13.
-//    v2.12 bounds that wait (~30 s): if no fresh decision arrives,
-//    the launch opens on the cached decision instead of hanging
+//    v2.12 bounded that wait (~30 s): if no fresh decision arrived,
+//    the launch opened on the cached decision instead of hanging
 //    forever (build 13 hung at 75% across restarts for exactly this
-//    reason). v2.13: signing/installing follow the SAME decision the
+//    reason). v2.40 removed the wait itself for the cached case: the
+//    launch now opens at once on a cached "fine" and refreshes the
+//    check in the background, because the fresh fetch effectively
+//    never completes on this phone and every launch parked at 75%
+//    for the whole deadline. A later fresh check that blocks still
+//    flips the UI to the update screen the moment it answers.
+//    v2.13: signing/installing follow the SAME decision the
 //    launch gate uses (see ensureSignAllowed) — a fresh pass, or a
 //    cached decision that says this build is fine — because the
 //    fresh check never completes on this phone at all, so the old
@@ -46,11 +53,11 @@
 //    can never lift a block. A cached "fine" still never sets
 //    hasPassedCheck — only a fresh check passes — and only a field
 //    that succeeded fresh may clear or overwrite its cache. But a
-//    cached "fine" DOES open the app at launch (v2.12 deadline
-//    fallback) and DOES allow signing/installing (v2.13,
-//    ensureSignAllowed): the launch gate and the signing gate use
-//    the same cached decision, so a build the launch opened on is
-//    a build that can sign.
+//    cached "fine" DOES open the app at launch (v2.40: at once, no
+//    deadline wait; before that the v2.12 deadline fallback) and DOES
+//    allow signing/installing (v2.13, ensureSignAllowed): the launch
+//    gate and the signing gate use the same cached decision, so a
+//    build the launch opened on is a build that can sign.
 //  * Every check (launch and foreground) applies the cached decision
 //    FIRST, before any network, so a cached block shows instantly
 //    and a backgrounded old app re-blocks the moment it foregrounds.
@@ -87,6 +94,13 @@
 //  fetch cannot complete at all, the app opens on stale cache —
 //  it cannot know what it cannot fetch. A later fresh check that
 //  blocks flips the UI to the update screen the moment it answers.
+//
+//  v2.40: the launch no longer waits at all when a cached decision
+//  exists — it opens at once on a cached "fine" (background refresh
+//  still runs) and the no-cache wait is now ~12 s with 5 s fetch
+//  timeouts. The 30 s deadline and the 15 s timeouts were the
+//  75% stall: the fresh fetch effectively never completes on this
+//  phone, so every launch sat at step 4 until the deadline.
 //
 //  v2.13: the signing/installing gate follows the launch decision
 //  (ensureSignAllowed). The fresh check NEVER completes on this
@@ -196,8 +210,11 @@ final class ForcedUpdateManager: ObservableObject {
 	
 	private let _session: URLSession = {
 		let config = URLSessionConfiguration.ephemeral
-		config.timeoutIntervalForRequest = 15
-		config.timeoutIntervalForResource = 20
+		// v2.40: short timeouts — a slow network must never park the
+		// launch screen at 75% for long. Was 15 s / 20 s, which let
+		// one retry round alone run ~45 s.
+		config.timeoutIntervalForRequest = 5
+		config.timeoutIntervalForResource = 8
 		return URLSession(configuration: config)
 	}()
 	
@@ -380,12 +397,14 @@ final class ForcedUpdateManager: ObservableObject {
 		var updateURLResult: (value: String?, succeeded: Bool) = (nil, false)
 		var nameResult: (value: String?, succeeded: Bool) = (nil, false)
 
-		// 3 attempts, 2 s apart. Worst case on a dead-but-"online"
-		// connection is ~3 x 15 s timeouts + gaps before the caller
-		// retries again; the launch screen waits (see LoadingView),
-		// because opening on a guess is exactly how build 12 shipped
-		// past minVersion 13.
-		for attempt in 1...3 {
+		// v2.40: 2 attempts, 1 s apart, 5 s per-request timeout.
+		// Worst case on a dead-but-"online" connection is ~2 x 5 s
+		// timeouts + gaps before the caller retries again (was 3
+		// attempts, 2 s apart, 15 s timeouts: ~45 s a round, which
+		// parked the launch at 75% for the whole ~30 s deadline
+		// even when a cached "fine" existed — the launch now opens
+		// on the cache at once instead, see LoadingView step 4).
+		for attempt in 1...2 {
 			checkAttempts += 1
 			async let minVersionFetch = _tryFetchInt(from: Self.minVersionURL)
 			async let killedFetch = _tryFetchBool(from: Self.killedURL)
@@ -407,8 +426,8 @@ final class ForcedUpdateManager: ObservableObject {
 			// the check re-runs when connectivity returns.
 			if NetworkMonitor.shared.isOffline { break }
 			if Task.isCancelled { break }
-			if attempt < 3 {
-				try? await Task.sleep(nanoseconds: 2_000_000_000)
+			if attempt < 2 {
+				try? await Task.sleep(nanoseconds: 1_000_000_000)
 			}
 		}
 		
@@ -567,7 +586,7 @@ final class ForcedUpdateManager: ObservableObject {
 		items.append(URLQueryItem(name: "cb", value: String(Int(Date().timeIntervalSince1970 * 1000))))
 		components?.queryItems = items
 		let freshURL = components?.url ?? url
-		var request = URLRequest(url: freshURL, cachePolicy: .reloadIgnoringLocalAndRemoteCacheData, timeoutInterval: 15)
+		var request = URLRequest(url: freshURL, cachePolicy: .reloadIgnoringLocalAndRemoteCacheData, timeoutInterval: 5)
 		request.setValue("no-cache", forHTTPHeaderField: "Cache-Control")
 		request.setValue("no-cache", forHTTPHeaderField: "Pragma")
 		return request

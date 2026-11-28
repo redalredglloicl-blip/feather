@@ -193,4 +193,18 @@ extension LibraryPrefs {
 		guard FileManager.default.fileExists(atPath: url.path) else { return nil }
 		return url
 	}
+
+	/// Zenith v2.40: removes the game's record AND deletes its
+	/// modified IPA file from Documents/Archives. The file
+	/// delete is best-effort — when the file is already gone,
+	/// the record is still removed and nothing errors.
+	/// Removing the dictionary entry fires the @Published
+	/// didSet, so the change persists and the Home section
+	/// refreshes at once.
+	func removeValueEditorGame(uuid: String) {
+		guard let game = valueEditorGames[uuid] else { return }
+		valueEditorGames.removeValue(forKey: uuid)
+		let ipaURL = URL(fileURLWithPath: game.ipaPath)
+		try? FileManager.default.removeItem(at: ipaURL)
+	}
 }

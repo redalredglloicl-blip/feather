@@ -41,6 +41,10 @@ struct LibraryView: View {
 	/// game finds its modified IPA file gone.
 	@State private var _isValueEditorMissingAlertPresenting = false
 	
+	/// Zenith v2.40: the Value Editor game waiting for delete
+	/// confirmation after a trailing swipe on its row.
+	@State private var _valueEditorGamePendingDelete: ValueEditorGame?
+	@State private var _isValueEditorDeleteConfirmPresenting = false
 	
 	@Namespace private var _namespace
 	
@@ -372,6 +376,17 @@ struct LibraryView: View {
 			.alert(.localized("Value Editor File Missing"), isPresented: $_isValueEditorMissingAlertPresenting) {
 				Button(.localized("OK"), role: .cancel) { }
 			}
+			.alert(.localized("امسح هاي اللعبة؟"), isPresented: $_isValueEditorDeleteConfirmPresenting) {
+				Button(.localized("Delete"), role: .destructive) {
+					if let game = _valueEditorGamePendingDelete {
+						_prefs.removeValueEditorGame(uuid: game.uuid)
+					}
+					_valueEditorGamePendingDelete = nil
+				}
+				Button(.localized("Cancel"), role: .cancel) {
+					_valueEditorGamePendingDelete = nil
+				}
+			}
 		}
 	}
 }
@@ -606,9 +621,11 @@ extension LibraryView {
 	/// opens the Share sheet for the modified IPA file ONLY
 	/// (Files or any person, via UIActivityViewController).
 	/// LONG-PRESS does NOTHING on purpose: no .contextMenu,
-	/// no swipe actions, no long-press gesture is attached to
-	/// this row at all — Reda's order, v2.38 Part B. No
-	/// install, no sign, no delete from this section.
+	/// no long-press gesture is attached to this row at all —
+	/// Reda's order, v2.38 Part B. TRAILING SWIPE shows the
+	/// red Delete button (Zenith v2.40, Issue 1): it asks
+	/// first, then removes the record and deletes the
+	/// modified IPA file. No install, no sign from this section.
 	private func _valueEditorGameRow(for game: ValueEditorGame) -> some View {
 		HStack(spacing: 12) {
 			_valueEditorGameIcon(for: game)
@@ -634,6 +651,12 @@ extension LibraryView {
 		.contentShape(Rectangle())
 		.onTapGesture {
 			_shareValueEditorGame(game)
+		}
+		.swipeActions(edge: .trailing) {
+			Button(.localized("Delete"), role: .destructive) {
+				_valueEditorGamePendingDelete = game
+				_isValueEditorDeleteConfirmPresenting = true
+			}
 		}
 		.listRowBackground(Color.clear)
 		.listRowSeparator(.hidden)

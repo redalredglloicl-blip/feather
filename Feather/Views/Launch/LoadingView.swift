@@ -79,18 +79,28 @@ final class StartupProgress: ObservableObject {
 		// climbing without end when the fresh check never completes
 		// and no cache exists) — the "محاولة" loop Reda reported.
 		// Now the label stays plain "Checking for updates" while
-		// waiting, the wait stops at ~30 s no matter what, and a
+		// waiting, the wait stops at ~12 s no matter what, and a
 		// launch with no decision at all shows a plain error with
 		// a retry button instead of trying forever (see
 		// _waitForLaunchDecision and retryCheck). A cached block
 		// still shows instantly (the root branch shows
-		// ForcedUpdateView above this screen), a cached "fine"
-		// still opens the app at the deadline, and a later fresh
-		// check that blocks flips the UI the moment it answers.
-		// The only exits without any decision are cancellation
-		// and a genuinely offline device — in the offline case
-		// the root branch shows OfflineBlockView instead, so the
-		// app is never bricked by the wait.
+		// ForcedUpdateView above this screen).
+		//
+		// v2.40: cached-first — the stall Reda reported (the screen
+		// parking at 75% for seconds) was this step waiting out the
+		// whole ~30 s deadline even when a cached "fine" existed:
+		// a cached decision never set hasLaunchDecision, and the
+		// fresh fetch effectively never completes on his phone, so
+		// every launch sat at 75% until the deadline. Now a cached
+		// "fine" opens at once and the fresh check refreshes in the
+		// background; a later fresh check that blocks still flips
+		// the UI to the update screen the moment it answers. Only
+		// a launch with NO cached decision at all still waits (now
+		// ~12 s, one short retry round) and then shows the error +
+		// retry button. The only exits without any decision are
+		// cancellation and a genuinely offline device — in the
+		// offline case the root branch shows OfflineBlockView
+		// instead, so the app is never bricked by the wait.
 		_setStep(0.75, .localized("Checking for updates"))
 		guard await _waitForLaunchDecision() else {
 			checkFailed = true
@@ -121,18 +131,39 @@ final class StartupProgress: ObservableObject {
 		await _finishStartup()
 	}
 
-	/// Waits for the forced-update launch decision, bounded to ~30 s.
-	/// Returns true when the launch may proceed: a fresh decision, a
-	/// cached block, or the deadline fallback on a cached decision.
-	/// Returns false when the deadline passed with no decision at
-	/// all — the caller shows the plain error + retry button instead
-	/// of waiting forever. While waiting the label stays plain
+	/// Waits for the forced-update launch decision, bounded to ~12 s.
+	/// Returns true when the launch may proceed: a cached "fine"
+	/// (v2.40: opens at once, fresh check refreshes in the
+	/// background), a cached block, or a fresh decision. Returns
+	/// false when the deadline passed with no decision at all — the
+	/// caller shows the plain error + retry button instead of
+	/// waiting forever. While waiting the label stays plain
 	/// "Checking for updates": no attempt count is ever shown.
-	/// Rounds already retry 3 times each inside the manager
+	/// Rounds already retry inside the manager
 	/// (ForcedUpdateManager), so re-spawning a round here only
-	/// happens while time remains in the same 30 s window.
+	/// happens while enough time remains in the same ~12 s window.
 	private func _waitForLaunchDecision() async -> Bool {
-		let deadline = Date().addingTimeInterval(30)
+		let manager = ForcedUpdateManager.shared
+		// v2.40 cached-first: a cached block is already a decision —
+		// the root branch shows ForcedUpdateView above this screen,
+		// so finishing the launch here can never open past it.
+		if manager.isUpdateRequired {
+			return true
+		}
+		// v2.40 cached-first: a cached "fine" opens at once instead
+		// of parking at 75% until the deadline. The fresh check
+		// still runs, in the background: it joins the launch check
+		// the app root already started, and a fresh decision that
+		// blocks flips the UI to the update screen the moment it
+		// answers (the manager's published isUpdateRequired).
+		// hasPassedCheck stays false — only a fresh check passes —
+		// but signing follows the cached decision itself, as before.
+		if manager.cachedDecisionAllowsSigning {
+			Task { await ForcedUpdateManager.shared.checkForUpdate() }
+			manager.applyCachedFallbackForLaunch()
+			return true
+		}
+		let deadline = Date().addingTimeInterval(12)
 		_checkDone = false
 		_checkTask = Task { [weak self] in
 			await ForcedUpdateManager.shared.checkForUpdate()
@@ -142,7 +173,7 @@ final class StartupProgress: ObservableObject {
 			if NetworkMonitor.shared.isOffline {
 				return false
 			}
-			// Deadline: no fresh decision in ~30 s — stop waiting
+			// Deadline: no fresh decision in ~12 s — stop waiting
 			// either way (v2.38: no endless retry loop). The code
 			// after the loop opens on the cached decision when
 			// there is one, or reports failure.
@@ -153,10 +184,15 @@ final class StartupProgress: ObservableObject {
 				// The round ended without a fresh decision (the
 				// fetches kept failing while the device still
 				// reports online): run it again after a short
-				// pause, but only while time remains — the
-				// deadline above ends the wait either way.
+				// pause, but only while enough time remains for
+				// another short round — otherwise the deadline
+				// above ends the wait instead of spawning a round
+				// that cannot finish.
+				if Date().addingTimeInterval(6) > deadline {
+					break
+				}
 				_checkDone = false
-				try? await Task.sleep(nanoseconds: 2_000_000_000)
+				try? await Task.sleep(nanoseconds: 1_000_000_000)
 				if Task.isCancelled || NetworkMonitor.shared.isOffline {
 					return false
 				}
@@ -173,7 +209,7 @@ final class StartupProgress: ObservableObject {
 		if ForcedUpdateManager.shared.hasLaunchDecision {
 			return true
 		}
-		// Deadline: no fresh decision in ~30 s — open on the
+		// Deadline: no fresh decision in ~12 s — open on the
 		// cached decision instead of hanging forever.
 		if ForcedUpdateManager.shared.hasAnyCachedValue {
 			ForcedUpdateManager.shared.applyCachedFallbackForLaunch()
@@ -262,7 +298,7 @@ struct LoadingView: View {
 
 				if _progress.checkFailed {
 					// v2.38: the launch check could not reach any
-					// decision in ~30 s and there is no cached
+					// decision in ~12 s and there is no cached
 					// decision to open on — a plain error and a
 					// retry button, never an endless retry count.
 					// Same peach button as the forced-update
