@@ -22,6 +22,22 @@
 //  * Edit: write a new value to a found address with vm_write
 //    (v2.26: on failure, vm_protect the page writable, retry,
 //    then restore the original protection).
+//  * Encrypted search (v2.27): a DIFFERENTIAL search for values
+//    the game stores transformed, not plainly. "خذ لقطة" walks the
+//    same writable regions as the exact search and writes their raw
+//    bytes to a snapshot file (NSTemporaryDirectory /
+//    ZenithVESnapshot.bin, plain C stdio, capped at 512MB — past
+//    the cap the snapshot stops and says so honestly), recording
+//    each region's start / size / file offset in a table. "دوّر"
+//    re-reads the regions fresh and compares each aligned word
+//    with its snapshot word: XOR — (sA ^ sB) == (A ^ B), the key
+//    is (sA ^ A); multiply — sA*B == sB*A in __int128 signed
+//    math, the constant is sA / A when it divides evenly. A
+//    multiply hit that does not divide evenly is stored but
+//    NOT editable (its K cannot be derived). The edit panel and
+//    the result rows always show the DISPLAYED value and convert
+//    it back to stored bits before writing; freeze and the saved
+//    list keep writing the stored bits, unchanged.
 //  * Freeze: a background thread re-writes frozen addresses every
 //    0.25s, so the value stays put (the freeze).
 //  * Saved list: found/edited values saved per game, in the game's
@@ -64,6 +80,19 @@
 //    game freed it or moved the value) or the kernel refuses
 //    to make the mapping writable, the edit honestly says it
 //    failed — re-search to find the live address.
+//  * Encrypted search finds only two transforms, both with a
+//    FIXED key/constant: XOR with a fixed key, and multiply by
+//    a fixed constant. NOT found: values encrypted with a key
+//    that CHANGES every frame/read, values stored as float/double
+//    transforms (encrypted search is integers only), values the
+//    game keeps server-side, and values in memory that moved
+//    between snapshot and compare (that region is skipped).
+//    The snapshot is only valid in the same game session —
+//    if the game restarts, take a fresh snapshot. A multiply
+//    hit whose stored value does not divide evenly by the
+//    displayed value cannot be edited (its K is not derivable),
+//    only frozen — the panel says so instead of writing a
+//    wrong value.
 //
 //  BUILD (not part of the Xcode app target — a dylib needs its own
 //  build step; this file ships as source only until that step
@@ -91,6 +120,8 @@
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
 #import <mach/mach.h>
+#import <stdio.h>
+#import <unistd.h>
 // NOTE: <mach/mach_vm.h> is stubbed out in the iOS SDK (its first line is
 // `#error mach_vm.h unsupported.`), so declare the one function we need
 // ourselves. mach_vm_region lives in libSystem at runtime, so this links.
@@ -118,6 +149,12 @@ static const NSTimeInterval kZenithVEFreezeInterval = 0.25;
 // NSUserDefaults key (inside the GAME's defaults, so the saved
 // list is per game automatically) for the saved values.
 static NSString * const kZenithVESavedDefaultsKey = @"ZenithValueEditorSaved";
+// Encrypted search (v2.27): the snapshot file name inside
+// NSTemporaryDirectory(), and the cap on snapshot bytes. Past
+// the cap the snapshot stops adding regions and reports the
+// truncation honestly instead of pretending it is complete.
+static NSString * const kZenithVESnapshotFileName = @"ZenithVESnapshot.bin";
+static const uint64_t kZenithVESnapshotMaxBytes = 512ULL * 1024ULL * 1024ULL;
 
 typedef NS_ENUM(NSInteger, VEValueType) {
 	VEValueTypeInt32 = 0,
@@ -133,6 +170,18 @@ typedef NS_ENUM(NSInteger, VERefineMode) {
 	VERefineDecreased = 3,
 };
 
+// How a found value is stored in the game (v2.27). Plain is the
+// old behaviour (bits ARE the displayed value). XOR means the
+// game stores (displayed ^ key), Multiply means it stores
+// (displayed * K). transformParam holds the key, or K. A
+// Multiply hit whose K could not be derived stores param 0
+// and is NOT editable — see VEStoredBitsForDisplayed.
+typedef NS_ENUM(NSInteger, VEValueTransform) {
+	VEValueTransformPlain = 0,
+	VEValueTransformXOR = 1,
+	VEValueTransformMultiply = 2,
+};
+
 // MARK: - VEResult
 
 /// One found address. `bits` holds the raw value bits (4 bytes for
@@ -144,6 +193,10 @@ typedef NS_ENUM(NSInteger, VERefineMode) {
 @property (nonatomic, assign) VEValueType type;
 @property (nonatomic, assign) BOOL frozen;
 @property (nonatomic, copy) NSString *label;
+// v2.27: how the value is stored (Plain by default — every
+// pre-2.27 result is Plain/0, so old saved lists load unchanged).
+@property (nonatomic, assign) VEValueTransform transform;
+@property (nonatomic, assign) uint64_t transformParam;
 @end
 
 @implementation VEResult
@@ -270,6 +323,112 @@ static int VECompareBits(uint64_t a, uint64_t b, VEValueType type) {
 	return 0;
 }
 
+// MARK: - Encrypted-value transform helpers (v2.27, plain C)
+//
+// The game shows the player a DISPLAYED value but stores a
+// TRANSFORMED one. These two convert between the two, so the
+// menu always shows the displayed value and only ever writes
+// stored bits. Plain is the identity. Float/double have no
+// transform (encrypted search is integers only), so they also
+// pass through unchanged here.
+static uint64_t VEMaskForType(VEValueType type) {
+	size_t size = VESizeForType(type);
+	return (size == 8) ? UINT64_MAX : ((1ULL << (size * 8)) - 1);
+}
+
+// Displayed -> stored. Returns NO when the conversion is
+// impossible: Multiply with param 0, i.e. a multiply hit whose
+// K could not be derived (sA did not divide evenly by A).
+// The caller must NOT write in that case.
+static BOOL VEStoredBitsForDisplayed(uint64_t displayed, VEValueTransform transform, uint64_t param, VEValueType type, uint64_t *storedOut) {
+	if (storedOut == NULL) {
+		return NO;
+	}
+	uint64_t mask = VEMaskForType(type);
+	switch (transform) {
+		case VEValueTransformPlain:
+			*storedOut = displayed & mask;
+			return YES;
+		case VEValueTransformXOR:
+			*storedOut = (displayed ^ param) & mask;
+			return YES;
+		case VEValueTransformMultiply: {
+			if (param == 0) {
+				return NO;
+			}
+			if (type == VEValueTypeInt32) {
+				int32_t d = 0, k = 0;
+				uint64_t dp = displayed & mask, kp = param & mask;
+				memcpy(&d, &dp, 4);
+				memcpy(&k, &kp, 4);
+				int32_t r = (int32_t)((__int128)d * (__int128)k);
+				*storedOut = 0;
+				memcpy(storedOut, &r, 4);
+				return YES;
+			}
+			if (type == VEValueTypeInt64) {
+				int64_t d = (int64_t)displayed;
+				int64_t k = (int64_t)param;
+				int64_t r = (int64_t)((__int128)d * (__int128)k);
+				*storedOut = (uint64_t)r;
+				return YES;
+			}
+			*storedOut = displayed & mask;
+			return YES;
+		}
+	}
+	*storedOut = displayed & mask;
+	return YES;
+}
+
+// Stored -> displayed (the inverse, for showing values).
+// Multiply: stored / param when it divides evenly; otherwise
+// the stored bits as-is (the displayed value is not derivable,
+// but showing the stored bits beats showing nothing — and the
+// edit path above refuses to write for that case anyway).
+static uint64_t VEDisplayedBitsForStored(uint64_t stored, VEValueTransform transform, uint64_t param, VEValueType type) {
+	uint64_t mask = VEMaskForType(type);
+	switch (transform) {
+		case VEValueTransformPlain:
+			return stored & mask;
+		case VEValueTransformXOR:
+			return (stored ^ param) & mask;
+		case VEValueTransformMultiply: {
+			if (param == 0) {
+				return stored & mask;
+			}
+			if (type == VEValueTypeInt32) {
+				int32_t s = 0, k = 0;
+				uint64_t sp = stored & mask, kp = param & mask;
+				memcpy(&s, &sp, 4);
+				memcpy(&k, &kp, 4);
+				if (k == 0 || (k == -1 && s == INT32_MIN) || (s % k) != 0) {
+					return stored & mask;
+				}
+				int32_t r = (int32_t)(s / k);
+				uint64_t out = 0;
+				memcpy(&out, &r, 4);
+				return out;
+			}
+			if (type == VEValueTypeInt64) {
+				int64_t s = (int64_t)stored;
+				int64_t k = (int64_t)param;
+				if (k == 0 || (k == -1 && s == INT64_MIN) || (s % k) != 0) {
+					return stored & mask;
+				}
+				return (uint64_t)(s / k);
+			}
+			return stored & mask;
+		}
+	}
+	return stored & mask;
+}
+
+// Snapshot file path (v2.27): the game's temp directory.
+static NSString *VEEncryptedSnapshotPath(void) {
+	return [NSTemporaryDirectory() stringByAppendingPathComponent:kZenithVESnapshotFileName];
+}
+
 // MARK: - ZenithValueEditor (scan engine + freeze + saved list)
 
 @interface ZenithValueEditor : NSObject
@@ -287,6 +446,18 @@ static int VECompareBits(uint64_t a, uint64_t b, VEValueType type) {
 		 completion:(void (^)(NSUInteger count, BOOL capped, NSString *error))completion;
 - (void)refineExact:(NSString *)text completion:(void (^)(NSUInteger count, NSString *error))completion;
 - (void)refineFuzzy:(VERefineMode)mode completion:(void (^)(NSUInteger count))completion;
+
+// Encrypted search (v2.27, differential — never guesses keys):
+// takeEncryptedSnapshot writes the raw bytes of every writable
+// region to the snapshot file and records the region table;
+// searchEncrypted compares the snapshot words with a fresh
+// re-read for the new displayed value. Snapshot completion
+// reports (success, truncated, error); compare completion is
+// identical to searchExact (count, capped, error).
+- (void)takeEncryptedSnapshot:(NSString *)text
+						 type:(VEValueType)type
+				   completion:(void (^)(BOOL success, BOOL truncated, NSString *error))completion;
+- (void)searchEncrypted:(NSString *)text completion:(void (^)(NSUInteger count, BOOL capped, NSString *error))completion;
 
 // Safe count of the results list (v2.17): the results ivar was once
 // seen holding a non-array object (crash log: -[OS_xpc_array count]),
@@ -311,6 +482,16 @@ static int VECompareBits(uint64_t a, uint64_t b, VEValueType type) {
 @property (nonatomic, assign) VEValueType currentType;
 @property (nonatomic, assign) BOOL scanning;
 @property (nonatomic, assign) BOOL freezeRunning;
+
+// Encrypted-search snapshot state (v2.27). snapshotRegions is
+// an NSArray of NSDictionary @{@"start":@(addr),
+// @"size":@(size), @"offset":@(fileOffset)}; snapshotBitsA is
+// the parsed displayed value A the snapshot was taken for.
+@property (nonatomic, assign) BOOL snapshotValid;
+@property (nonatomic, assign) BOOL snapshotTruncated;
+@property (nonatomic, assign) VEValueType snapshotType;
+@property (nonatomic, assign) uint64_t snapshotBitsA;
+@property (nonatomic, strong) NSArray<NSDictionary *> *snapshotRegions;
 
 @end
 
@@ -674,6 +855,405 @@ static int VECompareBits(uint64_t a, uint64_t b, VEValueType type) {
 	});
 }
 
+// MARK: Encrypted search (v2.27)
+//
+// DIFFERENTIAL, never guessing: the game stores the displayed
+// value A transformed (XOR key, or * K). The snapshot freezes
+// the raw stored bytes at A; the compare re-reads them live at
+// B and tests, per aligned word, whether the SAME transform
+// explains both stored words. No key is ever guessed — the
+// key/constant is DERIVED from the two stored words and the
+// two displayed values.
+
+- (void)takeEncryptedSnapshot:(NSString *)text
+						 type:(VEValueType)type
+				   completion:(void (^)(BOOL success, BOOL truncated, NSString *error))completion {
+	// Integers only: XOR / multiply are integer rules.
+	if (type == VEValueTypeFloat || type == VEValueTypeDouble) {
+		if (completion != NULL) {
+			completion(NO, NO, @"البحث المشفّر يشتغل على صحيح وكبير بس — بدّل النوع.");
+		}
+		return;
+	}
+	uint64_t bitsA = 0;
+	if (!VEParseBits(text, type, &bitsA)) {
+		if (completion != NULL) {
+			completion(NO, NO, @"الرقم مو صحيح — اكتب رقم يناسب النوع اللي اخترته.");
+		}
+		return;
+	}
+	if (self.scanning) {
+		if (completion != NULL) {
+			completion(NO, NO, @"البحث شغال بعد — انتظر يخلص.");
+		}
+		return;
+	}
+	self.scanning = YES;
+	NSString *path = VEEncryptedSnapshotPath();
+
+	dispatch_async(dispatch_get_global_queue(QOS_CLASS_USER_INITIATED, 0), ^{
+		// A new snapshot replaces the old one: delete it first,
+		// so a failed snapshot never leaves a stale file that
+		// a later compare would mistake for a fresh one.
+		[[NSFileManager defaultManager] removeItemAtPath:path error:NULL];
+		NSMutableArray<NSDictionary *> *regions = [[NSMutableArray alloc] init];
+		BOOL truncated = NO;
+		BOOL wroteAnything = NO;
+		uint64_t totalWritten = 0;
+		NSString *error = nil;
+
+		FILE *file = fopen([path UTF8String], "wb");
+		if (file == NULL) {
+			dispatch_async(dispatch_get_main_queue(), ^{
+				self.scanning = NO;
+				if (completion != NULL) {
+					completion(NO, NO, @"ما قدرت أحفظ اللقطة — جرّب مرة ثانية.");
+				}
+			});
+			[regions release];
+			return;
+		}
+
+		mach_vm_address_t address = 0;
+		mach_vm_size_t size = 0;
+		vm_region_basic_info_data_64_t info;
+		mach_msg_type_number_t infoCount = VM_REGION_BASIC_INFO_COUNT_64;
+		mach_port_t objectName = MACH_PORT_NULL;
+
+		while (mach_vm_region(mach_task_self(), &address, &size,
+							  VM_REGION_BASIC_INFO_64, (vm_region_info_t)&info,
+							  &infoCount, &objectName) == KERN_SUCCESS) {
+			mach_vm_address_t regionStart = address;
+			mach_vm_size_t regionSize = size;
+			if (objectName != MACH_PORT_NULL) {
+				mach_port_deallocate(mach_task_self(), objectName);
+				objectName = MACH_PORT_NULL;
+			}
+			if (regionSize == 0) {
+				break;
+			}
+			address += size;
+			infoCount = VM_REGION_BASIC_INFO_COUNT_64;
+
+			// Same writable-only rule as searchExact.
+			if ((info.protection & (VM_PROT_READ | VM_PROT_WRITE)) != (VM_PROT_READ | VM_PROT_WRITE)) {
+				continue;
+			}
+			// Cap: stop adding regions past 512MB. The region
+			// is skipped whole (never half-written), so the
+			// table stays exact: every recorded region is
+			// fully present in the file.
+			if (totalWritten + (uint64_t)regionSize > kZenithVESnapshotMaxBytes) {
+				truncated = YES;
+				break;
+			}
+
+			uint64_t regionOffset = totalWritten;
+			uint64_t regionWritten = 0;
+			BOOL regionOK = YES;
+			mach_vm_address_t offset = 0;
+			while (offset < regionSize) {
+				vm_size_t chunk = (vm_size_t)MIN((uint64_t)kZenithVEChunkSize, (uint64_t)(regionSize - offset));
+				vm_offset_t data = 0;
+				mach_msg_type_number_t dataCount = 0;
+				kern_return_t kr = vm_read(mach_task_self(), regionStart + offset, chunk, &data, &dataCount);
+				if (kr != KERN_SUCCESS) {
+					// A chunk that cannot be read breaks the
+					// region's byte-for-byte alignment: drop
+					// the whole region, not just the chunk.
+					regionOK = NO;
+					break;
+				}
+				size_t written = fwrite((const void *)data, 1, dataCount, file);
+				vm_deallocate(mach_task_self(), data, dataCount);
+				if (written != dataCount) {
+					regionOK = NO;
+					break;
+				}
+				regionWritten += (uint64_t)written;
+				offset += chunk;
+			}
+			if (!regionOK) {
+				// Roll the file back to the region's start so
+				// the next region still lands at a known offset.
+				fseek(file, (long)regionOffset, SEEK_SET);
+				if (ftruncate(fileno(file), (off_t)regionOffset) != 0) {
+					// Truncate failed: the file is unusable.
+					error = @"ما قدرت أحفظ اللقطة — جرّب مرة ثانية.";
+					break;
+				}
+				continue;
+			}
+			[regions addObject:@{
+				@"start": @(regionStart),
+				@"size": @(regionSize),
+				@"offset": @(regionOffset),
+			}];
+			totalWritten += regionWritten;
+			wroteAnything = YES;
+		}
+		fclose(file);
+
+		if (error == nil && !wroteAnything) {
+			error = @"ما قدرت أقرأ ذاكرة اللعبة — جرّب مرة ثانية.";
+		}
+		if (error != nil) {
+			[[NSFileManager defaultManager] removeItemAtPath:path error:NULL];
+		}
+		NSArray<NSDictionary *> *keptRegions = [regions copy];
+		[regions release];
+		dispatch_async(dispatch_get_main_queue(), ^{
+			self.scanning = NO;
+			if (error == nil) {
+				self.snapshotValid = YES;
+				self.snapshotTruncated = truncated;
+				self.snapshotType = type;
+				self.snapshotBitsA = bitsA;
+				self.snapshotRegions = keptRegions;
+			} else {
+				self.snapshotValid = NO;
+				self.snapshotTruncated = NO;
+				self.snapshotRegions = nil;
+			}
+			if (completion != NULL) {
+				completion(error == nil, truncated, error);
+			}
+		});
+		[keptRegions release];
+	});
+}
+
+- (void)searchEncrypted:(NSString *)text completion:(void (^)(NSUInteger count, BOOL capped, NSString *error))completion {
+	if (!self.snapshotValid) {
+		if (completion != NULL) {
+			completion(0, NO, @"خذ لقطة أول شي.");
+		}
+		return;
+	}
+	// Capture the snapshot state now: the compare runs on a
+	// background queue, and a new snapshot cannot start while
+	// scanning, so these cannot change under it.
+	VEValueType type = self.snapshotType;
+	uint64_t bitsA = self.snapshotBitsA;
+	NSArray<NSDictionary *> *regions = [self.snapshotRegions copy];
+	NSString *path = VEEncryptedSnapshotPath();
+	if (![[NSFileManager defaultManager] fileExistsAtPath:path]) {
+		[regions release];
+		if (completion != NULL) {
+			completion(0, NO, @"اللقطة راحت — خذ لقطة جديدة.");
+		}
+		return;
+	}
+	uint64_t bitsB = 0;
+	if (!VEParseBits(text, type, &bitsB)) {
+		[regions release];
+		if (completion != NULL) {
+			completion(0, NO, @"الرقم مو صحيح — اكتب رقم يناسب النوع اللي اخترته.");
+		}
+		return;
+	}
+	// A zero delta matches EVERYTHING (sA ^ sB == 0 for any word
+	// that did not change, and 0*B == 0*A), so it is refused
+	// outright instead of flooding the results list.
+	if (bitsB == bitsA) {
+		[regions release];
+		if (completion != NULL) {
+			completion(0, NO, @"ما غيّرت الرقم — غيّر القيمة باللعبة وبعدين دوس دوّر.");
+		}
+		return;
+	}
+	if (self.scanning) {
+		[regions release];
+		if (completion != NULL) {
+			completion(0, NO, @"البحث شغال بعد — انتظر يخلص.");
+		}
+		return;
+	}
+	self.scanning = YES;
+	self.currentType = type;
+	size_t valueSize = VESizeForType(type);
+	uint64_t mask = VEMaskForType(type);
+	uint64_t delta = (bitsA ^ bitsB) & mask;
+	// Lookup table: snapshot region by its start address.
+	NSMutableDictionary<NSNumber *, NSDictionary *> *byStart = [[NSMutableDictionary alloc] init];
+	for (NSDictionary *region in regions) {
+		byStart[region[@"start"]] = region;
+	}
+	[regions release];
+
+	dispatch_async(dispatch_get_global_queue(QOS_CLASS_USER_INITIATED, 0), ^{
+		NSMutableArray<VEResult *> *found = [[NSMutableArray alloc] init];
+		BOOL capped = NO;
+
+		FILE *file = fopen([path UTF8String], "rb");
+		if (file == NULL) {
+			dispatch_async(dispatch_get_main_queue(), ^{
+				self.scanning = NO;
+				if (completion != NULL) {
+					completion(0, NO, @"اللقطة راحت — خذ لقطة جديدة.");
+				}
+			});
+			[byStart release];
+			[found release];
+			return;
+		}
+
+		mach_vm_address_t address = 0;
+		mach_vm_size_t size = 0;
+		vm_region_basic_info_data_64_t info;
+		mach_msg_type_number_t infoCount = VM_REGION_BASIC_INFO_COUNT_64;
+		mach_port_t objectName = MACH_PORT_NULL;
+
+		while (mach_vm_region(mach_task_self(), &address, &size,
+							  VM_REGION_BASIC_INFO_64, (vm_region_info_t)&info,
+							  &infoCount, &objectName) == KERN_SUCCESS && !capped) {
+			mach_vm_address_t regionStart = address;
+			mach_vm_size_t regionSize = size;
+			if (objectName != MACH_PORT_NULL) {
+				mach_port_deallocate(mach_task_self(), objectName);
+				objectName = MACH_PORT_NULL;
+			}
+			if (regionSize == 0) {
+				break;
+			}
+			address += size;
+			infoCount = VM_REGION_BASIC_INFO_COUNT_64;
+
+			if ((info.protection & (VM_PROT_READ | VM_PROT_WRITE)) != (VM_PROT_READ | VM_PROT_WRITE)) {
+				continue;
+			}
+			// Exact start match only. A region that moved or
+			// resized between snapshot and compare is skipped
+			// silently — its words no longer line up, and
+			// guessing an offset would fake results.
+			NSDictionary *snapRegion = byStart[@(regionStart)];
+			if (snapRegion == nil) {
+				continue;
+			}
+			if ([snapRegion[@"size"] unsignedLongLongValue] != (uint64_t)regionSize) {
+				continue;
+			}
+			uint64_t fileOffset = [snapRegion[@"offset"] unsignedLongLongValue];
+
+			mach_vm_address_t offset = 0;
+			while (offset < regionSize && !capped) {
+				vm_size_t chunk = (vm_size_t)MIN((uint64_t)kZenithVEChunkSize, (uint64_t)(regionSize - offset));
+				// Snapshot bytes for this chunk.
+				uint8_t *snapBytes = (uint8_t *)malloc(chunk);
+				if (snapBytes == NULL) {
+					offset += chunk;
+					continue;
+				}
+				fseek(file, (long)(fileOffset + (uint64_t)offset), SEEK_SET);
+				size_t snapRead = fread(snapBytes, 1, chunk, file);
+				vm_offset_t data = 0;
+				mach_msg_type_number_t dataCount = 0;
+				kern_return_t kr = vm_read(mach_task_self(), regionStart + offset, chunk, &data, &dataCount);
+				if (kr != KERN_SUCCESS || snapRead < chunk || dataCount < chunk) {
+					if (kr == KERN_SUCCESS) {
+						vm_deallocate(mach_task_self(), data, dataCount);
+					}
+					free(snapBytes);
+					offset += chunk;
+					continue;
+				}
+				const uint8_t *nowBytes = (const uint8_t *)data;
+				// Aligned words only: region starts are
+				// page-aligned, so stepping by valueSize from
+				// the region start keeps absolute alignment.
+				for (vm_size_t i = 0; i + valueSize <= dataCount; i += valueSize) {
+					uint64_t sA = 0, sB = 0;
+					memcpy(&sA, snapBytes + i, valueSize);
+					memcpy(&sB, nowBytes + i, valueSize);
+					sA &= mask;
+					sB &= mask;
+					VEResult *result = nil;
+					// (a) XOR first: (sA ^ sB) == (A ^ B).
+					// This also covers plain storage (key 0).
+					if (((sA ^ sB) & mask) == delta) {
+						result = [[VEResult alloc] init];
+						result.transform = VEValueTransformXOR;
+						result.transformParam = (sA ^ bitsA) & mask;
+					} else if (bitsA != 0 && bitsB != 0) {
+						// (b) Multiply, ONLY when A and B are
+						// both non-zero — with A == 0 every
+						// word satisfies sA*0 == sB*0. Signed
+						// __int128 so no overflow can fake a
+						// match on 64-bit values.
+						BOOL mulMatch = NO;
+						BOOL divisible = NO;
+						uint64_t k = 0;
+						if (valueSize == 4) {
+							int32_t sa = 0, sb = 0, av = 0, bv = 0;
+							uint64_t saB = sA, sbB = sB, aB = bitsA & mask, bB = bitsB & mask;
+							memcpy(&sa, &saB, 4);
+							memcpy(&sb, &sbB, 4);
+							memcpy(&av, &aB, 4);
+							memcpy(&bv, &bB, 4);
+							mulMatch = ((__int128)sa * (__int128)bv == (__int128)sb * (__int128)av);
+							if (mulMatch && av != 0 && (sa % av) == 0) {
+								divisible = YES;
+								int32_t kv = (int32_t)(sa / av);
+								k = 0;
+								memcpy(&k, &kv, 4);
+							}
+						} else {
+							int64_t sa = (int64_t)sA, sb = (int64_t)sB;
+							int64_t av = (int64_t)bitsA, bv = (int64_t)bitsB;
+							mulMatch = ((__int128)sa * (__int128)bv == (__int128)sb * (__int128)av);
+							if (mulMatch && av != 0 && (sa % av) == 0) {
+								divisible = YES;
+								k = (uint64_t)(sa / av);
+							}
+						}
+						if (mulMatch) {
+							result = [[VEResult alloc] init];
+							result.transform = VEValueTransformMultiply;
+							// K derivable only when it divides
+							// evenly; otherwise param 0 marks
+							// the result non-editable (see
+							// VEStoredBitsForDisplayed).
+							result.transformParam = divisible ? k : 0;
+						}
+					}
+					if (result == nil) {
+						continue;
+					}
+					result.address = (uint64_t)(regionStart + offset + i);
+					result.bits = sB;
+					result.type = type;
+					[found addObject:result];
+					[result release];
+					if (found.count >= kZenithVEMaxResults) {
+						capped = YES;
+						break;
+					}
+				}
+				vm_deallocate(mach_task_self(), data, dataCount);
+				free(snapBytes);
+				offset += chunk;
+			}
+		}
+		fclose(file);
+
+		dispatch_async(dispatch_get_main_queue(), ^{
+			self.results = found;
+			self.scanning = NO;
+			if (completion != NULL) {
+				NSString *error = nil;
+				if (found.count == 0) {
+					error = @"ما لگينا شي — جرّب غيّر الرقم أكثر.";
+				} else if (capped) {
+					error = @"النتائج هواي (فوق 100 ألف) — غيّر الرقم أكثر وبعدين دوّر من جديد.";
+				}
+				completion(found.count, capped, error);
+			}
+		});
+		[found release];
+		[byStart release];
+	});
+}
+
 // MARK: Freeze
 
 - (void)setFrozen:(BOOL)frozen forResult:(VEResult *)result {
@@ -744,6 +1324,10 @@ static int VECompareBits(uint64_t a, uint64_t b, VEValueType type) {
 		result.type = (VEValueType)[dict[@"type"] integerValue];
 		result.label = dict[@"label"];
 		result.frozen = [dict[@"frozen"] boolValue];
+		// v2.27: missing keys mean Plain/0 (pre-2.27 saved lists).
+		result.transform = (VEValueTransform)[dict[@"transform"] integerValue];
+		NSString *paramHex = dict[@"transformParam"];
+		result.transformParam = (paramHex != nil) ? strtoull([paramHex UTF8String], NULL, 0) : 0;
 		[self.saved addObject:result];
 		if (result.frozen) {
 			[self.frozen addObject:result];
@@ -773,6 +1357,8 @@ static int VECompareBits(uint64_t a, uint64_t b, VEValueType type) {
 			@"type": @(result.type),
 			@"label": result.label ?: @"",
 			@"frozen": @(result.frozen),
+			@"transform": @(result.transform),
+			@"transformParam": [NSString stringWithFormat:@"0x%llx", (unsigned long long)result.transformParam],
 		}];
 	}
 	[[NSUserDefaults standardUserDefaults] setObject:stored forKey:kZenithVESavedDefaultsKey];
@@ -783,6 +1369,8 @@ static int VECompareBits(uint64_t a, uint64_t b, VEValueType type) {
 		if (existing.address == result.address) {
 			existing.bits = result.bits;
 			existing.type = result.type;
+			existing.transform = result.transform;
+			existing.transformParam = result.transformParam;
 			[self persistSaved];
 			return;
 		}
@@ -791,7 +1379,9 @@ static int VECompareBits(uint64_t a, uint64_t b, VEValueType type) {
 	copy.address = result.address;
 	copy.bits = result.bits;
 	copy.type = result.type;
-	copy.label = result.label ?: VEStringForBits(result.bits, result.type);
+	copy.transform = result.transform;
+	copy.transformParam = result.transformParam;
+	copy.label = result.label ?: VEStringForBits(VEDisplayedBitsForStored(result.bits, result.transform, result.transformParam, result.type), result.type);
 	[self.saved addObject:copy];
 	[copy release];
 	[self persistSaved];
@@ -826,6 +1416,14 @@ static int VECompareBits(uint64_t a, uint64_t b, VEValueType type) {
 @property (nonatomic, strong) UITableView *tableView;
 @property (nonatomic, strong) UIButton *searchButton;
 @property (nonatomic, strong) UIButton *refineButton;
+@property (nonatomic, strong) UIStackView *fuzzyRow;
+// v2.27: encrypted mode — the "مشفّر" toggle at the leading
+// side of the title row (mirroring "إغلاق" on the trailing
+// side). ON: search becomes "خذ لقطة", refine becomes "دوّر",
+// the fuzzy row hides. The snapshot survives turning the mode
+// off (it only gates the compare).
+@property (nonatomic, strong) UIButton *encryptedToggleButton;
+@property (nonatomic, assign) BOOL encryptedMode;
 
 /// v2.26: the edit panel lives INSIDE the menu (see
 /// showEditPanelForResult:). Two alert generations (2.24
@@ -879,6 +1477,16 @@ static int VECompareBits(uint64_t a, uint64_t b, VEValueType type) {
 	close.translatesAutoresizingMaskIntoConstraints = NO;
 	[self.view addSubview:close];
 
+	// v2.27: the encrypted-mode toggle, leading side of the
+	// title row, mirroring "إغلاق" on the trailing side.
+	self.encryptedToggleButton = [UIButton buttonWithType:UIButtonTypeSystem];
+	[self.encryptedToggleButton setTitle:@"مشفّر" forState:UIControlStateNormal];
+	self.encryptedToggleButton.titleLabel.font = [UIFont systemFontOfSize:15];
+	[self.encryptedToggleButton setTitleColor:[UIColor colorWithRed:1.0 green:0.78 blue:0.47 alpha:1.0] forState:UIControlStateNormal];
+	[self.encryptedToggleButton addTarget:self action:@selector(encryptedToggleTapped) forControlEvents:UIControlEventTouchUpInside];
+	self.encryptedToggleButton.translatesAutoresizingMaskIntoConstraints = NO;
+	[self.view addSubview:self.encryptedToggleButton];
+
 	self.typeSeg = [[UISegmentedControl alloc] initWithItems:@[@"صحيح", @"كبير", @"فلوت", @"دبل"]];
 	self.typeSeg.selectedSegmentIndex = 0;
 	self.typeSeg.translatesAutoresizingMaskIntoConstraints = NO;
@@ -917,11 +1525,11 @@ static int VECompareBits(uint64_t a, uint64_t b, VEValueType type) {
 	// Fuzzy refine row: what happened to the value since the last
 	// search. Only meaningful after an exact search seeded the list.
 	NSArray<NSString *> *fuzzyTitles = @[@"تغيّر", @"ما تغيّر", @"زاد", @"قلّ"];
-	UIStackView *fuzzyRow = [[UIStackView alloc] init];
-	fuzzyRow.axis = UILayoutConstraintAxisHorizontal;
-	fuzzyRow.distribution = UIStackViewDistributionFillEqually;
-	fuzzyRow.spacing = 6;
-	fuzzyRow.translatesAutoresizingMaskIntoConstraints = NO;
+	self.fuzzyRow = [[UIStackView alloc] init];
+	self.fuzzyRow.axis = UILayoutConstraintAxisHorizontal;
+	self.fuzzyRow.distribution = UIStackViewDistributionFillEqually;
+	self.fuzzyRow.spacing = 6;
+	self.fuzzyRow.translatesAutoresizingMaskIntoConstraints = NO;
 	for (NSInteger i = 0; i < (NSInteger)fuzzyTitles.count; i++) {
 		UIButton *b = [UIButton buttonWithType:UIButtonTypeSystem];
 		[b setTitle:fuzzyTitles[i] forState:UIControlStateNormal];
@@ -931,9 +1539,9 @@ static int VECompareBits(uint64_t a, uint64_t b, VEValueType type) {
 		b.layer.cornerRadius = 8;
 		b.tag = i;
 		[b addTarget:self action:@selector(fuzzyTapped:) forControlEvents:UIControlEventTouchUpInside];
-		[fuzzyRow addArrangedSubview:b];
+		[self.fuzzyRow addArrangedSubview:b];
 	}
-	[self.view addSubview:fuzzyRow];
+	[self.view addSubview:self.fuzzyRow];
 
 	self.statusLabel = [[UILabel alloc] init];
 	self.statusLabel.text = @"اكتب الرقم ودوس بحث.";
@@ -961,6 +1569,8 @@ static int VECompareBits(uint64_t a, uint64_t b, VEValueType type) {
 		[title.centerXAnchor constraintEqualToAnchor:self.view.centerXAnchor],
 		[close.centerYAnchor constraintEqualToAnchor:title.centerYAnchor],
 		[close.trailingAnchor constraintEqualToAnchor:self.view.trailingAnchor constant:-12],
+		[self.encryptedToggleButton.centerYAnchor constraintEqualToAnchor:title.centerYAnchor],
+		[self.encryptedToggleButton.leadingAnchor constraintEqualToAnchor:self.view.leadingAnchor constant:12],
 		[self.typeSeg.topAnchor constraintEqualToAnchor:title.bottomAnchor constant:12],
 		[self.typeSeg.leadingAnchor constraintEqualToAnchor:self.view.leadingAnchor constant:12],
 		[self.typeSeg.trailingAnchor constraintEqualToAnchor:self.view.trailingAnchor constant:-12],
@@ -976,11 +1586,11 @@ static int VECompareBits(uint64_t a, uint64_t b, VEValueType type) {
 		[self.refineButton.trailingAnchor constraintEqualToAnchor:self.view.trailingAnchor constant:-12],
 		[self.refineButton.widthAnchor constraintEqualToAnchor:self.view.widthAnchor multiplier:0.44],
 		[self.refineButton.heightAnchor constraintEqualToConstant:40],
-		[fuzzyRow.topAnchor constraintEqualToAnchor:self.searchButton.bottomAnchor constant:8],
-		[fuzzyRow.leadingAnchor constraintEqualToAnchor:self.view.leadingAnchor constant:12],
-		[fuzzyRow.trailingAnchor constraintEqualToAnchor:self.view.trailingAnchor constant:-12],
-		[fuzzyRow.heightAnchor constraintEqualToConstant:34],
-		[self.statusLabel.topAnchor constraintEqualToAnchor:fuzzyRow.bottomAnchor constant:8],
+		[self.fuzzyRow.topAnchor constraintEqualToAnchor:self.searchButton.bottomAnchor constant:8],
+		[self.fuzzyRow.leadingAnchor constraintEqualToAnchor:self.view.leadingAnchor constant:12],
+		[self.fuzzyRow.trailingAnchor constraintEqualToAnchor:self.view.trailingAnchor constant:-12],
+		[self.fuzzyRow.heightAnchor constraintEqualToConstant:34],
+		[self.statusLabel.topAnchor constraintEqualToAnchor:self.fuzzyRow.bottomAnchor constant:8],
 		[self.statusLabel.leadingAnchor constraintEqualToAnchor:self.view.leadingAnchor constant:12],
 		[self.statusLabel.trailingAnchor constraintEqualToAnchor:self.view.trailingAnchor constant:-12],
 		[self.tabSeg.topAnchor constraintEqualToAnchor:self.statusLabel.bottomAnchor constant:8],
@@ -1190,9 +1800,65 @@ static int VECompareBits(uint64_t a, uint64_t b, VEValueType type) {
 	[self refreshTable];
 }
 
+- (void)encryptedToggleTapped {
+	self.encryptedMode = !self.encryptedMode;
+	[self updateEncryptedUI];
+}
+
+- (void)updateEncryptedUI {
+	ZenithValueEditor *engine = [ZenithValueEditor shared];
+	if (self.encryptedMode) {
+		[self.encryptedToggleButton setTitle:@"عادي" forState:UIControlStateNormal];
+		self.valueField.placeholder = engine.snapshotValid
+			? @"القيمة الثانية — اكتب الرقم الجديد"
+			: @"القيمة الأولى — اكتب الرقم الحالي";
+		[self.searchButton setTitle:@"خذ لقطة" forState:UIControlStateNormal];
+		[self.refineButton setTitle:@"دوّر" forState:UIControlStateNormal];
+		// "دوّر" stays disabled until a snapshot exists.
+		self.refineButton.enabled = engine.snapshotValid;
+		self.refineButton.alpha = engine.snapshotValid ? 1.0 : 0.4;
+		self.fuzzyRow.hidden = YES;
+		[self setStatus:engine.snapshotValid
+			? @"تم أخذ اللقطة — غيّر الرقم باللعبة ودوس دوّر."
+			: @"اكتب الرقم الحالي ودوس خذ لقطة، بعدين غيّره باللعبة."];
+	} else {
+		[self.encryptedToggleButton setTitle:@"مشفّر" forState:UIControlStateNormal];
+		self.valueField.placeholder = @"اكتب الرقم هنا";
+		[self.searchButton setTitle:@"بحث" forState:UIControlStateNormal];
+		[self.refineButton setTitle:@"تضييق" forState:UIControlStateNormal];
+		self.refineButton.enabled = YES;
+		self.refineButton.alpha = 1.0;
+		self.fuzzyRow.hidden = NO;
+		// The snapshot is KEPT (it only gates the compare),
+		// so turning the mode back on later resumes it.
+		[self setStatus:@"اكتب الرقم ودوس بحث."];
+	}
+}
+
 - (void)searchTapped {
 	[self.valueField resignFirstResponder];
 	ZenithValueEditor *engine = [ZenithValueEditor shared];
+	if (self.encryptedMode) {
+		[self setStatus:@"جاري أخذ اللقطة…"];
+		[engine takeEncryptedSnapshot:self.valueField.text type:[self selectedType] completion:^(BOOL success, BOOL truncated, NSString *error) {
+			if (!success) {
+				[self setStatus:error];
+				return;
+			}
+			self.valueField.text = nil;
+			self.valueField.placeholder = @"القيمة الثانية — اكتب الرقم الجديد";
+			self.refineButton.enabled = YES;
+			self.refineButton.alpha = 1.0;
+			if (truncated) {
+				[self setStatus:@"تم أخذ اللقطة — بس اللقطة انقطعت لأن الذاكرة أكبر من 512 ميغا، النتائج ممكن تكون ناقصة. غيّر الرقم باللعبة ودوس دوّر."];
+			} else {
+				[self setStatus:@"تم أخذ اللقطة — غيّر الرقم باللعبة ودوس دوّر."];
+			}
+			[self.tabSeg setSelectedSegmentIndex:0];
+			[self refreshTable];
+		}];
+		return;
+	}
 	[self setStatus:@"جاري البحث…"];
 	[engine searchExact:self.valueField.text type:[self selectedType] completion:^(NSUInteger count, BOOL capped, NSString *error) {
 		if (error != nil) {
@@ -1208,6 +1874,23 @@ static int VECompareBits(uint64_t a, uint64_t b, VEValueType type) {
 - (void)refineTapped {
 	[self.valueField resignFirstResponder];
 	ZenithValueEditor *engine = [ZenithValueEditor shared];
+	if (self.encryptedMode) {
+		if (!engine.snapshotValid) {
+			[self setStatus:@"خذ لقطة أول شي."];
+			return;
+		}
+		[self setStatus:@"جاري التدوير…"];
+		[engine searchEncrypted:self.valueField.text completion:^(NSUInteger count, BOOL capped, NSString *error) {
+			if (error != nil) {
+				[self setStatus:error];
+			} else {
+				[self setStatus:[NSString stringWithFormat:@"النتائج: %lu — دوس على وحدة وعدّلها.", (unsigned long)count]];
+			}
+			[self.tabSeg setSelectedSegmentIndex:0];
+			[self refreshTable];
+		}];
+		return;
+	}
 	if ([engine safeResultsCount] == 0) {
 		[self setStatus:@"ما عندك نتائج تضيّقها — ابحث أول شي."];
 		return;
@@ -1260,7 +1943,11 @@ static int VECompareBits(uint64_t a, uint64_t b, VEValueType type) {
 	ZenithValueEditor *engine = [ZenithValueEditor shared];
 	uint64_t now = 0;
 	BOOL readable = [engine readBitsAt:result.address type:result.type bitsOut:&now];
-	NSString *valueText = readable ? VEStringForBits(now, result.type) : @"؟";
+	// v2.27: show the DISPLAYED value, not the stored bits —
+	// for an encrypted result the stored bits are the XORed /
+	// multiplied form, not the number the player sees.
+	uint64_t displayed = readable ? VEDisplayedBitsForStored(now, result.transform, result.transformParam, result.type) : 0;
+	NSString *valueText = readable ? VEStringForBits(displayed, result.type) : @"؟";
 	cell.textLabel.text = [NSString stringWithFormat:@"0x%llx  —  %@", (unsigned long long)result.address, valueText];
 	NSString *frozenMark = result.frozen ? @"مثبّت • " : @"";
 	NSString *label = (result.label != nil && result.label.length > 0) ? result.label : @"";
@@ -1301,7 +1988,9 @@ static int VECompareBits(uint64_t a, uint64_t b, VEValueType type) {
 	uint64_t now = 0;
 	BOOL readable = [engine readBitsAt:result.address type:result.type bitsOut:&now];
 	if (readable) {
-		self.editField.text = VEStringForBits(now, result.type);
+		// v2.27: prefill the DISPLAYED value (see cellForRow).
+		uint64_t displayed = VEDisplayedBitsForStored(now, result.transform, result.transformParam, result.type);
+		self.editField.text = VEStringForBits(displayed, result.type);
 		self.editField.placeholder = nil;
 		self.editApplyButton.enabled = YES;
 		self.editApplyButton.alpha = 1.0;
@@ -1352,13 +2041,22 @@ static int VECompareBits(uint64_t a, uint64_t b, VEValueType type) {
 	}
 	ZenithValueEditor *engine = [ZenithValueEditor shared];
 	NSString *text = self.editField.text;
-	uint64_t bits = 0;
-	if (!VEParseBits(text, result.type, &bits)) {
+	uint64_t displayedBits = 0;
+	if (!VEParseBits(text, result.type, &displayedBits)) {
 		[self setEditStatus:@"الرقم مو صحيح."];
 		return;
 	}
-	if ([engine writeBits:bits at:result.address type:result.type]) {
-		result.bits = bits;
+	// v2.27: the typed value is the DISPLAYED value — convert
+	// it back to STORED bits before writing. If the conversion
+	// is impossible (Multiply with an underivable K), do NOT
+	// write: freezing still works, editing does not.
+	uint64_t storedBits = 0;
+	if (!VEStoredBitsForDisplayed(displayedBits, result.transform, result.transformParam, result.type, &storedBits)) {
+		[self setEditStatus:@"هاي القيمة مشفّرة بطريقة ما نگدر نعدّلها — بس نگدر نثبّتها."];
+		return;
+	}
+	if ([engine writeBits:storedBits at:result.address type:result.type]) {
+		result.bits = storedBits;
 		[self setEditStatus:@"تم التعديل."];
 	} else {
 		[self setEditStatus:@"ما قدرت أعدّل هاي القيمة — اللعبة حامية هاي الذاكرة."];
