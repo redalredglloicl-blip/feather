@@ -612,7 +612,7 @@ static BOOL VEImageRangeForIndex(uint32_t index, uint64_t *baseUnslidOut, int64_
 		return NO;
 	}
 	const struct mach_header_64 *header64 = (const struct mach_header_64 *)header;
-	int64_t slide = _dyld_get_image_slide(index);
+	int64_t slide = _dyld_get_image_vmaddr_slide(index);
 	uintptr_t cursor = (uintptr_t)header64 + sizeof(struct mach_header_64);
 	uint64_t low = UINT64_MAX, high = 0;
 	for (uint32_t i = 0; i < header64->ncmds; i++) {
@@ -2127,17 +2127,6 @@ static NSString *VEBackupRootPath(void) {
 /// results table, and tap-a-row to edit / freeze / save. Built with
 /// plain UIKit, no storyboards — the dylib has no bundle of its own.
 
-// v2.32 feature 7: the menu talks to the overlay (defined below)
-// to start/stop watching a value. The overlay's full interface
-// comes later in the file, so these are declared on a category
-// here — a category declaration does not clash with the real
-// @interface below, the way a second @interface would.
-@interface ZenithValueEditorOverlay (VEWatch)
-- (void)startWatchingResult:(VEResult *)result;
-- (void)stopWatching;
-- (BOOL)isWatchingResult:(VEResult *)result;
-@end
-
 @interface ZenithValueEditorMenuViewController : UIViewController <UITableViewDataSource, UITableViewDelegate, UITextFieldDelegate>
 
 @property (nonatomic, strong) UISegmentedControl *typeSeg;
@@ -3594,8 +3583,10 @@ __attribute__((used)) static const ZenithVEInterpose kZenithVEInterposers[] __at
 - (void)speedDownTapped;
 - (UIWindow *)keyWindow;
 // v2.32 feature 7 (value watch): live on-screen value + alert
-// on change. Declared on the category at the top of the menu
-// section too, so the menu can call them.
+// on change. Declared here on the real interface — an earlier
+// (VEWatch) category above the menu section was deleted in
+// 2.33 because a category cannot be declared before the
+// class's @interface exists (that failed the 2.32 build).
 - (void)startWatchingResult:(VEResult *)result;
 - (void)stopWatching;
 - (BOOL)isWatchingResult:(VEResult *)result;
