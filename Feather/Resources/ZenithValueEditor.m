@@ -285,6 +285,21 @@ static NSString *VEStringForBits(uint64_t bits, VEValueType type) {
 	return @"?";
 }
 
+/// The short Iraqi name of a value type, for the result rows
+/// and the edit panel (v2.28: the subtitle used to be empty for
+/// every unfrozen, unlabelled result). Switch, not an array
+/// index — a corrupt saved list could hold an out-of-range
+/// type and an index would crash the game.
+static NSString *VETypeName(VEValueType type) {
+	switch (type) {
+		case VEValueTypeInt32: return @"صحيح";
+		case VEValueTypeInt64: return @"كبير";
+		case VEValueTypeFloat: return @"فلوت";
+		case VEValueTypeDouble: return @"دبل";
+	}
+	return @"صحيح";
+}
+
 /// Numeric comparison of two values of the same type: -1 / 0 / 1.
 /// Used by the fuzzy refine (changed / bigger / smaller).
 static int VECompareBits(uint64_t a, uint64_t b, VEValueType type) {
@@ -643,7 +658,7 @@ static NSString *VEEncryptedSnapshotPath(void) {
 	uint64_t targetBits = 0;
 	if (!VEParseBits(text, type, &targetBits)) {
 		if (completion != NULL) {
-			completion(0, NO, @"الرقم مو صحيح — اكتب رقم يناسب النوع اللي اخترته.");
+			completion(0, NO, @"الرقم مو صحيح — اكتب رقم يناسب النوع.");
 		}
 		return;
 	}
@@ -764,7 +779,7 @@ static NSString *VEEncryptedSnapshotPath(void) {
 	uint64_t targetBits = 0;
 	if (!VEParseBits(text, self.currentType, &targetBits)) {
 		if (completion != NULL) {
-			completion([self safeResultsCount], @"الرقم مو صحيح.");
+			completion([self safeResultsCount], @"الرقم مو صحيح — اكتب رقم يناسب النوع.");
 		}
 		return;
 	}
@@ -878,7 +893,7 @@ static NSString *VEEncryptedSnapshotPath(void) {
 	uint64_t bitsA = 0;
 	if (!VEParseBits(text, type, &bitsA)) {
 		if (completion != NULL) {
-			completion(NO, NO, @"الرقم مو صحيح — اكتب رقم يناسب النوع اللي اخترته.");
+			completion(NO, NO, @"الرقم مو صحيح — اكتب رقم يناسب النوع.");
 		}
 		return;
 	}
@@ -1048,7 +1063,7 @@ static NSString *VEEncryptedSnapshotPath(void) {
 	if (!VEParseBits(text, type, &bitsB)) {
 		[regions release];
 		if (completion != NULL) {
-			completion(0, NO, @"الرقم مو صحيح — اكتب رقم يناسب النوع اللي اخترته.");
+			completion(0, NO, @"الرقم مو صحيح — اكتب رقم يناسب النوع.");
 		}
 		return;
 	}
@@ -1371,6 +1386,14 @@ static NSString *VEEncryptedSnapshotPath(void) {
 			existing.type = result.type;
 			existing.transform = result.transform;
 			existing.transformParam = result.transformParam;
+			// v2.28: the frozen flag used to be dropped here —
+			// freeze a result, then save it, and the saved row
+			// showed unfrozen (and a relaunch never re-froze
+			// it), while the search-tab row still showed
+			// "مثبّت". The live freeze loop keeps holding the
+			// search-tab instance; the flag only makes the
+			// saved row and the relaunch agree with it.
+			existing.frozen = result.frozen;
 			[self persistSaved];
 			return;
 		}
@@ -1381,6 +1404,7 @@ static NSString *VEEncryptedSnapshotPath(void) {
 	copy.type = result.type;
 	copy.transform = result.transform;
 	copy.transformParam = result.transformParam;
+	copy.frozen = result.frozen;
 	copy.label = result.label ?: VEStringForBits(VEDisplayedBitsForStored(result.bits, result.transform, result.transformParam, result.type), result.type);
 	[self.saved addObject:copy];
 	[copy release];
@@ -1417,11 +1441,21 @@ static NSString *VEEncryptedSnapshotPath(void) {
 @property (nonatomic, strong) UIButton *searchButton;
 @property (nonatomic, strong) UIButton *refineButton;
 @property (nonatomic, strong) UIStackView *fuzzyRow;
+// v2.28: the fuzzy row's height constraint, kept so encrypted
+// mode can collapse the row to 0 (see updateEncryptedUI).
+// hidden=YES alone does NOT collapse it — the height
+// constraint stays active and leaves a dead 34pt gap that
+// eats the results table in landscape.
+@property (nonatomic, strong) NSLayoutConstraint *fuzzyHeightConstraint;
 // v2.27: encrypted mode — the "مشفّر" toggle at the leading
 // side of the title row (mirroring "إغلاق" on the trailing
 // side). ON: search becomes "خذ لقطة", refine becomes "دوّر",
 // the fuzzy row hides. The snapshot survives turning the mode
 // off (it only gates the compare).
+// v2.28: the label stays "مشفّر" in both states — the FILL
+// shows the state (peach = ON, dark = OFF), instead of the
+// old label that flipped to the other mode's name and read
+// like a different button.
 @property (nonatomic, strong) UIButton *encryptedToggleButton;
 @property (nonatomic, assign) BOOL encryptedMode;
 
@@ -1473,29 +1507,61 @@ static NSString *VEEncryptedSnapshotPath(void) {
 	[close setTitle:@"إغلاق" forState:UIControlStateNormal];
 	close.titleLabel.font = [UIFont systemFontOfSize:15];
 	[close setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+	// v2.28: the title-row buttons used to be bare text on the
+	// dark menu — no fill, and a tap target barely bigger than
+	// the glyphs. Same dark fill (white 0.12) as the other
+	// secondary buttons, same 8pt radius, and insets so the
+	// target is a real button, not just the letters. No white
+	// stroke anywhere (v2.10 rule) — fill only.
+	close.backgroundColor = [[UIColor whiteColor] colorWithAlphaComponent:0.12];
+	close.layer.cornerRadius = 8;
+	close.contentEdgeInsets = UIEdgeInsetsMake(6, 12, 6, 12);
 	[close addTarget:self action:@selector(closeTapped) forControlEvents:UIControlEventTouchUpInside];
 	close.translatesAutoresizingMaskIntoConstraints = NO;
 	[self.view addSubview:close];
 
 	// v2.27: the encrypted-mode toggle, leading side of the
 	// title row, mirroring "إغلاق" on the trailing side.
+	// v2.28: same dark fill + 8pt radius + insets as "إغلاق",
+	// so the two title controls match. The ON state is a peach
+	// fill with black text (set in updateEncryptedUI); the
+	// label itself never changes.
 	self.encryptedToggleButton = [UIButton buttonWithType:UIButtonTypeSystem];
 	[self.encryptedToggleButton setTitle:@"مشفّر" forState:UIControlStateNormal];
 	self.encryptedToggleButton.titleLabel.font = [UIFont systemFontOfSize:15];
 	[self.encryptedToggleButton setTitleColor:[UIColor colorWithRed:1.0 green:0.78 blue:0.47 alpha:1.0] forState:UIControlStateNormal];
+	self.encryptedToggleButton.backgroundColor = [[UIColor whiteColor] colorWithAlphaComponent:0.12];
+	self.encryptedToggleButton.layer.cornerRadius = 8;
+	self.encryptedToggleButton.contentEdgeInsets = UIEdgeInsetsMake(6, 12, 6, 12);
 	[self.encryptedToggleButton addTarget:self action:@selector(encryptedToggleTapped) forControlEvents:UIControlEventTouchUpInside];
 	self.encryptedToggleButton.translatesAutoresizingMaskIntoConstraints = NO;
 	[self.view addSubview:self.encryptedToggleButton];
 
 	self.typeSeg = [[UISegmentedControl alloc] initWithItems:@[@"صحيح", @"كبير", @"فلوت", @"دبل"]];
 	self.typeSeg.selectedSegmentIndex = 0;
+	// v2.28: the selected segment is peach with black text, so
+	// it matches the peach primary buttons. The unselected
+	// segments keep their default look on purpose — white text
+	// over the default light pill would be unreadable.
+	self.typeSeg.selectedSegmentTintColor = [UIColor colorWithRed:1.0 green:0.78 blue:0.47 alpha:1.0];
+	[self.typeSeg setTitleTextAttributes:@{NSForegroundColorAttributeName: [UIColor blackColor]} forState:UIControlStateSelected];
 	self.typeSeg.translatesAutoresizingMaskIntoConstraints = NO;
 	[self.view addSubview:self.typeSeg];
 
 	self.valueField = [[UITextField alloc] init];
 	self.valueField.placeholder = @"اكتب الرقم هنا";
 	self.valueField.keyboardType = UIKeyboardTypeNumbersAndPunctuation;
-	self.valueField.borderStyle = UITextBorderStyleRoundedRect;
+	// v2.28: borderStyle None + our own 8pt radius, so the
+	// field has exactly one border: the peach focus ring set
+	// in textFieldDidBeginEditing (never a white stroke, v2.10
+	// rule). Clear button while editing, no autocorrect on a
+	// numbers field, Search return key.
+	self.valueField.borderStyle = UITextBorderStyleNone;
+	self.valueField.layer.cornerRadius = 8;
+	self.valueField.clearButtonMode = UITextFieldViewModeWhileEditing;
+	self.valueField.autocorrectionType = UITextAutocorrectionTypeNo;
+	self.valueField.spellCheckingType = UITextSpellCheckingTypeNo;
+	self.valueField.returnKeyType = UIReturnKeySearch;
 	self.valueField.backgroundColor = [UIColor whiteColor];
 	self.valueField.textColor = [UIColor blackColor];
 	self.valueField.delegate = self;
@@ -1547,12 +1613,19 @@ static NSString *VEEncryptedSnapshotPath(void) {
 	self.statusLabel.text = @"اكتب الرقم ودوس بحث.";
 	self.statusLabel.textColor = [UIColor lightGrayColor];
 	self.statusLabel.font = [UIFont systemFontOfSize:13];
-	self.statusLabel.numberOfLines = 0;
+	// v2.28: capped at 2 lines. Uncapped, a long status (the
+	// old truncated-snapshot message ran to 4 lines) pushed
+	// the tabs and the results table down — in landscape the
+	// table lost the height the 2.22 fix had won back.
+	self.statusLabel.numberOfLines = 2;
 	self.statusLabel.translatesAutoresizingMaskIntoConstraints = NO;
 	[self.view addSubview:self.statusLabel];
 
 	self.tabSeg = [[UISegmentedControl alloc] initWithItems:@[@"بحث", @"المحفوظات"]];
 	self.tabSeg.selectedSegmentIndex = 0;
+	// v2.28: same peach selected segment as the type picker.
+	self.tabSeg.selectedSegmentTintColor = [UIColor colorWithRed:1.0 green:0.78 blue:0.47 alpha:1.0];
+	[self.tabSeg setTitleTextAttributes:@{NSForegroundColorAttributeName: [UIColor blackColor]} forState:UIControlStateSelected];
 	[self.tabSeg addTarget:self action:@selector(tabChanged) forControlEvents:UIControlEventValueChanged];
 	self.tabSeg.translatesAutoresizingMaskIntoConstraints = NO;
 	[self.view addSubview:self.tabSeg];
@@ -1563,6 +1636,13 @@ static NSString *VEEncryptedSnapshotPath(void) {
 	self.tableView.delegate = self;
 	self.tableView.translatesAutoresizingMaskIntoConstraints = NO;
 	[self.view addSubview:self.tableView];
+
+	// v2.28: the fuzzy row's height lives in a property so
+	// encrypted mode can collapse it to 0 (see
+	// updateEncryptedUI) — hidden=YES alone does NOT collapse
+	// it: the 34pt height constraint stays active and leaves
+	// a dead gap that eats the results table in landscape.
+	self.fuzzyHeightConstraint = [self.fuzzyRow.heightAnchor constraintEqualToConstant:34];
 
 	[NSLayoutConstraint activateConstraints:@[
 		[title.topAnchor constraintEqualToAnchor:self.view.topAnchor constant:12],
@@ -1580,16 +1660,19 @@ static NSString *VEEncryptedSnapshotPath(void) {
 		[self.valueField.heightAnchor constraintEqualToConstant:36],
 		[self.searchButton.topAnchor constraintEqualToAnchor:self.valueField.bottomAnchor constant:8],
 		[self.searchButton.leadingAnchor constraintEqualToAnchor:self.view.leadingAnchor constant:12],
-		[self.searchButton.widthAnchor constraintEqualToAnchor:self.view.widthAnchor multiplier:0.48],
+		[self.searchButton.trailingAnchor constraintEqualToAnchor:self.refineButton.leadingAnchor constant:-8],
 		[self.searchButton.heightAnchor constraintEqualToConstant:40],
 		[self.refineButton.topAnchor constraintEqualToAnchor:self.valueField.bottomAnchor constant:8],
 		[self.refineButton.trailingAnchor constraintEqualToAnchor:self.view.trailingAnchor constant:-12],
-		[self.refineButton.widthAnchor constraintEqualToAnchor:self.view.widthAnchor multiplier:0.44],
+		// v2.28: the two buttons used to be 0.48 / 0.44 of the
+		// menu width — visibly uneven. Equal widths with one
+		// 8pt gap between them, matching the 8pt rhythm below.
+		[self.refineButton.widthAnchor constraintEqualToAnchor:self.searchButton.widthAnchor],
 		[self.refineButton.heightAnchor constraintEqualToConstant:40],
 		[self.fuzzyRow.topAnchor constraintEqualToAnchor:self.searchButton.bottomAnchor constant:8],
 		[self.fuzzyRow.leadingAnchor constraintEqualToAnchor:self.view.leadingAnchor constant:12],
 		[self.fuzzyRow.trailingAnchor constraintEqualToAnchor:self.view.trailingAnchor constant:-12],
-		[self.fuzzyRow.heightAnchor constraintEqualToConstant:34],
+		self.fuzzyHeightConstraint,
 		[self.statusLabel.topAnchor constraintEqualToAnchor:self.fuzzyRow.bottomAnchor constant:8],
 		[self.statusLabel.leadingAnchor constraintEqualToAnchor:self.view.leadingAnchor constant:12],
 		[self.statusLabel.trailingAnchor constraintEqualToAnchor:self.view.trailingAnchor constant:-12],
@@ -1613,7 +1696,11 @@ static NSString *VEEncryptedSnapshotPath(void) {
 	// above the landscape keyboard. Hidden until a result row
 	// is tapped.
 	self.editPanel = [[UIView alloc] init];
-	self.editPanel.backgroundColor = [UIColor blackColor];
+	// v2.28: near-black (white 0.06) instead of pure black —
+	// the menu behind it is black at 0.92, so the panel used
+	// to read as a pasted pure-black slab. Still fully opaque,
+	// so the search controls behind it do not bleed through.
+	self.editPanel.backgroundColor = [UIColor colorWithWhite:0.06 alpha:1.0];
 	self.editPanel.layer.cornerRadius = 16;
 	self.editPanel.clipsToBounds = YES;
 	self.editPanel.hidden = YES;
@@ -1638,7 +1725,10 @@ static NSString *VEEncryptedSnapshotPath(void) {
 	self.editStatusLabel = [[UILabel alloc] init];
 	self.editStatusLabel.textColor = [UIColor lightGrayColor];
 	self.editStatusLabel.font = [UIFont systemFontOfSize:13];
-	self.editStatusLabel.numberOfLines = 0;
+	// v2.28: capped at 2 lines like the menu status — a long
+	// message used to push the field and both button rows
+	// down toward the landscape keyboard.
+	self.editStatusLabel.numberOfLines = 2;
 	self.editStatusLabel.textAlignment = NSTextAlignmentCenter;
 	self.editStatusLabel.translatesAutoresizingMaskIntoConstraints = NO;
 	[self.editPanel addSubview:self.editStatusLabel];
@@ -1651,7 +1741,16 @@ static NSString *VEEncryptedSnapshotPath(void) {
 	self.editField = [[UITextField alloc] init];
 	self.editField.placeholder = @"اكتب الرقم هنا";
 	self.editField.keyboardType = UIKeyboardTypeNumbersAndPunctuation;
-	self.editField.borderStyle = UITextBorderStyleRoundedRect;
+	// v2.28: same treatment as valueField — borderStyle None
+	// with our own 8pt radius (one border only: the peach
+	// focus ring), clear button while editing, no autocorrect,
+	// Done return key.
+	self.editField.borderStyle = UITextBorderStyleNone;
+	self.editField.layer.cornerRadius = 8;
+	self.editField.clearButtonMode = UITextFieldViewModeWhileEditing;
+	self.editField.autocorrectionType = UITextAutocorrectionTypeNo;
+	self.editField.spellCheckingType = UITextSpellCheckingTypeNo;
+	self.editField.returnKeyType = UIReturnKeyDone;
 	self.editField.backgroundColor = [UIColor whiteColor];
 	self.editField.textColor = [UIColor blackColor];
 	self.editField.delegate = self;
@@ -1693,8 +1792,12 @@ static NSString *VEEncryptedSnapshotPath(void) {
 	self.editSaveButton.translatesAutoresizingMaskIntoConstraints = NO;
 
 	self.editRemoveButton = [UIButton buttonWithType:UIButtonTypeSystem];
-	[self.editRemoveButton setTitle:@"حذف من المحفوظات" forState:UIControlStateNormal];
-	self.editRemoveButton.titleLabel.font = [UIFont systemFontOfSize:14];
+	// v2.28: was a 17-character title at 14pt — in the
+	// 3-equal second row (~114pt per button in portrait) it
+	// truncated. "حذف" fits, and the saved context is obvious
+	// already.
+	[self.editRemoveButton setTitle:@"حذف" forState:UIControlStateNormal];
+	self.editRemoveButton.titleLabel.font = [UIFont systemFontOfSize:16];
 	[self.editRemoveButton setTitleColor:[UIColor colorWithRed:1.0 green:0.35 blue:0.3 alpha:1.0] forState:UIControlStateNormal];
 	self.editRemoveButton.backgroundColor = [[UIColor whiteColor] colorWithAlphaComponent:0.12];
 	self.editRemoveButton.layer.cornerRadius = 8;
@@ -1797,7 +1900,29 @@ static NSString *VEEncryptedSnapshotPath(void) {
 }
 
 - (void)tabChanged {
+	// v2.28: the keyboard used to stay up over the results
+	// when switching tabs, and the status line kept
+	// describing the other tab ("النتائج: …" while looking at
+	// the saved list). Dismiss the keyboard and re-sync the
+	// status to the list now on screen. Programmatic
+	// setSelectedSegmentIndex: (search/refine completions)
+	// does NOT fire this action, so no loop.
+	[self.valueField resignFirstResponder];
 	[self refreshTable];
+	NSUInteger count = [self currentList].count;
+	if (self.tabSeg.selectedSegmentIndex == 1) {
+		[self setStatus:(count > 0)
+			? [NSString stringWithFormat:@"المحفوظات: %lu قيمة محفوظة — دوس على وحدة وعدّلها.", (unsigned long)count]
+			: @"ما عندك شي محفوظ بعد — دوس على نتيجة ودوس حفظ."];
+		return;
+	}
+	if (self.encryptedMode) {
+		[self updateEncryptedUI];
+		return;
+	}
+	[self setStatus:(count > 0)
+		? [NSString stringWithFormat:@"النتائج: %lu — دوس على وحدة وعدّلها.", (unsigned long)count]
+		: @"اكتب الرقم ودوس بحث."];
 }
 
 - (void)encryptedToggleTapped {
@@ -1807,8 +1932,16 @@ static NSString *VEEncryptedSnapshotPath(void) {
 
 - (void)updateEncryptedUI {
 	ZenithValueEditor *engine = [ZenithValueEditor shared];
+	// v2.28: the toggle label stays "مشفّر" — the FILL is the
+	// state (peach + black text = ON, dark + peach text =
+	// OFF). And the fuzzy row COLLAPSES (height 0), not just
+	// hides: hidden=YES alone leaves its 34pt height
+	// constraint active, a dead gap that shrank the results
+	// table to under 2 rows in landscape.
 	if (self.encryptedMode) {
-		[self.encryptedToggleButton setTitle:@"عادي" forState:UIControlStateNormal];
+		[self.encryptedToggleButton setTitle:@"مشفّر" forState:UIControlStateNormal];
+		[self.encryptedToggleButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
+		self.encryptedToggleButton.backgroundColor = [UIColor colorWithRed:1.0 green:0.78 blue:0.47 alpha:1.0];
 		self.valueField.placeholder = engine.snapshotValid
 			? @"القيمة الثانية — اكتب الرقم الجديد"
 			: @"القيمة الأولى — اكتب الرقم الحالي";
@@ -1818,17 +1951,21 @@ static NSString *VEEncryptedSnapshotPath(void) {
 		self.refineButton.enabled = engine.snapshotValid;
 		self.refineButton.alpha = engine.snapshotValid ? 1.0 : 0.4;
 		self.fuzzyRow.hidden = YES;
+		self.fuzzyHeightConstraint.constant = 0;
 		[self setStatus:engine.snapshotValid
 			? @"تم أخذ اللقطة — غيّر الرقم باللعبة ودوس دوّر."
 			: @"اكتب الرقم الحالي ودوس خذ لقطة، بعدين غيّره باللعبة."];
 	} else {
 		[self.encryptedToggleButton setTitle:@"مشفّر" forState:UIControlStateNormal];
+		[self.encryptedToggleButton setTitleColor:[UIColor colorWithRed:1.0 green:0.78 blue:0.47 alpha:1.0] forState:UIControlStateNormal];
+		self.encryptedToggleButton.backgroundColor = [[UIColor whiteColor] colorWithAlphaComponent:0.12];
 		self.valueField.placeholder = @"اكتب الرقم هنا";
 		[self.searchButton setTitle:@"بحث" forState:UIControlStateNormal];
 		[self.refineButton setTitle:@"تضييق" forState:UIControlStateNormal];
 		self.refineButton.enabled = YES;
 		self.refineButton.alpha = 1.0;
 		self.fuzzyRow.hidden = NO;
+		self.fuzzyHeightConstraint.constant = 34;
 		// The snapshot is KEPT (it only gates the compare),
 		// so turning the mode back on later resumes it.
 		[self setStatus:@"اكتب الرقم ودوس بحث."];
@@ -1850,7 +1987,7 @@ static NSString *VEEncryptedSnapshotPath(void) {
 			self.refineButton.enabled = YES;
 			self.refineButton.alpha = 1.0;
 			if (truncated) {
-				[self setStatus:@"تم أخذ اللقطة — بس اللقطة انقطعت لأن الذاكرة أكبر من 512 ميغا، النتائج ممكن تكون ناقصة. غيّر الرقم باللعبة ودوس دوّر."];
+				[self setStatus:@"تم أخذ اللقطة، بس انقطعت (الذاكرة فوق 512 ميغا) — النتائج ممكن تكون ناقصة. غيّر الرقم ودوس دوّر."];
 			} else {
 				[self setStatus:@"تم أخذ اللقطة — غيّر الرقم باللعبة ودوس دوّر."];
 			}
@@ -1892,7 +2029,7 @@ static NSString *VEEncryptedSnapshotPath(void) {
 		return;
 	}
 	if ([engine safeResultsCount] == 0) {
-		[self setStatus:@"ما عندك نتائج تضيّقها — ابحث أول شي."];
+		[self setStatus:@"ما عندك نتائج — ابحث أول شي."];
 		return;
 	}
 	[self setStatus:@"جاري التضييق…"];
@@ -1907,14 +2044,17 @@ static NSString *VEEncryptedSnapshotPath(void) {
 }
 
 - (void)fuzzyTapped:(UIButton *)sender {
+	// v2.28: dismiss the keyboard — search/refine already did,
+	// but a fuzzy tap left it up over the bottom of the table.
+	[self.valueField resignFirstResponder];
 	ZenithValueEditor *engine = [ZenithValueEditor shared];
 	if ([engine safeResultsCount] == 0) {
-		[self setStatus:@"ما عندك نتائج — ابحث عن رقم أول شي."];
+		[self setStatus:@"ما عندك نتائج — ابحث أول شي."];
 		return;
 	}
 	[self setStatus:@"جاري التضييق…"];
 	[engine refineFuzzy:(VERefineMode)sender.tag completion:^(NSUInteger count) {
-		[self setStatus:[NSString stringWithFormat:@"النتائج: %lu", (unsigned long)count]];
+		[self setStatus:[NSString stringWithFormat:@"النتائج: %lu — إذا بقى رقم واحد، دوس عليه وعدّله.", (unsigned long)count]];
 		[self refreshTable];
 	}];
 }
@@ -1933,6 +2073,10 @@ static NSString *VEEncryptedSnapshotPath(void) {
 		cell.backgroundColor = [UIColor clearColor];
 		cell.textLabel.textColor = [UIColor whiteColor];
 		cell.detailTextLabel.textColor = [UIColor lightGrayColor];
+		// v2.28: explicit fonts on the menu's rhythm (15/13)
+		// instead of the cell defaults (17/12).
+		cell.textLabel.font = [UIFont systemFontOfSize:15];
+		cell.detailTextLabel.font = [UIFont systemFontOfSize:13];
 	}
 	VEResult *result = [self resultAtIndex:indexPath.row];
 	if (result == nil) {
@@ -1950,7 +2094,11 @@ static NSString *VEEncryptedSnapshotPath(void) {
 	NSString *valueText = readable ? VEStringForBits(displayed, result.type) : @"؟";
 	cell.textLabel.text = [NSString stringWithFormat:@"0x%llx  —  %@", (unsigned long long)result.address, valueText];
 	NSString *frozenMark = result.frozen ? @"مثبّت • " : @"";
-	NSString *label = (result.label != nil && result.label.length > 0) ? result.label : @"";
+	// v2.28: the subtitle used to be empty for every
+	// unfrozen, unlabelled result — an empty second line on
+	// every row. Fall back to the value type, so each row
+	// always says something useful.
+	NSString *label = (result.label != nil && result.label.length > 0) ? result.label : VETypeName(result.type);
 	cell.detailTextLabel.text = [NSString stringWithFormat:@"%@%@", frozenMark, label];
 	return cell;
 }
@@ -1980,7 +2128,7 @@ static NSString *VEEncryptedSnapshotPath(void) {
 	self.editingResult = result;
 	self.editingIsSavedTab = isSavedTab;
 
-	self.editAddressLabel.text = [NSString stringWithFormat:@"0x%llx", (unsigned long long)result.address];
+	self.editAddressLabel.text = [NSString stringWithFormat:@"0x%llx  •  %@", (unsigned long long)result.address, VETypeName(result.type)];
 
 	// Fresh read at tap time. Never fake a value: an
 	// unreadable address gets the honest placeholder and a
@@ -1991,19 +2139,24 @@ static NSString *VEEncryptedSnapshotPath(void) {
 		// v2.27: prefill the DISPLAYED value (see cellForRow).
 		uint64_t displayed = VEDisplayedBitsForStored(now, result.transform, result.transformParam, result.type);
 		self.editField.text = VEStringForBits(displayed, result.type);
-		self.editField.placeholder = nil;
+		// v2.28: the placeholder used to be nil here, so
+		// clearing the field left it with no hint at all. A
+		// placeholder only shows while the field is empty.
+		self.editField.placeholder = @"اكتب الرقم الجديد";
 		self.editApplyButton.enabled = YES;
 		self.editApplyButton.alpha = 1.0;
 	} else {
 		self.editField.text = nil;
-		self.editField.placeholder = @"تعذّرت قراءة القيمة";
+		self.editField.placeholder = @"ما گدرت أقرأ القيمة";
 		self.editApplyButton.enabled = NO;
 		self.editApplyButton.alpha = 0.4;
 	}
 
 	[self.editFreezeButton setTitle:(result.frozen ? @"إلغاء التثبيت" : @"تثبيت القيمة") forState:UIControlStateNormal];
 	if (isSavedTab) {
-		[self.editSaveButton setTitle:@"كتابة القيمة المحفوظة" forState:UIControlStateNormal];
+		// v2.28: was a 21-character title — ~158pt at 16pt
+		// in a ~114pt third of the row, so it truncated.
+		[self.editSaveButton setTitle:@"كتابة القيمة" forState:UIControlStateNormal];
 		self.editRemoveButton.hidden = NO;
 	} else {
 		[self.editSaveButton setTitle:@"حفظ" forState:UIControlStateNormal];
@@ -2043,7 +2196,7 @@ static NSString *VEEncryptedSnapshotPath(void) {
 	NSString *text = self.editField.text;
 	uint64_t displayedBits = 0;
 	if (!VEParseBits(text, result.type, &displayedBits)) {
-		[self setEditStatus:@"الرقم مو صحيح."];
+		[self setEditStatus:@"الرقم مو صحيح — اكتب رقم يناسب النوع."];
 		return;
 	}
 	// v2.27: the typed value is the DISPLAYED value — convert
@@ -2111,6 +2264,19 @@ static NSString *VEEncryptedSnapshotPath(void) {
 - (BOOL)textFieldShouldReturn:(UITextField *)textField {
 	[textField resignFirstResponder];
 	return YES;
+}
+
+// v2.28: the focused field gets a peach ring — the only
+// border in the menu, and it is never white (v2.10 rule).
+// Both fields start with no border (borderStyle None,
+// borderWidth 0), so the ring is the whole focus state.
+- (void)textFieldDidBeginEditing:(UITextField *)textField {
+	textField.layer.borderWidth = 2.0;
+	textField.layer.borderColor = [[UIColor colorWithRed:1.0 green:0.78 blue:0.47 alpha:1.0] CGColor];
+}
+
+- (void)textFieldDidEndEditing:(UITextField *)textField {
+	textField.layer.borderWidth = 0.0;
 }
 
 @end
