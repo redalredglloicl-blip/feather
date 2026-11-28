@@ -2336,8 +2336,10 @@ static void VEAddTiltedEllipseArc(CGContextRef ctx, CGPoint center, CGFloat a, C
 	CGFloat ringWidth = MAX(2.0, w * 0.045);
 	CGFloat tilt = -0.26; // about -15 degrees, right end lifted
 
-	// Dark circular button.
-	CGContextSetFillColorWithColor(ctx, [[UIColor colorWithWhite:0.05 alpha:0.92] CGColor]);
+	// Dark circular button, dimmed (alpha 0.45) so the game shows through
+	// the pill; the peach planet below stays fully opaque so it reads
+	// clearly over both light and dark game scenes.
+	CGContextSetFillColorWithColor(ctx, [[UIColor colorWithWhite:0.05 alpha:0.45] CGColor]);
 	CGContextFillEllipseInRect(ctx, self.bounds);
 
 	// The ring, drawn full first: the disc painted over it next
