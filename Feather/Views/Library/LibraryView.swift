@@ -609,7 +609,7 @@ extension LibraryView {
 	/// no swipe actions, no long-press gesture is attached to
 	/// this row at all — Reda's order, v2.38 Part B. No
 	/// install, no sign, no delete from this section.
-	private func _valueEditorGameRow(for game: LibraryPrefs.ValueEditorGame) -> some View {
+	private func _valueEditorGameRow(for game: ValueEditorGame) -> some View {
 		HStack(spacing: 12) {
 			_valueEditorGameIcon(for: game)
 			VStack(alignment: .leading, spacing: 2) {
@@ -644,7 +644,7 @@ extension LibraryView {
 	/// deleted from the Library after injection (the modified
 	/// IPA file itself still exists and still shares).
 	@ViewBuilder
-	private func _valueEditorGameIcon(for game: LibraryPrefs.ValueEditorGame) -> some View {
+	private func _valueEditorGameIcon(for game: ValueEditorGame) -> some View {
 		let apps: [AppInfoPresentable] = _signedApps.compactMap { $0 as? AppInfoPresentable }
 			+ _importedApps.compactMap { $0 as? AppInfoPresentable }
 		if let app = apps.first(where: { $0.uuid == game.uuid }) {
@@ -657,7 +657,7 @@ extension LibraryView {
 		}
 	}
 
-	private func _valueEditorGameSubtitle(for game: LibraryPrefs.ValueEditorGame) -> String {
+	private func _valueEditorGameSubtitle(for game: ValueEditorGame) -> String {
 		var parts: [String] = []
 		if let version = game.version {
 			parts.append("v\(version)")
@@ -676,7 +676,7 @@ extension LibraryView {
 	/// Share sheet ONLY: the modified IPA file, to Files or to
 	/// any person. When the file itself is gone, an alert says
 	/// so instead of sharing nothing.
-	private func _shareValueEditorGame(_ game: LibraryPrefs.ValueEditorGame) {
+	private func _shareValueEditorGame(_ game: ValueEditorGame) {
 		guard let ipaURL = _prefs.valueEditorGameIPAURL(for: game.uuid) else {
 			_isValueEditorMissingAlertPresenting = true
 			return
