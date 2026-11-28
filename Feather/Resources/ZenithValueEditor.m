@@ -1407,7 +1407,12 @@ static void VEAddTiltedEllipseArc(CGContextRef ctx, CGPoint center, CGFloat a, C
 	}
 	_menu = [[ZenithValueEditorMenuViewController alloc] init];
 	_menu.presentingHost = host;
-	_menu.view.frame = CGRectInset(host.view.bounds, 16, 60);
+	// v2.22: the menu used to be inset 60pt top/bottom, which left
+	// the results table only ~14pt tall in landscape — the result
+	// rows were invisible and untappable, so the editor could
+	// search but never edit. 16pt insets give the table ~100pt
+	// (2+ rows, scrollable) on an iPhone 11 landscape screen.
+	_menu.view.frame = CGRectInset(host.view.bounds, 16, 16);
 	_menu.view.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
 	[host.view addSubview:_menu.view];
 }
