@@ -2,12 +2,14 @@
 //  ZenithStoreModels.swift
 //  Zenith
 //
-//  Zenith 2.34 (Store): data models for the Zenith Store tab.
+//  Zenith 2.37 (Store): data models for the Zenith Store tab.
 //
-//  The store lists REAL apps and games from live community
-//  AltStore-source JSON feeds (CyPwn IPA Library, SideStore
-//  Community, Quantum Source). Nothing here is faked: every entry
-//  comes from one of those feeds, with a real download link.
+//  The store lists REAL apps and games from 12 live AltStore-source
+//  JSON feeds (AltStore official, OatmealDome, Provenance, Emily's
+//  Apps, UTM official, PokeMMO, iSH, CyPwn IPA Library, SideStore
+//  Community, Quantum Source, WuXu's Library++, Quantum++). Nothing
+//  here is faked: every entry comes from one of those feeds, with
+//  a real download link.
 //
 //  AltSource feeds come in two shapes, and both must decode:
 //  * v1 (flat): version / versionDate / downloadURL / size live on
@@ -35,10 +37,17 @@ struct ZenithStoreAppVersion: Codable, Identifiable, Equatable {
 	}
 
 	// Feeds disagree on the date format: "2026-07-23" (date only),
-	// "2024-03-01T03:47:43Z" (ISO8601) and
-	// "2025-02-22T21:37:29-05:00" (ISO8601 with offset).
+	// "2024-03-01T03:47:43Z" (ISO8601),
+	// "2025-02-22T21:37:29-05:00" (ISO8601 with offset) and
+	// "2026-11-28T09:31:19.767Z" (ISO8601 with fractional
+	// seconds — Provenance iCube, OatmealDome DolphiniOS).
 	static func _parseDate(_ text: String) -> Date? {
 		let iso = ISO8601DateFormatter()
+		// Fractional seconds first: the plain internet-time
+		// format rejects them, so without this attempt those
+		// feeds' dates would never parse.
+		iso.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
+		if let date = iso.date(from: text) { return date }
 		iso.formatOptions = [.withInternetDateTime]
 		if let date = iso.date(from: text) { return date }
 		iso.formatOptions = [.withFullDate]

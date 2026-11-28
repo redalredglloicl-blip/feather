@@ -5,9 +5,10 @@
 //  Created by samara on 22.03.2025.
 //
 //  Zenith has exactly five tabs — Home, Certificates, Downloads,
-//  Store and Settings — by design. Certificates live in their own
-//  tab (moved out of Settings in the Zenith v2 redesign). The Store
-//  tab (2.34) is last. Tab icons are the hand-drawn
+//  Store and Settings, in that order — by design. Certificates
+//  live in their own tab (moved out of Settings in the Zenith v2
+//  redesign). The Store tab (2.34) sits next to Downloads, and
+//  Settings is last (2.37). Tab icons are the hand-drawn
 //  Zenith asset images, not SF Symbols.
 
 import SwiftUI
@@ -59,8 +60,8 @@ enum TabEnum: String, CaseIterable, Hashable {
 			.library,
 			.certificates,
 			.downloads,
-			.settings,
-			.store
+			.store,
+			.settings
 		]
 	}
 	

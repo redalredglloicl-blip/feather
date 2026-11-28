@@ -5,9 +5,12 @@
 //  Zenith 2.34 (Store): the Store tab — a live store fed by the
 //  community AltStore-source feeds through ZenithStoreManager:
 //  real apps and games, real icons/versions/download links.
-//  Search at the top, a paste-an-App-Store-link row, featured
-//  apps, games, then apps. Pull-to-refresh calls refresh().
-//  Starfield behind everything, like the other tabs.
+//  Zenith 2.37: the paste-an-App-Store-link row is gone — search
+//  only. The home is short: a featured row, then TWO big options
+//  ("التطبيقات" / "الألعاب"), each opening its own screen with
+//  its own search (ZenithStoreSections.swift). No more one long
+//  scroll stacking games then apps. Pull-to-refresh calls
+//  refresh(). Starfield behind everything, like the other tabs.
 //
 
 import SwiftUI
@@ -19,19 +22,13 @@ struct ZenithStoreView: View {
 	@StateObject private var _store = ZenithStoreManager.shared
 
 	@State private var _searchText = ""
-	@State private var _linkText = ""
-	@State private var _linkResult: ZenithStoreApp?
-	@State private var _linkMessage: String?
-	@State private var _isLookingUpLink = false
 
 	var body: some View {
 		NBNavigationView("المتجر") {
 			ScrollView {
 				VStack(alignment: .leading, spacing: 20) {
-					_linkSection
-
 					if let error = _store.errorMessage {
-						_errorSection(error)
+						ZenithStoreErrorBannerView(message: error)
 					}
 
 					if _store.isLoading && _store.apps.isEmpty {
@@ -40,8 +37,14 @@ struct ZenithStoreView: View {
 							.padding(.top, 40)
 					} else if !_searchText.isEmpty {
 						_searchResults
+					} else if _store.apps.isEmpty {
+						Text("المتجر فاضي هسه — اسحب لتحت حتى تحدّث")
+							.foregroundStyle(.secondary)
+							.frame(maxWidth: .infinity, alignment: .center)
+							.padding(.top, 40)
 					} else {
-						_catalogSections
+						_featuredSection
+						_sectionOptions
 					}
 
 					if _store.usingCachedCatalog {
@@ -74,78 +77,6 @@ struct ZenithStoreView: View {
 		return "نسخة محفوظة — يمكن مو أحدث شي، اسحب لتحت حتى تحدّث"
 	}
 
-	// MARK: - Paste an App Store link
-	private var _linkSection: some View {
-		VStack(alignment: .leading, spacing: 10) {
-			Text("عندك رابط تطبيق من آب ستور؟")
-				.font(.headline)
-
-			HStack(spacing: 8) {
-				TextField("الصق الرابط هنا...", text: $_linkText)
-					.textFieldStyle(.roundedBorder)
-					.autocapitalization(.none)
-					.disableAutocorrection(true)
-
-				Button {
-					_lookUpLink()
-				} label: {
-					Text("جيب التطبيق")
-						.fontWeight(.semibold)
-						.foregroundStyle(.black)
-						.padding(.horizontal, 14)
-						.padding(.vertical, 8)
-						.background(Color(hex: "#FFC778"), in: RoundedRectangle(cornerRadius: 10, style: .continuous))
-				}
-				.buttonStyle(ZenithPressButtonStyle())
-				.disabled(_linkText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || _isLookingUpLink)
-			}
-
-			if _isLookingUpLink {
-				ProgressView("جاي أدور عليه...")
-			}
-			if let result = _linkResult {
-				ZenithStoreRowView(app: result)
-			}
-			if let message = _linkMessage {
-				Text(message)
-					.font(.subheadline)
-					.foregroundStyle(.secondary)
-			}
-		}
-		.padding(14)
-		.zenithGlassCard()
-	}
-
-	private func _lookUpLink() {
-		let text = _linkText.trimmingCharacters(in: .whitespacesAndNewlines)
-		guard !text.isEmpty else { return }
-		_linkResult = nil
-		_linkMessage = nil
-		_isLookingUpLink = true
-		_store.lookupAppStoreLink(text) { app, message in
-			DispatchQueue.main.async {
-				_isLookingUpLink = false
-				_linkResult = app
-				_linkMessage = message
-			}
-		}
-	}
-
-	// MARK: - Error banner
-	private func _errorSection(_ message: String) -> some View {
-		VStack(alignment: .leading, spacing: 8) {
-			Text(message)
-				.font(.subheadline)
-			Button("حاول مرة ثانية") {
-				Task { await _store.refresh() }
-			}
-			.buttonStyle(ZenithPressButtonStyle())
-			.foregroundStyle(Color(hex: "#FFC778"))
-		}
-		.padding(14)
-		.zenithGlassCard()
-	}
-
 	// MARK: - Search results
 	private var _searchResults: some View {
 		let results = _store.searchResults(for: _searchText)
@@ -158,51 +89,71 @@ struct ZenithStoreView: View {
 			} else {
 				ForEach(results, id: \.id) { app in
 					ZenithStoreRowView(app: app)
+					Divider()
 				}
 			}
 		}
 	}
 
-	// MARK: - Catalog
-	private var _catalogSections: some View {
+	// MARK: - Featured
+	private var _featuredSection: some View {
 		Group {
 			if !_store.featured.isEmpty {
 				_sectionTitle("مميّزة")
 				ScrollView(.horizontal, showsIndicators: false) {
-					HStack(spacing: 12) {
+					HStack(alignment: .top, spacing: 12) {
 						ForEach(_store.featured, id: \.id) { app in
 							ZenithStoreFeaturedCardView(app: app)
 						}
 					}
+					.padding(.vertical, 2)
 				}
-			}
-
-			if !_store.games.isEmpty {
-				_sectionTitle("ألعاب")
-				LazyVGrid(
-					columns: [GridItem(.flexible()), GridItem(.flexible())],
-					spacing: 12
-				) {
-					ForEach(_store.games, id: \.id) { app in
-						ZenithStoreGridCardView(app: app)
-					}
-				}
-			}
-
-			if !_store.storeApps.isEmpty {
-				_sectionTitle("تطبيقات")
-				ForEach(_store.storeApps, id: \.id) { app in
-					ZenithStoreRowView(app: app)
-				}
-			}
-
-			if _store.apps.isEmpty {
-				Text("المتجر فاضي هسه — اسحب لتحت حتى تحدّث")
-					.foregroundStyle(.secondary)
-					.frame(maxWidth: .infinity, alignment: .center)
-					.padding(.top, 40)
 			}
 		}
+	}
+
+	// MARK: - The two options
+	/// Two big tappable cards — "التطبيقات" and "الألعاب" — each
+	/// opens its own screen with its own search inside it. The
+	/// home itself stays short: no stacked games-then-apps scroll.
+	private var _sectionOptions: some View {
+		VStack(spacing: 14) {
+			NavigationLink(destination: ZenithStoreAppsView()) {
+				_optionCard(
+					title: "التطبيقات",
+					subtitle: "\(_store.storeApps.count) تطبيق — دوّر وحمّل"
+				)
+			}
+			.buttonStyle(ZenithPressButtonStyle())
+
+			NavigationLink(destination: ZenithStoreGamesView()) {
+				_optionCard(
+					title: "الألعاب",
+					subtitle: "\(_store.games.count) لعبة — دوّر وحمّل"
+				)
+			}
+			.buttonStyle(ZenithPressButtonStyle())
+		}
+	}
+
+	private func _optionCard(title: String, subtitle: String) -> some View {
+		HStack {
+			VStack(alignment: .leading, spacing: 4) {
+				Text(title)
+					.font(.title3.bold())
+					.foregroundStyle(.primary)
+				Text(subtitle)
+					.font(.subheadline)
+					.foregroundStyle(.secondary)
+			}
+			Spacer()
+			Text("شوف الكل")
+				.font(.subheadline.bold())
+				.foregroundStyle(Color(hex: "#FFC778"))
+		}
+		.padding(18)
+		.frame(maxWidth: .infinity, alignment: .leading)
+		.zenithGlassCard(cornerRadius: 18)
 	}
 
 	private func _sectionTitle(_ title: String) -> some View {

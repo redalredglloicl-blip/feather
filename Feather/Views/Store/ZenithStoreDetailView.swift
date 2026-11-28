@@ -81,6 +81,7 @@ struct ZenithStoreDetailView: View {
 				Text(app.name)
 					.font(.title3.bold())
 					.lineLimit(2)
+					.fixedSize(horizontal: false, vertical: true)
 				Text(app.developerName ?? "مطوّر مو معروف")
 					.font(.subheadline)
 					.foregroundStyle(.secondary)
@@ -88,6 +89,7 @@ struct ZenithStoreDetailView: View {
 				Text(_versionLine)
 					.font(.caption)
 					.foregroundStyle(.secondary)
+					.lineLimit(1)
 				if let sizeText = ZenithStoreFormatters.size(app.size) {
 					Text(sizeText)
 						.font(.caption)
@@ -98,6 +100,8 @@ struct ZenithStoreDetailView: View {
 					.foregroundStyle(.secondary)
 					.lineLimit(1)
 			}
+			// Never squeeze the header text vertically.
+			.fixedSize(horizontal: false, vertical: true)
 
 			Spacer()
 		}
