@@ -467,6 +467,11 @@ struct InstallPreviewView: View {
 			// installed; otherwise we wait a short grace period and
 			// then fail honestly instead of claiming success.
 			var missingTicks = 0
+			// Zenith v2.25: the highest progress ever seen, so the
+			// failure verdict can say which stage it died on — a
+			// verdict after real progress means installd gave up at
+			// verification, not during the download.
+			var peakProgress = 0.0
 
 			while !Task.isCancelled {
 				let rawProgress = await UIApplication.installProgress(for: bundleID) ?? 0.0
@@ -479,6 +484,8 @@ struct InstallPreviewView: View {
 				let progress = await hasStarted
 					? _normalizeInstallProgress(rawProgress)
 					: 0.0
+
+				peakProgress = max(peakProgress, progress)
 
 				Logger.misc.info("Install progress for \(bundleID): \(progress)")
 
@@ -501,7 +508,10 @@ struct InstallPreviewView: View {
 					missingTicks += 1
 					if missingTicks >= 10 {
 						await MainActor.run {
-							viewModel.status = .broken(InstallLinkError.installDidNotFinish)
+							viewModel.status = .broken(InstallLinkError.installDidNotFinish(
+								lastStatus: viewModel.statusLabel,
+								peakProgress: peakProgress
+							))
 						}
 						break
 					}
@@ -532,14 +542,19 @@ private enum InstallLinkError: LocalizedError {
 	// success (the old code set .completed here, which is how
 	// Zenith said "done" while the home-screen icon stayed a white
 	// placeholder).
-	case installDidNotFinish
+	// Zenith v2.25: carries the last status and the highest
+	// progress seen, so the verdict names the stage it died on
+	// instead of the bare "try again" — the poll only starts once
+	// the payload stream has finished, so any verdict here means
+	// the download completed and installd gave up at verification.
+	case installDidNotFinish(lastStatus: String, peakProgress: Double)
 	
 	var errorDescription: String? {
 		switch self {
 		case .invalidLink: "رابط التثبيت مو صحيح."
 		case .systemRefused: "النظام رفض رابط التثبيت."
 		case .installNeverStarted: "التثبيت ما بدأ. جرّب مرة ثانية."
-		case .installDidNotFinish: "التثبيت ما اكتمل — التطبيق ما انثبّت. جرّب مرة ثانية."
+		case .installDidNotFinish(let lastStatus, let peakProgress): "التثبيت ما اكتمل — التطبيق ما انثبّت. آخر حالة: \(lastStatus)، وأعلى تقدّم وصل \(Int(peakProgress * 100))%. جرّب مرة ثانية."
 		}
 	}
 }

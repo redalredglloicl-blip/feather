@@ -1,0 +1,19 @@
+--- a/src/bundle.cpp
++++ b/src/bundle.cpp
+@@ -680,7 +680,15 @@
+ 
+ 	ZFile::RemoveFileV("%s/embedded.mobileprovision", m_strAppFolder.c_str());
+ 	if (!pSignAsset->m_strProvData.empty()) {
+-		if (bRemoveProvision) {
++		// Zenith 2.25: restored upstream (zhlynn/zsign) behaviour.
++		// Upstream writes the profile unconditionally here; this
++		// fork guarded the write with if (bRemoveProvision), and
++		// GenerateCodeResources deletes the profile when
++		// m_bRemoveProvision is true — so the default path wrote it
++		// and then deleted it, and every signed bundle shipped with
++		// NO embedded.mobileprovision, which installd rejects at
++		// verification. Write unless removal was requested.
++		if (!bRemoveProvision) {
+ 			if (!ZFile::WriteFileV(pSignAsset->m_strProvData, "%s/embedded.mobileprovision", m_strAppFolder.c_str())) { // embedded.mobileprovision
+ 				ZLog::ErrorV(">>> Can't write embedded.mobileprovision!\n");
+ 				return false;

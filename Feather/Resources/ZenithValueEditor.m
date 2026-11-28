@@ -764,15 +764,28 @@ static int VECompareBits(uint64_t a, uint64_t b, VEValueType type) {
 @property (nonatomic, strong) UIButton *refineButton;
 
 /// The game's topmost view controller the menu's view hangs
-/// off. The menu is NOT a child view controller (v2.16), so it
-/// cannot present its edit sheets from itself — it presents
-/// them from the host instead. Assign, not weak: this file is
-/// compiled by the Run Script with plain clang (no -fobjc-arc,
-/// manual reference counting), and weak cannot be synthesized
-/// under MRC. Same non-owning semantics — the host owns the view
-/// hierarchy, the menu must never keep it alive — and safe:
-/// presentingHost is only read while the menu is visible, when
-/// the host is necessarily alive.
+/// off, captured when the menu was first built (showMenu).
+/// Assign, not weak: this file is compiled by the Run Script
+/// with plain clang (no -fobjc-arc, manual reference counting),
+/// and weak cannot be synthesized under MRC. Same non-owning
+/// semantics — the host owns the view hierarchy, the menu must
+/// never keep it alive.
+/// v2.25: this is NO LONGER used to present the edit sheets.
+/// The old claim — "only read while the menu is visible, when
+/// the host is necessarily alive" — was FALSE, and it is the
+/// root cause of ITEM A (edit field accepts no input, prefill
+/// missing): a visible menu only proves _menu.view.window != nil,
+/// i.e. the menu sits in SOME window. It does not prove the host
+/// is still alive (assign dangles on dealloc), nor that the
+/// host's view is still in the KEY window — a game can swap its
+/// key window / root VC / scene while the old window, menu still
+/// attached, stays on screen as a non-key window. Presenting the
+/// alert from that stale host put the alert in a non-key window:
+/// its field became first responder there (blinking caret,
+/// keyboard up) but key events, delivered through the key
+/// window, never reached it, and the prefill never appeared on
+/// the displayed field. showActionsForResult: now computes the
+/// presenter fresh from the live key window at tap time instead.
 @property (nonatomic, assign) UIViewController *presentingHost;
 
 - (void)refreshTable;
@@ -1063,11 +1076,41 @@ static int VECompareBits(uint64_t a, uint64_t b, VEValueType type) {
 	[self showActionsForResult:result isSavedTab:isSavedTab];
 }
 
+/// The game's key window, found fresh at tap time — the same
+/// walk ZenithValueEditorOverlay's keyWindow does. The menu VC
+/// has its own copy because the overlay's @interface is declared
+/// below this implementation, and the presenter for the edit
+/// sheet must be recomputed on every tap, never cached: the
+/// cached presentingHost (v2.24) is what broke typing in ITEM A.
+/// Nil if the game has no key window right now.
+- (UIWindow *)ve_keyWindow {
+	for (UIScene *scene in [UIApplication sharedApplication].connectedScenes) {
+		if (scene.activationState != UISceneActivationStateForegroundActive) {
+			continue;
+		}
+		if (![scene isKindOfClass:[UIWindowScene class]]) {
+			continue;
+		}
+		for (UIWindow *window in ((UIWindowScene *)scene).windows) {
+			if (window.isKeyWindow) {
+				return window;
+			}
+		}
+	}
+	return nil;
+}
+
 /// Edit / freeze / save sheet for one address.
 - (void)showActionsForResult:(VEResult *)result isSavedTab:(BOOL)isSavedTab {
 	ZenithValueEditor *engine = [ZenithValueEditor shared];
 	uint64_t now = 0;
-	[engine readBitsAt:result.address type:result.type bitsOut:&now];
+	// v2.25, ITEM A: readBitsAt's result used to be ignored, so
+	// an unreadable address silently prefilled "0". Keep the
+	// honest bit: `readable` decides whether the field gets the
+	// real current value or an honest placeholder — never a
+	// faked value, never a silently empty field.
+	BOOL readable = [engine readBitsAt:result.address type:result.type bitsOut:&now];
+	NSString *currentText = readable ? VEStringForBits(now, result.type) : nil;
 
 	// v2.24, Bug 2: this MUST be Alert, never ActionSheet.
 	// UIKit FORBIDS text fields in an action sheet:
@@ -1086,7 +1129,14 @@ static int VECompareBits(uint64_t a, uint64_t b, VEValueType type) {
 		message:nil
 		preferredStyle:UIAlertControllerStyleAlert];
 	[sheet addTextFieldWithConfigurationHandler:^(UITextField *textField) {
-		textField.text = VEStringForBits(now, result.type);
+		// VEStringForBits never returns an empty string (its
+		// switch covers all four types, else @"?"), so a nil
+		// currentText here means the address is unreadable, not
+		// that the value is empty — say so in the placeholder.
+		textField.text = currentText;
+		if (!readable) {
+			textField.placeholder = @"تعذّرت قراءة القيمة";
+		}
 		textField.keyboardType = UIKeyboardTypeNumbersAndPunctuation;
 	}];
 
@@ -1138,15 +1188,60 @@ static int VECompareBits(uint64_t a, uint64_t b, VEValueType type) {
 
 	[sheet addAction:[UIAlertAction actionWithTitle:@"إلغاء" style:UIAlertActionStyleCancel handler:nil]];
 
-	// The menu is a plain subview, not a child view controller
+	// v2.25, ITEM A — the presenter is computed FRESH from the
+	// live key window at tap time. NEVER the cached
+	// presentingHost, NEVER the detached menu VC (self):
+	// the menu is a plain subview, not a child view controller
 	// (v2.16), so presenting from self would warn "whose view
-	// is not in the window hierarchy" and drop the sheet.
-	// Present from the host view controller instead.
-	UIViewController *presenter = self.presentingHost ?: self;
+	// is not in the window hierarchy" and drop the sheet — and
+	// the cached host, set once at first menu open and never
+	// refreshed on reopen, can point at a VC whose view is no
+	// longer in the KEY window (game scene / root VC swap). The
+	// alert then appeared in a non-key window: its field became
+	// first responder there (blinking caret, keyboard up, but
+	// typed keys, delivered through the key window, reached
+	// NOTHING — neither the alert field nor the menu's 5455
+	// field behind it) and the prefill never reached the
+	// displayed field, even though VEStringForBits can never
+	// return an empty string. Presenting from the key window's
+	// own topmost VC puts the alert, its field and the keyboard
+	// in the same window key events go to. If there is no key
+	// window right now, do NOT present a broken sheet — say so
+	// in the menu's status line instead.
+	UIWindow *keyWindow = [self ve_keyWindow];
+	if (keyWindow == nil) {
+		[self setStatus:@"ما قدرت أفتح نافذة التعديل — اللعبة ما عندها نافذة نشطة هسه."];
+		return;
+	}
+	UIViewController *presenter = keyWindow.rootViewController;
 	while (presenter.presentedViewController != nil) {
 		presenter = presenter.presentedViewController;
 	}
-	[presenter presentViewController:sheet animated:YES completion:nil];
+	if (presenter == nil) {
+		[self setStatus:@"ما قدرت أفتح نافذة التعديل — اللعبة ما عندها نافذة نشطة هسه."];
+		return;
+	}
+	[presenter presentViewController:sheet animated:YES completion:^{
+		// Backstop for the prefill (ITEM A, symptom 2): the
+		// configuration handler above sets the text, but the
+		// 2.24 phone test proved the displayed field can still
+		// come up empty when the presentation path is wrong — so
+		// verify on the field that is actually on screen, after
+		// presentation, and fill it if it is empty. This is a
+		// no-op when the handler already did its job. Also make
+		// Return dismiss the keyboard (the menu VC is the
+		// delegate for its own value field too) and explicitly
+		// make this field first responder in the key window, so
+		// typed keys have somewhere to go.
+		UITextField *field = sheet.textFields.firstObject;
+		if (field != nil) {
+			if (field.text.length == 0 && currentText != nil) {
+				field.text = currentText;
+			}
+			field.delegate = self;
+			[field becomeFirstResponder];
+		}
+	}];
 }
 
 - (BOOL)textFieldShouldReturn:(UITextField *)textField {
@@ -1401,9 +1496,12 @@ static void VEAddTiltedEllipseArc(CGContextRef ctx, CGPoint center, CGFloat a, C
 	// are pure reads, and addSubview is the same plain view op
 	// ads and SDKs do inside games. So the menu is now a plain
 	// subview of the game's view — no containment at all. The
-	// menu still presents its edit sheets, through
-	// presentingHost (see showActionsForResult:), and the game
-	// keeps its key window, its scene and its runloop untouched.
+	// menu still presents its edit sheets, from the live key
+	// window's topmost view controller computed fresh at tap
+	// time (v2.25, see showActionsForResult: — NOT through the
+	// cached presentingHost, which broke typing in ITEM A),
+	// and the game keeps its key window, its scene and its
+	// runloop untouched.
 	// No memory scan starts here: searching only starts when
 	// the user taps بحث.
 	UIWindow *keyWindow = [self keyWindow];

@@ -27,6 +27,17 @@ deps:
 $(PLATFORMS): deps
 	rm -rf _build
 
+	# Zenith 2.25: the vendored zsign fork ships every signed bundle
+	# without embedded.mobileprovision (its bundle.cpp writes the
+	# profile only `if (bRemoveProvision)`, and CodeResources then
+	# deletes it) — restore the upstream behaviour at build time.
+	# Zsign is a submodule, so the fix lives as a patch file, not
+	# an edited submodule file. The grep guard makes it a no-op
+	# when already applied; a context change fails loudly.
+	@if ! grep -q 'if (!bRemoveProvision)' Zsign/src/bundle.cpp; then \
+		patch -p1 -d Zsign < ZsignPatch/bundle.cpp.patch; \
+	fi
+
 	# Zenith app icons live in the repo as base64 text (the GitHub API
 	# cannot carry raw binary through this tooling) — decode them back
 	# to real PNGs before the build reads the asset catalog.
