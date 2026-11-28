@@ -111,6 +111,58 @@
 //    also hurries the game's own timers and animations, and
 //    dates the game reads (NSDate) run fast while speed is on.
 //    At 1x the virtual clock is exactly the real clock.
+//  * v2.32 FIXED THE FIX: the first v2.32 attempt read real
+//    ticks from a libc uptime call, but Apple's Libc implements
+//    that call on top of
+//    mach_absolute_time — and interposition redirects EVERY
+//    call site, including libc's own — so the game still could
+//    not launch. Real ticks now come from mach_continuous_time()
+//    called directly: a mach trap, no libc under it, no
+//    recursion path at all (same tick units, no conversion).
+//  * v2.32 Update 2, items 6–10 (all in this file):
+//    6. تطبيق تلقائي — saved values re-apply themselves 3s
+//    after launch, from slide-aware addresses (stored relative
+//    to the owning image + the slide at save time, current
+//    slide re-added at load). 7. مراقبة قيمة — a live on-screen
+//    label (1s refresh, pass-through touches) plus a visible
+//    alert when the value changes. 8. نسخة احتياطية — the
+//    game's Documents + Library/Preferences copied before the
+//    first edit of the session, one-tap restore from the edit
+//    panel. 9. كشف النوع تلقائياً — "تلقائي" searches int32 /
+//    int64 / float / double in one pass and tags each hit.
+//    10. تحديث النتائج الحي — visible rows re-read every
+//    2.5s while the menu is open, in place, no rebuild.
+//
+//  v2.32 HONEST LIMITS (in addition to the above):
+//  * Auto-apply only re-finds values that live inside a loaded
+//    image (globals/statics). Heap values (coins in most games)
+//    have no stable base across launches: a v2.32 heap save
+//    stays saved for manual use, but auto-apply and the freeze
+//    loop never read or write its stale address — the menu
+//    reports how many were skipped (autoApplySkipped). The
+//    skip only applies to saves that actually carry relocation
+//    info with relocatable == NO. Old (pre-2.32) saves carry
+//    no relocation info at all, so they cannot be told apart
+//    from heap values: they keep their absolute address and
+//    are applied as before, NOT slide-safe.
+//  * The backup covers Documents + Library/Preferences only,
+//    skips single files over 50MB, and stops past 200MB total
+//    (it says so when it does). Restoring while the game is
+//    running copies the files back, but the game may overwrite
+//    them again on its next save — restore, then relaunch the
+//    game to be sure it took.
+//  * Auto-detect: one address yields one row, first matching
+//    type wins (int32, then int64, then float, then double), so
+//    a value that is 0 in two types is tagged with the first.
+//    The encrypted search still needs one integer type —
+//    "تلقائي" is refused there. The scan stays writable-only
+//    (read-only/deep search is a later update).
+//  * The watch label sits at the top centre of the screen and
+//    shows one value; starting a second watch replaces the
+//    first. It costs one vm_read a second.
+//  * Live refresh updates only the rows on screen, never
+//    result.bits (that is the fuzzy-refine baseline), and pauses
+//    while the edit panel is open.
 //
 //  BUILD (not part of the Xcode app target — a dylib needs its own
 //  build step; this file ships as source only until that step
@@ -139,9 +191,10 @@
 #import <UIKit/UIKit.h>
 #import <mach/mach.h>
 #import <mach/mach_time.h> // v2.31: mach_absolute_time + mach_timebase_info live here, NOT in <mach/mach.h> — their absence failed the 2.30 build.
+#import <mach-o/dyld.h> // v2.32: _dyld_image_count / slide, for slide-aware saved addresses (feature 6).
+#import <mach-o/loader.h> // v2.32: mach_header_64 / LC_SEGMENT_64, same reason.
 #import <stdio.h>
 #import <unistd.h>
-#import <dlfcn.h>
 #import <pthread.h>
 #import <sys/time.h>
 #import <time.h>
@@ -178,12 +231,30 @@ static NSString * const kZenithVESavedDefaultsKey = @"ZenithValueEditorSaved";
 // truncation honestly instead of pretending it is complete.
 static NSString * const kZenithVESnapshotFileName = @"ZenithVESnapshot.bin";
 static const uint64_t kZenithVESnapshotMaxBytes = 512ULL * 1024ULL * 1024ULL;
+// v2.32 feature 8 (save backup): folder inside the game's
+// Library/ (NSHomeDirectory()/Library/ZenithVEBackup), with
+// Documents/ and Preferences/ mirrored under it. A single file
+// over 50MB is skipped, and copying stops past 200MB total.
+static NSString * const kZenithVEBackupDirName = @"ZenithVEBackup";
+static const uint64_t kZenithVEBackupMaxFileBytes = 50ULL * 1024ULL * 1024ULL;
+static const uint64_t kZenithVEBackupMaxTotalBytes = 200ULL * 1024ULL * 1024ULL;
+// v2.32 feature 7 (value watch): the on-screen value refreshes
+// this often. One vm_read a second — negligible.
+static const NSTimeInterval kZenithVEWatchInterval = 1.0;
+// v2.32 feature 10 (live results refresh): the visible rows
+// re-read their values this often while the menu is open.
+static const NSTimeInterval kZenithVELiveRefreshInterval = 2.5;
 
 typedef NS_ENUM(NSInteger, VEValueType) {
 	VEValueTypeInt32 = 0,
 	VEValueTypeInt64 = 1,
 	VEValueTypeFloat = 2,
 	VEValueTypeDouble = 3,
+	// v2.32 feature 9 (auto-detect): search all four types at
+	// once and tag each hit with the type that matched. The
+	// type picker has "تلقائي" as its 5th segment (index 4),
+	// so selectedType maps straight onto this value.
+	VEValueTypeAuto = 4,
 };
 
 typedef NS_ENUM(NSInteger, VERefineMode) {
@@ -220,6 +291,30 @@ typedef NS_ENUM(NSInteger, VEValueTransform) {
 // pre-2.27 result is Plain/0, so old saved lists load unchanged).
 @property (nonatomic, assign) VEValueTransform transform;
 @property (nonatomic, assign) uint64_t transformParam;
+// v2.32 feature 6 (auto-apply, slide-aware): a saved ABSOLUTE
+// address is stale next launch — ASLR moves every image by a
+// different slide. So a saved value also records WHERE it lives
+// relative to its owning image: relOffset is the address minus
+// the image's unslid base minus the slide at save time, and
+// imageName is the image's file name. At load the current slide
+// is added back (base + current slide + relOffset). relocatable
+// is NO for values that live in no image at all (heap values):
+// a heap address has no stable base, so it can never be
+// re-found next launch — it stays in the list for manual use,
+// but auto-apply and the freeze loop never write to it (see
+// the explicit relocationKnown && !relocatable skip in both).
+// relocationKnown tells a v2.32 save apart from an old one:
+// pre-2.32 saves carry NO relocation keys at all, so their
+// relocatable reads as NO too — but they are old saves, not
+// known heap values, and keep the old behaviour (applied as
+// before, absolute address). Only an entry that actually
+// carries relocation info AND has relocatable == NO is a
+// known heap value and is skipped.
+@property (nonatomic, assign) uint64_t relOffset;
+@property (nonatomic, copy) NSString *imageName;
+@property (nonatomic, assign) int64_t slideAtSave;
+@property (nonatomic, assign) BOOL relocatable;
+@property (nonatomic, assign) BOOL relocationKnown;
 @end
 
 @implementation VEResult
@@ -319,6 +414,9 @@ static NSString *VETypeName(VEValueType type) {
 		case VEValueTypeInt64: return @"كبير";
 		case VEValueTypeFloat: return @"فلوت";
 		case VEValueTypeDouble: return @"دبل";
+		// v2.32 auto: results always carry a concrete type, so
+		// this is only reached if Auto itself is ever named.
+		case VEValueTypeAuto: return @"تلقائي";
 	}
 	return @"صحيح";
 }
@@ -467,6 +565,178 @@ static NSString *VEEncryptedSnapshotPath(void) {
 	return [NSTemporaryDirectory() stringByAppendingPathComponent:kZenithVESnapshotFileName];
 }
 
+// MARK: - v2.32 helpers: auto-detect strict parse, slide-aware addresses, backup paths
+
+// Strict parse for auto-detect (feature 9): VEParseBits accepts
+// a leading number and ignores the rest ("1.5" parses as int 1),
+// which would invent phantom int targets. Auto mode needs the
+// WHOLE string to be the number, so trailing junk fails.
+static BOOL VEParseBitsStrict(NSString *text, VEValueType type, uint64_t *bitsOut) {
+	if (text == nil || bitsOut == NULL) {
+		return NO;
+	}
+	NSString *trimmed = [text stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
+	if (trimmed.length == 0) {
+		return NO;
+	}
+	if (!VEParseBits(trimmed, type, bitsOut)) {
+		return NO;
+	}
+	const char *cText = [trimmed UTF8String];
+	char *end = NULL;
+	switch (type) {
+		case VEValueTypeInt32:
+		case VEValueTypeInt64:
+			(void)strtoll(cText, &end, 10);
+			break;
+		case VEValueTypeFloat:
+			(void)strtof(cText, &end);
+			break;
+		case VEValueTypeDouble:
+			(void)strtod(cText, &end);
+			break;
+		default:
+			return NO;
+	}
+	return end != NULL && *end == '\0';
+}
+
+// Slide-aware addresses (feature 6). One loaded image's address
+// range: walk its LC_SEGMENT_64 commands. baseUnslid is the
+// lowest segment vmaddr WITHOUT the slide; the loaded base is
+// baseUnslid + slide. Pure dyld calls — no by-name lookup, no
+// interposed symbol in the path.
+static BOOL VEImageRangeForIndex(uint32_t index, uint64_t *baseUnslidOut, int64_t *slideOut, uint64_t *endOut, const char **nameOut) {
+	const struct mach_header *header = _dyld_get_image_header(index);
+	if (header == NULL) {
+		return NO;
+	}
+	const struct mach_header_64 *header64 = (const struct mach_header_64 *)header;
+	int64_t slide = _dyld_get_image_slide(index);
+	uintptr_t cursor = (uintptr_t)header64 + sizeof(struct mach_header_64);
+	uint64_t low = UINT64_MAX, high = 0;
+	for (uint32_t i = 0; i < header64->ncmds; i++) {
+		struct load_command *cmd = (struct load_command *)cursor;
+		if (cmd->cmd == LC_SEGMENT_64) {
+			struct segment_command_64 *seg = (struct segment_command_64 *)cursor;
+			uint64_t start = seg->vmaddr + (uint64_t)slide;
+			uint64_t end = start + seg->vmsize;
+			if (start < low) {
+				low = start;
+			}
+			if (end > high) {
+				high = end;
+			}
+		}
+		cursor += cmd->cmdsize;
+	}
+	if (low == UINT64_MAX) {
+		return NO;
+	}
+	if (baseUnslidOut != NULL) {
+		*baseUnslidOut = low - (uint64_t)slide;
+	}
+	if (slideOut != NULL) {
+		*slideOut = slide;
+	}
+	if (endOut != NULL) {
+		*endOut = high;
+	}
+	if (nameOut != NULL) {
+		*nameOut = _dyld_get_image_name(index);
+	}
+	return YES;
+}
+
+// Which image owns this address (if any), and its unslid base
+// + current slide. A heap address belongs to no image.
+static BOOL VEImageInfoForAddress(uint64_t address, uint64_t *baseUnslidOut, int64_t *slideOut, NSString **imageNameOut) {
+	uint32_t count = _dyld_image_count();
+	for (uint32_t i = 0; i < count; i++) {
+		uint64_t base = 0, end = 0;
+		int64_t slide = 0;
+		const char *name = NULL;
+		if (!VEImageRangeForIndex(i, &base, &slide, &end, &name)) {
+			continue;
+		}
+		uint64_t start = base + (uint64_t)slide;
+		if (address >= start && address < end) {
+			if (baseUnslidOut != NULL) {
+				*baseUnslidOut = base;
+			}
+			if (slideOut != NULL) {
+				*slideOut = slide;
+			}
+			if (imageNameOut != NULL) {
+				*imageNameOut = (name != NULL) ? [NSString stringWithUTF8String:name] : nil;
+			}
+			return YES;
+		}
+	}
+	return NO;
+}
+
+// Re-resolve a saved value for THIS launch: find the image by
+// file name (last path component — the container path changes
+// on reinstall, so the full path is never matched) and re-add
+// the CURRENT slide to the stored relative offset.
+static BOOL VEResolveSavedAddress(NSString *imageName, uint64_t relOffset, uint64_t *addressOut) {
+	if (imageName == nil || imageName.length == 0 || addressOut == NULL) {
+		return NO;
+	}
+	NSString *wantedBase = [imageName lastPathComponent];
+	uint32_t count = _dyld_image_count();
+	for (uint32_t i = 0; i < count; i++) {
+		uint64_t base = 0, end = 0;
+		int64_t slide = 0;
+		const char *name = NULL;
+		if (!VEImageRangeForIndex(i, &base, &slide, &end, &name)) {
+			continue;
+		}
+		if (name == NULL) {
+			continue;
+		}
+		NSString *candidate = [NSString stringWithUTF8String:name];
+		if (![[candidate lastPathComponent] isEqualToString:wantedBase]) {
+			continue;
+		}
+		*addressOut = base + (uint64_t)slide + relOffset;
+		return YES;
+	}
+	return NO;
+}
+
+// Fill a result's slide-aware fields from its current address,
+// at save time. Heap values get relocatable = NO (see the
+// VEResult property comment).
+static void VEFillRelocationForResult(VEResult *result) {
+	if (result == nil) {
+		return;
+	}
+	uint64_t base = 0;
+	int64_t slide = 0;
+	NSString *name = nil;
+	if (VEImageInfoForAddress(result.address, &base, &slide, &name)) {
+		result.relocatable = YES;
+		result.relOffset = result.address - base - (uint64_t)slide;
+		result.imageName = name;
+		result.slideAtSave = slide;
+	} else {
+		result.relocatable = NO;
+		result.relOffset = 0;
+		result.imageName = nil;
+		result.slideAtSave = 0;
+	}
+	// Either way the relocation question was answered at save
+	// time, so this entry carries relocation info from now on.
+	result.relocationKnown = YES;
+}
+
+// v2.32 feature 8: the backup root inside the game's Library/.
+static NSString *VEBackupRootPath(void) {
+	return [[NSHomeDirectory() stringByAppendingPathComponent:@"Library"] stringByAppendingPathComponent:kZenithVEBackupDirName];
+}
+
 // MARK: - ZenithValueEditor (scan engine + freeze + saved list)
 
 @interface ZenithValueEditor : NSObject
@@ -514,6 +784,25 @@ static NSString *VEEncryptedSnapshotPath(void) {
 - (void)removeSaved:(VEResult *)result;
 - (void)applySaved:(VEResult *)result;
 
+// v2.32 feature 6 (auto-apply): write every saved value back
+// at launch (delayed, from setup — the game has to exist first),
+// using the slide-resolved address loadSaved computed. Entries
+// whose address could not be resolved (an image that is gone,
+// address 0) and known heap values (relocationKnown &&
+// !relocatable — a v2.32 save, never an old save: see VEResult)
+// are skipped, never written blind. Counts land in
+// autoApplyApplied / autoApplySkipped for the menu status line.
+- (void)autoApplySaved;
+
+// v2.32 feature 8 (save backup): copy the game's Documents and
+// Library/Preferences into the backup folder BEFORE the first
+// edit of the session. Returns an Iraqi status message, or nil
+// when the backup was already done this session (once only).
+- (NSString *)backupSaveIfNeeded;
+// One-tap restore: copy the backup back over the live save
+// files. Completion runs on the main queue.
+- (void)restoreBackupWithCompletion:(void (^)(BOOL success, NSString *message))completion;
+
 @property (nonatomic, strong) NSMutableArray<VEResult *> *results;
 @property (nonatomic, strong) NSMutableArray<VEResult *> *saved;
 @property (nonatomic, strong) NSMutableArray<VEResult *> *frozen;
@@ -530,6 +819,12 @@ static NSString *VEEncryptedSnapshotPath(void) {
 @property (nonatomic, assign) VEValueType snapshotType;
 @property (nonatomic, assign) uint64_t snapshotBitsA;
 @property (nonatomic, strong) NSArray<NSDictionary *> *snapshotRegions;
+
+// v2.32 feature 6: auto-apply outcome (see autoApplySaved).
+@property (nonatomic, assign) NSUInteger autoApplyApplied;
+@property (nonatomic, assign) NSUInteger autoApplySkipped;
+// v2.32 feature 8: YES once the backup ran this session.
+@property (nonatomic, assign) BOOL backupDoneThisSession;
 
 @end
 
@@ -569,10 +864,19 @@ static NSString *VEEncryptedSnapshotPath(void) {
 }
 
 - (void)setup {
-	// Nothing to start here: the floating-button window is created
-	// by the overlay below, on the main queue, from the
-	// constructor. Kept so the constructor reads like the other
-	// overlays (shared -> setup).
+	// The floating-button window is created by the overlay below,
+	// on the main queue, from the constructor. Kept so the
+	// constructor reads like the other overlays (shared -> setup).
+	// v2.32 feature 6 (auto-apply): the saved values apply
+	// themselves a few seconds after launch — NOT at once, so
+	// the game has finished launching and created its data
+	// first (an immediate write could land before the game
+	// initialised the value and be overwritten). Frozen values
+	// do not depend on this: the freeze loop re-writes them
+	// every 0.25s from launch anyway.
+	dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(3.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+		[[ZenithValueEditor shared] autoApplySaved];
+	});
 }
 
 // v2.17: defensive count of the results list. The results ivar
@@ -678,12 +982,38 @@ static NSString *VEEncryptedSnapshotPath(void) {
 - (void)searchExact:(NSString *)text
 			   type:(VEValueType)type
 		 completion:(void (^)(NSUInteger count, BOOL capped, NSString *error))completion {
-	uint64_t targetBits = 0;
-	if (!VEParseBits(text, type, &targetBits)) {
-		if (completion != NULL) {
-			completion(0, NO, @"الرقم مو صحيح — اكتب رقم يناسب النوع.");
+	// v2.32 feature 9 (auto-detect): one scan, up to four
+	// bit-patterns — int32, int64, float, double — instead of
+	// making the user pick the type. A plain type is the same
+	// code with a single target. Strict parse for auto (see
+	// VEParseBitsStrict): "1.5" must not invent an int target
+	// of 1. The targets are built INSIDE the block below, so
+	// the block only captures `text` and `type` — no stack
+	// array crosses into it.
+	if (type == VEValueTypeAuto) {
+		static const VEValueType autoTypes[] = { VEValueTypeInt32, VEValueTypeInt64, VEValueTypeFloat, VEValueTypeDouble };
+		BOOL any = NO;
+		for (NSUInteger t = 0; t < 4; t++) {
+			uint64_t bits = 0;
+			if (VEParseBitsStrict(text, autoTypes[t], &bits)) {
+				any = YES;
+				break;
+			}
 		}
-		return;
+		if (!any) {
+			if (completion != NULL) {
+				completion(0, NO, @"الرقم مو صحيح — اكتب رقم يناسب النوع.");
+			}
+			return;
+		}
+	} else {
+		uint64_t targetBits = 0;
+		if (!VEParseBits(text, type, &targetBits)) {
+			if (completion != NULL) {
+				completion(0, NO, @"الرقم مو صحيح — اكتب رقم يناسب النوع.");
+			}
+			return;
+		}
 	}
 	if (self.scanning) {
 		if (completion != NULL) {
@@ -693,9 +1023,34 @@ static NSString *VEEncryptedSnapshotPath(void) {
 	}
 	self.scanning = YES;
 	self.currentType = type;
-	size_t valueSize = VESizeForType(type);
 
 	dispatch_async(dispatch_get_global_queue(QOS_CLASS_USER_INITIATED, 0), ^{
+		typedef struct { VEValueType type; uint64_t bits; size_t size; uint64_t mask; } VEAutoTarget;
+		VEAutoTarget targets[4];
+		NSUInteger targetCount = 0;
+		if (type == VEValueTypeAuto) {
+			static const VEValueType autoTypes[] = { VEValueTypeInt32, VEValueTypeInt64, VEValueTypeFloat, VEValueTypeDouble };
+			for (NSUInteger t = 0; t < 4; t++) {
+				uint64_t bits = 0;
+				if (!VEParseBitsStrict(text, autoTypes[t], &bits)) {
+					continue;
+				}
+				targets[targetCount].type = autoTypes[t];
+				targets[targetCount].bits = bits;
+				targets[targetCount].size = VESizeForType(autoTypes[t]);
+				targets[targetCount].mask = VEMaskForType(autoTypes[t]);
+				targetCount++;
+			}
+		} else {
+			uint64_t targetBits = 0;
+			// Cannot fail: the same parse succeeded above.
+			VEParseBits(text, type, &targetBits);
+			targets[0].type = type;
+			targets[0].bits = targetBits;
+			targets[0].size = VESizeForType(type);
+			targets[0].mask = VEMaskForType(type);
+			targetCount = 1;
+		}
 		NSMutableArray<VEResult *> *found = [[NSMutableArray alloc] init];
 		BOOL capped = NO;
 
@@ -747,23 +1102,36 @@ static NSString *VEEncryptedSnapshotPath(void) {
 				// Step one byte at a time: a value can sit at ANY
 				// address, not only at a multiple of its size.
 				// Stepping by the value size would miss most hits.
-				for (vm_size_t i = 0; i + valueSize <= dataCount; i += 1) {
-					uint64_t bits = 0;
-					memcpy(&bits, bytes + i, valueSize);
-					if (bits != targetBits) {
+				// v2.32 auto: test every target at this offset.
+				// One address yields at most ONE row — the first
+				// matching type wins (int32, then int64, then
+				// float, then double) — so the same address never
+				// appears twice under two types. Each row keeps
+				// the type that matched it, and the table shows
+				// that type (see cellForRowAtIndexPath).
+				// A match compares only the value bytes: for
+				// 4-byte types the high bytes of `bits` are zero.
+				for (vm_size_t i = 0; i + 4 <= dataCount; i += 1) {
+					VEResult *result = nil;
+					for (NSUInteger t = 0; t < targetCount; t++) {
+						size_t valueSize = targets[t].size;
+						if (i + valueSize > dataCount) {
+							continue;
+						}
+						uint64_t bits = 0;
+						memcpy(&bits, bytes + i, valueSize);
+						if ((bits & targets[t].mask) != (targets[t].bits & targets[t].mask)) {
+							continue;
+						}
+						result = [[VEResult alloc] init];
+						result.address = (uint64_t)(regionStart + offset + i);
+						result.bits = targets[t].bits;
+						result.type = targets[t].type;
+						break;
+					}
+					if (result == nil) {
 						continue;
 					}
-					// A match whose low bytes equal the target: for
-					// 4-byte types the high bytes of `bits` are
-					// zero, so compare only the value bytes.
-					uint64_t mask = (valueSize == 8) ? UINT64_MAX : ((1ULL << (valueSize * 8)) - 1);
-					if ((bits & mask) != (targetBits & mask)) {
-						continue;
-					}
-					VEResult *result = [[VEResult alloc] init];
-					result.address = (uint64_t)(regionStart + offset + i);
-					result.bits = targetBits;
-					result.type = type;
 					[found addObject:result];
 					[result release];
 					if (found.count >= kZenithVEMaxResults) {
@@ -799,8 +1167,14 @@ static NSString *VEEncryptedSnapshotPath(void) {
 // Re-read every stored address and keep only the ones that now
 // hold the new exact value.
 - (void)refineExact:(NSString *)text completion:(void (^)(NSUInteger count, NSString *error))completion {
+	// v2.32 auto: an auto search leaves rows of MIXED types, so
+	// the target is parsed per row, in that row's own type —
+	// parsing once with currentType (Auto) would read every row
+	// as 4 bytes and compare the wrong width. A plain search
+	// still parses once up front, as before.
+	VEValueType type = self.currentType;
 	uint64_t targetBits = 0;
-	if (!VEParseBits(text, self.currentType, &targetBits)) {
+	if (type != VEValueTypeAuto && !VEParseBits(text, type, &targetBits)) {
 		if (completion != NULL) {
 			completion([self safeResultsCount], @"الرقم مو صحيح — اكتب رقم يناسب النوع.");
 		}
@@ -813,19 +1187,23 @@ static NSString *VEEncryptedSnapshotPath(void) {
 		return;
 	}
 	self.scanning = YES;
-	VEValueType type = self.currentType;
 	NSArray<VEResult *> *previous = [self.results copy];
-	size_t valueSize = VESizeForType(type);
-	uint64_t mask = (valueSize == 8) ? UINT64_MAX : ((1ULL << (valueSize * 8)) - 1);
 
 	dispatch_async(dispatch_get_global_queue(QOS_CLASS_USER_INITIATED, 0), ^{
 		NSMutableArray<VEResult *> *kept = [[NSMutableArray alloc] init];
 		for (VEResult *result in previous) {
-			uint64_t now = 0;
-			if (![self readBitsAt:result.address type:type bitsOut:&now]) {
+			VEValueType rowType = (type == VEValueTypeAuto) ? result.type : type;
+			uint64_t rowTarget = targetBits;
+			if (type == VEValueTypeAuto && !VEParseBits(text, rowType, &rowTarget)) {
 				continue;
 			}
-			if ((now & mask) != (targetBits & mask)) {
+			size_t valueSize = VESizeForType(rowType);
+			uint64_t mask = (valueSize == 8) ? UINT64_MAX : ((1ULL << (valueSize * 8)) - 1);
+			uint64_t now = 0;
+			if (![self readBitsAt:result.address type:rowType bitsOut:&now]) {
+				continue;
+			}
+			if ((now & mask) != (rowTarget & mask)) {
 				continue;
 			}
 			result.bits = now;
@@ -863,11 +1241,14 @@ static NSString *VEEncryptedSnapshotPath(void) {
 	dispatch_async(dispatch_get_global_queue(QOS_CLASS_USER_INITIATED, 0), ^{
 		NSMutableArray<VEResult *> *kept = [[NSMutableArray alloc] init];
 		for (VEResult *result in previous) {
+			// v2.32 auto: mixed-type rows compare in their own
+			// type, not in currentType (Auto has no width).
+			VEValueType rowType = (type == VEValueTypeAuto) ? result.type : type;
 			uint64_t now = 0;
-			if (![self readBitsAt:result.address type:type bitsOut:&now]) {
+			if (![self readBitsAt:result.address type:rowType bitsOut:&now]) {
 				continue;
 			}
-			int cmp = VECompareBits(now, result.bits, type);
+			int cmp = VECompareBits(now, result.bits, rowType);
 			BOOL keep = NO;
 			switch (mode) {
 				case VERefineChanged: keep = (cmp != 0); break;
@@ -907,6 +1288,15 @@ static NSString *VEEncryptedSnapshotPath(void) {
 						 type:(VEValueType)type
 				   completion:(void (^)(BOOL success, BOOL truncated, NSString *error))completion {
 	// Integers only: XOR / multiply are integer rules.
+	// v2.32 auto: the encrypted search needs ONE integer type —
+	// "تلقائي" has no single width, so it is refused here
+	// instead of silently snapshotting as the wrong type.
+	if (type == VEValueTypeAuto) {
+		if (completion != NULL) {
+			completion(NO, NO, @"البحث المشفّر يحتاج نوع صحيح أو كبير — بدّل النوع.");
+		}
+		return;
+	}
 	if (type == VEValueTypeFloat || type == VEValueTypeDouble) {
 		if (completion != NULL) {
 			completion(NO, NO, @"البحث المشفّر يشتغل على صحيح وكبير بس — بدّل النوع.");
@@ -1330,6 +1720,18 @@ static NSString *VEEncryptedSnapshotPath(void) {
 				break;
 			}
 			for (VEResult *result in snapshot) {
+				// v2.32 feature 6: a KNOWN heap value is never
+				// read or written here — its saved address is
+				// stale next launch and a recycled heap page
+				// would still answer vm_read, so a read-then-
+				// write would corrupt unrelated memory.
+				// relocationKnown matters: an old (pre-2.32)
+				// save carries no relocation info, so it is
+				// NOT a known heap value and keeps the old
+				// behaviour (frozen as before).
+				if (result.relocationKnown && !result.relocatable) {
+					continue;
+				}
 				uint64_t now = 0;
 				if (![self readBitsAt:result.address type:result.type bitsOut:&now]) {
 					continue;
@@ -1366,6 +1768,48 @@ static NSString *VEEncryptedSnapshotPath(void) {
 		result.transform = (VEValueTransform)[dict[@"transform"] integerValue];
 		NSString *paramHex = dict[@"transformParam"];
 		result.transformParam = (paramHex != nil) ? strtoull([paramHex UTF8String], NULL, 0) : 0;
+		// v2.32 feature 6: resolve the slide-aware address for
+		// THIS launch. A v2.32 save carries relOffset + image
+		// (relocatable YES): the live address is base + current
+		// slide + relOffset. An old save has neither key — it
+		// keeps its absolute address as before (backward
+		// compatible, but NOT slide-safe: auto-apply still
+		// writes it, and the menu says so — see autoApplySaved).
+		// A v2.32 save whose image is gone this launch resolves
+		// to address 0: the entry stays in the list for manual
+		// use, but auto-apply skips address 0 explicitly.
+		// A v2.32 HEAP save keeps its stale absolute address
+		// (it resolves to nothing, so there is no 0 to hide
+		// behind) — it is skipped by the explicit
+		// relocationKnown && !relocatable check in
+		// autoApplySaved and freezeLoop, never by address 0.
+		// relocationKnown is what tells the two apart: an old
+		// save has no relocation keys, a v2.32 save does. The
+		// explicit @"hasRelocation" flag is written by
+		// persistSaved from v2.32-fix on; before that flag
+		// existed, the presence of @"relocatable" itself is
+		// the marker (v2.32 saves always wrote it, old saves
+		// never had it). The flag wins when present, so a
+		// later persist can never promote an old save into a
+		// known heap value just by writing the relocatable key.
+		if (dict[@"hasRelocation"] != nil) {
+			result.relocationKnown = [dict[@"hasRelocation"] boolValue];
+		} else {
+			result.relocationKnown = (dict[@"relocatable"] != nil);
+		}
+		result.relocatable = [dict[@"relocatable"] boolValue];
+		NSString *relHex = dict[@"relOffset"];
+		result.relOffset = (relHex != nil) ? strtoull([relHex UTF8String], NULL, 0) : 0;
+		result.imageName = dict[@"image"];
+		result.slideAtSave = [dict[@"slide"] longLongValue];
+		if (result.relocatable) {
+			uint64_t resolved = 0;
+			if (VEResolveSavedAddress(result.imageName, result.relOffset, &resolved)) {
+				result.address = resolved;
+			} else {
+				result.address = 0;
+			}
+		}
 		[self.saved addObject:result];
 		if (result.frozen) {
 			[self.frozen addObject:result];
@@ -1382,9 +1826,15 @@ static NSString *VEEncryptedSnapshotPath(void) {
 
 - (void)persistSaved {
 	NSMutableArray<NSDictionary *> *stored = [NSMutableArray array];
-	NSMutableSet<NSNumber *> *seen = [NSMutableSet set];
+	NSMutableSet<NSString *> *seen = [NSMutableSet set];
 	for (VEResult *result in self.saved) {
-		NSNumber *key = @(result.address);
+		// v2.32: unresolved entries all share address 0, so the
+		// dedupe key cannot be the address alone — two different
+		// unresolved values would collapse into one. Unresolved
+		// rows key on image + relOffset instead.
+		NSString *key = (result.address != 0)
+			? [NSString stringWithFormat:@"a:0x%llx", (unsigned long long)result.address]
+			: [NSString stringWithFormat:@"r:%@:0x%llx", result.imageName ?: @"", (unsigned long long)result.relOffset];
 		if ([seen containsObject:key]) {
 			continue;
 		}
@@ -1397,18 +1847,36 @@ static NSString *VEEncryptedSnapshotPath(void) {
 			@"frozen": @(result.frozen),
 			@"transform": @(result.transform),
 			@"transformParam": [NSString stringWithFormat:@"0x%llx", (unsigned long long)result.transformParam],
+			// v2.32 feature 6: slide-aware fields (see VEResult).
+			@"relOffset": [NSString stringWithFormat:@"0x%llx", (unsigned long long)result.relOffset],
+			@"image": result.imageName ?: @"",
+			@"slide": @(result.slideAtSave),
+			@"relocatable": @(result.relocatable),
+			// v2.32 fix: explicit marker so loadSaved can tell
+			// a known heap value from an old save that merely
+			// lacks relocation info (see loadSaved).
+			@"hasRelocation": @(result.relocationKnown),
 		}];
 	}
 	[[NSUserDefaults standardUserDefaults] setObject:stored forKey:kZenithVESavedDefaultsKey];
 }
 
 - (void)saveResult:(VEResult *)result {
+	// v2.32 feature 6: record WHERE the value lives relative
+	// to its image before saving, so next launch can re-find
+	// it under a new slide (see VEFillRelocationForResult).
+	VEFillRelocationForResult(result);
 	for (VEResult *existing in self.saved) {
-		if (existing.address == result.address) {
+		if (existing.address == result.address && result.address != 0) {
 			existing.bits = result.bits;
 			existing.type = result.type;
 			existing.transform = result.transform;
 			existing.transformParam = result.transformParam;
+			existing.relOffset = result.relOffset;
+			existing.imageName = result.imageName;
+			existing.slideAtSave = result.slideAtSave;
+			existing.relocatable = result.relocatable;
+			existing.relocationKnown = result.relocationKnown;
 			// v2.28: the frozen flag used to be dropped here —
 			// freeze a result, then save it, and the saved row
 			// showed unfrozen (and a relaunch never re-froze
@@ -1427,6 +1895,11 @@ static NSString *VEEncryptedSnapshotPath(void) {
 	copy.type = result.type;
 	copy.transform = result.transform;
 	copy.transformParam = result.transformParam;
+	copy.relOffset = result.relOffset;
+	copy.imageName = result.imageName;
+	copy.slideAtSave = result.slideAtSave;
+	copy.relocatable = result.relocatable;
+	copy.relocationKnown = result.relocationKnown;
 	copy.frozen = result.frozen;
 	copy.label = result.label ?: VEStringForBits(VEDisplayedBitsForStored(result.bits, result.transform, result.transformParam, result.type), result.type);
 	[self.saved addObject:copy];
@@ -1443,7 +1916,206 @@ static NSString *VEEncryptedSnapshotPath(void) {
 }
 
 - (void)applySaved:(VEResult *)result {
+	// v2.32: an unresolved address (0) is never written to.
+	if (result.address == 0) {
+		return;
+	}
 	[self writeBits:result.bits at:result.address type:result.type];
+}
+
+// MARK: v2.32 feature 6 — auto-apply
+
+- (void)autoApplySaved {
+	NSUInteger applied = 0, skipped = 0;
+	for (VEResult *result in self.saved) {
+		// v2.32 fix: a KNOWN heap value is never written here
+		// — its saved address is stale next launch, and a
+		// recycled heap page would still accept the write, so
+		// address 0 cannot be the guard (heap saves keep a
+		// non-zero stale address). relocationKnown matters:
+		// an old (pre-2.32) save carries no relocation info,
+		// so it is NOT a known heap value and is applied as
+		// before (see loadSaved). Skipped heap entries count
+		// in autoApplySkipped, so the menu status reports them.
+		if (result.relocationKnown && !result.relocatable) {
+			skipped++;
+			continue;
+		}
+		// Never write blind: address 0 means the value could
+		// not be re-found this launch (its image is gone).
+		// Writing to a stale absolute address could corrupt
+		// unrelated memory — skipping is the honest choice,
+		// and the menu status says how many were skipped.
+		if (result.address == 0) {
+			skipped++;
+			continue;
+		}
+		// result.bits already holds the STORED bits (see
+		// saveResult / VEStoredBitsForDisplayed), so this writes
+		// exactly what the user saved, transform included.
+		// Frozen values are re-written by the freeze loop too,
+		// so this is a duplicate for them, not a conflict.
+		if ([self writeBits:result.bits at:result.address type:result.type]) {
+			applied++;
+		} else {
+			skipped++;
+		}
+	}
+	self.autoApplyApplied = applied;
+	self.autoApplySkipped = skipped;
+}
+
+// MARK: v2.32 feature 8 — save backup / restore
+
+// Copy one tree (Documents or Library/Preferences) into the
+// backup folder, mirroring subdirectories. Files over 50MB are
+// skipped one by one; copying stops past 200MB total. Returns
+// the file count through countOut and sets truncatedOut when
+// the total cap stopped the copy early. Runs SYNCHRONOUSLY
+// on the calling thread: both edit paths call it on the MAIN
+// thread (backupSaveIfNeeded, from the edit handlers) and it
+// must finish before the first edit lands, so it stalls the
+// UI once per session, in proportion to the save size — that
+// stall is deliberate, not a bug. Only RESTORE runs on a
+// background queue (see restoreBackupWithCompletion).
+- (void)copySaveTree:(NSString *)sourceRoot
+			toBackup:(NSString *)destRoot
+		   totalBytes:(uint64_t *)totalBytes
+			fileCount:(NSUInteger *)fileCount
+		   truncated:(BOOL *)truncated {
+	NSFileManager *fm = [NSFileManager defaultManager];
+	BOOL isDir = NO;
+	if (![fm fileExistsAtPath:sourceRoot isDirectory:&isDir] || !isDir) {
+		return;
+	}
+	NSDirectoryEnumerator *enumerator = [fm enumeratorAtPath:sourceRoot];
+	NSString *relative = nil;
+	while ((relative = [enumerator nextObject]) != nil) {
+		if (*truncated) {
+			return;
+		}
+		NSString *source = [sourceRoot stringByAppendingPathComponent:relative];
+		NSString *dest = [destRoot stringByAppendingPathComponent:relative];
+		BOOL entryIsDir = NO;
+		if (![fm fileExistsAtPath:source isDirectory:&entryIsDir]) {
+			continue;
+		}
+		if (entryIsDir) {
+			[fm createDirectoryAtPath:dest withIntermediateDirectories:YES attributes:nil error:NULL];
+			continue;
+		}
+		NSDictionary *attrs = [fm attributesOfItemAtPath:source error:NULL];
+		unsigned long long fileSize = [attrs[NSFileSize] unsignedLongLongValue];
+		if (fileSize > kZenithVEBackupMaxFileBytes) {
+			continue;
+		}
+		if (*totalBytes + fileSize > kZenithVEBackupMaxTotalBytes) {
+			*truncated = YES;
+			return;
+		}
+		NSString *parent = [dest stringByDeletingLastPathComponent];
+		[fm createDirectoryAtPath:parent withIntermediateDirectories:YES attributes:nil error:NULL];
+		if ([fm copyItemAtPath:source toPath:dest error:NULL]) {
+			*totalBytes += fileSize;
+			(*fileCount)++;
+		}
+	}
+}
+
+- (NSString *)backupSaveIfNeeded {
+	if (self.backupDoneThisSession) {
+		return nil;
+	}
+	// Once per session even if it fails: retrying on every edit
+	// would copy the (already edited) save over the backup.
+	self.backupDoneThisSession = YES;
+	NSFileManager *fm = [NSFileManager defaultManager];
+	NSString *root = VEBackupRootPath();
+	// A fresh backup replaces last session's: restore always
+	// returns the state from just before the first edit of the
+	// session that made it, never a stale one.
+	[fm removeItemAtPath:root error:NULL];
+	NSString *home = NSHomeDirectory();
+	NSArray<NSArray<NSString *> *> *trees = @[
+		@[[home stringByAppendingPathComponent:@"Documents"], @"Documents"],
+		@[[home stringByAppendingPathComponent:@"Library/Preferences"], @"Preferences"],
+	];
+	uint64_t totalBytes = 0;
+	NSUInteger fileCount = 0;
+	BOOL truncated = NO;
+	for (NSArray<NSString *> *tree in trees) {
+		[self copySaveTree:tree[0]
+				  toBackup:[root stringByAppendingPathComponent:tree[1]]
+				totalBytes:&totalBytes
+				 fileCount:&fileCount
+				truncated:&truncated];
+		if (truncated) {
+			break;
+		}
+	}
+	if (fileCount == 0) {
+		return @"ما لگيت ملفات حفظ أنسخها — ما انحفظت نسخة.";
+	}
+	if (truncated) {
+		return [NSString stringWithFormat:@"تم حفظ نسخة احتياطية (%lu ملف)، بس انقطعت — الحفظ أكبر من 200 ميغا.", (unsigned long)fileCount];
+	}
+	return [NSString stringWithFormat:@"تم حفظ نسخة احتياطية من حفظ اللعبة (%lu ملف) قبل التعديل.", (unsigned long)fileCount];
+}
+
+- (void)restoreBackupWithCompletion:(void (^)(BOOL success, NSString *message))completion {
+	NSString *root = VEBackupRootPath();
+	NSFileManager *fm = [NSFileManager defaultManager];
+	if (![fm fileExistsAtPath:root]) {
+		if (completion != NULL) {
+			completion(NO, @"ما عندك نسخة محفوظة — النسخة تنحفظ قبل أول تعديل بالجلسة.");
+		}
+		return;
+	}
+	// Copying can take a moment on a big save: off the main
+	// queue, completion back on it.
+	dispatch_async(dispatch_get_global_queue(QOS_CLASS_USER_INITIATED, 0), ^{
+		NSString *home = NSHomeDirectory();
+		NSArray<NSArray<NSString *> *> *trees = @[
+			@[[root stringByAppendingPathComponent:@"Documents"], [home stringByAppendingPathComponent:@"Documents"]],
+			@[[root stringByAppendingPathComponent:@"Preferences"], [home stringByAppendingPathComponent:@"Library/Preferences"]],
+		];
+		NSUInteger fileCount = 0;
+		for (NSArray<NSString *> *tree in trees) {
+			// Mirror the backup tree back over the live
+			// locations. copyItemAtPath fails where a file
+			// already exists, so each live file is removed
+			// just before its copy lands.
+			NSDirectoryEnumerator *enumerator = [fm enumeratorAtPath:tree[0]];
+			NSString *relative = nil;
+			while ((relative = [enumerator nextObject]) != nil) {
+				NSString *source = [tree[0] stringByAppendingPathComponent:relative];
+				NSString *dest = [tree[1] stringByAppendingPathComponent:relative];
+				BOOL entryIsDir = NO;
+				if (![fm fileExistsAtPath:source isDirectory:&entryIsDir]) {
+					continue;
+				}
+				if (entryIsDir) {
+					[fm createDirectoryAtPath:dest withIntermediateDirectories:YES attributes:nil error:NULL];
+					continue;
+				}
+				NSString *parent = [dest stringByDeletingLastPathComponent];
+				[fm createDirectoryAtPath:parent withIntermediateDirectories:YES attributes:nil error:NULL];
+				[fm removeItemAtPath:dest error:NULL];
+				if ([fm copyItemAtPath:source toPath:dest error:NULL]) {
+					fileCount++;
+				}
+			}
+		}
+		dispatch_async(dispatch_get_main_queue(), ^{
+			if (completion != NULL) {
+				if (fileCount == 0) {
+					completion(NO, @"النسخة فاضية — ما استرجعت شي.");
+				} else {
+					completion(YES, [NSString stringWithFormat:@"تم استرجاع النسخة (%lu ملف) — حفظ اللعبة رجع مثل ما كان قبل التعديل.", (unsigned long)fileCount]);
+				}
+			}
+		});
+	});
 }
 
 @end
@@ -1454,6 +2126,18 @@ static NSString *VEEncryptedSnapshotPath(void) {
 /// type picker, value field, search / refine / fuzzy buttons, a
 /// results table, and tap-a-row to edit / freeze / save. Built with
 /// plain UIKit, no storyboards — the dylib has no bundle of its own.
+
+// v2.32 feature 7: the menu talks to the overlay (defined below)
+// to start/stop watching a value. The overlay's full interface
+// comes later in the file, so these are declared on a category
+// here — a category declaration does not clash with the real
+// @interface below, the way a second @interface would.
+@interface ZenithValueEditorOverlay (VEWatch)
+- (void)startWatchingResult:(VEResult *)result;
+- (void)stopWatching;
+- (BOOL)isWatchingResult:(VEResult *)result;
+@end
+
 @interface ZenithValueEditorMenuViewController : UIViewController <UITableViewDataSource, UITableViewDelegate, UITextFieldDelegate>
 
 @property (nonatomic, strong) UISegmentedControl *typeSeg;
@@ -1499,11 +2183,27 @@ static NSString *VEEncryptedSnapshotPath(void) {
 @property (nonatomic, strong) UIButton *editFreezeButton;
 @property (nonatomic, strong) UIButton *editSaveButton;
 @property (nonatomic, strong) UIButton *editRemoveButton;
+// v2.32 feature 7 (watch) + feature 8 (restore): the edit
+// panel's third row. Watch toggles the on-screen live value;
+// restore copies the pre-edit backup back over the save.
+@property (nonatomic, strong) UIButton *editWatchButton;
+@property (nonatomic, strong) UIButton *editRestoreButton;
 @property (nonatomic, strong) VEResult *editingResult;
 @property (nonatomic, assign) BOOL editingIsSavedTab;
 
+// v2.32 feature 10 (live refresh): a timer that re-reads the
+// visible rows' values while the menu is open. The overlay
+// starts it in showMenu and stops it in hideMenu — the menu is
+// a plain subview, never a child view controller, so
+// viewDidAppear / viewWillDisappear never fire for it.
+@property (nonatomic, strong) NSTimer *liveRefreshTimer;
+- (void)startLiveRefresh;
+- (void)stopLiveRefresh;
+- (void)liveRefreshTick;
+
 - (void)refreshTable;
 - (void)setStatus:(NSString *)text;
+- (NSString *)defaultStatusText;
 - (void)hideEditPanel;
 - (NSArray<VEResult *> *)currentList;
 - (VEResult *)resultAtIndex:(NSInteger)index;
@@ -1560,7 +2260,9 @@ static NSString *VEEncryptedSnapshotPath(void) {
 	self.encryptedToggleButton.translatesAutoresizingMaskIntoConstraints = NO;
 	[self.view addSubview:self.encryptedToggleButton];
 
-	self.typeSeg = [[UISegmentedControl alloc] initWithItems:@[@"صحيح", @"كبير", @"فلوت", @"دبل"]];
+	// v2.32 feature 9: "تلقائي" is the 5th segment (index 4 =
+	// VEValueTypeAuto), so selectedType maps straight onto it.
+	self.typeSeg = [[UISegmentedControl alloc] initWithItems:@[@"صحيح", @"كبير", @"فلوت", @"دبل", @"تلقائي"]];
 	self.typeSeg.selectedSegmentIndex = 0;
 	// v2.28: the selected segment is peach with black text, so
 	// it matches the peach primary buttons. The unselected
@@ -1843,6 +2545,35 @@ static NSString *VEEncryptedSnapshotPath(void) {
 	editRow2.translatesAutoresizingMaskIntoConstraints = NO;
 	[self.editPanel addSubview:editRow2];
 
+	// v2.32 feature 7 (watch) + feature 8 (restore): the third
+	// row of the edit panel. Watch toggles the live on-screen
+	// value for the row being edited; restore copies the
+	// pre-edit backup back over the game's save files.
+	self.editWatchButton = [UIButton buttonWithType:UIButtonTypeSystem];
+	[self.editWatchButton setTitle:@"مراقبة القيمة" forState:UIControlStateNormal];
+	self.editWatchButton.titleLabel.font = [UIFont systemFontOfSize:16];
+	[self.editWatchButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+	self.editWatchButton.backgroundColor = [[UIColor whiteColor] colorWithAlphaComponent:0.12];
+	self.editWatchButton.layer.cornerRadius = 8;
+	[self.editWatchButton addTarget:self action:@selector(editWatchTapped) forControlEvents:UIControlEventTouchUpInside];
+	self.editWatchButton.translatesAutoresizingMaskIntoConstraints = NO;
+
+	self.editRestoreButton = [UIButton buttonWithType:UIButtonTypeSystem];
+	[self.editRestoreButton setTitle:@"استرجاع النسخة" forState:UIControlStateNormal];
+	self.editRestoreButton.titleLabel.font = [UIFont systemFontOfSize:16];
+	[self.editRestoreButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+	self.editRestoreButton.backgroundColor = [[UIColor whiteColor] colorWithAlphaComponent:0.12];
+	self.editRestoreButton.layer.cornerRadius = 8;
+	[self.editRestoreButton addTarget:self action:@selector(editRestoreTapped) forControlEvents:UIControlEventTouchUpInside];
+	self.editRestoreButton.translatesAutoresizingMaskIntoConstraints = NO;
+
+	UIStackView *editRow3 = [[UIStackView alloc] initWithArrangedSubviews:@[self.editWatchButton, self.editRestoreButton]];
+	editRow3.axis = UILayoutConstraintAxisHorizontal;
+	editRow3.distribution = UIStackViewDistributionFillEqually;
+	editRow3.spacing = 8;
+	editRow3.translatesAutoresizingMaskIntoConstraints = NO;
+	[self.editPanel addSubview:editRow3];
+
 	[NSLayoutConstraint activateConstraints:@[
 		[self.editPanel.topAnchor constraintEqualToAnchor:self.view.topAnchor constant:0],
 		[self.editPanel.leadingAnchor constraintEqualToAnchor:self.view.leadingAnchor constant:0],
@@ -1868,7 +2599,15 @@ static NSString *VEEncryptedSnapshotPath(void) {
 		[editRow2.leadingAnchor constraintEqualToAnchor:self.editPanel.leadingAnchor constant:12],
 		[editRow2.trailingAnchor constraintEqualToAnchor:self.editPanel.trailingAnchor constant:-12],
 		[editRow2.heightAnchor constraintEqualToConstant:40],
+		[editRow3.topAnchor constraintEqualToAnchor:editRow2.bottomAnchor constant:8],
+		[editRow3.leadingAnchor constraintEqualToAnchor:self.editPanel.leadingAnchor constant:12],
+		[editRow3.trailingAnchor constraintEqualToAnchor:self.editPanel.trailingAnchor constant:-12],
+		[editRow3.heightAnchor constraintEqualToConstant:40],
 	]];
+
+	// v2.32 feature 6: if the launch auto-apply already ran,
+	// say what it did — instead of the default line.
+	[self setStatus:[self defaultStatusText]];
 }
 
 - (VEValueType)selectedType {
@@ -1918,6 +2657,80 @@ static NSString *VEEncryptedSnapshotPath(void) {
 	self.statusLabel.text = text;
 }
 
+// v2.32 feature 6: the menu's default status line. When the
+// launch auto-apply has run, it reports what it did (and how
+// many values it had to skip); otherwise the plain prompt.
+// Used on first open and on tab switches, so the message is
+// still there even if the menu opened before the delayed
+// auto-apply ran.
+- (NSString *)defaultStatusText {
+	ZenithValueEditor *engine = [ZenithValueEditor shared];
+	if (engine.autoApplyApplied > 0 || engine.autoApplySkipped > 0) {
+		if (engine.autoApplySkipped > 0) {
+			return [NSString stringWithFormat:@"تم تطبيق %lu قيمة محفوظة تلقائياً، وتخطّينا %lu (ما نگدر نلگي مكانها بهالتشغيلة).", (unsigned long)engine.autoApplyApplied, (unsigned long)engine.autoApplySkipped];
+		}
+		return [NSString stringWithFormat:@"تم تطبيق %lu قيمة محفوظة تلقائياً.", (unsigned long)engine.autoApplyApplied];
+	}
+	return @"اكتب الرقم ودوس بحث.";
+}
+
+// MARK: v2.32 feature 10 — live results refresh
+//
+// While the menu is open, every ~2.5s each VISIBLE row re-reads
+// its value and updates its text in place. No reloadData: a
+// reload would rebuild the list, jump the scroll position and
+// drop the selection. Only the rows on screen are touched (a
+// full list can hold 100k rows — re-reading all of them every
+// tick would stall the game). result.bits is deliberately NOT
+// updated here: it is the fuzzy-refine baseline (the value at
+// find / last refine), and moving it every tick would break
+// "تغيّر / ما تغيّر". The timer runs only while the menu is
+// visible — the overlay starts it in showMenu and stops it in
+// hideMenu — and the tick itself stops it if the menu went away
+// without hideMenu being called.
+- (void)startLiveRefresh {
+	[self stopLiveRefresh];
+	self.liveRefreshTimer = [NSTimer scheduledTimerWithTimeInterval:kZenithVELiveRefreshInterval
+															 target:self
+														   selector:@selector(liveRefreshTick)
+														   userInfo:nil
+															repeats:YES];
+}
+
+- (void)stopLiveRefresh {
+	[self.liveRefreshTimer invalidate];
+	self.liveRefreshTimer = nil;
+}
+
+- (void)liveRefreshTick {
+	if (self.view.window == nil || self.view.hidden || self.editPanel.hidden == NO) {
+		// The edit panel covers the table while it is open, so
+		// there is nothing visible to refresh — and the tick
+		// must never fight the user typing in the panel's field.
+		// The menu itself is gone: stop the timer outright.
+		if (self.view.window == nil || self.view.hidden) {
+			[self stopLiveRefresh];
+		}
+		return;
+	}
+	ZenithValueEditor *engine = [ZenithValueEditor shared];
+	for (NSIndexPath *indexPath in [self.tableView indexPathsForVisibleRows]) {
+		VEResult *result = [self resultAtIndex:indexPath.row];
+		if (result == nil) {
+			continue;
+		}
+		UITableViewCell *cell = [self.tableView cellForRowAtIndexPath:indexPath];
+		if (cell == nil) {
+			continue;
+		}
+		uint64_t now = 0;
+		BOOL readable = [engine readBitsAt:result.address type:result.type bitsOut:&now];
+		uint64_t displayed = readable ? VEDisplayedBitsForStored(now, result.transform, result.transformParam, result.type) : 0;
+		NSString *valueText = readable ? VEStringForBits(displayed, result.type) : @"؟";
+		cell.textLabel.text = [NSString stringWithFormat:@"0x%llx  —  %@", (unsigned long long)result.address, valueText];
+	}
+}
+
 - (void)closeTapped {
 	[[ZenithValueEditorOverlay shared] hideMenu];
 }
@@ -1945,7 +2758,7 @@ static NSString *VEEncryptedSnapshotPath(void) {
 	}
 	[self setStatus:(count > 0)
 		? [NSString stringWithFormat:@"النتائج: %lu — دوس على وحدة وعدّلها.", (unsigned long)count]
-		: @"اكتب الرقم ودوس بحث."];
+		: [self defaultStatusText]];
 }
 
 - (void)encryptedToggleTapped {
@@ -2176,6 +2989,9 @@ static NSString *VEEncryptedSnapshotPath(void) {
 	}
 
 	[self.editFreezeButton setTitle:(result.frozen ? @"إلغاء التثبيت" : @"تثبيت القيمة") forState:UIControlStateNormal];
+	// v2.32 feature 7: the watch button shows the state for
+	// THIS row — "إيقاف المراقبة" while it is the watched one.
+	[self.editWatchButton setTitle:([[ZenithValueEditorOverlay shared] isWatchingResult:result] ? @"إيقاف المراقبة" : @"مراقبة القيمة") forState:UIControlStateNormal];
 	if (isSavedTab) {
 		// v2.28: was a 21-character title — ~158pt at 16pt
 		// in a ~114pt third of the row, so it truncated.
@@ -2231,9 +3047,18 @@ static NSString *VEEncryptedSnapshotPath(void) {
 		[self setEditStatus:@"هاي القيمة مشفّرة بطريقة ما نگدر نعدّلها — بس نگدر نثبّتها."];
 		return;
 	}
+	// v2.32 feature 8: back up the game's save BEFORE the
+	// first edit of the session lands. The message is shown
+	// alongside the edit result (nil when the backup already
+	// ran this session — once only).
+	NSString *backupMessage = [engine backupSaveIfNeeded];
 	if ([engine writeBits:storedBits at:result.address type:result.type]) {
 		result.bits = storedBits;
-		[self setEditStatus:@"تم التعديل."];
+		if (backupMessage != nil) {
+			[self setEditStatus:[NSString stringWithFormat:@"%@ تم التعديل.", backupMessage]];
+		} else {
+			[self setEditStatus:@"تم التعديل."];
+		}
 	} else {
 		[self setEditStatus:@"ما قدرت أعدّل هاي القيمة — اللعبة حامية هاي الذاكرة."];
 	}
@@ -2259,13 +3084,53 @@ static NSString *VEEncryptedSnapshotPath(void) {
 	}
 	ZenithValueEditor *engine = [ZenithValueEditor shared];
 	if (self.editingIsSavedTab) {
+		// v2.32 feature 8: writing a saved value back is an
+		// edit too — back up first, same as editApplyTapped.
+		NSString *backupMessage = [engine backupSaveIfNeeded];
 		[engine applySaved:result];
-		[self setEditStatus:@"انكتبت القيمة المحفوظة."];
+		if (backupMessage != nil) {
+			[self setEditStatus:[NSString stringWithFormat:@"%@ انكتبت القيمة المحفوظة.", backupMessage]];
+		} else {
+			[self setEditStatus:@"انكتبت القيمة المحفوظة."];
+		}
 	} else {
 		[engine saveResult:result];
 		[self setEditStatus:@"انحفظت بقائمة المحفوظات."];
 	}
 	[self refreshTable];
+}
+
+// v2.32 feature 7: toggle watching this row's value — the
+// overlay shows it live on screen while the game runs. The
+// panel stays open, so the button can stop it again.
+- (void)editWatchTapped {
+	VEResult *result = self.editingResult;
+	if (result == nil) {
+		return;
+	}
+	ZenithValueEditorOverlay *overlay = [ZenithValueEditorOverlay shared];
+	if ([overlay isWatchingResult:result]) {
+		[overlay stopWatching];
+		[self.editWatchButton setTitle:@"مراقبة القيمة" forState:UIControlStateNormal];
+		[self setEditStatus:@"تم إيقاف المراقبة."];
+	} else {
+		[overlay startWatchingResult:result];
+		[self.editWatchButton setTitle:@"إيقاف المراقبة" forState:UIControlStateNormal];
+		[self setEditStatus:@"جاي أراقب القيمة — تطلع فوك الشاشة وتتحدث كل ثانية."];
+	}
+}
+
+// v2.32 feature 8: one tap copies the pre-edit backup back
+// over the game's live save files.
+- (void)editRestoreTapped {
+	[self.editRestoreButton setTitle:@"جاري الاسترجاع…" forState:UIControlStateNormal];
+	self.editRestoreButton.enabled = NO;
+	[[ZenithValueEditor shared] restoreBackupWithCompletion:^(BOOL success, NSString *message) {
+		(void)success;
+		[self setEditStatus:message];
+		[self.editRestoreButton setTitle:@"استرجاع النسخة" forState:UIControlStateNormal];
+		self.editRestoreButton.enabled = YES;
+	}];
 }
 
 - (void)editRemoveTapped {
@@ -2445,16 +3310,53 @@ static void VEAddTiltedEllipseArc(CGContextRef ctx, CGPoint center, CGFloat a, C
 // also run faster, and any date the game reads runs fast — the
 // price of the clock trick, stated here, not hidden.
 //
-// The real functions are reached with dlsym(RTLD_NEXT, ...):
-// calling mach_absolute_time() directly from the replacement
-// would recurse through the interpose table. Resolved once in
-// ZenithVEInitClock() (constructor, single-threaded) and lazily
-// retried if that ever missed.
+// The real clock readings NEVER come from the interposed symbols
+// themselves. v2.30 resolved them by name at load time, but
+// dyld returns the INTERPOSED replacement for an interposed
+// symbol — so the "real" pointer was the replacement itself, and
+// the first call during libSystem init recursed until the stack
+// overflowed and Hill Climb Racing crashed at launch (v2.32).
+// There is no by-name resolution anywhere in this file any more. Real ticks
+// come from mach_continuous_time(), called DIRECTLY (v2.32, corrected):
+// it is a mach trap in libsystem_kernel (declared in
+// <mach/mach_time.h>, already imported), NOT a libc wrapper — it
+// does not call mach_absolute_time, does not go through libc at
+// all, and is NOT in the interpose table, so no recursion path
+// exists, not even through libc internals. That matters: the
+// first v2.32 fix read ticks from a libc uptime call, but
+// Apple's Libc implements that call ON TOP of
+// mach_absolute_time — and __DATA,__interpose redirects
+// EVERY call site process-wide, including libc's internal one —
+// so the recursion stayed open and the game still could not
+// launch. mach_continuous_time() has no such layer under it.
+// It returns time in the SAME tick units as mach_absolute_time
+// (same tick rate), so NO timebase conversion is needed: the
+// virtual clock only ever uses DELTAS, and continuous-time
+// deltas equal absolute-time deltas. Continuous time also counts
+// time asleep; that only shifts the absolute offset, and the
+// virtual clock rebases on every factor change, so continuity
+// holds. Real wall time comes from clock_gettime(CLOCK_REALTIME),
+// also not interposed: gettimeofday is built ON clock_gettime in
+// modern libc, not the reverse, so this direction is safe. Both
+// replacements are safe to call before the constructor has run,
+// with only static-zero state (a statically-initialised mutex;
+// no lazy init, no dispatch_once, no NSLog, no NSDate, no
+// CACurrentMediaTime anywhere on their paths).
 typedef uint64_t (*ZenithVEMachAbsoluteTimeFn)(void);
 typedef int (*ZenithVEGettimeofdayFn)(struct timeval *, void *);
 
+// Defence in depth (v2.32): these stay NULL forever — nothing
+// assigns them now that by-name lookup is gone. If one ever did point at
+// its own replacement, every read site treats it as NULL (see
+// ZenithVEInitClock and ZenithVERealTicks), so a bad pointer can
+// never recurse.
 static ZenithVEMachAbsoluteTimeFn kZenithVERealMachAbsoluteTime = NULL;
 static ZenithVEGettimeofdayFn kZenithVERealGettimeofday = NULL;
+
+// Forward declarations so the guard in ZenithVEInitClock can
+// compare the pointers against the replacements below.
+static uint64_t ZenithVE_mach_absolute_time(void);
+static int ZenithVE_gettimeofday(struct timeval *tv, void *tz);
 
 // The virtual clock's state. Guarded by the lock: factor changes
 // happen on the main thread (arrow taps), reads happen on the
@@ -2467,30 +3369,57 @@ static int64_t kZenithVEWallBaseUs = 0;     // virtual wall microseconds at the 
 static int64_t kZenithVEWallRealBaseUs = 0; // real wall microseconds at the last rebase
 
 static void ZenithVEInitClock(void) {
-	if (kZenithVERealMachAbsoluteTime == NULL) {
-		kZenithVERealMachAbsoluteTime = (ZenithVEMachAbsoluteTimeFn)dlsym(RTLD_NEXT, "mach_absolute_time");
+	// v2.32: deliberately does NOTHING that can recurse. The
+	// real clock readings come from mach_continuous_time() and
+	// clock_gettime (see ZenithVERealTicks / ZenithVERealTimeval),
+	// never from a resolved function pointer. This function only
+	// enforces the recursion guard: a "real" pointer equal to its
+	// own replacement is a self-call, so it is dropped to NULL
+	// and the non-interposed path is used instead. Safe to call
+	// before the constructor has run, and from any thread.
+	if (kZenithVERealMachAbsoluteTime == (ZenithVEMachAbsoluteTimeFn)ZenithVE_mach_absolute_time) {
+		kZenithVERealMachAbsoluteTime = NULL;
 	}
-	if (kZenithVERealGettimeofday == NULL) {
-		kZenithVERealGettimeofday = (ZenithVEGettimeofdayFn)dlsym(RTLD_NEXT, "gettimeofday");
+	if (kZenithVERealGettimeofday == (ZenithVEGettimeofdayFn)ZenithVE_gettimeofday) {
+		kZenithVERealGettimeofday = NULL;
 	}
 }
 
-// The real mach_absolute_time, with a fallback if dlsym ever
-// missed: CLOCK_UPTIME_RAW nanoseconds converted with the
-// timebase — the same uptime clock, and no interposed symbol in
-// the path, so it cannot recurse.
+// The real mach_absolute_time, with NO by-name lookup and NO call through
+// any interposed symbol (v2.32, corrected): mach_continuous_time()
+// directly. It is a mach trap — it does not call
+// mach_absolute_time, does not go through libc, and is not in
+// the interpose table, so it cannot recurse, even when libc
+// itself calls mach_absolute_time internally during early
+// libSystem init (the libc-uptime path it replaced
+// failed exactly there: Libc implements it on top of
+// mach_absolute_time). Same tick units as mach_absolute_time,
+// so the value is returned as-is, with NO timebase conversion
+// and NO lock taken on this path. Works with only static-zero
+// state, so it is safe before the constructor has run.
+// The pointer branch is only the recursion guard's safety net:
+// the pointers stay NULL, and a pointer equal to the replacement
+// is never called.
 static uint64_t ZenithVERealTicks(void) {
-	if (kZenithVERealMachAbsoluteTime != NULL) {
+	if (kZenithVERealMachAbsoluteTime != NULL && kZenithVERealMachAbsoluteTime != (ZenithVEMachAbsoluteTimeFn)ZenithVE_mach_absolute_time) {
 		return kZenithVERealMachAbsoluteTime();
 	}
-	ZenithVEInitClock();
-	if (kZenithVERealMachAbsoluteTime != NULL) {
-		return kZenithVERealMachAbsoluteTime();
+	return mach_continuous_time();
+}
+
+// The real gettimeofday, with NO call through any interposed
+// symbol (v2.32): clock_gettime(CLOCK_REALTIME) converted to a
+// struct timeval. The tz argument is ignored — the realtime
+// clock carries no timezone, same as the old fallback path.
+// Returns 0 on success, -1 if the clock read fails.
+static int ZenithVERealTimeval(struct timeval *tv) {
+	struct timespec ts;
+	if (clock_gettime(CLOCK_REALTIME, &ts) != 0) {
+		return -1;
 	}
-	mach_timebase_info_data_t info;
-	mach_timebase_info(&info);
-	uint64_t ns = clock_gettime_nsec_np(CLOCK_UPTIME_RAW);
-	return ns * info.denom / info.numer;
+	tv->tv_sec = (time_t)ts.tv_sec;
+	tv->tv_usec = (suseconds_t)(ts.tv_nsec / 1000);
+	return 0;
 }
 
 // Current virtual time in mach ticks. Snapshot the state under
@@ -2535,23 +3464,19 @@ static void ZenithVESetSpeedFactor(double factor) {
 	if (factor > 5.0) {
 		factor = 5.0;
 	}
-	if (kZenithVERealGettimeofday == NULL) {
-		ZenithVEInitClock();
-	}
 	// Capture the current virtual times BEFORE changing the
 	// factor, so the rebase below is continuous.
 	uint64_t virtualTicks = ZenithVEVirtualTicks();
 	uint64_t realTicks = ZenithVERealTicks();
 	int64_t virtualUs;
 	int64_t realUs;
-	if (kZenithVERealGettimeofday != NULL) {
-		struct timeval realTv;
-		kZenithVERealGettimeofday(&realTv, NULL);
+	struct timeval realTv;
+	if (ZenithVERealTimeval(&realTv) == 0) {
 		realUs = (int64_t)realTv.tv_sec * 1000000LL + (int64_t)realTv.tv_usec;
 		virtualUs = ZenithVEVirtualWallUs(realUs);
 	} else {
-		// Unreachable in practice: keep the wall clock where it
-		// is instead of rebasing it on a made-up reading.
+		// Realtime clock unreadable: keep the wall clock where
+		// it is instead of rebasing it on a made-up reading.
 		pthread_mutex_lock(&kZenithVEClockLock);
 		virtualUs = kZenithVEWallBaseUs;
 		realUs = kZenithVEWallRealBaseUs;
@@ -2575,31 +3500,24 @@ static uint64_t ZenithVE_mach_absolute_time(void) {
 }
 
 static int ZenithVE_gettimeofday(struct timeval *tv, void *tz) {
-	if (kZenithVERealGettimeofday == NULL) {
-		ZenithVEInitClock();
-	}
+	(void)tz;
+	// v2.32: the real reading is clock_gettime(CLOCK_REALTIME)
+	// (ZenithVERealTimeval) — never a gettimeofday function
+	// pointer, so this cannot recurse. The pointer branch is
+	// only the recursion guard's safety net: the pointer stays
+	// NULL, and a pointer equal to this replacement is never
+	// called.
 	struct timeval realTv;
-	if (kZenithVERealGettimeofday != NULL) {
+	if (kZenithVERealGettimeofday != NULL && kZenithVERealGettimeofday != (ZenithVEGettimeofdayFn)ZenithVE_gettimeofday) {
 		int result = kZenithVERealGettimeofday(&realTv, tz);
 		if (result != 0) {
 			return result;
 		}
-		if (tv == NULL) {
-			return result;
-		}
-	} else {
-		// gettimeofday itself unavailable (unreachable in
-		// practice): read the realtime clock directly — a
-		// different symbol, not interposed.
-		struct timespec ts;
-		if (clock_gettime(CLOCK_REALTIME, &ts) != 0) {
-			return -1;
-		}
-		realTv.tv_sec = (time_t)ts.tv_sec;
-		realTv.tv_usec = (suseconds_t)(ts.tv_nsec / 1000);
-		if (tv == NULL) {
-			return 0;
-		}
+	} else if (ZenithVERealTimeval(&realTv) != 0) {
+		return -1;
+	}
+	if (tv == NULL) {
+		return 0;
 	}
 	int64_t realUs = (int64_t)realTv.tv_sec * 1000000LL + (int64_t)realTv.tv_usec;
 	int64_t virtualUs = ZenithVEVirtualWallUs(realUs);
@@ -2675,6 +3593,13 @@ __attribute__((used)) static const ZenithVEInterpose kZenithVEInterposers[] __at
 - (void)speedUpTapped;
 - (void)speedDownTapped;
 - (UIWindow *)keyWindow;
+// v2.32 feature 7 (value watch): live on-screen value + alert
+// on change. Declared on the category at the top of the menu
+// section too, so the menu can call them.
+- (void)startWatchingResult:(VEResult *)result;
+- (void)stopWatching;
+- (BOOL)isWatchingResult:(VEResult *)result;
+- (void)watchTick;
 
 @end
 
@@ -2688,6 +3613,16 @@ __attribute__((used)) static const ZenithVEInterpose kZenithVEInterposers[] __at
 	UILabel *_speedLabel;
 	BOOL _speedArrowsVisible;
 	BOOL _longPressFired;
+	// v2.32 feature 7: the watched value, its label on screen,
+	// the 1s timer that refreshes it, and the last value shown
+	// (as DISPLAYED bits — what the player sees, transforms
+	// undone — so the change alert compares what changed on
+	// screen, not stored bits).
+	VEResult *_watchResult;
+	UILabel *_watchLabel;
+	NSTimer *_watchTimer;
+	uint64_t _watchLastDisplayedBits;
+	BOOL _watchHasLastValue;
 }
 
 + (instancetype)shared {
@@ -2834,6 +3769,9 @@ __attribute__((used)) static const ZenithVEInterpose kZenithVEInterposers[] __at
 	if (_menu != nil && _menu.view.window != nil) {
 		[_menu hideEditPanel];
 		_menu.view.hidden = NO;
+		// v2.32 feature 10: the live refresh runs only while
+		// the menu is visible — restart it on every reopen.
+		[_menu startLiveRefresh];
 		return;
 	}
 	// First open, or the host view went away while the menu was
@@ -2883,6 +3821,9 @@ __attribute__((used)) static const ZenithVEInterpose kZenithVEInterposers[] __at
 	_menu.view.frame = CGRectInset(host.view.bounds, 16, 16);
 	_menu.view.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
 	[host.view addSubview:_menu.view];
+	// v2.32 feature 10: start the live refresh now that the
+	// menu is on screen.
+	[_menu startLiveRefresh];
 }
 
 - (void)hideMenu {
@@ -2890,6 +3831,132 @@ __attribute__((used)) static const ZenithVEInterpose kZenithVEInterposers[] __at
 	// so it does not linger over the game after the menu closes.
 	[_menu.view endEditing:YES];
 	_menu.view.hidden = YES;
+	// v2.32 feature 10: the menu is gone — stop the live
+	// refresh timer (it would otherwise keep re-reading rows
+	// the user cannot see). Watching (feature 7) is NOT
+	// stopped here: its label lives outside the menu, on the
+	// game itself, and keeps updating while the game runs.
+	[_menu stopLiveRefresh];
+}
+
+// MARK: v2.32 feature 7 — value watch
+//
+// One value, watched live: a small label sits on the game
+// itself (top centre, below the status bar), showing the
+// value's current number, refreshed every second. The label
+// and its container never take touches (userInteractionEnabled
+// NO), so gameplay taps pass straight through it. When the
+// value changes, the label says so plainly and flashes peach
+// for two seconds, then goes back to the plain value — the
+// alert IS the label, no popup to dismiss mid-game. Watching
+// survives the menu closing; only the edit panel's "إيقاف
+// المراقبة" stops it. Cost: one vm_read a second.
+
+- (BOOL)isWatchingResult:(VEResult *)result {
+	return _watchResult != nil && result != nil && _watchResult == result;
+}
+
+- (void)startWatchingResult:(VEResult *)result {
+	if (result == nil || result.address == 0) {
+		return;
+	}
+	[self stopWatching];
+	_watchResult = [result retain];
+	_watchHasLastValue = NO;
+	_watchLastDisplayedBits = 0;
+	UIWindow *keyWindow = [self keyWindow];
+	if (keyWindow == nil) {
+		[_watchResult release];
+		_watchResult = nil;
+		return;
+	}
+	UIViewController *host = keyWindow.rootViewController;
+	while (host.presentedViewController != nil) {
+		host = host.presentedViewController;
+	}
+	if (host == nil) {
+		[_watchResult release];
+		_watchResult = nil;
+		return;
+	}
+	CGRect bounds = [UIScreen mainScreen].bounds;
+	CGFloat width = 260.0;
+	_watchLabel = [[UILabel alloc] initWithFrame:CGRectMake((CGRectGetWidth(bounds) - width) / 2.0, 64.0, width, 30.0)];
+	_watchLabel.backgroundColor = [[UIColor blackColor] colorWithAlphaComponent:0.6];
+	_watchLabel.textColor = [UIColor colorWithRed:1.0 green:0.78 blue:0.47 alpha:1.0];
+	_watchLabel.font = [UIFont boldSystemFontOfSize:14];
+	_watchLabel.textAlignment = NSTextAlignmentCenter;
+	_watchLabel.layer.cornerRadius = 8;
+	_watchLabel.clipsToBounds = YES;
+	// Pass-through touches: the label never takes a touch, so
+	// it can never block gameplay.
+	_watchLabel.userInteractionEnabled = NO;
+	_watchLabel.text = @"مراقبة…";
+	[host.view addSubview:_watchLabel];
+	_watchTimer = [NSTimer scheduledTimerWithTimeInterval:kZenithVEWatchInterval
+												   target:self
+												 selector:@selector(watchTick)
+												 userInfo:nil
+												  repeats:YES];
+	[self watchTick];
+}
+
+- (void)stopWatching {
+	[_watchTimer invalidate];
+	_watchTimer = nil;
+	[_watchLabel removeFromSuperview];
+	[_watchLabel release];
+	_watchLabel = nil;
+	[_watchResult release];
+	_watchResult = nil;
+	_watchHasLastValue = NO;
+}
+
+- (void)watchTick {
+	if (_watchResult == nil || _watchLabel == nil) {
+		[self stopWatching];
+		return;
+	}
+	ZenithValueEditor *engine = [ZenithValueEditor shared];
+	uint64_t now = 0;
+	BOOL readable = [engine readBitsAt:_watchResult.address type:_watchResult.type bitsOut:&now];
+	if (!readable) {
+		_watchLabel.text = @"المراقبة: ؟";
+		return;
+	}
+	uint64_t displayed = VEDisplayedBitsForStored(now, _watchResult.transform, _watchResult.transformParam, _watchResult.type);
+	NSString *valueText = VEStringForBits(displayed, _watchResult.type);
+	if (!_watchHasLastValue) {
+		_watchHasLastValue = YES;
+		_watchLastDisplayedBits = displayed;
+		_watchLabel.text = [NSString stringWithFormat:@"القيمة: %@", valueText];
+		return;
+	}
+	if (displayed != _watchLastDisplayedBits) {
+		NSString *oldText = VEStringForBits(_watchLastDisplayedBits, _watchResult.type);
+		_watchLastDisplayedBits = displayed;
+		_watchLabel.text = [NSString stringWithFormat:@"تغيّرت القيمة: %@ (كانت %@)", valueText, oldText];
+		// Flash peach for two seconds, then back to the plain
+		// value line — the alert is visible without stealing
+		// a tap or covering the game.
+		_watchLabel.backgroundColor = [UIColor colorWithRed:1.0 green:0.78 blue:0.47 alpha:1.0];
+		_watchLabel.textColor = [UIColor blackColor];
+		// Capture THIS label: if the user starts watching a
+		// different value inside the two seconds, the delayed
+		// block must not repaint the new label with the old
+		// value.
+		UILabel *flashedLabel = _watchLabel;
+		dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(2.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+			if (_watchLabel != flashedLabel || _watchResult == nil) {
+				return;
+			}
+			flashedLabel.backgroundColor = [[UIColor blackColor] colorWithAlphaComponent:0.6];
+			flashedLabel.textColor = [UIColor colorWithRed:1.0 green:0.78 blue:0.47 alpha:1.0];
+			flashedLabel.text = [NSString stringWithFormat:@"القيمة: %@", VEStringForBits(_watchLastDisplayedBits, _watchResult.type)];
+		});
+		return;
+	}
+	_watchLabel.text = [NSString stringWithFormat:@"القيمة: %@", valueText];
 }
 
 - (void)pillTapped {
@@ -3032,8 +4099,11 @@ __attribute__((used)) static const ZenithVEInterpose kZenithVEInterposers[] __at
 @end
 
 __attribute__((constructor)) static void ZenithValueEditorInit(void) {
-	// Game speed (v2.30): resolve the real clock functions before
-	// any interposed call can happen.
+	// Game speed (v2.32, corrected): the clock needs no setup
+	// any more — the real readings come from
+	// mach_continuous_time() / clock_gettime, not from resolved
+	// pointers — so this only enforces the recursion guard. The
+	// replacements are safe even before this constructor runs.
 	ZenithVEInitClock();
 	dispatch_async(dispatch_get_main_queue(), ^{
 		[[ZenithValueEditor shared] setup];
