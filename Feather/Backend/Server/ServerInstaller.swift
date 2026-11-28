@@ -12,6 +12,7 @@ import Combine
 import Vapor
 import NIOSSL
 import NIOTLS
+import OSLog
 import SwiftUI
 import IDeviceSwift
 
@@ -151,10 +152,12 @@ class ServerInstaller: Identifiable, ObservableObject {
 /// together they cover an audio interruption and a task expiry.
 ///
 /// Lifetime: begin() when the install sheet appears, end() as
-/// soon as the install reaches a terminal status (.completed /
-/// .broken). A 10-minute grace end bounds the session if the
-/// sheet (and its poll) is gone and no terminal status ever
-/// arrives — a local install finishes in well under that.
+/// soon as the install reaches .completed. A .broken status does
+/// NOT end the session (v2.23) — installd may still retry/resume
+/// against the live server. A 10-minute grace end bounds the
+/// session if the sheet (and its poll) is gone and no terminal
+/// status ever arrives — a local install finishes in well under
+/// that.
 final class InstallSessionManager {
 	static let shared = InstallSessionManager()
 
@@ -164,24 +167,53 @@ final class InstallSessionManager {
 	#endif
 	private var _statusCancellable: AnyCancellable?
 	private var _graceTask: Task<Void, Never>?
+	/// Whether this session holds its own audio keep-alive.
+	/// Tracked separately from the refcount so begin() never
+	/// eats the sheet's hold (v2.23) and end() never stops audio
+	/// it does not hold.
+	private var _audioHeld = false
 
 	private init() {}
 
 	/// Keep `server` (and the process) alive for this install.
-	/// Ends any previous session first. Call on the main thread.
+	/// Ends any previous session first (without touching audio).
+	/// Call on the main thread.
 	func begin(server: ServerInstaller, viewModel: InstallerStatusViewModel) {
-		end()
+		// Zenith v2.23: tear down a previous session WITHOUT
+		// touching audio. The old begin() called end(), which
+		// stopped the audio — eating the sheet's onAppear hold
+		// (count 1→0, engine stopped) and then restarting it, a
+		// stop→restart cycle on every sheet appearance. If that
+		// restart threw, the refcount stayed 1 with a dead engine
+		// (phantom hold) and the process suspended when the
+		// itms-services link backgrounded Zenith.
+		_endSessionWithoutAudio()
 		_server = server
 		#if !targetEnvironment(macCatalyst)
-		BackgroundAudioManager.shared.start()
+		if !_audioHeld {
+			BackgroundAudioManager.shared.start()
+			_audioHeld = true
+		}
+		if !BackgroundAudioManager.shared.ensureEngineRunning() {
+			Logger.misc.error("Install session: audio keep-alive engine is not running after start.")
+		}
 		_beginBackgroundTask()
 		#endif
 		_statusCancellable = viewModel.$status
 			.receive(on: DispatchQueue.main)
 			.sink { [weak self] status in
 				switch status {
-				case .completed, .broken:
+				case .completed:
 					self?.end()
+				case .broken:
+					// Zenith v2.23: do NOT end the session on
+					// .broken. The server must survive so installd
+					// can retry/resume the payload fetch — ending
+					// here destroyed the server on a transient
+					// stall or a slow prompt confirmation, and the
+					// retry hit a dead server. The 10-minute grace
+					// task below bounds the session.
+					break
 				default:
 					break
 				}
@@ -197,13 +229,26 @@ final class InstallSessionManager {
 	/// hold. Idempotent; safe to call when no session is active.
 	/// Call on the main thread.
 	func end() {
+		_endSessionWithoutAudio()
+		#if !targetEnvironment(macCatalyst)
+		if _audioHeld {
+			BackgroundAudioManager.shared.stop()
+			_audioHeld = false
+		}
+		#endif
+	}
+
+	/// Release the server, the background task, the status sink
+	/// and the grace task — but NOT the audio hold. begin() uses
+	/// this so a previous session's teardown never eats the
+	/// sheet's (or this session's) audio hold.
+	private func _endSessionWithoutAudio() {
 		_statusCancellable?.cancel()
 		_statusCancellable = nil
 		_graceTask?.cancel()
 		_graceTask = nil
 		#if !targetEnvironment(macCatalyst)
 		_endBackgroundTask()
-		BackgroundAudioManager.shared.stop()
 		#endif
 		_server = nil
 	}
@@ -212,9 +257,18 @@ final class InstallSessionManager {
 	private func _beginBackgroundTask() {
 		guard _backgroundTask == .invalid else { return }
 		_backgroundTask = UIApplication.shared.beginBackgroundTask(withName: "ZenithInstall") { [weak self] in
-			// Time is up: give the task back, but keep the server
-			// and the audio keep-alive — they carry the install now.
-			self?._endBackgroundTask()
+			// Zenith v2.23: this ~30s grant expired — give the old
+			// task back, then immediately begin a fresh one while
+			// the session is still active, so a live task covers
+			// the whole session in ~30s slices. The old code only
+			// ended the task here, so by the time installd fetched
+			// the IPA no task was live. Do not re-begin once the
+			// session has ended (_server nil).
+			guard let self else { return }
+			self._endBackgroundTask()
+			if self._server != nil {
+				self._beginBackgroundTask()
+			}
 		}
 	}
 

@@ -22,6 +22,11 @@ struct InstallPreviewView: View {
 	// watchdog (see _openInstallLinkExternal).
 	@State private var _didOpenInstallLink = false
 	@State private var _stallWatchdog: Task<Void, Never>?
+	// Zenith v2.23: honest stall note while installd fetches the
+	// IPA — a 45s timer started on .sendingPayload; if the status
+	// is still .sendingPayload when it fires, the note shows.
+	@State private var _payloadStallTask: Task<Void, Never>?
+	@State private var _showPayloadStallNote = false
 	@State private var progressTask: Task<Void, Never>?
 	
 	var app: AppInfoPresentable
@@ -68,6 +73,16 @@ struct InstallPreviewView: View {
 			SafariRepresentableView(url: installer.pageEndpoint).ignoresSafeArea()
 		}
 		.onReceive(viewModel.$status) { newStatus in
+			// Zenith v2.23: the payload-stall note. Start the 45s
+			// timer on .sendingPayload; any other status clears
+			// the timer and the note.
+			if case .sendingPayload = newStatus {
+				_startPayloadStallTimer()
+			} else {
+				_payloadStallTask?.cancel()
+				_payloadStallTask = nil
+				_showPayloadStallNote = false
+			}
 			if _installationMethod == 0 {
 				if case .ready = newStatus {
 					// Zenith v2.15: ask the installer which server method
@@ -165,6 +180,9 @@ struct InstallPreviewView: View {
 			progressTask = nil
 			_stallWatchdog?.cancel()
 			_stallWatchdog = nil
+			_payloadStallTask?.cancel()
+			_payloadStallTask = nil
+			_showPayloadStallNote = false
 			
 			#if !targetEnvironment(macCatalyst)
 			BackgroundAudioManager.shared.stop()
@@ -187,7 +205,14 @@ struct InstallPreviewView: View {
 	
 	@ViewBuilder
 	private func _status() -> some View {
-		Label(viewModel.statusLabel, systemImage: viewModel.statusImage)
+		VStack(alignment: .leading, spacing: 4) {
+			Label(viewModel.statusLabel, systemImage: viewModel.statusImage)
+			if _showPayloadStallNote {
+				Text("التحميل واقف — السيرفر توقف. جرّب إلغاء وإعادة التثبيت.")
+					.font(.footnote)
+					.foregroundStyle(.secondary)
+			}
+		}
 			.padding()
 			.labelStyle(.titleAndIcon)
 			.frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottomLeading)
@@ -302,6 +327,27 @@ struct InstallPreviewView: View {
 						title: .localized("Install"),
 						message: "التثبيت ما بدأ — ما وصل شي للشاشة. جرّب تثبيت مرة ثانية."
 					)
+				}
+			}
+		}
+	}
+	
+	// Zenith v2.23: honest payload-stall note. installd is
+	// fetching the IPA from the local server; if the status is
+	// still .sendingPayload 45s later the fetch has stalled
+	// (most likely the server died while Zenith was
+	// backgrounded) — say so under the status line instead of
+	// sitting on the progress text forever. Cancelled as soon as
+	// the status leaves .sendingPayload or the view disappears.
+	private func _startPayloadStallTimer() {
+		_payloadStallTask?.cancel()
+		_showPayloadStallNote = false
+		_payloadStallTask = Task.detached {
+			try? await Task.sleep(nanoseconds: 45_000_000_000)
+			guard !Task.isCancelled else { return }
+			await MainActor.run {
+				if case .sendingPayload = viewModel.status {
+					_showPayloadStallNote = true
 				}
 			}
 		}

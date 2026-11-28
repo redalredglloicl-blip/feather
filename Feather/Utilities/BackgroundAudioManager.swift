@@ -79,6 +79,21 @@ class BackgroundAudioManager {
 		try? AVAudioSession.sharedInstance().setActive(false)
 	}
 
+	/// Restart the engine if anything still holds the keep-alive
+	/// but the engine is not running — a start that raced a stop,
+	/// or a failed start that left a counted-but-dead hold
+	/// (Zenith v2.23: the install session's start() used to leave
+	/// exactly that phantom hold). Does not touch the refcount.
+	/// Returns whether the engine is running afterwards.
+	func ensureEngineRunning() -> Bool {
+		_lock.lock()
+		defer { _lock.unlock() }
+		if _retainCount > 0, !_engine.isRunning {
+			_startEngineLocked()
+		}
+		return _engine.isRunning
+	}
+
 	/// Start the engine. Called with _lock held.
 	private func _startEngineLocked() {
 		do {
