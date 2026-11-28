@@ -207,6 +207,15 @@ struct InstallPreviewView: View {
 	private func _status() -> some View {
 		VStack(alignment: .leading, spacing: 4) {
 			Label(viewModel.statusLabel, systemImage: viewModel.statusImage)
+			// Zenith v2.24: show the real failure behind a bare
+			// "خطأ" — the attached .broken error's description
+			// (see statusDetail), so the next failed install says
+			// WHY instead of ending on a bare warning triangle.
+			if let detail = viewModel.statusDetail {
+				Text(detail)
+					.font(.footnote)
+					.foregroundStyle(.secondary)
+			}
 			if _showPayloadStallNote {
 				Text("التحميل واقف — السيرفر توقف. جرّب إلغاء وإعادة التثبيت.")
 					.font(.footnote)

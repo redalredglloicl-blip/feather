@@ -32,4 +32,19 @@ extension InstallerStatusViewModel {
 		case .broken: .localized("Error")
 		}
 	}
+
+	// Zenith v2.24: the real failure behind a .broken status.
+	// The sheet used to show only statusLabel ("خطأ") and drop
+	// the attached error, so an install that installd rejected
+	// ended on a bare warning triangle with no diagnosis. The
+	// install-failure errors already carry Iraqi-dialect
+	// descriptions (InstallLinkError); a system error shows its
+	// own description. Shown under the status line so the next
+	// test gives a diagnosis instead of a bare triangle.
+	var statusDetail: String? {
+		if case .broken(let error) = status {
+			return error.localizedDescription
+		}
+		return nil
+	}
 }

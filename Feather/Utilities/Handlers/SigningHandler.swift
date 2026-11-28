@@ -246,12 +246,22 @@ final class SigningHandler: NSObject {
 			throw SigningFileHandlerError.missingCertifcate
 		}
 		
-		try await self.move()
-		try await self.addToDatabase()
-		
+		// Zenith v2.24: a failed sign must never reach the Library.
+		// The old code moved the .app into Signed/ and added it to
+		// the database BEFORE checking hadError, so a signing that
+		// zsign reported as failed still left a broken (unsigned or
+		// half-signed) app in the Library as if it were signed —
+		// and installing that entry fails at the end in installd
+		// with a bare error, exactly the failure this version
+		// fixes. Check first; on failure the work copy stays in
+		// tmp and the caller cleans it, and the Library keeps the
+		// last good signed copy (or none).
 		if let error = handler.hadError {
 			throw error
 		}
+
+		try await self.move()
+		try await self.addToDatabase()
 	}
 	
 	func move() async throws {

@@ -1069,10 +1069,22 @@ static int VECompareBits(uint64_t a, uint64_t b, VEValueType type) {
 	uint64_t now = 0;
 	[engine readBitsAt:result.address type:result.type bitsOut:&now];
 
+	// v2.24, Bug 2: this MUST be Alert, never ActionSheet.
+	// UIKit FORBIDS text fields in an action sheet:
+	// addTextFieldWithConfigurationHandler: raises
+	// NSInternalInconsistencyException ("text fields can only
+	// be added to an alert controller of style Alert") and the
+	// game aborts — crash log 4, incident BB7C7968, tap any
+	// result row -> showActionsForResult -> addTextField ->
+	// NSAssertionHandler -> SIGABRT. The 2.22 layout fix made
+	// the rows tappable for the first time, so this is the
+	// first tap that ever reached this code. An alert needs
+	// no popover anchor on any device, and keeps the same
+	// text field + تعديل / freeze / save actions.
 	UIAlertController *sheet = [UIAlertController
 		alertControllerWithTitle:[NSString stringWithFormat:@"0x%llx", (unsigned long long)result.address]
 		message:nil
-		preferredStyle:UIAlertControllerStyleActionSheet];
+		preferredStyle:UIAlertControllerStyleAlert];
 	[sheet addTextFieldWithConfigurationHandler:^(UITextField *textField) {
 		textField.text = VEStringForBits(now, result.type);
 		textField.keyboardType = UIKeyboardTypeNumbersAndPunctuation;

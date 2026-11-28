@@ -150,10 +150,21 @@ class TweakHandler {
 		// identical UUID across 2.18 and 2.19 signings). The load
 		// command itself is safe on re-injection: zsign's
 		// InjectDylib no-ops when the same path is already loaded.
+		// Zenith v2.24: COPY the staged dylib into the bundle, do
+		// not move it. The move consumed the staged file, but its
+		// URL stays in the persisted Options (OptionsManager saves
+		// injectionFiles) — the next signing then found a dangling
+		// staged URL, refreshStagedBundledOverlays silently skipped
+		// it, and the remove above deleted the old dylib from the
+		// copied bundle before the move threw on the missing file,
+		// so re-signing with the overlays on always failed after
+		// the first signing. A copy leaves the staged file in place
+		// for the next signing, where refresh keeps its bytes
+		// current.
 		if url != destinationURL {
 			try _fileManager.removeFileIfNeeded(at: destinationURL)
+			try _fileManager.copyItem(at: url, to: destinationURL)
 		}
-		try _fileManager.moveFileIfNeeded(from: url, to: destinationURL)
 		
 		guard let appexe = Bundle(url: _app)?.executableURL else {
 			return
@@ -368,8 +379,10 @@ class TweakHandler {
 	// dylibs (any other file name) are never touched, and the
 	// staged URL stays valid — nothing in Options needs to
 	// change, so the persisted entry is refreshed too. A missing
-	// staged file is left alone: injection then fails loudly as
-	// before, instead of silently signing without the overlay.
+	// staged file is re-created from the bundled dylib (v2.24):
+	// it is the normal state after an earlier signing consumed
+	// the staged copy, and leaving it missing broke the next
+	// signing — see the note inside the loop.
 	static func refreshStagedBundledOverlays(in options: Options) {
 		let bundled: [(name: String, url: URL?)] = [
 			(ValueEditorInjector.bundledDylibName, ValueEditorInjector.bundledDylibURL),
@@ -381,8 +394,25 @@ class TweakHandler {
 			guard let bundledData = try? Data(contentsOf: bundledURL) else { continue }
 			let fileName = name + ".dylib"
 			for staged in options.injectionFiles where staged.lastPathComponent == fileName {
-				guard let stagedData = try? Data(contentsOf: staged) else { continue }
-				guard stagedData != bundledData else { continue }
+				if let stagedData = try? Data(contentsOf: staged), stagedData == bundledData {
+					continue
+				}
+				// Zenith v2.24: a staged copy that is missing (or
+				// stale) is re-created from the current bundled
+				// dylib instead of skipped. The old code skipped a
+				// missing staged file — but a missing staged file is
+				// the NORMAL state after any earlier signing, because
+				// _handleDylib moved the staged file into the .app
+				// and the persisted Options still list its URL. The
+				// skip left the next signing with no dylib to inject
+				// (and _handleDylib's remove-then-move threw on the
+				// missing file), so re-signing with the overlays on
+				// always failed after the first signing. The parent
+				// directory may be gone too (tmp purge), so recreate
+				// it; if either step fails, injection still fails
+				// loudly as before instead of signing without the
+				// overlay.
+				try? FileManager.default.createDirectoryIfNeeded(at: staged.deletingLastPathComponent())
 				try? bundledData.write(to: staged, options: .atomic)
 				Logger.misc.info("Refreshed staged overlay dylib \(fileName) with the current build's copy")
 			}
